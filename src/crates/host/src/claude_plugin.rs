@@ -1,9 +1,9 @@
 //! Settings → Agents → Agent plugins: Agent HUD's Claude Code plugin, which
 //! lets the HUD answer Claude's questions in the session that asked. It is
 //! installed and removed only when the user asks there, with Claude Code's own
-//! `plugin install`; at launch, a plugin the user installed from another
-//! folder, such as the Swift app's, is installed again from this app's. The
-//! channel it shares with the app and the HUD's answers live in
+//! `plugin install`. Launching never touches it, so a plugin installed from
+//! another folder, such as the release's or the Swift app's, stays as it is.
+//! The channel it shares with the app and the HUD's answers live in
 //! `agent_hud_runtime::claude_plugin`.
 use agent_hud_runtime::claude_plugin::{self as plugin, ClaudeChannel, ClaudeReplies};
 use agent_hud_runtime::replies::SessionReplies;
@@ -97,56 +97,6 @@ fn install(
         return Err("Claude Code still runs the plugin from another folder".into());
     }
     Ok(())
-}
-
-/// At launch: when the user installed the plugin from another folder, such
-/// as the Swift app's, has Claude Code install it from this app's instead.
-/// Runs in the background under the Settings actions' owner; never installs
-/// a plugin the user has not, and only logs a failure.
-pub(crate) fn repair_on_launch(app: &tauri::AppHandle) {
-    // The demo leaves the user's Claude Code alone.
-    if app.state::<super::AppState>().demo {
-        return;
-    }
-    let app = app.clone();
-    tauri::async_runtime::spawn_blocking(move || {
-        let state = app.state::<ClaudePlugin>();
-        let Ok(_owner) = state.owner.lock() else {
-            return;
-        };
-        let result = super::mcp_clients::home().and_then(|home| {
-            let executable = super::mcp_clients::executable("claudeCode", &home);
-            let config = plugin::claude_config_directory(&home);
-            repair(
-                &state.channel,
-                &state.folder,
-                executable.as_deref(),
-                &config,
-                &home,
-            )
-        });
-        if let Err(error) = result {
-            eprintln!("The Claude Code plugin could not be installed from this app: {error}");
-        }
-    });
-}
-
-/// Installs the plugin again from `folder` when Claude Code lists it from
-/// another folder and its command line is here. Returns whether it did.
-fn repair(
-    channel: &ClaudeChannel,
-    folder: &Path,
-    executable: Option<&Path>,
-    claude_config: &Path,
-    home: &Path,
-) -> Result<bool, String> {
-    if executable.is_none()
-        || !plugin::installed(claude_config)
-        || plugin::installed_from(claude_config, folder)
-    {
-        return Ok(false);
-    }
-    install(channel, folder, executable, claude_config, home).map(|()| true)
 }
 
 /// Forgets every check-in and word left, then has Claude Code remove the
@@ -371,58 +321,6 @@ mod tests {
             folder.join("hooks/register.ts").is_file(),
             "files refreshed"
         );
-        assert!(!repair(&channel, &folder, Some(&claude), &config, root).unwrap());
         assert!(!root.join("calls").exists());
-    }
-
-    #[test]
-    fn the_launch_repair_installs_nothing_the_user_did_not() {
-        let temp = tempfile::tempdir().unwrap();
-        let root = temp.path();
-        let config = root.join("claude-config");
-        let channel = ClaudeChannel::new(root.join("channel"));
-        let folder = root.join("plugin");
-        let claude = fake_claude(root, &config);
-
-        assert!(!repair(&channel, &folder, Some(&claude), &config, root).unwrap());
-        // Nor when only a marketplace from another folder is left.
-        let swift = root.join("swift-plugin");
-        fs::write(
-            config.join("plugins/known_marketplaces.json"),
-            json!({"agent-hud":{"source":{"source":"directory","path":swift}}}).to_string(),
-        )
-        .unwrap();
-        assert!(!repair(&channel, &folder, Some(&claude), &config, root).unwrap());
-        assert!(!root.join("calls").exists());
-        assert!(!folder.exists());
-        assert!(!plugin::installed(&config));
-    }
-
-    #[test]
-    fn the_launch_repair_installs_a_copy_from_another_folder_again_from_ours() {
-        let temp = tempfile::tempdir().unwrap();
-        let root = temp.path();
-        let config = root.join("claude-config");
-        let channel = ClaudeChannel::new(root.join("channel"));
-        let folder = root.join("plugin");
-        let claude = fake_claude(root, &config);
-        listed_from(&config, &root.join("swift-plugin"));
-
-        assert!(
-            !repair(&channel, &folder, None, &config, root).unwrap(),
-            "no Claude Code, nothing to run"
-        );
-        assert!(repair(&channel, &folder, Some(&claude), &config, root).unwrap());
-        let calls = fs::read_to_string(root.join("calls")).unwrap();
-        assert_eq!(calls.lines().collect::<Vec<_>>(), replaced(&folder));
-        assert!(plugin::installed_from(&config, &folder));
-        assert!(folder.join("hooks/register.ts").is_file());
-
-        assert!(
-            !repair(&channel, &folder, Some(&claude), &config, root).unwrap(),
-            "once is enough"
-        );
-        let calls = fs::read_to_string(root.join("calls")).unwrap();
-        assert_eq!(calls.lines().count(), 3);
     }
 }
