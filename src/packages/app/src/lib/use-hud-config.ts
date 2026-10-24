@@ -65,6 +65,7 @@ const globalKeys = [
   "collapseDelayMs",
   "requiresOptionToOpen",
   "openImmediatelyAtTop",
+  "doubleClickOpensApp",
   "animations",
 ] as const satisfies readonly (keyof HUDConfig)[];
 const oldSharedPanelKeys = [

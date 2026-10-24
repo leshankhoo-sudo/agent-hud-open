@@ -44,6 +44,9 @@ static DISCOVERY: Discovery = Discovery {
     ],
     commands: &["claude"],
     apps: &["Claude"],
+    // Claude Desktop from the Microsoft Store: package Claude by Anthropic, PBC,
+    // application Claude (Claude 3.6556.2.0's manifest).
+    packaged_apps: &["Claude_pzs8sxrjxfjjc!Claude"],
     ..Discovery::NONE
 };
 

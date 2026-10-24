@@ -19,6 +19,15 @@ pub use accounts::{AccountService, CollectionGate};
 pub use navigation::session_url;
 use std::path::{Path, PathBuf};
 
+/// The clients' desktop apps by packaged application ID, as their descriptors
+/// name them: each client's id with its IDs, for the clients that have any.
+pub fn packaged_apps() -> impl Iterator<Item = (&'static str, &'static [&'static str])> {
+    agent_hud_agents::ALL
+        .iter()
+        .map(|agent| (agent.id, agent.discovery.packaged_apps))
+        .filter(|(_, ids)| !ids.is_empty())
+}
+
 pub struct NativePlatform {
     home: PathBuf,
 }

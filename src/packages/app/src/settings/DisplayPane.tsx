@@ -705,6 +705,15 @@ export function DisplayPane({
               "工作时保持 Bot；空闲时偶尔变成 Bot 活动几秒，再回到 Logo。悬停、等待批准或刚回复时也显示 Bot。",
             ),
           )}
+          <Divider />
+          {toggle(
+            "doubleClickOpensApp",
+            t("Double-click a logo to open its app", "双击 Logo 打开应用"),
+            t(
+              "Claude Code's logo opens Claude, and Codex's opens ChatGPT, when the app is installed; one already running comes to the front. A single click waits a moment to tell the two apart. Windows only for now.",
+              "双击 Claude Code 的 Logo 打开 Claude，双击 Codex 的 Logo 打开 ChatGPT（需已安装）；已在运行的应用会切到前台。单击会稍等片刻以区分双击。目前仅支持 Windows。",
+            ),
+          )}
         </Section>
         <Section title={t("Hover behavior", "悬停交互")}>
           {toggle(

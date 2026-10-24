@@ -33,6 +33,7 @@
   "collapseDelayMs": 200,
   "requiresOptionToOpen": false,
   "openImmediatelyAtTop": false,
+  "doubleClickOpensApp": true,
   "sessionList": true,
   "quotaDetails": true,
   "resetCountdown": true,

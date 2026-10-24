@@ -31,6 +31,7 @@ import {
 } from "./scene/useHUDDrag";
 import {
   useHUDInteraction,
+  type HUDDesktopApps,
   type HUDNativePointer,
 } from "./scene/useHUDInteraction";
 import { useHUDLayout } from "./scene/useHUDLayout";
@@ -67,7 +68,10 @@ export type {
 } from "./model";
 export { defaultHUDConfig, HUD_METRICS } from "./model";
 export type { HUDDragPreview, HUDDragStartArgs } from "./scene/useHUDDrag";
-export type { HUDNativePointer } from "./scene/useHUDInteraction";
+export type {
+  HUDDesktopApps,
+  HUDNativePointer,
+} from "./scene/useHUDInteraction";
 export type { HUDFlight, HUDFlightCommand } from "./scene/FlightLayer";
 
 export interface HUDSceneProps {
@@ -108,6 +112,9 @@ export interface HUDSceneProps {
   panelCommand?: { open: boolean; sequence: number };
   /** The host's recent flights between two agents' marks, oldest first. */
   flights?: readonly HUDFlightCommand[];
+  /** The marks a double-click opens the agent's desktop app from. */
+  desktopApps?: HUDDesktopApps;
+  onOpenApp?: (key: string) => void;
 }
 
 const position = (rect: HUDRect): CSSProperties => ({
@@ -170,6 +177,8 @@ export function HUDScene({
   renderBackdrop,
   panelCommand,
   flights,
+  desktopApps,
+  onOpenApp,
 }: HUDSceneProps) {
   const sourceConfig = useMemo(
     () => ({ ...defaultHUDConfig, ...supplied }),
@@ -569,6 +578,7 @@ export function HUDScene({
     entered,
     domExited,
     pin,
+    clickMark,
     handoff,
     configurePanel,
     showPanelStats,
@@ -607,6 +617,8 @@ export function HUDScene({
     onConfigure,
     onStats,
     onEscape: endHold,
+    desktopApps,
+    onOpenApp,
   });
 
   // A card's Open Agent plugins hands over as the settings button does.
@@ -978,10 +990,9 @@ export function HUDScene({
                   background: "transparent",
                   cursor: dragVisual ? "grabbing" : "default",
                 }}
-                onClick={(event) => {
-                  const key = vendorUnderPointer(event) ?? hovered;
-                  if (key) pin(key);
-                }}
+                onClick={(event) =>
+                  clickMark(vendorUnderPointer(event) ?? hovered, event.detail)
+                }
               />
             )}
             <HUDMarkStrip
@@ -1016,7 +1027,7 @@ export function HUDScene({
               setHovered={setHovered}
               setPinned={setPinned}
               forceOpen={forceOpen}
-              pin={pin}
+              clickMark={clickMark}
             />
           </div>
           {dragVisual && (

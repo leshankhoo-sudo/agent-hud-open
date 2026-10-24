@@ -46,6 +46,9 @@ static DISCOVERY: Discovery = Discovery {
     commands: &["codex"],
     apps: &["Codex", "ChatGPT"],
     bundles: &["com.openai.codex"],
+    // The ChatGPT desktop app, which hosts Codex: package OpenAI.Codex,
+    // application App (ChatGPT 26.1016.8622.0's manifest).
+    packaged_apps: &["OpenAI.Codex_2p2nqsd0c76g0!App"],
     ..Discovery::NONE
 };
 

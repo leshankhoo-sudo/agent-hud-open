@@ -64,6 +64,8 @@ export interface HUDConfig {
   collapseDelayMs: number;
   requiresOptionToOpen: boolean;
   openImmediatelyAtTop: boolean;
+  /** Double-clicking a mark opens its agent's desktop app, where the host can. */
+  doubleClickOpensApp: boolean;
   sessionList: boolean;
   quotaDetails: boolean;
   resetCountdown: boolean;

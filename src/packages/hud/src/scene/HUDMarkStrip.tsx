@@ -52,7 +52,7 @@ export function HUDMarkStrip({
   setHovered,
   setPinned: _setPinned,
   forceOpen,
-  pin,
+  clickMark,
 }: {
   id: string;
   config: HUDConfig;
@@ -85,7 +85,7 @@ export function HUDMarkStrip({
   setHovered: (key: string | null) => void;
   setPinned: (pinned: boolean) => void;
   forceOpen: () => void;
-  pin: (key?: string) => void;
+  clickMark: (key: string | null, clicks: number) => void;
 }) {
   const format = useFormat();
   const { quotaDisplay } = format;
@@ -259,7 +259,7 @@ export function HUDMarkStrip({
                 setHovered(vendor.key);
                 if (!hasAlert && !suppressHover.current) forceOpen();
               }}
-              onClick={() => pin(vendor.key)}
+              onClick={(event) => clickMark(vendor.key, event.detail)}
               style={{
                 position: "relative",
                 zIndex: 1,

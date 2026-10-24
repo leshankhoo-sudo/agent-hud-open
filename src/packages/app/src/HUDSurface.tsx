@@ -3,6 +3,7 @@ import { invoke, isTauri } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { HUDScene } from "@agent-hud/hud/HUDScene";
 import type {
+  HUDDesktopApps,
   HUDDragStartArgs,
   HUDFlight,
   HUDFlightCommand,
@@ -425,6 +426,20 @@ export default function NativeHUDSurface({
   const openUpdate = useCallback(() => {
     void invoke("open_update");
   }, []);
+  // The agents whose desktop app a double-click on their mark opens, read
+  // once: the apps installed when the HUD starts.
+  const [desktopApps, setDesktopApps] = useState<HUDDesktopApps>();
+  useEffect(() => {
+    if (!isTauri()) return;
+    void invoke<HUDDesktopApps>("hud_desktop_apps")
+      .then(setDesktopApps)
+      .catch((error) => console.error("Desktop apps unavailable", error));
+  }, []);
+  const openApp = useCallback((key: string) => {
+    void invoke("hud_open_desktop_app", { key }).catch((error) =>
+      console.error("The desktop app could not be opened", error),
+    );
+  }, []);
   // A product's flights between two agents' marks; every screen's HUD plays them.
   const [flights, setFlights] = useState<readonly HUDFlightCommand[]>([]);
   useEffect(() => {
@@ -635,6 +650,8 @@ export default function NativeHUDSurface({
       onRequestDecision={decide}
       panelCommand={primary ? panelCommand : undefined}
       flights={flights}
+      desktopApps={desktopApps}
+      onOpenApp={openApp}
     />
   );
 }

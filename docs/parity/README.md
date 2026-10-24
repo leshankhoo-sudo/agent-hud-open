@@ -25,6 +25,7 @@ Deliberate differences:
 - The HUD has no glass material: every look is solid, with a transparency (decided 2026-10-21, after the React Bits / Liquid Glass look proved out of reach in the WebView; c07 #57).
 - Next keeps its own settings and database, reads legacy preferences once and never writes Open's database. The one-time import of quota history reads `usage-ledger.sqlite` from the Application Support folder named by the `AgentHUDDataDirectory` key in the Info.plist of the installed `Agent HUD.app` (in `/Applications` or `~/Applications`); with no such key it reads Agent HUD Open's folder. An in-place update replaces that bundle with the app built on Next, so a product that updates an earlier app in place must declare the same key, or the import misses the earlier app's ledger.
 - Demo mode only through `--demo`.
+- Double-clicking a mark opens its agent's desktop app, which Open does not do: on Windows, Claude Code's opens Claude and Codex's opens ChatGPT, found by the packaged application IDs in the agents' descriptors; a running app's window comes to the front instead of a second copy starting. Settings → Display → Logos turns it off (`doubleClickOpensApp`, on by default). On such a mark a single click's pin waits for the system's double-click time, so one gesture never does both; other marks, and other hosts, pin at once as before. While a request or reply card is up, a double-click opens nothing and leaves the card in place (c06 #25).
 - The LAN token-usage and session service, which Open does not have.
 - The Windows and Linux adapters.
 - Decided 2026-10-20:
@@ -49,12 +50,12 @@ Open is the floor, not the ceiling. Next must not do worse than Open; where it c
 | [c03](c03-hooks-store-ledger.md) | Hooks, permissions, collector, store, ledger | 104 | 44 | 6 | 6 | 4 | 8 | 28 | 8 |
 | [c04](c04-models-logic.md) | Models, quota math, session phases, formatting, demo | 122 | 51 | 3 | 5 | 18 | 12 | 26 | 7 |
 | [c05](c05-panel-mcp.md) | Panel layout, HUD style, MCP tools | 96 | 24 | 5 | 1 | 16 | 2 | 47 | 1 |
-| [c06](c06-notch-surface.md) | Island, hover panel, Simple mode, HUD windows | 119 | 40 | 5 | 1 | 18 | 11 | 41 | 3 |
+| [c06](c06-notch-surface.md) | Island, hover panel, Simple mode, HUD windows | 119 | 39 | 6 | 1 | 18 | 11 | 41 | 3 |
 | [c07](c07-glow-alerts-theme.md) | Glow, alerts, permission cards, theme | 119 | 39 | 3 | 4 | 24 | 6 | 39 | 4 |
 | [c08](c08-bots.md) | Bots and Clawd | 58 | 35 | 1 | 2 | 1 | 1 | 15 | 3 |
 | [c09](c09-app-settings.md) | App lifecycle, Settings, menu bar | 90 | 25 | 6 | 6 | 7 | 9 | 32 | 5 |
 | [c10](c10-statistics-debug.md) | Statistics, sessions window, debug, recording | 101 | 14 | 1 | 9 | 13 | 8 | 54 | 2 |
-| **Total** | | **1,217** | **412** | **41** | **47** | **175** | **88** | **408** | **46** |
+| **Total** | | **1,217** | **411** | **42** | **47** | **175** | **88** | **408** | **46** |
 
 `pnpm run parity:ledger` recounts this table from the rows; `pnpm run check` fails when it is stale.
 

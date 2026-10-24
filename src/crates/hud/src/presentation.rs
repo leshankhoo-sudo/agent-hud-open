@@ -21,6 +21,7 @@ const GLOBAL: &[&str] = &[
     "collapseDelayMs",
     "requiresOptionToOpen",
     "openImmediatelyAtTop",
+    "doubleClickOpensApp",
     "animations",
 ];
 const HARDWARE: &[&str] = &["monitorIndex", "hasNotch", "notchWidth", "notchHeight"];

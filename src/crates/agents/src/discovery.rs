@@ -21,6 +21,10 @@ pub struct Discovery {
     pub apps: &'static [&'static str],
     /// Its desktop apps, by bundle identifier, on systems with bundles.
     pub bundles: &'static [&'static str],
+    /// Its desktop apps, by packaged application ID (the package family and
+    /// the manifest's application, `Family!App`), on systems with packages.
+    /// The HUD opens the first one installed when its mark is double-clicked.
+    pub packaged_apps: &'static [&'static str],
     /// Variables that hold its credential: any set and not empty says it is
     /// configured.
     pub credentials_env: &'static [&'static str],
@@ -39,6 +43,7 @@ impl Discovery {
         commands: &[],
         apps: &[],
         bundles: &[],
+        packaged_apps: &[],
         credentials_env: &[],
         configured: None,
     };

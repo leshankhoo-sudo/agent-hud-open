@@ -22,6 +22,13 @@ export interface HUDNativePointer {
   shiftKey: boolean | null;
 }
 
+/** The marks whose agent's desktop app the host can open, and how long the
+ * system waits for a second click. */
+export interface HUDDesktopApps {
+  doubleClickMs: number;
+  marks: string[];
+}
+
 const horizontal = (edge: HUDEdge) => edge === "top" || edge === "bottom";
 
 export interface UseHUDInteractionArgs {
@@ -60,6 +67,9 @@ export interface UseHUDInteractionArgs {
   onStats?: () => void;
   /** Escape only ends an agent's edit hold; the panel is left to the hover. */
   onEscape?: () => void;
+  desktopApps?: HUDDesktopApps;
+  /** Opens, or brings forward, the desktop app of the agent drawn as `key`. */
+  onOpenApp?: (key: string) => void;
 }
 
 export function useHUDInteraction({
@@ -97,6 +107,8 @@ export function useHUDInteraction({
   onConfigure,
   onStats,
   onEscape,
+  desktopApps,
+  onOpenApp,
 }: UseHUDInteractionArgs) {
   const lastAlertId = useRef<string | null>(null);
   const lastAlertInUsagePanel = useRef(false);
@@ -310,6 +322,50 @@ export function useHUDInteraction({
     },
     [collapse, suppressHover],
   );
+
+  // A single click's pin, waiting to see whether a second click follows.
+  const pendingPin = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestPin = useRef(pin);
+  latestPin.current = pin;
+  const cancelPendingPin = () => {
+    if (pendingPin.current === null) return;
+    clearTimeout(pendingPin.current);
+    pendingPin.current = null;
+  };
+  useEffect(() => cancelPendingPin, []);
+
+  /** A click on a mark. Where a double-click opens the agent's desktop app, a
+   * single click's pin waits out the system's double-click time, so one
+   * gesture never does both; elsewhere, for a key press (no click count) and
+   * while a request or reply card is up, it pins at once, as before, and a
+   * double-click never closes the card. */
+  function clickMark(key: string | null, clicks: number) {
+    if (!key) return;
+    const open =
+      config.doubleClickOpensApp && !request && !event ? onOpenApp : undefined;
+    if (!open || !desktopApps?.marks.includes(key) || clicks === 0) {
+      pin(key);
+      return;
+    }
+    if (
+      dragCandidate.current?.armed ||
+      dragPreview ||
+      suppressDragClick.current
+    )
+      return;
+    cancelPendingPin();
+    if (clicks === 2) {
+      handoff(() => open(key));
+      return;
+    }
+    // A third click belongs to the double-click that already opened the app.
+    if (clicks > 2) return;
+    const wait = desktopApps.doubleClickMs;
+    pendingPin.current = setTimeout(() => {
+      pendingPin.current = null;
+      latestPin.current(key);
+    }, wait);
+  }
   const configurePanel = useMemo(
     () => (onConfigure ? () => handoff(onConfigure) : undefined),
     [onConfigure, handoff],
@@ -325,6 +381,7 @@ export function useHUDInteraction({
     entered,
     domExited,
     pin,
+    clickMark,
     handoff,
     configurePanel,
     showPanelStats,

@@ -16,6 +16,7 @@ mod claude_plugin;
 mod cli;
 mod coordinator;
 mod demo;
+mod desktop_apps;
 pub mod extension;
 mod hud;
 mod instance;
@@ -850,6 +851,8 @@ pub fn run_with_options(
             hud::hud_report_regions,
             hud::hud_drag_start,
             hud::hud_text_focus,
+            desktop_apps::hud_desktop_apps,
+            desktop_apps::hud_open_desktop_app,
             hud_show_main,
             quit_app,
             open_statistics,
