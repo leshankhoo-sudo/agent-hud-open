@@ -1,0 +1,461 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Mint & Apricot</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}
+#title{position:fixed;left:0;right:0;text-align:center;font-family:"DejaVu Sans",sans-serif;font-weight:bold;color:#fff8ec;letter-spacing:.06em;text-shadow:0 3px 14px rgba(200,100,50,.6),0 1px 3px rgba(90,50,30,.55);pointer-events:none;opacity:0}
+#title small{display:block;font-weight:normal;font-size:.5em;letter-spacing:.3em;margin-top:.4em;color:#fff3e0}</style>
+<script type="importmap">{"imports":{"three":"./lib/node_modules/three/build/three.module.js","three/addons/":"./lib/node_modules/three/examples/jsm/"}}</script>
+</head><body><div id="title"></div>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { HorizontalTiltShiftShader } from 'three/addons/shaders/HorizontalTiltShiftShader.js';
+import { VerticalTiltShiftShader } from 'three/addons/shaders/VerticalTiltShiftShader.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const W = +(new URLSearchParams(location.search).get('w') || 1280), H = Math.round(W * 9 / 16);
+// ---------- beat grid (fitted from librosa beat track) ----------
+const T0 = 0.244, BP = 0.45940;
+const U = t => (t - T0) / BP;              // time -> beat units
+const fr = x => x - Math.floor(x);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const ss = (a, b, x) => { const k = clamp((x - a) / (b - a)); return k * k * (3 - 2 * k); };
+const easeOutBack = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+const easeInOut = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const pulse = (u, k = 6) => Math.exp(-fr(u) * k);           // decays after every beat
+const pulseAt = (u, at, k = 5) => u >= at ? Math.exp(-(u - at) * k) : 0;
+const win = (u, a, b) => u >= a && u < b;
+// progress that only advances while "stepping" on beats a..b (snappy hop-steps)
+const steps = (u, a, b) => { if (u <= a) return 0; if (u >= b) return 1; const k = Math.floor(u - a), p = fr(u); return (k + easeInOut(clamp(p / .75))) / (b - a); };
+
+// ---------- renderer ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(W, H);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = .95;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 200);
+
+// ---------- clay texture (fingerprint-ish soft noise) ----------
+function noiseTex(seed = 1, size = 512) {
+  const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d');
+  g.fillStyle = '#808080'; g.fillRect(0, 0, size, size);
+  let s = seed; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 2600; i++) {
+    const x = rnd() * size, y = rnd() * size, r = 2 + rnd() * 14, v = rnd() > .5 ? 255 : 0;
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, `rgba(${v},${v},${v},${.05 + rnd() * .07})`); gr.addColorStop(1, 'rgba(128,128,128,0)');
+    g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+  }
+  g.strokeStyle = 'rgba(0,0,0,.035)'; g.lineWidth = 1.2;           // faint tool strokes
+  for (let i = 0; i < 160; i++) { g.beginPath(); const x = rnd() * size, y = rnd() * size; g.arc(x, y, 6 + rnd() * 30, rnd() * 6, rnd() * 6 + 1.2); g.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+}
+const clayBump = noiseTex(7);
+const clay = (color, o = {}) => new THREE.MeshPhysicalMaterial(Object.assign({
+  color, roughness: .78, metalness: 0, sheen: .7, sheenRoughness: .6, sheenColor: new THREE.Color('#fff4e6'),
+  bumpMap: clayBump, bumpScale: 1.4, clearcoat: .06, clearcoatRoughness: .7
+}, o));
+function glowTex(inner = 'rgba(255,255,255,1)') {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, inner); gr.addColorStop(.35, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c);
+}
+const GLOW = glowTex();
+const glowSprite = (color, s, op = .6) => { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW, color, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false })); m.scale.setScalar(s); return m; };
+
+// ---------- sky ----------
+const skyMat = new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false,
+  uniforms: { top: { value: new THREE.Color() }, mid: { value: new THREE.Color() }, bot: { value: new THREE.Color() } },
+  vertexShader: `varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+  fragmentShader: `uniform vec3 top,mid,bot; varying vec3 vP; void main(){ float h=vP.y; vec3 c = h>0.05 ? mix(mid,top,smoothstep(.05,.7,h)) : mix(bot,mid,smoothstep(-.3,.05,h)); gl_FragColor=vec4(c,1.); }`
+});
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(90, 32, 16), skyMat));
+const DAY = { top: '#f6d7b8', mid: '#fdebd3', bot: '#f9dcc0', fog: '#fbe3c9' };
+const DUSK = { top: '#b9a3d6', mid: '#f4c3b5', bot: '#f7d2bd', fog: '#e9c6c0' };
+const NIGHT = { top: '#5d5a9c', mid: '#a68fc5', bot: '#d9b4c4', fog: '#b49ac0' };
+scene.fog = new THREE.Fog('#fbe3c9', 14, 46);
+
+// ---------- lights ----------
+const hemi = new THREE.HemisphereLight('#fff3e2', '#f2c9a8', 1.25); scene.add(hemi);
+const key = new THREE.DirectionalLight('#fff0dc', 2.4); key.position.set(4, 7, 5); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -0.0004; key.shadow.normalBias = .02;
+Object.assign(key.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 1, far: 25 }); scene.add(key);
+const rim = new THREE.DirectionalLight('#ffd0e6', 1.0); rim.position.set(-5, 3, -6); scene.add(rim);
+const charLight = new THREE.PointLight('#ffb37a', 0, 3, 2); scene.add(charLight);
+
+// ---------- miniature island ----------
+const world = new THREE.Group(); scene.add(world);
+{
+  const pts = []; const R = 4.2;
+  for (let i = 0; i <= 24; i++) { const a = i / 24 * Math.PI / 2; pts.push(new THREE.Vector2(R - 0.55 + Math.cos(a) * 0.55, -Math.sin(a) * 0.55 - 0.0)); }
+  pts.push(new THREE.Vector2(R - 1.4, -1.5), new THREE.Vector2(1.5, -2.2), new THREE.Vector2(0, -2.5));
+  pts.unshift(new THREE.Vector2(0, 0));
+  const isl = new THREE.Mesh(new THREE.LatheGeometry(pts.map(p => new THREE.Vector2(p.x, p.y + 0.0)), 96), clay('#f6e2c4', { bumpScale: 2 }));
+  isl.receiveShadow = true; world.add(isl);
+  const under = new THREE.Mesh(new THREE.ConeGeometry(2.6, 2.4, 48), clay('#e9b896')); under.position.y = -2.4; under.rotation.x = Math.PI; world.add(under);
+  const grass = new THREE.Mesh(new THREE.CylinderGeometry(3.95, 3.95, 0.06, 96), clay('#bfe3c0')); grass.position.y = 0.0; grass.receiveShadow = true; world.add(grass);
+}
+const bobbers = [];
+function lump(col, x, y, z, sx, sy, sz, parent = world) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 40, 24), clay(col)); m.position.set(x, y, z); m.scale.set(sx, sy, sz); m.castShadow = m.receiveShadow = true; parent.add(m); return m; }
+// hill the two sit/stand on
+lump('#bfe4c8', 0, -0.35, -0.2, 1.7, .55, 1.3);
+lump('#f8d3b4', -2.6, -0.2, -1.6, 1.1, .6, .9); lump('#cbe6d3', 2.5, -0.3, -1.9, 1.3, .7, 1.0);
+// trees
+function tree(x, z, s, col) { const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s);
+  const tr = new THREE.Mesh(new THREE.CylinderGeometry(.07, .1, .5, 12), clay('#d9a77f')); tr.position.y = .25; tr.castShadow = true; g.add(tr);
+  lump(col, 0, .7, 0, .34, .36, .34, g); lump(col, .16, .95, .02, .24, .25, .24, g); lump(col, -.14, .9, .05, .22, .22, .22, g);
+  world.add(g); bobbers.push(g); return g; }
+tree(-2.9, -0.9, 1.1, '#a8dcbf'); tree(-3.2, 0.6, .8, '#bfe6c9'); tree(2.9, -0.6, 1.0, '#ffd1a8'); tree(3.2, 0.9, .75, '#a8dcbf'); tree(-1.4, -2.6, 1.2, '#bfe6c9'); tree(1.7, -2.7, 1.0, '#a8dcbf');
+// mushrooms + flowers
+function mush(x, z, s) { const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s);
+  const st = new THREE.Mesh(new THREE.CylinderGeometry(.06, .08, .22, 12), clay('#fff6ea')); st.position.y = .11; g.add(st);
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(.17, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2), clay('#f7a59a')); cap.position.y = .2; cap.castShadow = true; g.add(cap);
+  for (let i = 0; i < 4; i++) lump('#fff6ea', Math.cos(i * 1.7) * .1, .3 + (i % 2) * .02, Math.sin(i * 1.7) * .1, .025, .015, .025, g);
+  world.add(g); bobbers.push(g); }
+mush(-1.9, 1.4, 1.2); mush(-2.2, 1.7, .8); mush(2.0, 1.6, 1.0); mush(1.2, -1.6, .9);
+const flowers = [];
+for (let i = 0; i < 26; i++) { const a = i * 2.4, r = 1.8 + (i * 37 % 17) / 10; const x = Math.cos(a) * r, z = Math.sin(a) * r;
+  if (Math.abs(x) < 1.2 && z > -0.5 && z < 1.6) continue;
+  const g = new THREE.Group(); g.position.set(x, 0, z); const col = ['#ffd6e0', '#fff1b8', '#cdeee0', '#ffd3b0'][i % 4];
+  const st = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, .16, 6), clay('#9fd3a9')); st.position.y = .08; g.add(st);
+  for (let k = 0; k < 5; k++) lump(col, Math.cos(k * 1.256) * .045, .17, Math.sin(k * 1.256) * .045, .035, .02, .035, g);
+  lump('#ffcf6e', 0, .18, 0, .025, .02, .025, g); world.add(g); flowers.push(g); }
+// clouds
+const clouds = [];
+function cloud(x, y, z, s) { const g = new THREE.Group(); g.position.set(x, y, z); g.scale.setScalar(s);
+  [[0, 0, 0, .6], [.55, -.08, .05, .45], [-.55, -.1, 0, .42], [.2, .25, 0, .4]].forEach(([a, b, c, r]) => lump('#fffaf3', a, b, c, r, r * .85, r * .8, g));
+  scene.add(g); clouds.push(g); return g; }
+cloud(-5, 3.6, -6, 1.1); cloud(5.5, 4.2, -7, 1.3); cloud(0.5, 5.2, -10, 1.6); cloud(-7.5, 2.4, -3, .8); cloud(7, 2.2, -2, .7);
+
+// ---------- clay stars ----------
+function starShape(r1 = .5, r2 = .24, n = 5) { const s = new THREE.Shape(); for (let i = 0; i <= n * 2; i++) { const a = i / (n * 2) * Math.PI * 2 + Math.PI / 2, r = i % 2 ? r2 : r1; i ? s.lineTo(Math.cos(a) * r, Math.sin(a) * r) : s.moveTo(Math.cos(a) * r, Math.sin(a) * r); } return s; }
+const starGeo = new THREE.ExtrudeGeometry(starShape(), { depth: .12, bevelEnabled: true, bevelThickness: .1, bevelSize: .09, bevelSegments: 6, curveSegments: 4 }); starGeo.center();
+const starMat = () => clay('#ffe08a', { emissive: new THREE.Color('#ffc64d'), emissiveIntensity: .5, roughness: .6 });
+const skyStars = [];
+for (let i = 0; i < 34; i++) { const a = (i * 137.5) * Math.PI / 180, r = 7 + (i * 53 % 23) / 2.2;
+  const m = new THREE.Mesh(starGeo, starMat()); m.position.set(Math.cos(a) * r, 3.2 + (i * 29 % 31) / 5.5, -6 + Math.sin(a) * r * .5 - 4);
+  m.userData = { s: .35 + (i % 5) * .08, at: 34 + (i % 12) * .5, ph: i * .7 }; scene.add(m); skyStars.push(m); }
+// stars to chase (low, around the island)
+const chaseStars = [];
+for (let i = 0; i < 14; i++) { const m = new THREE.Mesh(starGeo, starMat()); m.userData.i = i; m.castShadow = true; scene.add(m); chaseStars.push(m); }
+const bigStar = new THREE.Mesh(starGeo, starMat()); bigStar.castShadow = true; scene.add(bigStar);
+const bigGlow = glowSprite('#ffd27a', 2.2, 0); scene.add(bigGlow);
+const shooting = new THREE.Group(); { const h = new THREE.Mesh(starGeo, starMat()); h.scale.setScalar(.45); shooting.add(h);
+  for (let i = 1; i < 9; i++) { const g = glowSprite('#ffe6a8', .6 - i * .05, .5 - i * .05); g.position.x = i * .28; shooting.add(g); } scene.add(shooting); }
+
+// sparkle burst pool (tiny 4-point stars)
+const sparkGeo = new THREE.ExtrudeGeometry(starShape(.5, .14, 4), { depth: .05, bevelEnabled: true, bevelThickness: .05, bevelSize: .05, bevelSegments: 3 }); sparkGeo.center();
+const sparks = []; const bursts = [];
+for (let i = 0; i < 160; i++) { const m = new THREE.Mesh(sparkGeo, new THREE.MeshBasicMaterial({ color: '#fff3c4', transparent: true })); m.visible = false; scene.add(m); sparks.push(m); }
+const burst = (u0, pos, col = '#fff1b5', n = 12, size = .09, spd = 1) => bursts.push({ u0, pos: !pos ? null : pos.clone ? pos : new THREE.Vector3(...pos), col: new THREE.Color(col), n, size, spd });
+// little heart (only one, for the hand-touch moment)
+const heartShape = new THREE.Shape(); heartShape.moveTo(0, -.35); heartShape.bezierCurveTo(-.6, .05, -.32, .5, 0, .25); heartShape.bezierCurveTo(.32, .5, .6, .05, 0, -.35);
+const heartGeo = new THREE.ExtrudeGeometry(heartShape, { depth: .08, bevelEnabled: true, bevelThickness: .08, bevelSize: .07, bevelSegments: 5 }); heartGeo.center();
+const heart = new THREE.Mesh(heartGeo, clay('#ff9fb0', { emissive: new THREE.Color('#ff7f9a'), emissiveIntensity: .35 })); scene.add(heart);
+const handGlow = glowSprite('#fff0b0', .5, 0); scene.add(handGlow);
+
+// ---------- characters ----------
+function sprite(o) {
+  const root = new THREE.Group(), squash = new THREE.Group(), turn = new THREE.Group();
+  root.add(turn); turn.add(squash);
+  const bodyMat = clay(o.body, { emissive: new THREE.Color(o.glow), emissiveIntensity: .05 });
+  const body = new THREE.Mesh(new THREE.SphereGeometry(.5, 64, 48), bodyMat); body.scale.set(1, .9, .95); body.position.y = .47; body.castShadow = true; squash.add(body);
+  const face = new THREE.Group(); face.position.set(0, .5, 0); squash.add(face);
+  const eyeMat = new THREE.MeshPhysicalMaterial({ color: '#3a2a28', roughness: .25, clearcoat: 1 });
+  const eyes = [], happy = [], blush = [];
+  for (const s of [-1, 1]) {
+    const e = new THREE.Group(); e.position.set(s * .155, .02, .43);
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(.062, 24, 16), eyeMat); ball.scale.set(.9, 1.15, .5); e.add(ball);
+    const hl = new THREE.Mesh(new THREE.SphereGeometry(.018, 10, 8), new THREE.MeshBasicMaterial({ color: '#fff' })); hl.position.set(.02 * s + .012, .03, .03); e.add(hl);
+    face.add(e); eyes.push(e);
+    const hp = new THREE.Mesh(new THREE.TorusGeometry(.05, .014, 8, 20, Math.PI), eyeMat); hp.position.set(s * .155, .0, .44); hp.visible = false; face.add(hp); happy.push(hp);
+    const b = new THREE.Mesh(new THREE.CircleGeometry(.075, 24), new THREE.MeshBasicMaterial({ color: '#ff8fa0', transparent: true, opacity: .45, depthWrite: false }));
+    b.position.set(s * .27, -.09, .395); b.rotation.y = s * .55; b.scale.y = .62; face.add(b); blush.push(b);
+  }
+  const mouth = new THREE.Mesh(new THREE.TorusGeometry(.035, .011, 8, 16, Math.PI), eyeMat); mouth.position.set(0, -.08, .45); mouth.rotation.z = Math.PI; face.add(mouth);
+  const arms = [];
+  for (const s of [-1, 1]) {
+    const piv = new THREE.Group(); piv.position.set(s * .41, .4, .14);
+    const a = new THREE.Mesh(new THREE.CapsuleGeometry(.085, .15, 8, 16), bodyMat); a.position.y = -.13; a.castShadow = true; piv.add(a);
+    piv.rotation.z = s * .35; squash.add(piv); arms.push(piv);
+  }
+  const feet = [];
+  for (const s of [-1, 1]) { const f = new THREE.Mesh(new THREE.SphereGeometry(.12, 24, 16), bodyMat); f.scale.set(1, .55, 1.25); f.position.set(s * .19, .05, .06); f.castShadow = true; squash.add(f); feet.push(f); }
+  const glow = glowSprite(o.glow, 2.0, .35); glow.position.y = .47; squash.add(glow);
+  const ch = { root, squash, turn, body, bodyMat, eyes, happy, blush, arms, feet, glow, face, mouth, extras: [] };
+  if (o.kind === 'gpt') {          // mint sprout + mint swirl
+    const st = new THREE.Mesh(new THREE.CylinderGeometry(.018, .022, .14, 8), clay('#7fd8b4')); st.position.set(0, .94, 0); squash.add(st);
+    for (const s of [-1, 1]) { const l = new THREE.Mesh(new THREE.SphereGeometry(.09, 20, 12), clay('#8fe3c4', { emissive: new THREE.Color('#5fe0b0'), emissiveIntensity: .35 })); l.scale.set(1, .38, .55); l.position.set(s * .08, 1.02, 0); l.rotation.z = s * .5; squash.add(l); ch.extras.push(l); }
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(.53, .022, 10, 64), clay('#a8f0d4', { emissive: new THREE.Color('#62e6b6'), emissiveIntensity: .9 })); ring.position.y = .2; ring.rotation.x = Math.PI / 2.05; ring.scale.set(.82,.82,.82); squash.add(ring); ch.ring = ring;
+  } else {                          // apricot with orange sun rays
+    const rays = new THREE.Group(); rays.position.set(0, .5, -.12); squash.add(rays);
+    const rayMat = clay('#f58a45', { emissive: new THREE.Color('#ff8a3d'), emissiveIntensity: .45 });
+    for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; const r = new THREE.Mesh(new THREE.CapsuleGeometry(.05, i % 2 ? .05 : .1, 6, 12), rayMat);
+      r.position.set(Math.cos(a) * (i % 2 ? .56 : .59), Math.sin(a) * (i % 2 ? .52 : .55), 0); r.rotation.z = a - Math.PI / 2; r.castShadow = true; rays.add(r); }
+    ch.rays = rays; ch.rayMat = rayMat;
+    const sp = new THREE.Mesh(sparkGeo, clay('#ff9a52', { emissive: new THREE.Color('#ff8a3d'), emissiveIntensity: .6 })); sp.scale.setScalar(.22); sp.position.set(.2, .93, .1); squash.add(sp); ch.spark = sp;
+  }
+  scene.add(root); return ch;
+}
+const gpt = sprite({ kind: 'gpt', body: '#fbf6ea', glow: '#7ff0c8' });
+const cla = sprite({ kind: 'claude', body: '#f9bf98', glow: '#ff9a52' });
+
+// ---------- post ----------
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), .3, .45, .97); composer.addPass(bloom);
+const hT = new ShaderPass(HorizontalTiltShiftShader), vT = new ShaderPass(VerticalTiltShiftShader);
+hT.uniforms.h.value = 1.6 / W; vT.uniforms.v.value = 1.6 / H; hT.uniforms.r.value = vT.uniforms.r.value = .5;
+composer.addPass(hT); composer.addPass(vT);
+const grade = new ShaderPass({ uniforms: { tDiffuse: { value: null }, fade: { value: 0 }, fadeCol: { value: new THREE.Color('#fff4e6') }, vig: { value: .32 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float fade, vig; uniform vec3 fadeCol; varying vec2 vUv;
+    void main(){ vec4 c=texture2D(tDiffuse,vUv); vec2 d=vUv-.5; float v=1.-dot(d,d)*vig*2.2; c.rgb*=v; c.rgb=mix(c.rgb, c.rgb*vec3(1.03,1.0,.96), .6); c.rgb=(c.rgb-.5)*1.12+.5; float l=dot(c.rgb,vec3(.299,.587,.114)); c.rgb=mix(vec3(l),c.rgb,1.15); c.rgb=mix(c.rgb,fadeCol,fade); gl_FragColor=c; }` });
+composer.addPass(new OutputPass()); composer.addPass(grade);
+
+// ---------- timeline helpers ----------
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const camKeys = [ // [beat, camPos, lookAt]
+  [-1, V(0, 7.5, 15), V(0, .6, 0)],
+  [7, V(2.2, 2.6, 7.2), V(0.3, .6, 0)],
+  [8, V(-1.2, 1.8, 6.4), V(-1.4, .55, 0)],
+  [15, V(0, 1.5, 5.0), V(-.1, .55, 0)],
+  [16, V(.5, 1.5, 5.4), V(0, .55, 0)],
+  [23.6, V(-.2, 1.2, 4.4), V(0, .6, 0)],
+  [24, V(0.05, .55, 2.9), V(0, .35, .3)],
+  [31.6, V(-.1, .7, 3.4), V(0, .42, .3)],
+  [32, V(-2.6, 1.7, 4.8), V(0, .65, 0)],
+  [39.6, V(2.2, 1.4, 4.6), V(0, .9, 0)],
+  [40, V(0, 3.4, 7.8), V(0, 1.2, 0)],
+  [56, V(0, 3.4, 7.8), V(0, 1.2, 0)],
+  [56.01, V(1.8, 1.3, 5.0), V(0, 1.0, 0)],
+  [63.6, V(-1.2, 1.0, 4.2), V(0, 1.0, 0)],
+  [64, V(0, 1.4, 5.0), V(0, 1.0, 0)],
+  [72, V(0, 4.2, 11.5), V(0, 1.6, 0)],
+];
+const CUTS = [8, 16, 24, 32, 40, 56.01, 64];
+function camAt(u) {
+  let i = 0; while (i < camKeys.length - 2 && u >= camKeys[i + 1][0]) i++;
+  const [ua, pa, la] = camKeys[i], [ub, pb, lb] = camKeys[i + 1];
+  const cut = CUTS.includes(ub) ? 1 : 0;
+  const k = cut ? ss(ua, ub, u) * .3 + clamp((u - ua) / (ub - ua)) * .7 : ss(ua, ub, u);
+  return [pa.clone().lerp(pb, k), la.clone().lerp(lb, k)];
+}
+const mix3 = (a, b, k) => new THREE.Color(a).lerp(new THREE.Color(b), k);
+function setSky(u) {
+  const k1 = ss(30, 40, u), k2 = ss(40, 52, u);
+  for (const n of ['top', 'mid', 'bot']) skyMat.uniforms[n].value.copy(mix3(DAY[n], DUSK[n], k1).lerp(new THREE.Color(NIGHT[n]), k2 * .85));
+  scene.fog.color.copy(mix3(DAY.fog, DUSK.fog, k1).lerp(new THREE.Color(NIGHT.fog), k2 * .85));
+  hemi.intensity = 1.25 - k2 * .35; key.intensity = 2.4 - k1 * .6 - k2 * .7;
+  key.color.copy(mix3('#fff0dc', '#ffc9a8', k1).lerp(new THREE.Color('#d8c8ff'), k2));
+  hemi.color.copy(mix3('#fff3e2', '#ffd9cf', k1).lerp(new THREE.Color('#cfc4ff'), k2));
+  return k2;
+}
+const hopY = (u, h) => Math.sin(Math.PI * clamp(fr(u) / .75)) * h;
+function pose(ch, P) {
+  ch.root.position.copy(P.pos); ch.root.position.y += hillH(P.pos.x, P.pos.z); ch.root.rotation.y = P.face || 0;
+  ch.turn.rotation.set(P.lean?.x || 0, P.look || 0, P.lean?.z || 0);
+  ch.squash.position.y = P.hop || 0;
+  const sq = P.squash || 0; ch.squash.scale.set(1 + sq * .6, 1 - sq, 1 + sq * .6);
+  ch.arms[0].rotation.z = P.armL ?? -.35; ch.arms[1].rotation.z = P.armR ?? .35;
+  ch.arms[0].rotation.x = P.armLx || 0; ch.arms[1].rotation.x = P.armRx || 0;
+  const blink = P.blink || 0; ch.eyes.forEach(e => { e.visible = !P.happy; e.scale.y = 1 - blink * .9; });
+  ch.happy.forEach(h => h.visible = !!P.happy);
+  ch.blush.forEach(b => { b.material.opacity = .35 + (P.blush || 0) * .6; b.scale.set(1 + (P.blush || 0) * .3, .62 * (1 + (P.blush || 0) * .3), 1); });
+  ch.bodyMat.emissiveIntensity = .04 + (P.glow || 0) * .28;
+  ch.glow.material.opacity = .18 + (P.glow || 0) * .4; ch.glow.scale.setScalar(1.8 + (P.glow || 0) * 1.2);
+  ch.face.position.x = (P.faceX || 0);
+}
+const blinkAt = (u, seeds) => seeds.reduce((m, s) => Math.max(m, Math.exp(-Math.pow((u - s) * 9, 2))), 0);
+
+// pre-register sparkle bursts on key beats
+const handPoint = () => gpt.root.position.clone().lerp(cla.root.position, .5).add(V(0, .3, .25));
+burst(28, [0, .35, .3], '#fff1b5', 18, .07, .8);
+for (let k = 0; k < 14; k++) { burst(42 + k, null, k % 2 ? '#ffe3b0' : '#c8ffe9', 14, .08, 1.1); bursts[bursts.length - 1].chase = true; }   // star catches (pos filled at runtime)
+burst(60, [0, 1.6, .2], '#fff1b5', 30, .1, 1.6);
+burst(62, [0, 1.3, .2], '#ffd7a8', 20, .08, 1.2);
+
+
+// chase: run away from camera toward the stars (41-47), spin round (47-48), run back toward camera (48-55)
+const chaseMid = u => V(0, 0, u < 47.5 ? lerp(.4, -2.3, steps(u, 41, 47)) : lerp(-2.3, .4, steps(u, 48, 55)));
+const chaseFace = u => u < 41 ? lerp(.1, Math.PI, ss(40.3, 41, u)) : u < 47 ? Math.PI : u < 48 ? lerp(Math.PI, Math.PI * 2, easeInOut(clamp(u - 47))) : u < 55 ? Math.PI * 2 : lerp(Math.PI * 2, Math.PI * 2 + .1, ss(55, 56, u));
+const CATCH = [42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55];
+const starPos = i => { const c = CATCH[i]; const p = chaseMid(c + .05); const gSide = i % 2 === 0; const facingAway = c < 47.5;
+  p.x = (gSide ? -1 : 1) * .95 * (facingAway ? 1 : 1); p.y = 1.3; p.z += facingAway ? -.15 : .15; return p; };
+const hillH = (x, z) => Math.max(0, .55 * Math.sqrt(Math.max(0, 1 - (x / 1.7) ** 2 - ((z + .2) / 1.3) ** 2)) - .35);
+
+window.renderFrame = function (t) {
+  const u = U(t);
+  const night = setSky(u);
+  // ambient
+  clouds.forEach((c, i) => { c.position.x += 0; c.position.y = c.userData.y0 ?? (c.userData.y0 = c.position.y); c.position.y = c.userData.y0 + Math.sin(u * .5 + i) * .15; c.rotation.z = Math.sin(u * .25 + i) * .03; });
+  bobbers.forEach((b, i) => { const p = pulse(u + (i % 2) * .5, 5); b.scale.y = (b.userData.s ?? (b.userData.s = b.scale.y)) * (1 + p * .05); });
+  flowers.forEach((f, i) => { f.rotation.z = Math.sin((u + i * .25) * Math.PI) * .18; f.scale.setScalar(1 + pulse(u, 7) * .15); });
+  const bp = pulse(u, 5);
+
+  // ---- default poses
+  const G = { pos: V(-4.8, 0, .4), face: Math.PI / 2, look: 0, hop: 0, blink: blinkAt(u, [5.2, 13.6, 33.4, 47.3, 66]) };
+  const C = { pos: V(.55, 0, .4), face: 0, look: 0, hop: 0, blink: blinkAt(u, [2.6, 10.4, 21.2, 44.8, 58.5]), blush: 0, glow: 0 };
+  const sway = Math.sin(u * Math.PI / 2);
+
+  // A intro: Claude alone, gentle bounce
+  C.squash = bp * .06; C.lean = { z: sway * .06 }; C.look = u > 4 ? -.25 * ss(4, 5, u) : 0;
+  // B GPT hops in on every beat
+  if (u >= 7) {
+    const k = steps(u, 8, 15);
+    G.pos = V(lerp(-4.8, -.75, k), 0, .4);
+    if (win(u, 8, 15)) { G.hop = hopY(u, .42); G.squash = fr(u) > .75 ? -.0 : Math.max(0, .18 * Math.exp(-fr(u) * 12)); G.lean = { z: -.12 * Math.sin(Math.PI * fr(u)) }; G.armL = -.9; G.armR = .9 + Math.sin(fr(u) * Math.PI) * .6; }
+    G.face = lerp(Math.PI / 2, .25, ss(14.5, 15.5, u));
+    if (win(u, 15, 16)) { G.squash = .18 * Math.exp(-fr(u) * 8); G.armR = 2.2 + Math.sin(u * Math.PI * 4) * .35; } // wave hello on the downbeat
+    C.look = lerp(C.look, -.55, ss(12, 13.5, u)); if (u > 15) C.blush = .5 * pulseAt(u, 15, 2);
+  }
+  // C scoot closer; Claude glances & blushes on the off-beats
+  if (u >= 16) {
+    const k = steps(u, 16, 17) * .34 + steps(u, 18, 19) * .33 + steps(u, 20, 21) * .33;
+    G.pos.x = lerp(-.75, -.45, k); G.face = .25; G.look = .25;
+    if (win(u, 16, 17) || win(u, 18, 19) || win(u, 20, 21)) { G.hop = hopY(u, .12); G.lean = { z: -.15 * Math.sin(Math.PI * fr(u)) }; }
+    const glance = [17, 19, 21].reduce((m, s) => Math.max(m, ss(s, s + .2, u) * (1 - ss(s + .5, s + .9, u))), 0);
+    C.look = -.55 * glance + .35 * (1 - glance) * ss(16.5, 17, u);
+    C.blush = Math.max(C.blush, [17, 19, 21].reduce((m, s) => Math.max(m, pulseAt(u, s, 1.5)), 0));
+    C.squash = [17, 19, 21].reduce((m, s) => Math.max(m, .1 * pulseAt(u, s, 8)), 0);
+    if (u >= 22) { C.happy = true; C.glow = ss(22, 22.3, u) * (.7 + .3 * pulse(u, 4)); C.blush = 1; C.look = .2; C.lean = { z: .08 * Math.sin(u * Math.PI) }; G.happy = u > 23; }
+  }
+  // D secret hand hold (close-up)
+  if (u >= 24) {
+    G.pos.x = lerp(-.45, -.62, ss(24, 24.5, u)); C.pos.x = lerp(.55, .62, ss(24, 24.5, u)); G.face = .1; C.face = -.1; G.look = 0; C.look = 0; C.happy = false; C.glow = 0; C.blush = .4; G.happy = false;
+    const gReach = steps(u, 24, 27);           // GPT's hand creeps: 24,25,26
+    const cReach = steps(u, 27, 28);           // Claude answers on 27
+    G.armR = lerp(.35, 1.2, gReach); G.armRx = -.55 * gReach;
+    C.armL = lerp(-.35, -1.2, cReach); C.armLx = -.55 * cReach;
+    G.look = .25 * ss(24, 24.3, u) * (1 - ss(26.5, 27, u)); // peeks at Claude
+    C.look = -.3 * ss(25.5, 26, u) * (1 - ss(26.6, 27, u));
+    if (u >= 28) { G.happy = C.happy = true; const p = pulseAt(u, 28, 2.2); C.glow = .3 + p * .9; G.glow = .2 + p * .6; C.blush = 1;
+      G.hop = hopY(u, .05); C.hop = hopY(u + .5, .05); G.squash = .05 * pulse(u, 6); C.squash = .05 * pulse(u + .5, 6); }
+    G.squash = (G.squash || 0) + [24, 25, 26].reduce((m, s) => Math.max(m, .05 * pulseAt(u, s, 9)), 0);
+  }
+  // E lean on shoulder + sway
+  if (u >= 32) {
+    G.happy = C.happy = true; C.blush = .8;
+    const lk = ss(32, 32.6, u);
+    C.lean = { z: .3 * lk + sway * .07 }; C.pos.x = lerp(.62, .5, lk);
+    G.lean = { z: -.1 * lk + sway * .07 }; G.pos.x = lerp(-.62, -.52, lk);
+    C.glow = .35 + .25 * pulse(u, 4); G.glow = .2 + .15 * pulse(u + .5, 4);
+    G.armR = 1.1; G.armRx = -.5; C.armL = -1.1; C.armLx = -.5;
+    C.squash = .04 * pulse(u, 6); G.squash = .04 * pulse(u, 6);
+    if (u > 38.5) { G.happy = false; G.look = lerp(0, .9, ss(38.5, 39.2, u)); G.lean = { x: -.35 * ss(38.5, 39.2, u), z: 0 }; C.happy = false; C.lean = { x: -.35 * ss(38.8, 39.5, u), z: .32 * (1 - ss(38.8, 39.5, u)) }; } // look up: shooting star!
+  }
+  // F chase the stars together (hand in hand, hop every beat)
+  shooting.visible = win(u, 38, 42);
+  if (shooting.visible) { const k = clamp((u - 38) / 3.2); shooting.position.set(lerp(6, -7, k), lerp(5.2, 2.6, k), -2); shooting.rotation.z = -.2; }
+  if (u >= 40) {
+    const mid = chaseMid(u), face = chaseFace(u);
+    G.pos = mid.clone().add(V(-.55, 0, 0)); C.pos = mid.clone().add(V(.55, 0, 0));
+    G.face = C.face = face;
+    const jh = win(u, 40, 41) ? .6 : win(u, 47, 48) ? .45 : .32;
+    G.hop = u < 55.5 ? hopY(u, jh) : 0; C.hop = u < 55.5 ? hopY(u - .08, jh) : 0;
+    const land = fr(u) < .25 && u < 56 ? .15 * Math.exp(-fr(u) * 14) : 0; G.squash = land; C.squash = land;
+    G.lean = { x: .15 }; C.lean = { x: .15 };
+    G.hold = C.hold = true; G.happy = C.happy = true; C.glow = .35 + .4 * pulse(u, 4); G.glow = .3 + .3 * pulse(u, 4); C.blush = .6;
+  }
+  // chase stars placement / pops
+  chaseStars.forEach((s, i) => {
+    const catchU = CATCH[i]; s.visible = false; if (catchU === undefined) return;
+    const p = starPos(i);
+    const appear = ss(catchU - 4, catchU - 3, u);
+    const pop = u >= catchU ? Math.max(0, 1 - (u - catchU) * 3) : 1;
+    s.visible = u > 39 && appear > 0 && pop > 0;
+    s.position.copy(p).add(V(0, Math.sin(u * 1.6 + i) * .08, 0));
+    s.scale.setScalar(.3 * easeOutBack(appear) * (u >= catchU ? 1 + (1 - pop) * .8 : 1) * (1 + .12 * pulse(u, 6)) * pop);
+    s.rotation.set(0, u * .9 + i, Math.sin(u + i) * .3);
+    s.material.emissiveIntensity = .5 + .6 * pulse(u, 5);
+  });
+  bursts.forEach(b => { if (b.chase) { const i = CATCH.indexOf(b.u0); b.pos = i < 0 ? null : starPos(i); } });
+  // G big star + finale
+  bigStar.visible = bigGlow.visible = u > 55;
+  if (u >= 56) {
+    G.pos = V(-.55, 0, .4); C.pos = V(.55, 0, .4); G.face = .1; C.face = -.1; G.happy = C.happy = true;
+    G.armR = 1.1; C.armL = -1.1; G.armRx = C.armLx = -.5; G.lean = { z: sway * .05 }; C.lean = { z: sway * .05 };
+    const desc = ss(56, 60, u);
+    const sp = V(0, lerp(3.4, 1.42, desc) + (u > 60 ? Math.sin(u * 1.2) * .03 : 0), .55);
+    bigStar.position.copy(sp); bigStar.scale.setScalar(lerp(.5, .42, desc) * (1 + .1 * pulse(u, 5)));
+    bigStar.rotation.set(0, u < 60 ? u * 1.4 : 60 * 1.4 + Math.sin(u) * .3, 0); bigStar.material.emissiveIntensity = .8 + pulse(u, 4) * .6;
+    bigGlow.position.copy(sp); bigGlow.material.opacity = .45 + .25 * pulse(u, 4);
+    const raise = ss(59.3, 60, u); G.armL = lerp(-.35, -2.6, raise); C.armR = lerp(.35, 2.6, raise); G.lean.x = -.15 * raise; C.lean.x = -.15 * raise;
+    G.look = .2 * raise; C.look = -.2 * raise;
+    G.hop = win(u, 56, 60) ? hopY(u, .08) : 0; C.hop = win(u, 56, 60) ? hopY(u + .5, .08) : 0;
+    C.glow = .4 + .9 * pulseAt(u, 60, 1.2) + .3 * pulse(u, 4); G.glow = .3 + .6 * pulseAt(u, 60, 1.5); C.blush = 1;
+    if (win(u, 62, 64)) { G.turnSpin = easeInOut(clamp((u - 62) / 1.6)) * Math.PI * 2; G.hop = hopY(u, .25); } // GPT happy spin
+  }
+  // H outro: snuggle under the stars
+  if (u >= 64) {
+    const k = ss(64, 65, u); C.pos.x = lerp(.55, .5, k); G.pos.x = lerp(-.55, -.52, k); C.lean = { z: .28 * k + sway * .05 }; G.lean = { z: -.08 * k + sway * .05 };
+    G.armL = -.35; C.armR = .35; G.armR = 1.1; C.armL = -1.1; G.armRx = C.armLx = -.5; bigStar.position.set(0, 1.6 + Math.sin(u) * .05, .1); bigStar.scale.setScalar(.38);
+    bigGlow.position.copy(bigStar.position); C.glow = .5 + .2 * pulse(u, 4); G.glow = .35;
+  }
+  if (G.hold) { // inner hands reach toward each other, free hands up to the stars
+    const lx = f => V(Math.cos(f), 0, -Math.sin(f));
+    const d = C.pos.clone().sub(G.pos); const gIn = d.dot(lx(G.face)) > 0, cIn = d.dot(lx(C.face)) < 0;
+    const up = -2.4 + Math.sin(u * Math.PI) * .3;
+    if (gIn) { G.armR = 1.1; G.armL = up; } else { G.armL = -1.1; G.armR = -up; }
+    if (cIn) { C.armL = -1.1; C.armR = -up; } else { C.armR = 1.1; C.armL = up; }
+  }
+  pose(gpt, G); pose(cla, C);
+  { const on = u >= 28 && !(u > 40 && u < 56) ? Math.min(1, (u - 28) * 4) : 0; handGlow.position.copy(G.pos).lerp(C.pos, .5).add(V(0, .25 + (G.hop || 0) * .5, .45));
+    handGlow.material.opacity = on * (.35 + .5 * pulse(u, 4) + .6 * pulseAt(u, 28, 2)); handGlow.scale.setScalar(.45 + .25 * pulse(u, 5) + .6 * pulseAt(u, 28, 2)); }
+  gpt.turn.rotation.y += G.turnSpin || 0;
+  // signature details
+  gpt.ring.rotation.z = u * .6; gpt.ring.material.emissiveIntensity = .7 + .8 * pulse(u, 5) + (G.glow || 0);
+  gpt.ring.scale.setScalar(.82 * (1 + .04 * pulse(u, 7)));
+  gpt.extras.forEach((l, i) => l.rotation.z = (i ? 1 : -1) * (.5 + .25 * pulse(u, 6)));
+  cla.rays.rotation.z = u * .25; const bloomRay = u >= 60 ? 1 + .25 * pulseAt(u, 60, .8) : 1;
+  cla.rays.scale.setScalar((1 + .09 * pulse(u, 5) + (C.glow || 0) * .08) * bloomRay);
+  cla.rayMat.emissiveIntensity = .4 + .5 * pulse(u, 5) + (C.glow || 0) * .8; cla.spark.rotation.z = u * .8;
+  charLight.position.copy(cla.root.position).add(V(0, .9, 1.4)); charLight.intensity = (C.glow || 0) * .8;
+  // heart at the hand-touch
+  heart.visible = win(u, 28, 31.5);
+  if (heart.visible) { const k = u - 28; heart.position.set(0, .35 + k * .28, .45); heart.scale.setScalar(.12 * easeOutBack(clamp(k * 2.5)) * (1 - ss(2.6, 3.5, k)) * (1 + .1 * pulse(u, 6))); heart.rotation.y = Math.sin(k * 3) * .4; }
+  // sky stars appear one per beat after 34, twinkle on beats
+  skyStars.forEach((s, i) => { const d = s.userData; const a = ss(d.at, d.at + .4, u);
+    s.visible = a > 0; s.scale.setScalar(d.s * easeOutBack(a) * (1 + .18 * pulse(u + (i % 3) * .33, 6))); s.rotation.z = Math.sin(u * .5 + d.ph) * .3; s.material.emissiveIntensity = .4 + night * .6 + .4 * pulse(u, 5); });
+  // sparkles
+  sparks.forEach(m => m.visible = false); let si = 0;
+  for (const b of bursts) { const age = u - b.u0; if (age < 0 || age > 2 || !b.pos) continue;
+    for (let j = 0; j < b.n && si < sparks.length; j++, si++) { const m = sparks[si]; const a = j / b.n * Math.PI * 2 + b.u0, el = Math.sin(j * 2.3) * .8;
+      const d = (1 - Math.exp(-age * 3.5)) * .6 * b.spd; m.visible = true;
+      m.position.set(b.pos.x + Math.cos(a) * Math.cos(el) * d, b.pos.y + Math.sin(el) * d + age * .15, b.pos.z + Math.sin(a) * Math.cos(el) * d * .6);
+      m.scale.setScalar(b.size * (1 - age / 2) * (1 + Math.sin(age * 12 + j))); m.rotation.z = age * 4 + j; m.lookAt(camera.position);
+      m.material.color.copy(b.col); m.material.opacity = 1 - age / 2; } }
+  // camera (+ beat punch on bar downbeats)
+  const [cp, cl] = camAt(u);
+  const barPunch = Math.floor(u) % 4 === 0 && u > 0 ? pulse(u, 5) : 0;
+  const dir = cl.clone().sub(cp); cp.addScaledVector(dir, barPunch * .025);
+  cp.x += Math.sin(t * .7) * .04; cp.y += Math.sin(t * .9 + 1) * .03;
+  if (u > 39.5 && u < 56.5) { // tracking shot alongside the running pair
+    const m = chaseMid(u); const away = 1 - ss(46.8, 48.2, u);
+    const tp = V(Math.sin(u * .4) * .5, 1.45 + away * .25, m.z + 3.5 - away * .4), tl = V(0, .8 + away * .5, m.z - away * 1.2);
+    const k = ss(39.5, 41, u) * (1 - ss(55, 56.01, u)); cp.lerp(tp, k); cl.lerp(tl, k); }
+  camera.position.copy(cp); camera.lookAt(cl);
+  // tilt-shift focus follows characters
+  const focusY = (() => { const v = gpt.root.position.clone().lerp(cla.root.position, .5).add(V(0, .5, 0)).project(camera); return v.y * .5 + .5; })();
+  hT.uniforms.r.value = vT.uniforms.r.value = clamp(focusY, .25, .75);
+  bloom.strength = .22 + .12 * pulse(u, 4) + night * .12;
+  // title cards
+  const title = document.getElementById('title');
+  const tIn = ss(.5, 1.5, u) * (1 - ss(5.5, 7, u)), tOut = ss(65.5, 67, u);
+  if (tIn > 0.001) { title.innerHTML = 'Mint &amp; Apricot<small>a little AI love song</small>'; title.style.opacity = tIn; title.style.top = '13%'; title.style.fontSize = (H * .085) + 'px'; title.style.transform = `translateY(${(1 - tIn) * 12}px) scale(${1 + .03 * pulse(u, 5)})`; }
+  else if (tOut > 0.001) { title.innerHTML = 'Mint &amp; Apricot<small>always side by side</small>'; title.style.opacity = tOut; title.style.top = '12%'; title.style.fontSize = (H * .075) + 'px'; title.style.transform = `translateY(${(1 - tOut) * 12}px)`; }
+  else title.style.opacity = 0;
+  grade.uniforms.fade.value = Math.max(1 - ss(-0.6, 0.6, u), ss(69.4, 70.6, u) * .85);
+  composer.render();
+  return true;
+};
+window.ready = true;
+</script></body></html>
