@@ -22,7 +22,7 @@ const server = http.createServer((req, res) => { const f = path.join(__dirname, 
     const dur = await new Promise(r => { const p = spawn('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', AUDIO]); let o = ''; p.stdout.on('data', d => o += d); p.on('close', () => r(parseFloat(o))); });
     const from = +(opt('from') || 0), to = +(opt('to') || Math.ceil(dur * FPS));
     const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-', '-ss', String(from / FPS), '-i', AUDIO,
-      '-c:v', 'libx264', '-preset', 'slow', '-crf', '22', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', OUT], { stdio: ['pipe', 'inherit', 'inherit'] });
+      '-c:v', 'libx264', '-preset', 'slow', '-crf', '24', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', OUT], { stdio: ['pipe', 'inherit', 'inherit'] });
     const t0 = Date.now();
     for (let f = from; f < to; f++) { const buf = await grab(f / FPS); if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
       if (f % 60 === 0) console.log(`frame ${f}/${to}  ${((Date.now() - t0) / 1000).toFixed(0)}s`); }
