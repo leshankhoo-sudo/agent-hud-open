@@ -1,7 +1,7 @@
 // ---------- lyric-driven story (times in beats u; B(u) converts to seconds) ----------
 const B = u => T0 + BP * u;
-const LINES = [ // [startBeat, endBeat, text] — the singing starts after a ~6.7s intro
-  [14, 22, '跨越过多少海洋去看你'], [22, 27, '孤单的黑夜途中'], [27, 31, '只要想着你'], [31, 38, '我就不会惶恐'],
+const LINES = [ // [startBeat, endBeat, text]
+  [.2, 14, '我曾经走过多遥远的路'], [14, 22, '跨越过多少海洋去看你'], [22, 27, '孤单的黑夜途中'], [27, 31, '只要想着你'], [31, 38, '我就不会惶恐'],
   [38, 43, '时光的岸上'], [43, 47, '人来了又走'], [47, 55, '离开时你不用说我都懂'], [55, 62, '感谢你曾让我'], [62, 68, '留在你眼中']];
 LYRICS = LINES.map(([a, b, text]) => ({ start: B(a), end: B(b) - .05, text }));
 
@@ -64,43 +64,55 @@ function bubble(x, y, r) { ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); 
 
 // ---------- scenes ----------
 const NIGHT = ['#3a3f7a', '#34396f', '#2d3264', '#272b58'], DAYSEA = ['#a9dfe0', '#8fd3d6', '#79c5cc', '#6ab7c2'], DUSK = ['#d79fb4', '#c88fae', '#b781a6', '#a6739c'];
-// 0-14 prologue: together on a tiny island → the island splits and drifts apart
-function prologue(u) {
-  const split = ss(9, 11, u), drift = ss(10, 14, u);
-  const z = lerp_(1.9, 1.0, ss(9.5, 13, u)); setCam(640 - drift * 120, lerp_(420, 380, drift), z);
-  sky('#f7cdb9', '#fde9d6'); glow(980, 170, 260, '#fff2c8', .6);
-  for (let i = 0; i < 5; i++) cloud(((i * 300 + u * 15) % 1700) - 250, 110 + (i % 2) * 70, 130, '#fff6ee');
-  sea(u, 470, DAYSEA, 10, 0, 1);
-  const shake = win(u, 8, 10) ? Math.sin(u * 60) * 4 * (1 - fr(u)) : 0;
-  const lx = 640 - split * 70 - drift * 260, rx = 640 + split * 70 + drift * 560, ry = 520 - drift * 70, rs = 1 - drift * .55;
-  // two halves of the island
-  ctx.save(); ctx.beginPath(); ctx.rect(-1000, -1000, 1640 - 0 + (lx - 640), 3000); ctx.clip(); ctx.translate(lx - 640 + shake, 0); island(640, 528, 520); ctx.restore();
-  ctx.save(); ctx.translate(rx, ry); ctx.scale(rs, rs); ctx.translate(-640, -528); ctx.beginPath(); ctx.rect(640, -1000, 3000, 3000); ctx.clip(); island(640, 528, 520);
-  clayEll(820, 470, 30, 60, '#a8dcbf'); ctx.restore();
-  if (win(u, 8, 10.2)) { ctx.save(); ctx.strokeStyle = '#7a5038'; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.beginPath(); const k = ss(8, 9.6, u); ctx.moveTo(640, 498); for (let i = 1; i <= 6; i++) if (i / 6 <= k) ctx.lineTo(640 + (i % 2 ? 12 : -12), 498 + i * 12); ctx.stroke(); ctx.restore(); }
-  sea(u, 470, DAYSEA, 10, 1, 4);
-  const G = pose({ x: lx - 70, y: 512, armR: .4 }), C = pose({ x: 640 + 70, y: 512, armL: .4, blush: .4 });
-  if (u < 8) {
-    const sw = Math.sin(u * Math.PI / 2);
-    if (u < 2) { const k = steps(u, 0, 1); G.x = lerp_(lx - 120, lx - 70, k); const j = J(u, u < 1 ? 50 : 0); G.hop = j.hop; G.sq = j.sq; G.look = .5; C.look = -.3; }
-    if (win(u, 1, 3)) { C.blush = 1; C.glow = .6 * pulseAt(u, 1.5, 1); C.happy = true; C.armL = C.armR = -2.3 * ss(1.4, 1.7, u) * (1 - ss(2.5, 2.9, u)); }
-    if (u >= 3) { const k = steps(u, 3, 4); G.armR = lerp_(.4, 1.4, k); C.armL = lerp_(.4, 1.4, ss(3.6, 4, u)); G.happy = C.happy = u >= 4; C.blush = 1; }
-    if (u >= 4) { C.lean = -.3 * ss(4, 4.4, u) + sw * .12; G.lean = sw * .12; C.glow = .4 + .3 * pulse(u, 4); }
-    if (win(u, 5.5, 8)) { // a firefly-star buzzes around; GPT jumps for it and flops
-      if (win(u, 6, 7)) { const j = J(u, 150); G.hop = j.hop; G.sq = j.sq; G.armL = 2.8; G.armR = .4; C.lean = 0; G.happy = false; G.mouth = 1; G.lookY = -1; }
-      if (win(u, 7, 8)) { G.sq = .45 * pulseAt(u, 7, 3); G.happy = true; G.armR = .4; const j = J(u * 2, 18); C.hop = j.hop; C.mouth = 1; C.lean = .15 * Math.sin(u * 12); }
-    }
-  } else {
-    G.x = lx - 70; C.x = rx + 70 * rs; C.y = ry - 16 * rs; C.s = rs; G.look = .6; C.look = -.6; C.blush = .3;
-    G.armR = 1.4 + split * .6; C.armL = 1.4 + split * .6;
-    G.mouth = C.mouth = win(u, 9, 11) ? 1 : 0; G.lean = C.lean = shake * .01;
-    if (u >= 11) { C.armR = 2.4 + Math.sin(u * Math.PI * 3) * .4; C.armL = .4; G.armR = 1.6; G.blink = 0; }
-    if (u >= 12.3) { G.look = 0; G.armR = G.armL = lerp_(.4, 2.6, ss(12.8, 13.1, u)); G.sq = -.15 * ss(12.3, 12.8, u) + .3 * pulseAt(u, 13, 6); G.mouth = 0; G.happy = u > 13; }
-    if (u >= 13) { const j = J(u, 70); G.hop = j.hop; }
+// 0-14 "我曾经走过多遥远的路": a long walk through meadow, desert, snow and autumn, until the road meets the sea
+const ZONES = [ // [fromBeat, sky top, sky bottom, far hills, ground]
+  [-1, '#f7cdb9', '#fde9d6', '#bfe3c0', '#a9d8a8'], [3, '#ffd59a', '#fff0d0', '#f3cf96', '#f2d29a'],
+  [6, '#c9d8ef', '#f4f6fb', '#e3ebf5', '#f7f9fc'], [9, '#f6b98f', '#ffe3c4', '#e9a173', '#e6b17c'], [12, '#f7cdb9', '#fde9d6', '#a9dfe0', '#f6dcb4']];
+const zoneAt = u => { let i = 0; while (i < ZONES.length - 1 && u >= ZONES[i + 1][0]) i++; const n = ZONES[Math.min(i + 1, ZONES.length - 1)], k = i < ZONES.length - 1 ? ss(n[0] - .5, n[0], u) : 0;
+  return [1, 2, 3, 4].map(j => mixc(ZONES[i][j], n[j], k)).concat([i, k]); };
+const walkX = u => 300 + (Math.floor(Math.max(0, u)) + easeIO(clamp(fr(Math.max(0, u)) / .8))) * 150;
+function journey(u, t) {
+  const walking = u < 11 || (u >= 12 && u < 12.6);
+  const X = u < 11 ? walkX(u) : u < 12 ? walkX(11) + 40 * ss(11, 11.3, u) : walkX(11) + 40 + 150 * ss(12, 12.8, u);
+  const [top, bot, far, ground, zi] = zoneAt(u);
+  const camx = X + 140; setCam(camx, 470, 1.3);
+  sky(top, bot);
+  // far goal: Claude's sunny glow on the horizon, always ahead
+  glow(camx + 420, 270, 150, '#ffb37a', .5 + .2 * pulse(u, 4)); clayStar(camx + 420, 270, 16, u * .5, '#ffb37a', .4);
+  ctx.save(); ctx.translate(camx * .55, 0); for (let i = -3; i < 6; i++) hill(i * 420 + 200 - camx * .55 + Math.floor(camx * .45 / 420) * 420, 470, 560, 110, far); ctx.restore();
+  if (zi >= 4 || u > 11.6) { const k = ss(11.6, 12.4, u); ctx.save(); ctx.globalAlpha = k; sea(u, 455, DAYSEA, 8, 0, 4, camx - 900, camx + 900); ctx.restore(); }
+  // ground
+  const gg = ctx.createLinearGradient(0, 560, 0, 800); gg.addColorStop(0, ground); gg.addColorStop(1, shade(ground, -.15)); ctx.fillStyle = gg;
+  ctx.beginPath(); ctx.moveTo(camx - 900, 600); for (let x = camx - 900; x <= camx + 900; x += 30) ctx.lineTo(x, 596 + Math.sin(x * .01) * 8); ctx.lineTo(camx + 900, 1000); ctx.lineTo(camx - 900, 1000); ctx.fill();
+  // props by stretch of road (world x)
+  for (let i = 0; i < 40; i++) { const px = 120 + i * 95 + rnd(i) * 40; if (px < camx - 900 || px > camx + 900) continue;
+    const uz = (px - 300) / 150, z = uz < 3 ? 0 : uz < 6 ? 1 : uz < 9 ? 2 : uz < 12 ? 3 : 4, sway = Math.sin((u + i * .3) * Math.PI) * .3;
+    if (z === 0) { i % 3 ? flower(px, 612, 1.3, ['#ffd6e0', '#fff1b8', '#cdeee0'][i % 3], sway) : tree(px, 600, .9, '#a8dcbf'); }
+    if (z === 1 && i % 2) { capsule(px, 520, 30, 80, '#8cc79a'); capsule(px - 22, 545, 18, 34, '#8cc79a', .9); capsule(px + 22, 540, 18, 30, '#8cc79a', -.9); }
+    if (z === 2 && i % 2) { for (let k = 0; k < 3; k++) { ctx.fillStyle = shade('#9cc7c0', .1 * k); ctx.beginPath(); ctx.moveTo(px, 470 + k * 34); ctx.lineTo(px - 44 + k * 4, 540 + k * 30); ctx.lineTo(px + 44 - k * 4, 540 + k * 30); ctx.closePath(); ctx.fill(); clayEll(px, 486 + k * 34, 26, 12, '#ffffff', { rim: false }); } capsule(px, 600, 12, 14, '#c99a72'); }
+    if (z === 3 && i % 2 === 0) tree(px, 600, 1, i % 4 ? '#f2a35e' : '#e8805a');
   }
-  drawChar(GPT, G, u); drawChar(CLA, C, u);
-  if (u < 8 && u > 5) { const a = (u - 5) * 3.2; clayStar(lx - 70 + Math.cos(a) * 120, 380 + Math.sin(a * 1.3) * 50 - (u > 7 ? (u - 7) * 300 : 0), 10, a, '#ffe28a', .6, 4); }
-  if (u > 1.2 && u < 3) sparkles(C.x, 420, u - 1.5, 10, 3, '#ffe0b0', 80, 8);
+  // milestones, passed exactly on beats 3, 6, 9
+  [[3, '1 km'], [6, '100 km'], [9, '9999 km']].forEach(([b, txt]) => { const px = walkX(b) + 70; capsule(px, 500, 12, 100, '#c99a72');
+    ctx.save(); ctx.translate(px, 512); ctx.rotate(-.05 + .08 * pulseAt(u, b, 4)); ctx.fillStyle = '#e8b78f'; ctx.beginPath(); ctx.roundRect(-58, -22, 116, 44, 12); ctx.fill(); ctx.restore(); textPop(txt, px, 512, 22, 1, '#fff6e6'); });
+  // footprints
+  for (let b = 0; b <= Math.min(u, 11); b++) { const fx = walkX(b) - 10, a = clamp(1 - (u - b) / 6); if (a <= 0) continue; ctx.fillStyle = `rgba(90,60,40,${.18 * a})`; ctx.beginPath(); ctx.ellipse(fx - 14, 614, 11, 5, 0, 0, 7); ctx.ellipse(fx + 14, 618, 11, 5, 0, 0, 7); ctx.fill(); }
+  // GPT the traveller
+  const G = pose({ x: X, y: 606, s: 1.05, glow: .2, happy: zi === 0 });
+  const sw = Math.sin(u * Math.PI);
+  if (walking) { const j = J(u, 26); G.hop = j.hop; G.sq = j.sq; G.lean = .14; G.armL = .4 + .9 * Math.max(0, sw); G.armR = 1.3; }
+  if (zi === 1) { G.blink = .4; G.mouth = 1; G.lean = .22; }                                   // hot desert
+  if (zi === 2) { G.lean = .12 + Math.sin(t * 45) * .03; G.blush = .9; G.armL = -1.2; }        // freezing
+  if (win(u, 11, 12)) { const k = ss(11, 11.25, u), up = ss(11.6, 12, u); G.lean = lerp_(.14, 1.3, k) * (1 - up); G.sq = .3 * pulseAt(u, 11.25, 5); G.hop = 0; G.mouth = 1; G.armL = G.armR = 2.4 * (1 - up); } // trips, faceplant
+  if (u >= 12.6) { G.lean = 0; G.look = .6; G.lookY = -.2; G.mouth = 1; if (u >= 13) { const j = J(u, 90); G.hop = j.hop; G.sq = j.sq; G.armL = G.armR = 2.7; G.happy = true; G.mouth = 0; } }
+  // bindle over the shoulder
+  const p = pawPos(G, 1); ctx.save(); ctx.strokeStyle = '#c99a72'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(p.x, p.y);
+  const tip = { x: G.x - 70, y: G.y - G.hop - 175 }; if (G.armR === 1.3) { ctx.lineTo(tip.x, tip.y); ctx.stroke(); clayEll(tip.x - 8, tip.y + 18, 48, 40, '#ff9fb0'); } ctx.restore();
+  drawChar(GPT, G, u);
+  if (zi === 1) for (let k = 0; k < 2; k++) { const a = fr(u * 2 + k * .5); ctx.fillStyle = `rgba(140,200,255,${1 - a})`; ctx.beginPath(); ctx.ellipse(G.x + 46 + k * 10, G.y - G.hop - 120 + a * 40, 6, 9, 0, 0, 7); ctx.fill(); }
+  if (zi === 2) { clayEll(G.x, G.y - G.hop - 116, 40, 16, '#ffffff', { rim: false }); for (let i = 0; i < 70; i++) { const sx = camx - 700 + rnd(i) * 1400, sy = ((rnd(i * 3) * 700 + t * 120 + i * 9) % 700); clayEll(sx + Math.sin(t * 2 + i) * 14, sy, 7, 7, '#ffffff', { rim: false }); } }
+  if (zi === 3) for (let i = 0; i < 18; i++) { const lx = camx - 700 + ((rnd(i) * 1400 - t * 80) % 1400 + 1400) % 1400, ly = ((rnd(i * 5) * 600 + t * 90) % 600) + 80; ctx.save(); ctx.translate(lx, ly); ctx.rotate(t * 2 + i); clayEll(0, 0, 18, 9, i % 2 ? '#f2a35e' : '#e8805a', { rim: false }); ctx.restore(); }
+  if (u >= 13) sparkles(G.x, G.y - 200, u - 13, 14, 13, '#c8ffe9', 90, 9);
   return { title: 1 };
 }
 // 14-22 crossing the ocean: rowing the teacup, a map montage, surfing the giant wave
@@ -338,7 +350,7 @@ function inYourEyes(u) {
   }
   return { end: ss(67.8, 68.8, u) };
 }
-const SCENES = [[0, prologue], [14, crossing], [22, lonely], [31, brave], [38, shore], [47, parting], [55, thanks], [62, inYourEyes]];
+const SCENES = [[0, journey], [14, crossing], [22, lonely], [31, brave], [38, shore], [47, parting], [55, thanks], [62, inYourEyes]];
 
 // ---------- transitions (screen space, keyed to the cut beats) ----------
 function waveWipe(u, a, col1, col2, dir = 1) { // a big clay wave sweeps across; the cut happens under it at beat a
