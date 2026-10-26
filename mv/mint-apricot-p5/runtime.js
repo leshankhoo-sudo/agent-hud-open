@@ -12,9 +12,9 @@ function lyricLine(L, t) { // characters pop in one after another, then the whol
   ctx.restore();
 }
 function overlay(t, u, info) {
-  if (info.title) { const a = ss(.4, 1.4, u) * (1 - ss(5.6, 7, u)); const p = 1 + .04 * pulse(u, 5);
+  if (info.title) { const a = ss(.2, .9, u) * (1 - ss(5, 6.4, u)); const p = 1 + .04 * pulse(u, 5);
     ctx.save(); ctx.translate(640, 130 + (1 - a) * 14); ctx.scale(p, p); textPop('薄荷 & 杏桃', 0, 0, 80, a); textPop('Mint & Apricot', 0, 64, 28, a * .95); ctx.restore(); }
-  if (info.end) { const a = info.end; textPop('留在你眼中', 640, 300, 72, a); textPop('Mint & Apricot · 两个 AI 小精灵的故事', 640, 380, 28, a * .95); }
+  if (info.end) { const a = info.end; textPop('留在你眼中', 640, 520, 72, a); textPop('Mint & Apricot · 两个 AI 小精灵的故事', 640, 596, 28, a * .95); }
   for (const L of LYRICS) if (t >= L.start - .05 && t < L.end + .12) lyricLine(L, t);
 }
 window.renderFrame = function (t) {
@@ -23,12 +23,12 @@ window.renderFrame = function (t) {
   ctx.save(); ctx.scale(K, K);
   const bar = Math.floor(u) % 4 === 0 && u > 0 ? pulse(u, 5) : 0, z = 1 + bar * .04 + pulse(u, 8) * .01;
   ctx.translate(640, 360); ctx.scale(z, z); ctx.rotate((Math.floor(u) % 2 ? 1 : -1) * pulse(u, 7) * .005 * (u > 8)); ctx.translate(-640, -360);
-  let i = SCENES.length - 1; while (i > 0 && u < SCENES[i][0]) i--;
-  ctx.save(); const info = SCENES[i][1](u, t) || {}; ctx.restore();
+  const s = S(u); let i = SCENES.length - 1; while (i > 0 && s < SCENES[i][0]) i--;
+  ctx.save(); const info = SCENES[i][1](s, t) || {}; ctx.restore();
   ctx.restore();
   ctx.save(); ctx.scale(K, K);
   const v = ctx.createRadialGradient(640, 360, 300, 640, 360, 820); v.addColorStop(0, 'rgba(60,30,40,0)'); v.addColorStop(1, 'rgba(60,30,40,.3)'); ctx.fillStyle = v; ctx.fillRect(0, 0, 1280, 720);
-  transitions(u);
+  transitions(s);
   overlay(t, u, info);
   ctx.restore();
   ctx.save(); ctx.globalAlpha = .07; ctx.globalCompositeOperation = 'overlay'; ctx.drawImage(grain.elt, (Math.floor(t * 30) % 4) * -16, (Math.floor(t * 30) % 3) * -16); ctx.restore();

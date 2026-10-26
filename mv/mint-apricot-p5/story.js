@@ -1,9 +1,11 @@
 // ---------- lyric-driven story (times in beats u; B(u) converts to seconds) ----------
 const B = u => T0 + BP * u;
+// story beats s vs real beats u: line 1 (the walk) plays at double speed in u 0-7, everything after runs 7 beats ahead
+const S = u => u < 7 ? u * 2 : u + 7, Sinv = s => s < 14 ? s / 2 : s - 7;
 const LINES = [ // [startBeat, endBeat, text]
   [.2, 14, '我曾经走过多遥远的路'], [14, 22, '跨越过多少海洋去看你'], [22, 27, '孤单的黑夜途中'], [27, 31, '只要想着你'], [31, 38, '我就不会惶恐'],
   [38, 43, '时光的岸上'], [43, 47, '人来了又走'], [47, 55, '离开时你不用说我都懂'], [55, 62, '感谢你曾让我'], [62, 68, '留在你眼中']];
-LYRICS = LINES.map(([a, b, text]) => ({ start: B(a), end: B(b) - .05, text }));
+LYRICS = LINES.map(([a, b, text]) => ({ start: B(Sinv(a)), end: B(Sinv(b)) - .05, text }));
 
 // ---------- sea, boat, weather ----------
 const waveY = (x, u, layer, y0, amp) => y0 + layer * 34 + amp * (Math.sin(x * .0062 + u * Math.PI * .5 + layer * 1.3) * .62 + Math.sin(x * .013 - u * Math.PI * .75 + layer * 2.1) * .38);
@@ -335,20 +337,34 @@ function inYourEyes(u) {
     if (into > 0) { ctx.save(); ctx.globalAlpha = into; ctx.fillStyle = '#2f3170'; ctx.fillRect(-100, -100, 1500, 1000); ctx.restore(); }
   }
   if (u >= 63.6) { // the reflected world: GPT on the night sea, and two stars side by side
-    const k = ss(63.6, 64.4, u), up = easeIO(ss(65, 67, u));
-    ctx.save(); ctx.globalAlpha = k; setCam(640, lerp_(400, 120, up), lerp_(1.4, 1.1, up));
+    const k = ss(63.6, 64.4, u), up = easeIO(ss(65, 67, u)), sky2 = easeIO(ss(68, 70, u));
+    ctx.save(); ctx.globalAlpha = k; setCam(640, lerp_(400, 120, up) - 290 * sky2, lerp_(1.4, 1.1, up) + .35 * sky2);
     sky('#2f3170', '#9a78b4'); skyStars(u, 80, 31);
     sea(u, 470, NIGHT, 14, 0, 2); const y = waveY(640, u, 1, 470, 14);
     const G = pose({ y: -26, s: .78, happy: true, glow: .6 + .3 * pulse(u, 4), blush: 1, lookY: -.6 * up, armL: 1 + up * 1.6, keep: true }); G.lean = Math.sin(u * Math.PI / 2) * .08;
     cupBoat(640, y, 1, waveTilt(640, u, 1, 470, 14) * .8, () => drawChar(GPT, G, u), { u, lantern: 1 });
     sea(u, 470, NIGHT, 14, 2, 4);
     // two stars, mint & apricot, drifting together
-    const d = lerp_(220, 46, ss(65.5, 67.5, u));
+    const d = lerp_(220, 46, ss(65.5, 67.5, u)) + 34 * ss(68.5, 69.5, u);
+    constellation(u);
     for (const [sx, col, gcol] of [[-1, '#c8ffe9', '#7ff0c8'], [1, '#ffd0a0', '#ffa25a']]) { const x = 640 + sx * d, yy = -180 + Math.sin(u * 2 + sx) * 6; glow(x, yy, 120, gcol, .55 + .25 * pulse(u, 4)); clayStar(x, yy, 30 * (1 + .12 * pulse(u, 5)), u * .3 * sx, col, .4); }
     if (u >= 67.5) sparkles(640, -180, u - 67.5, 26, 67, '#fff2b8', 160, 11);
     ctx.restore();
   }
-  return { end: ss(67.8, 68.8, u) };
+  return { end: ss(72, 73, u) };
+}
+// outro: the two stars become a constellation of the pair holding hands, one star per half beat
+function constellation(u) {
+  if (u < 68.5) return; const pts = [];
+  for (const cx of [560, 720]) for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2 - Math.PI / 2; pts.push([cx + Math.cos(a) * 66, -175 + Math.sin(a) * 60]); }
+  pts.push([626, -165], [654, -165]);   // joined hands
+  const n = Math.min(pts.length, Math.floor((u - 68.5) * 2) + 1);
+  ctx.save(); ctx.strokeStyle = 'rgba(255,240,200,.55)'; ctx.lineWidth = 3; ctx.setLineDash([5, 8]);
+  for (let i = 1; i < n; i++) { if (i === 8 || i === 16) continue; const a = pts[i - 1], b = pts[i]; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+  if (n > 8) { ctx.beginPath(); ctx.moveTo(pts[7][0], pts[7][1]); ctx.lineTo(pts[0][0], pts[0][1]); ctx.stroke(); }
+  if (n > 16) { ctx.beginPath(); ctx.moveTo(pts[15][0], pts[15][1]); ctx.lineTo(pts[8][0], pts[8][1]); ctx.stroke(); }
+  ctx.restore();
+  for (let i = 0; i < n; i++) clayStar(pts[i][0], pts[i][1], 7 * (1 + .3 * pulseAt(u, 68.5 + i / 2, 6)), u + i, '#fff2b8', .35, 4);
 }
 const SCENES = [[0, journey], [14, crossing], [22, lonely], [31, brave], [38, shore], [47, parting], [55, thanks], [62, inYourEyes]];
 
@@ -375,5 +391,5 @@ function transitions(u) {
     const k = u < 38 ? ss(37.4, 38, u) : 1 - ss(38, 38.6, u); glow(640, 300, 200 + k * 900, '#ffe6a8', k); ctx.fillStyle = `rgba(255,236,190,${k * .9})`; ctx.fillRect(0, 0, 1280, 720); }
   if (win(u, 46.6, 47.6)) { const k = ss(46.6, 47.6, u); const y = lerp_(-760, 760, easeIO(k)); // sunset curtain drops down
     const g = ctx.createLinearGradient(0, y, 0, y + 760); g.addColorStop(0, 'rgba(243,160,160,0)'); g.addColorStop(.3, '#f3a0a0'); g.addColorStop(.7, '#ffd9b8'); g.addColorStop(1, 'rgba(255,217,184,0)'); ctx.fillStyle = g; ctx.fillRect(0, y, 1280, 760); }
-  iris(u, 67.8, 69.4, 640, 330, true);                 // ending iris
+  iris(u, 75.4, 77.2, 640, 330, true);                 // ending iris
 }
