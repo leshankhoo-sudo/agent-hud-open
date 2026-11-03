@@ -1,0 +1,52 @@
+{
+  "duration": 64,
+  "fps": 30,
+  "bpm": 120,
+  "prompt": "做一条视频，主角是你自己",
+  "title": "主角是我自己",
+  "agents": [
+    "建模",
+    "写代码",
+    "配乐",
+    "剪辑"
+  ],
+  "cues": {
+    "kick": 2.75,
+    "stick": 3.9,
+    "cursor": 4.9,
+    "termClick": 6.0,
+    "termOpen": 6.15,
+    "typeStart": 7.5,
+    "typeStep": 0.2,
+    "enter": 10.0,
+    "spark": 11.0,
+    "split": 12.0,
+    "done": [
+      21.0,
+      22.0,
+      22.75,
+      23.5
+    ],
+    "editor": 24.0,
+    "stompFrom": 25.0,
+    "stompTo": 31.05,
+    "drops": [
+      27.5,
+      28.5,
+      29.5
+    ],
+    "render": 32.0,
+    "coasterStart": 32.7,
+    "coasterEnd": 43.4,
+    "fileDrop": 46.0,
+    "pushStart": 47.5,
+    "pushEnd": 53.5,
+    "merge": 54.0,
+    "titleStart": 55.0,
+    "titleStep": 0.25,
+    "close": 58.9,
+    "grab": 60.4,
+    "place": 62.5,
+    "loopTop": 40.8
+  }
+}

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>主角是我自己</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #141413;
+        color: #b0aea5;
+        font: 14px/1.4 "JetBrains Mono", Menlo, monospace;
+      }
+      body {
+        display: grid;
+        place-items: center;
+      }
+      canvas {
+        width: min(100vw, calc(100vh * 16 / 9));
+        aspect-ratio: 16 / 9;
+        image-rendering: pixelated;
+        background: #000;
+        cursor: pointer;
+      }
+      #hint {
+        position: fixed;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="film" width="1920" height="1080"></canvas>
+    <div id="hint">点击播放 · 空格暂停 · ← → 跳 2 秒</div>
+    <audio id="score" src="out/score.wav" loop preload="auto"></audio>
+    <script src="out/data.js"></script>
+    <script src="film.js"></script>
+    <script>
+      // render.mjs drives frames itself (?render); otherwise this page plays
+      // the film in time with the soundtrack.
+      const canvas = document.getElementById("film");
+      const g = canvas.getContext("2d");
+      const audio = document.getElementById("score");
+      const rendering = new URLSearchParams(location.search).has("render");
+      const ready = FILM.prepare();
+      window.renderFrame = async (t, elapsed) => {
+        await ready;
+        FILM.frame(g, t, elapsed);
+      };
+      if (rendering) document.getElementById("hint").remove();
+      else
+        ready.then(() => {
+          const started = performance.now();
+          FILM.frame(g, 0, 0);
+          const tick = () => {
+            FILM.frame(g, audio.currentTime, (performance.now() - started) / 1000);
+            requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+          canvas.onclick = () => (audio.paused ? audio.play() : audio.pause());
+          addEventListener("keydown", (e) => {
+            if (e.key === " ") audio.paused ? audio.play() : audio.pause();
+            if (e.key === "ArrowRight") audio.currentTime = (audio.currentTime + 2) % FILM.DUR;
+            if (e.key === "ArrowLeft") audio.currentTime = (audio.currentTime + FILM.DUR - 2) % FILM.DUR;
+            e.preventDefault();
+          });
+        });
+    </script>
+  </body>
+</html>
