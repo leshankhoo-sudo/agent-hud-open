@@ -159,8 +159,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset
 /* ================= ending ================= */
 #end{position:relative;z-index:1;height:340vh}
 .endv{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
-#vEnd{position:absolute;right:max(2vw,0px);top:50%;height:min(118vh,62vw);aspect-ratio:1;max-width:none;transform:translateY(-50%) scale(var(--es,1.06));opacity:var(--eo,0);
-  -webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);will-change:transform,opacity}
+#vEnd{position:absolute;right:max(2vw,0px);top:50%;height:min(118vh,62vw);aspect-ratio:1;max-width:none;transform:translateY(-50%);opacity:var(--eo,0);
+  -webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);will-change:opacity}
 .ecopy{position:absolute;left:clamp(16px,7vw,132px);top:50%;transform:translateY(-50%);width:min(660px,48vw);display:grid;gap:26px}
 .ecopy>*{opacity:0;transform:translateY(24px);transition:opacity .9s var(--ez),transform 1.1s var(--ez)}
 .ecopy>.on{opacity:1;transform:none}
@@ -1356,7 +1356,7 @@ function seaFrame(){
   const black=sm(.15,.85,ein);
   seaEl.style.setProperty('--vig',(sm(.55,1,p)*.8+dv*.2).toFixed(3));seaEl.style.setProperty('--shade',Math.max(dv*.22,black).toFixed(3));
   fishAlpha=sm(.72,.95,p)*(1-sm(.1,.6,ein));
-  endEl.style.setProperty('--eo',sm(.55,1,ein).toFixed(3));endEl.style.setProperty('--es',(1.06-.06*eq).toFixed(4));
+  endEl.style.setProperty('--eo',sm(.55,1,ein).toFixed(3));
   if(ein>0){Es+=(eq*.98-Es)*.12;seek(vE,Es*(vE.duration||10));
     eSteps.forEach((el,k)=>el.classList.toggle('on',eq>=[.04,.16,.42,.62,.78][k]&&ein>.6));
     const ed=186+(1240-186)*sm(0,.9,eq);$('#eDepth').textContent=Math.round(ed).toLocaleString('en-US')+' m';$('#eTemp').textContent=(9.4-5.6*sm(0,.9,eq)).toFixed(1)+' °C'}
