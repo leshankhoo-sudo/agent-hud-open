@@ -179,6 +179,18 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset
 .eread b{font:700 24px/1 var(--f-mono);letter-spacing:.02em;color:#fff}
 .eread em{font-style:normal}
 @media (max-width:760px){#vEnd{right:-30vw;opacity:calc(var(--eo,0)*.7)}.ecopy{width:auto;right:16px}}
+
+/* ================= auto tour ================= */
+.tour{position:fixed;z-index:40;left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px;padding:6px 16px 6px 6px;border-radius:999px;background:rgba(6,18,28,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(214,236,244,.14);color:#eef5f8;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.tour button{height:38px;padding:0 16px;border-radius:999px;border:0;background:#f4f1ec;color:#0d1a24;display:flex;align-items:center;gap:8px;font:600 13px var(--f-cn);cursor:pointer;white-space:nowrap}
+.tour button:hover{background:#fff}
+.tour[data-state="play"] button{background:var(--acc);color:#151008}
+.tinfo{display:grid;gap:6px;min-width:120px}
+#tLbl{font:500 12px/1 var(--f-cn);color:rgba(238,245,248,.82);white-space:nowrap}
+.tseg{display:flex;gap:4px}
+.tseg i{width:22px;height:3px;border-radius:2px;background:rgba(214,236,244,.2);transition:background .4s}
+.tseg i.d{background:rgba(214,236,244,.6)}
+.tseg i.c{background:var(--acc)}
 @media (max-width:760px){.hlinks{display:none}.gauge{display:none}}
 @media (prefers-reduced-motion:reduce){.scene{transition:none}.hint i{animation:none}}
 /* ================= D1 · Bento ================= */
@@ -739,7 +751,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset
         <p class="hsub">A moment of stillness.<br>An endless sense of possibility.</p>
         <div class="hbtns">
           <a class="hb1" href="#deck" data-glide="deck">Explore the ocean <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5"/></svg></a>
-          <button class="hb2" type="button" data-glide="deep"><i><svg viewBox="0 0 10 10"><path d="M3 2l5 3-5 3z" fill="currentColor"/></svg></i>Watch the dive</button>
+          <button class="hb2" type="button" data-tour><i><svg viewBox="0 0 10 10"><path d="M3 2l5 3-5 3z" fill="currentColor"/></svg></i>Play the whole film</button>
         </div>
       </div>
       <div class="hbl"><i></i>LIVE AT SEA</div>
@@ -777,6 +789,11 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--acc);outline-offset
   </div>
 </section>
 
+
+<div class="tour" id="tour" data-state="idle" role="region" aria-label="自动播放">
+  <button id="tBtn" type="button"></button>
+  <div class="tinfo"><span id="tLbl" aria-live="polite"></span><span class="tseg" id="tSeg"><i></i><i></i><i></i><i></i><i></i></span></div>
+</div>
 
 <script>
 (()=>{
@@ -1236,6 +1253,7 @@ function fit(){const W=deckEl.clientWidth-32,H=deckEl.clientHeight-80;const k=Ma
 fit();addEventListener('resize',fit);
 
 /* ---------- playback ---------- */
+let deckEndHook=null,tourDriving=false;
 let cur=-1,auto=!matchMedia('(prefers-reduced-motion: reduce)').matches,tk=null,started=false,visible=false;
 function setCap(s,text,o){const c=s.cap;c.classList.remove('show');clearTimeout(c._t);if(!text)return;c._t=setTimeout(()=>{c.innerHTML=mark(text);c.classList.toggle('o',!!o);c.classList.add('show')},c.textContent?110:0)}
 function stop(){if(!tk)return;tk.dead=true;tk.ids.forEach(clearTimeout);tk=null;S.forEach(s=>{s.cur.hide();s.cos.forEach(w=>{w.classList.remove('show');setTimeout(()=>w.remove(),400)});s.cos=[]})}
@@ -1274,22 +1292,22 @@ function run(s){
     scroll:(el,to,d)=>{const from=el.scrollTop;c.tween(d,k=>{el.scrollTop=from+(to-from)*k})}};
   s.cfg.script(c,s.api);
   at(s.cfg.pr[1]+1.0,()=>s.cur.hide());
-  at(s.cfg.dur,()=>{if(auto&&visible)go(cur+1)});
+  at(s.cfg.dur,()=>{if(auto&&visible){if(cur===S.length-1&&deckEndHook){const h=deckEndHook;deckEndHook=null;h()}else go(cur+1)}});
 }
 function updUI(){$('#bPlay').innerHTML=(auto?ic('pause',14):ic('play',14))+`<span>${auto?'自动演示中':'自动演示'}</span>`;$('#bPlay').classList.toggle('off',!auto);
   $('#bLbl').textContent=`${String(cur+1).padStart(2,'0')} / ${String(SC.length).padStart(2,'0')}`}
-function userTook(){const s=S[cur];if(!s||!auto)return;auto=false;stop();settle(s);updUI()}
+function userTook(){tourPause();const s=S[cur];if(!s||!auto)return;auto=false;stop();settle(s);updUI()}
 stage.addEventListener('pointerdown',e=>{if(e.isTrusted&&e.target.closest('.dash'))userTook()},true);
 stage.addEventListener('wheel',e=>{if(e.target.closest('.aps'))userTook()},{capture:true,passive:true});
 $('#bPrev').innerHTML=ic('chevl',16);$('#bNext').innerHTML=ic('chevr',16);
 $('#bPrev').addEventListener('click',()=>go(cur-1));$('#bNext').addEventListener('click',()=>go(cur+1));
-$('#bPlay').addEventListener('click',()=>{auto=!auto;updUI();if(auto)go(cur,false);else{stop();settle(S[cur])}});
+$('#bPlay').addEventListener('click',()=>{tourPause();auto=!auto;updUI();if(auto)go(cur,false);else{stop();settle(S[cur])}});
 document.addEventListener('keydown',e=>{if(!visible)return;const s=S[cur];
   if(s.cfg.init===initD6&&(e.key==='ArrowDown'||e.key==='ArrowUp')){e.preventDefault();userTook();s.api.key(e.key==='ArrowDown'?1:-1);return}
   if(s.cfg.init===initD6&&e.key==='Escape'){s.api.close();return}
   if(e.key==='ArrowRight')go(cur+1);else if(e.key==='ArrowLeft')go(cur-1)});
 new IntersectionObserver(es=>{for(const en of es){visible=en.isIntersecting&&en.intersectionRatio>=.6;
-  if(visible){if(!started){started=true;go(0,false)}else if(auto&&!tk)go(cur,false)}
+  if(visible&&!tourDriving){if(!started){started=true;go(0,false)}else if(auto&&!tk)go(cur,false)}
   else if(tk&&auto){stop()}}},{threshold:[0,.6,1]}).observe(deckEl);
 cur=0;resetScene(S[0]);S[0].el.classList.remove('gone','t0');
 updUI();
@@ -1305,12 +1323,12 @@ const XF=.6,DUR=[9.96,9.96,9.96],ST=[0,DUR[0]-XF,DUR[0]+DUR[1]-2*XF],TOTAL=ST[2]
 V.forEach(v=>{v.pause();v.addEventListener('loadedmetadata',()=>{v._ok=true})});
 vD.playbackRate=.5;
 const sm=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
-let Ts=0,deepOn=false,idleOn=true;
+let Ts=0,deepOn=false,idleOn=true,snapSea=false;
 function progress(){const r=dive.getBoundingClientRect(),span=r.height-innerHeight;return clamp(-r.top/span,0,1)}
 function seek(v,t){if(!v._ok&&v.readyState<1)return;t=clamp(t,0,(v.duration||10)-.05);if(!v.seeking&&Math.abs(v.currentTime-t)>.03){try{v.currentTime=t}catch(e){}}}
 function seaFrame(){
   const p=progress(),T=p*TOTAL;
-  Ts+=(T-Ts)*.12;if(Math.abs(T-Ts)<.004)Ts=T;
+  if(snapSea){Ts=T;snapSea=false}Ts+=(T-Ts)*.12;if(Math.abs(T-Ts)<.004)Ts=T;
   const atTop=p<.002&&Ts<.04;
   if(atTop!==idleOn){idleOn=atTop;if(atTop){vI.style.opacity=1;vI.play().catch(()=>{})}else{vI.style.opacity=0;setTimeout(()=>{if(!idleOn)vI.pause()},400)}}
   // which dive clips are visible
@@ -1350,8 +1368,10 @@ vI.play&&vI.play().catch(()=>{});
 /* glide: cinematic scripted scroll for the hero links */
 let glideRaf=0;
 function glide(to,ms){cancelAnimationFrame(glideRaf);const from=scrollY,t0=performance.now();const f=now=>{const k=Math.min(1,(now-t0)/ms);scrollTo(0,from+(to-from)*ease(k));if(k<1)glideRaf=requestAnimationFrame(f)};glideRaf=requestAnimationFrame(f)}
-['wheel','touchstart','keydown'].forEach(ev=>addEventListener(ev,()=>cancelAnimationFrame(glideRaf),{passive:true}));
-$$('[data-glide]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const deck=deckEl.offsetTop,deep=dive.offsetTop+dive.offsetHeight-innerHeight;
+['wheel','touchstart'].forEach(ev=>addEventListener(ev,()=>{cancelAnimationFrame(glideRaf);tourPause()},{passive:true}));
+addEventListener('keydown',e=>{if(e.key===' '&&!e.target.closest('input,textarea,button,a')){e.preventDefault();tourToggle();return}
+  if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End'].includes(e.key)){cancelAnimationFrame(glideRaf);tourPause()}});
+$$('[data-glide]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();tourPause();const deck=deckEl.offsetTop,deep=dive.offsetTop+dive.offsetHeight-innerHeight;
   const to=a.dataset.glide==='deck'?deck:a.dataset.glide==='top'?0:deep;glide(to,Math.min(a.dataset.glide==='top'?12000:9000,Math.max(1800,Math.abs(to-scrollY)/innerHeight*1500)))}));
 
 /* =========================================================
@@ -1435,5 +1455,49 @@ function fishFrame(now){
   requestAnimationFrame(fishFrame);
 }
 requestAnimationFrame(fishFrame);
+
+/* =========================================================
+   Auto tour: plays the whole page at real speed
+   (dive footage at 1×, each dashboard chapter at its own length, ending growth at 1×)
+   ========================================================= */
+const tourEl=$('#tour'),tBtn=$('#tBtn'),tLbl=$('#tLbl'),tSeg=$$('#tSeg i');
+const STEPS=['海面','下沉','深海','Dashboard','结尾'];
+let tour={step:-1,state:'idle',tok:null,deckStart:0};
+const ramp=a=>k=>k<a?k*k/(2*a*(1-a)):k>1-a?1-(1-k)*(1-k)/(2*a*(1-a)):(k-a/2)/(1-a);
+function tglide(to,ms,tok,a=.08){return new Promise(res=>{cancelAnimationFrame(glideRaf);const from=scrollY,t0=performance.now(),e=ramp(a);
+  const f=now=>{if(tok.dead)return res();const k=Math.min(1,(now-t0)/ms);scrollTo(0,from+(to-from)*e(k));if(k<1)glideRaf=requestAnimationFrame(f);else res()};glideRaf=requestAnimationFrame(f)})}
+const twait=(ms,tok)=>new Promise(r=>{tok.ids.push(setTimeout(r,ms))});
+const diveY=x=>dive.offsetTop+(dive.offsetHeight-innerHeight)*x;
+const VIDEO_SEC=TOTAL*1000;
+function remaining(to,full,dist){const d=Math.abs(to-scrollY);return Math.max(400,full*Math.min(1,d/dist))}
+const RUN=[
+  async k=>{if(scrollY>2){scrollTo(0,0);snapSea=true}await twait(2600,k)},
+  async k=>{const a=diveY(0),b=diveY(.62);await tglide(b,remaining(b,VIDEO_SEC*.62,b-a),k,.06)},
+  async k=>{const a=diveY(.62),b=diveY(1);await tglide(b,remaining(b,VIDEO_SEC*.38,b-a),k,.12);await twait(2600,k)},
+  async k=>{await tglide(deckEl.offsetTop,remaining(deckEl.offsetTop,2600,innerHeight),k,.3);if(k.dead)return;
+    tourDriving=true;await twait(350,k);if(k.dead)return;
+    await new Promise(res=>{deckEndHook=res;k.onDead=res;stop();auto=true;started=true;updUI();go(tour.deckStart,false)});
+    tour.deckStart=0;tourDriving=false},
+  async k=>{const a=endEl.offsetTop,b=a+endEl.offsetHeight-innerHeight;await tglide(a,remaining(a,2600,innerHeight),k,.3);
+    await tglide(b,remaining(b,10500,b-a),k,.05);await twait(4500,k)},
+];
+function tourUI(){tourEl.dataset.state=tour.state;
+  tBtn.innerHTML=tour.state==='play'?ic('pause',14)+'<span>暂停</span>':tour.state==='paused'?ic('play',14)+'<span>继续播放</span>':tour.state==='done'?ic('play',14)+'<span>重新播放</span>':ic('play',14)+'<span>自动播放全片</span>';
+  tSeg.forEach((s,i)=>{s.className=i<tour.step||tour.state==='done'?'d':i===tour.step?'c':''});
+  tLbl.textContent=tour.state==='idle'?'约 4 分钟 · 正常速度':tour.state==='done'?'播放完毕':(tour.step===3&&cur>=0?`${SC[cur].n} ${SC[cur].t}`:STEPS[Math.max(0,tour.step)])}
+async function tourRun(from){
+  const k={dead:false,ids:[]};tour.tok=k;tour.state='play';tourUI();
+  for(let i=from;i<RUN.length;i++){tour.step=i;tourUI();await RUN[i](k);if(k.dead)return}
+  tour.state='done';tour.step=RUN.length;tourDriving=false;tourUI();
+}
+function tourKill(){const k=tour.tok;if(!k)return;k.dead=true;k.ids.forEach(clearTimeout);k.onDead&&k.onDead();tour.tok=null;cancelAnimationFrame(glideRaf);deckEndHook=null}
+function tourPause(){if(tour.state!=='play')return;tourKill();if(tour.step===3)tour.deckStart=Math.max(0,cur);tourDriving=false;tour.state='paused';tourUI()}
+function tourStart(){tourKill();tour.deckStart=0;tourRun(0)}
+function tourToggle(){if(tour.state==='play')tourPause();else if(tour.state==='paused')tourRun(tour.step);else tourStart()}
+tBtn.addEventListener('click',tourToggle);
+$$('[data-tour]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();tourStart()}));
+setInterval(()=>{if(tour.state==='play'&&tour.step===3)tourUI()},500);
+tourUI();
+if(location.hash==='#play')setTimeout(tourStart,1200);
 })();
 </script>
