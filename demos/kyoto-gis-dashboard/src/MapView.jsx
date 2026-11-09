@@ -47,6 +47,7 @@ export default function MapView({ data, cats, types, query, densityMode, basemap
   const el = useRef(null);
   const mapRef = useRef(null);
   const marker = useRef(null);
+  const callout = useRef(null);
   const latest = useRef({});
   latest.current = { onSelect, onHover, cats, types, query, densityMode };
 
@@ -69,7 +70,10 @@ export default function MapView({ data, cats, types, query, densityMode, basemap
     if (externalRef) externalRef.current = map;
     window.__kyotoMap = map; // used by the automated tests
 
-    map.on('load', () => addDataLayers(map, data));
+    map.on('load', () => {
+      addDataLayers(map, data);
+      intro(map);
+    });
     map.on('style.load', () => {
       if (!map.getSource('attractions')) addDataLayers(map, data);
       applyFilters(map, latest.current);
@@ -117,7 +121,9 @@ export default function MapView({ data, cats, types, query, densityMode, basemap
     if (!map) return;
     const set = () => {
       const src = map.getSource('walk');
-      if (src) src.setData({ type: 'FeatureCollection', features: routes || [] });
+      if (!src) return;
+      src.setData({ type: 'FeatureCollection', features: routes || [] });
+      if (routes?.length) drawRoutes(map);
     };
     if (map.getSource('walk')) set();
     else map.once('idle', set);
@@ -129,16 +135,106 @@ export default function MapView({ data, cats, types, query, densityMode, basemap
     if (!map) return;
     marker.current?.remove();
     marker.current = null;
+    callout.current?.remove();
+    callout.current = null;
     if (!selected) return;
     const node = document.createElement('div');
     node.className = 'sel-marker' + (selected.layer === 'transport' ? ' is-stop' : '');
     node.innerHTML = '<i></i><i></i><b></b>';
     marker.current = new maplibregl.Marker({ element: node }).setLngLat(selected.coords).addTo(map);
+    if (selected.label) {
+      const c = document.createElement('div');
+      c.className = 'sel-callout';
+      const t = document.createElement('div');
+      t.className = 'sel-card';
+      const sw = document.createElement('i');
+      sw.style.background = selected.color || '#7fb3ff';
+      const nm = document.createElement('b');
+      nm.textContent = selected.label;
+      nm.lang = 'ja';
+      const sub = document.createElement('span');
+      sub.textContent = selected.sub || '';
+      t.append(sw, nm, sub);
+      c.append(document.createElement('s'), t);
+      callout.current = new maplibregl.Marker({ element: c, anchor: 'bottom-left', offset: [6, -6] }).setLngLat(selected.coords).addTo(map);
+    }
     const z = Math.max(map.getZoom(), 13.5);
     if (selected.fly !== false) map.flyTo({ center: selected.coords, zoom: z, duration: prefersReducedMotion() ? 0 : 1100, essential: true, offset: [0, 0] });
   }, [selected]);
 
   return <div ref={el} className="map" role="region" aria-label="Map of Kyoto Prefecture" />;
+}
+
+const WALK_COLORS = [['bus', '#4fc3ff'], ['rail', '#f2c86b']];
+// line-progress gradient that reveals the route from the attraction (start) to the stop.
+const gradient = (col, t) => (t >= 1 ? ['interpolate', ['linear'], ['line-progress'], 0, col, 1, col]
+  : ['step', ['line-progress'], col, Math.max(0.0001, t), 'rgba(0,0,0,0)']);
+// Moving dash pattern: stepping through these looks like light travelling along the path.
+const DASH_STEPS = [[0, 4, 3], [0.5, 4, 2.5], [1, 4, 2], [1.5, 4, 1.5], [2, 4, 1], [2.5, 4, 0.5], [3, 4, 0], [0, 0.5, 3, 3.5], [0, 1, 3, 3], [0, 1.5, 3, 2.5], [0, 2, 3, 2], [0, 2.5, 3, 1.5], [0, 3, 3, 1], [0, 3.5, 3, 0.5]];
+
+let routeAnim = 0;
+function drawRoutes(map) {
+  cancelAnimationFrame(routeAnim);
+  const reduce = prefersReducedMotion();
+  const t0 = performance.now();
+  let lastStep = -1;
+  const frame = (now) => {
+    if (!map.getLayer('walk-line-bus')) return;
+    const k = reduce ? 1 : Math.min(1, (now - t0 - 350) / 1300);
+    const e = k <= 0 ? 0 : 1 - Math.pow(1 - k, 3);
+    for (const [t, col] of WALK_COLORS) map.setPaintProperty(`walk-line-${t}`, 'line-gradient', gradient(col, e));
+    const flowOn = e >= 1 && !reduce;
+    for (const [t] of WALK_COLORS) map.setLayoutProperty(`walk-flow-${t}`, 'visibility', flowOn ? 'visible' : 'none');
+    if (flowOn) {
+      const step = Math.floor(now / 70) % DASH_STEPS.length;
+      if (step !== lastStep) {
+        for (const [t] of WALK_COLORS) map.setPaintProperty(`walk-flow-${t}`, 'line-dasharray', DASH_STEPS[step]);
+        lastStep = step;
+      }
+    }
+    if (!reduce && map.getSource('walk')._data.features?.length) routeAnim = requestAnimationFrame(frame);
+  };
+  routeAnim = requestAnimationFrame(frame);
+}
+
+// Opening sequence: outline appears, then stops, then attractions; afterwards the outline glow breathes slowly.
+function intro(map) {
+  const reduce = prefersReducedMotion();
+  const set = (layer, prop, from, to, duration, delay) => {
+    if (!map.getLayer(layer)) return;
+    if (reduce) { map.setPaintProperty(layer, prop, to); return; }
+    map.setPaintProperty(layer, `${prop}-transition`, { duration: 0, delay: 0 });
+    map.setPaintProperty(layer, prop, from);
+    requestAnimationFrame(() => {
+      map.setPaintProperty(layer, `${prop}-transition`, { duration, delay });
+      map.setPaintProperty(layer, prop, to);
+    });
+  };
+  set('outline-line', 'line-opacity', 0, 1, 900, 0);
+  set('outline-glow', 'line-opacity', 0, 0.55, 1400, 200);
+  set('outline-fill', 'fill-opacity', 0, 0.1, 1200, 300);
+  set('muni-line', 'line-opacity', 0, 0.35, 900, 500);
+  set('transport-pt', 'circle-opacity', 0, ['match', ['get', 'transport_type'], 'bus', 0.75, 1], 900, 700);
+  set('attractions-glow', 'circle-opacity', 0, 0.45, 900, 1100);
+  set('attractions-pt', 'circle-opacity', 0, 1, 700, 1100);
+  set('attractions-pt', 'circle-stroke-opacity', 0, 1, 700, 1100);
+  if (!reduce) {
+    const c = map.getCenter(), z = map.getZoom();
+    map.jumpTo({ center: [c.lng - 0.08, c.lat + 0.05], zoom: z - 0.45 });
+    map.easeTo({ center: c, zoom: z, duration: 2200, easing: (t) => 1 - Math.pow(1 - t, 3), essential: true });
+    // slow breathing of the prefecture glow after the intro
+    setTimeout(() => {
+      if (!map.getLayer('outline-glow')) return;
+      map.setPaintProperty('outline-glow', 'line-opacity-transition', { duration: 0, delay: 0 });
+      const breathe = () => {
+        if (!map.getLayer('outline-glow')) return;
+        const t = performance.now() / 1000;
+        map.setPaintProperty('outline-glow', 'line-opacity', 0.42 + 0.16 * Math.sin(t * 1.2));
+        setTimeout(breathe, 80);
+      };
+      breathe();
+    }, 1800);
+  }
 }
 
 function addDataLayers(map, data) {
@@ -154,16 +250,19 @@ function addDataLayers(map, data) {
   }
   if (data.kde) {
     map.addSource('kde', { type: 'geojson', data: data.kde });
-    map.addLayer({ id: 'kde-fill', type: 'fill', source: 'kde', layout: { visibility: 'none' }, paint: { 'fill-opacity': 0.62, 'fill-outline-color': 'rgba(0,0,0,0)' } });
+    map.addLayer({ id: 'kde-fill', type: 'fill', source: 'kde', layout: { visibility: 'none' }, paint: { 'fill-opacity': 0, 'fill-opacity-transition': { duration: 700, delay: 0 }, 'fill-outline-color': 'rgba(0,0,0,0)' } });
   }
   if (data.walking?.pilot?.bbox) {
     const [x0, y0, x1, y1] = data.walking.pilot.bbox;
     map.addSource('pilot', { type: 'geojson', data: { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]] } } });
     map.addLayer({ id: 'pilot-line', type: 'line', source: 'pilot', paint: { 'line-color': '#f2c86b', 'line-width': 1.4, 'line-dasharray': [3, 2], 'line-opacity': 0.9 } });
   }
-  map.addSource('walk', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-  map.addLayer({ id: 'walk-glow', type: 'line', source: 'walk', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['match', ['get', 'stop_type'], 'rail', '#f2c86b', '#4fc3ff'], 'line-width': 10, 'line-blur': 6, 'line-opacity': 0.5 } });
-  map.addLayer({ id: 'walk-line', type: 'line', source: 'walk', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['match', ['get', 'stop_type'], 'rail', '#f2c86b', '#4fc3ff'], 'line-width': 3.2 } });
+  map.addSource('walk', { type: 'geojson', lineMetrics: true, data: { type: 'FeatureCollection', features: [] } });
+  for (const [t, col] of WALK_COLORS) {
+    map.addLayer({ id: `walk-glow-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': 11, 'line-blur': 7, 'line-opacity': 0.45 } });
+    map.addLayer({ id: `walk-line-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-width': 3.4, 'line-gradient': gradient(col, 1) } });
+    map.addLayer({ id: `walk-flow-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 1.6, 'line-opacity': 0.85, 'line-dasharray': DASH_STEPS[0] } });
+  }
   map.addSource('attractions', { type: 'geojson', data: data.attractions });
   map.addSource('transport', { type: 'geojson', data: data.transport });
   map.addLayer({
@@ -212,7 +311,14 @@ function applyFilters(map, { cats, types, query, densityMode }) {
   map.setLayoutProperty('heat', 'visibility', densityMode === 'heat' ? 'visible' : 'none');
   if (map.getLayer('kde-fill')) {
     const s = sumExpr(cats);
-    map.setLayoutProperty('kde-fill', 'visibility', densityMode === 'kde' && cats.length ? 'visible' : 'none');
+    const kdeOn = densityMode === 'kde' && cats.length > 0;
+    if (kdeOn) {
+      if (map.getLayoutProperty('kde-fill', 'visibility') !== 'visible') {
+        map.setPaintProperty('kde-fill', 'fill-opacity', 0);
+        map.setLayoutProperty('kde-fill', 'visibility', 'visible');
+        requestAnimationFrame(() => map.setPaintProperty('kde-fill', 'fill-opacity', 0.62));
+      }
+    } else map.setLayoutProperty('kde-fill', 'visibility', 'none');
     if (cats.length) {
       map.setFilter('kde-fill', ['>=', s, KDE_BREAKS[0]]);
       map.setPaintProperty('kde-fill', 'fill-color', ['step', s, KDE_COLORS[0], ...KDE_BREAKS.slice(1).flatMap((b, i) => [b, KDE_COLORS[i + 1]])]);

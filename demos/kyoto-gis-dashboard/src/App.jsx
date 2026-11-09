@@ -37,6 +37,8 @@ export default function App() {
   const [maxWalk, setMaxWalk] = useState(500);
   const [walkTypes, setWalkTypes] = useState(['bus', 'rail']);
   const mapRef = useRef(null);
+  const [introDone, setIntroDone] = useState(false);
+  useEffect(() => { if (loaded) { const t = setTimeout(() => setIntroDone(true), 2400); return () => clearTimeout(t); } }, [loaded]);
 
   useEffect(() => { loadAll().then(setLoaded); }, []);
 
@@ -73,7 +75,8 @@ export default function App() {
     const hit = byId.get(s.id);
     if (!hit) return;
     const [lon, lat] = hit.f.geometry.coordinates;
-    setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly });
+    const p = hit.f.properties;
+    setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, label: p.name || p.display_name, sub: `${p.id} · ${CATEGORY_LABEL[p.category]}`, color: dotColor(hit.f) });
   };
   useEffect(() => {
     const k = (e) => { if (e.key === 'Escape') { setSheet(null); } };
@@ -89,7 +92,7 @@ export default function App() {
   const matches = query.trim() ? [...fa.slice(0, 40), ...ft.slice(0, 40)] : [];
 
   return (
-    <div className="app">
+    <div className={'app' + (introDone ? '' : ' intro')}>
       <header className="top">
         <div className="brand">
           <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect x="3" y="7" width="26" height="3.4" rx="1.4" fill="#ff7a45" /><rect x="6" y="12.5" width="20" height="2.4" rx="1" fill="#ff7a45" /><rect x="8.4" y="10" width="2.6" height="18" rx="1" fill="#ff7a45" /><rect x="21" y="10" width="2.6" height="18" rx="1" fill="#ff7a45" /></svg>
@@ -196,7 +199,7 @@ export default function App() {
           </div>
           {coverage && (
             <div className="cov">
-              <div className="cov-big"><b className="mono">{coverage.within}</b><span>of {coverage.denominator} pilot records within {maxWalk} m of a {walkTypes.join(' or ')} stop</span></div>
+              <div className="cov-big"><b className="mono"><Rolling value={coverage.within} /></b><span>of {coverage.denominator} pilot records within {maxWalk} m of a {walkTypes.join(' or ')} stop</span></div>
               <ul className="xs">
                 <li>Farther than {maxWalk} m: {coverage.beyond}</li>
                 <li>No network route (reported separately): {coverage.noRoute}</li>

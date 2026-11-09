@@ -265,3 +265,62 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-delay: 0ms !important; transition-duration: 0.001ms !important; }
   .hc-line { stroke-dashoffset: 0; }
 }
+
+/* ================= motion ================= */
+/* Opening: top bar drops in, side cards rise one after another while the map draws itself. */
+.app.intro .top { animation: dropIn 0.7s var(--ez) both; }
+.app.intro .left > .card, .app.intro .right > .card { animation: rise 0.6s var(--ez) both; }
+.app.intro .left > .card:nth-child(1) { animation-delay: 0.15s; }
+.app.intro .left > .card:nth-child(2) { animation-delay: 0.22s; }
+.app.intro .left > .card:nth-child(3) { animation-delay: 0.29s; }
+.app.intro .left > .card:nth-child(4) { animation-delay: 0.36s; }
+.app.intro .left > .card:nth-child(5) { animation-delay: 0.43s; }
+.app.intro .left > .card:nth-child(6) { animation-delay: 0.5s; }
+.app.intro .right > .card { animation-delay: 0.4s; }
+.app.intro .count { animation: rise 0.6s var(--ez) both; }
+.app.intro .count + .count { animation-delay: 0.12s; }
+.app.intro .center .corner { animation: cornerIn 0.8s var(--ez) both 0.3s; }
+@keyframes dropIn { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+@keyframes cornerIn { from { opacity: 0; transform: scale(1.8); } to { opacity: 1; transform: none; } }
+
+/* A light that sweeps once along the top bar every few seconds (big-screen style). */
+.top::before { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent 0%, rgba(127, 179, 255, 0) 40%, #9fd0ff 50%, rgba(127, 179, 255, 0) 60%, transparent 100%) no-repeat;
+  background-size: 40% 100%; animation: sweep 6s linear infinite; }
+@keyframes sweep { 0% { background-position: -60% 0; } 60%, 100% { background-position: 160% 0; } }
+
+/* Live status dots pulse softly. */
+.chip.ok i { animation: dotPulse 2.4s ease-in-out infinite; }
+@keyframes dotPulse { 50% { box-shadow: 0 0 0 4px rgba(61, 220, 151, 0.12), 0 0 10px var(--ok); } }
+
+/* Cards answer the pointer with a faint edge light. */
+.left .card, .right .card { transition: box-shadow 0.3s var(--ez), transform 0.3s var(--ez); }
+.left .card:hover, .right .card:hover { box-shadow: 0 0 0 1px rgba(127, 179, 255, 0.35) inset, 0 0 22px rgba(61, 123, 255, 0.18), 0 10px 30px rgba(0, 0, 0, 0.35); }
+.chk { transition: background 0.2s; border-radius: 6px; }
+.chk:hover { background: rgba(61, 123, 255, 0.08); }
+.chk .sw { transition: transform 0.25s cubic-bezier(0.2, 1.6, 0.4, 1), opacity 0.2s; }
+.chk input:not(:checked) ~ .sw { transform: scale(0.6); opacity: 0.35; }
+.chk input:not(:checked) ~ span { color: var(--mute); }
+
+/* Frosted callout that pops out of the selected point with a leader line. */
+.sel-callout { pointer-events: none; position: relative; width: 0; height: 0; }
+.sel-callout s { position: absolute; left: 0; bottom: 0; width: 34px; height: 34px; border-left: 1.5px solid rgba(159, 208, 255, 0.85); transform-origin: bottom left; transform: skewX(40deg); animation: leader 0.35s var(--ez) both; }
+.sel-card { position: absolute; left: 30px; bottom: 30px; display: grid; grid-template-columns: 8px auto; column-gap: 8px; align-items: center; padding: 8px 12px; white-space: nowrap;
+  background: linear-gradient(140deg, rgba(30, 60, 120, 0.72), rgba(8, 18, 40, 0.78)); backdrop-filter: blur(10px) saturate(1.3); -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  border: 1px solid rgba(159, 208, 255, 0.45); border-radius: 10px; box-shadow: 0 0 18px rgba(61, 123, 255, 0.35), 0 10px 24px rgba(0, 0, 0, 0.35);
+  transform-origin: bottom left; animation: calloutPop 0.55s 0.2s cubic-bezier(0.18, 1.35, 0.32, 1) both; }
+.sel-card i { width: 8px; height: 8px; border-radius: 50%; grid-row: span 2; box-shadow: 0 0 8px currentColor; }
+.sel-card b { font-size: 13px; font-weight: 600; color: #fff; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.sel-card span { font: 10.5px var(--mono); color: var(--ink-2); }
+@keyframes leader { from { transform: skewX(40deg) scaleY(0); } }
+@keyframes calloutPop { from { opacity: 0; transform: translate(-10px, 10px) scale(0.7); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* Hover tooltip eases in. */
+.tip { animation: tipIn 0.18s var(--ez) both; }
+@keyframes tipIn { from { opacity: 0; transform: translateY(4px); } }
+
+/* Coverage and walking rows arrive in sequence. */
+.walk .wrow { animation: rise 0.45s var(--ez) both; }
+.walk .wrow + .wrow { animation-delay: 0.12s; }
+.wdist b { display: inline-block; animation: popNum 0.6s 0.3s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+@keyframes popNum { from { opacity: 0; transform: scale(0.6); } }

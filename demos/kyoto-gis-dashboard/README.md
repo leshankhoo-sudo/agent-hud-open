@@ -6,6 +6,10 @@
 
 ---
 
+## 0. Windows 最简单的方式
+
+下载 `Kyoto-GIS-Dashboard-Windows.zip`，解压后双击 `Start-Dashboard.bat`，不需要安装任何软件。详细步骤见 ZIP 里的 `README-Windows.txt`（源文件在 `windows/` 文件夹）。
+
 ## 1. 运行
 
 需要 Node.js 18 以上。
