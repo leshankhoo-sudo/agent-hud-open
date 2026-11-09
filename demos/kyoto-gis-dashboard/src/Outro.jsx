@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { loadAsBlob } from './lib/media.js';
 
 // Closing section: one 10 s video holds four vertical shots side by side (16:9 overall).
 // Each shot is drawn into its own panel; as the section scrolls into view the panels
@@ -17,6 +18,7 @@ export default function Outro({ manifest }) {
   const canvases = useRef([]);
   const [on, setOn] = useState(false);
 
+  useEffect(() => loadAsBlob(video.current, `${import.meta.env.BASE_URL}media/ending_quad.mp4`), []);
   useEffect(() => {
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       const vis = e.intersectionRatio > 0.35;
@@ -52,7 +54,7 @@ export default function Outro({ manifest }) {
 
   return (
     <section className={'outro' + (on ? ' on' : '')} ref={root} id="credits" aria-label="Credits">
-      <video ref={video} src={`${base}media/ending_quad.mp4`} muted loop playsInline preload="auto" aria-hidden="true" className="outro-src" />
+      <video ref={video} muted loop playsInline preload="auto" aria-hidden="true" className="outro-src" />
       <div className="outro-frame">
         {PANELS.map((p, i) => (
           <div className="op" key={p.k} style={{ '--i': i }}>

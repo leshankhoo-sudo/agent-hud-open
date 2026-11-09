@@ -43,7 +43,7 @@ function styleFor(basemap) {
   };
 }
 
-export default function MapView({ active = true, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk }) {
+export default function MapView({ active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk }) {
   const el = useRef(null);
   const mapRef = useRef(null);
   const marker = useRef(null);
@@ -107,6 +107,28 @@ export default function MapView({ active = true, data, cats, types, query, densi
     const map = mapRef.current;
     if (map && map.getSource('attractions') && map.getLayer('attractions-pt')) applyFilters(map, { cats, types, query, densityMode });
   }, [cats, types, query, densityMode]);
+
+  // Linked hover from the earlier dashboard: hovering a category or transit type in the filter
+  // list lifts those points and dims the rest.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.getLayer('attractions-pt')) return;
+    const T = { duration: 300, delay: 0 };
+    const aMatch = focus?.kind === 'cat' ? ['==', ['get', 'category'], focus.key] : null;
+    const tMatch = focus?.kind === 'type' ? ['==', ['get', 'transport_type'], focus.key] : null;
+    const aOp = !focus ? 1 : aMatch ? ['case', aMatch, 1, 0.12] : 0.15;
+    const tOp = !focus ? ['match', ['get', 'transport_type'], 'bus', 0.75, 1] : tMatch ? ['case', tMatch, 1, 0.08] : 0.1;
+    const grow = (base, m) => (m ? ['case', m, ['*', 1.6, base], base] : base);
+    for (const [l, p] of [['attractions-pt', 'circle-opacity'], ['attractions-pt', 'circle-stroke-opacity'], ['attractions-glow', 'circle-opacity'], ['transport-pt', 'circle-opacity']]) {
+      map.setPaintProperty(l, `${p}-transition`, T);
+    }
+    map.setPaintProperty('attractions-pt', 'circle-opacity', aOp);
+    map.setPaintProperty('attractions-pt', 'circle-stroke-opacity', aOp);
+    map.setPaintProperty('attractions-glow', 'circle-opacity', !focus ? 0.45 : aMatch ? ['case', aMatch, 0.9, 0.05] : 0.05);
+    map.setPaintProperty('transport-pt', 'circle-opacity', tOp);
+    map.setPaintProperty('attractions-pt', 'circle-radius', grow(['interpolate', ['linear'], ['zoom'], 7, 3, 12, 5.5, 16, 8], aMatch));
+    map.setPaintProperty('transport-pt', 'circle-radius', grow(['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'transport_type'], 'bus', 0.9, 2.4], 12, ['match', ['get', 'transport_type'], 'bus', 2.6, 4.5], 16, ['match', ['get', 'transport_type'], 'bus', 5, 7]], tMatch));
+  }, [focus]);
 
   // Swap the basemap tiles without rebuilding the data layers.
   useEffect(() => {

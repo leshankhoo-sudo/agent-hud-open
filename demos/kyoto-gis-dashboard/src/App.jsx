@@ -39,6 +39,7 @@ export default function App() {
   const [maxWalk, setMaxWalk] = useState(500);
   const [walkTypes, setWalkTypes] = useState(['bus', 'rail']);
   const [walkShow, setWalkShow] = useState(false);
+  const [focus, setFocus] = useState(null); // hovered category / transit type in the filter list
   const mapRef = useRef(null);
   const [introDone, setIntroDone] = useState(false);
   // The dashboard's own entrance plays when it first scrolls into view (it sits below the intro).
@@ -113,6 +114,26 @@ export default function App() {
     setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, label: p.name || p.display_name, sub: `${p.id} · ${CATEGORY_LABEL[p.category]}`, color: dotColor(hit.f),
       photo: ph ? { src: `${import.meta.env.BASE_URL}${ph.src}`, related: ph.match === 'wikidata-related' ? ph.matched_label : null, credit: `${ph.artist} · ${ph.license}` } : null });
   };
+  // Press feedback from the Smart Build chapter: sink on press, squash and spring back on release.
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const SEL = '.btn, .seg button, .wx-day, .toc button, .ist-go, .ist-skip, .x, .results button';
+    const down = (e) => {
+      const el = e.target.closest?.(SEL);
+      if (!el || el.disabled) return;
+      el.animate([{ transform: 'none' }, { transform: 'translateY(2px) scale(.94)' }], { duration: 110, fill: 'forwards', easing: 'cubic-bezier(.3,0,.3,1)' });
+      const up = () => {
+        el.getAnimations().forEach((a) => a.cancel());
+        el.animate([{ transform: 'translateY(2px) scale(.94)' }, { transform: 'translateY(2px) scale(1.05,.9)', offset: 0.25 }, { transform: 'translateY(-3px) scale(.98,1.04)', offset: 0.6 }, { transform: 'none' }], { duration: 480, easing: 'cubic-bezier(.3,.7,.3,1)' });
+        removeEventListener('pointerup', up);
+        removeEventListener('pointercancel', up);
+      };
+      addEventListener('pointerup', up);
+      addEventListener('pointercancel', up);
+    };
+    addEventListener('pointerdown', down, true);
+    return () => removeEventListener('pointerdown', down, true);
+  }, []);
   useEffect(() => {
     const k = (e) => { if (e.key === 'Escape') { setSheet(null); } };
     addEventListener('keydown', k);
@@ -185,7 +206,7 @@ export default function App() {
         <section className="card">
           <h3>Attraction categories</h3>
           {ATTRACTION_CATS.map((c) => (
-            <label className="chk" key={c.key}>
+            <label className="chk" key={c.key} onMouseEnter={() => setFocus({ kind: 'cat', key: c.key })} onMouseLeave={() => setFocus(null)}>
               <input type="checkbox" checked={cats.includes(c.key)} onChange={() => toggle(cats, setCats, c.key)} />
               <span className="sw" style={{ background: c.color }} />
               <span>{c.label}</span>
@@ -198,7 +219,7 @@ export default function App() {
         <section className="card">
           <h3>Transit type</h3>
           {TRANSPORT_TYPES.map((t) => (
-            <label className="chk" key={t.key}>
+            <label className="chk" key={t.key} onMouseEnter={() => setFocus({ kind: 'type', key: t.key })} onMouseLeave={() => setFocus(null)}>
               <input type="checkbox" checked={types.includes(t.key)} onChange={() => toggle(types, setTypes, t.key)} />
               <span className="sw round" style={{ background: t.color }} />
               <span>{t.label}<small className="sub">{t.cats.map((c) => `${subCount[c] || 0} ${CATEGORY_LABEL[c].toLowerCase()}${(subCount[c] || 0) === 1 ? '' : 's'}`).join(' + ')}</small></span>
@@ -269,7 +290,7 @@ export default function App() {
       <main className="center">
         <i className="corner c1" /><i className="corner c2" /><i className="corner c3" /><i className="corner c4" />
         {core ? (
-          <MapView data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={sel} active={dashSeen} onSelect={(s) => select(s, false)} onHover={setHover} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} />
+          <MapView data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={sel} active={dashSeen} focus={focus} onSelect={(s) => select(s, false)} onHover={setHover} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} />
         ) : (
           <div className="alert big" role="alert"><b>Map data could not be loaded.</b>{failed.map(([k, v]) => <span key={k}>{v.file}: {v.error}</span>)}</div>
         )}
@@ -414,7 +435,7 @@ function Walking({ available, index, id, byId }) {
         <dt><i className={'wkey ' + t} />{label}</dt>
         <dd>
           <b lang="ja">{s?.name || s?.display_name || x.stop_id}</b> <span className="mono muted">{x.stop_id}</span>
-          <span className="wdist"><b className="mono">{Math.round(x.distance_m).toLocaleString('en-US')} m</b> · ≈{x.duration_min} min at 80 m/min</span>
+          <span className="wdist"><b className="mono"><Rolling value={Math.round(x.distance_m)} /> m</b> · ≈{x.duration_min} min at 80 m/min</span>
           <small>Access gaps (straight, not added): attraction {x.attraction_snap_gap_m} m, stop {x.stop_snap_gap_m} m</small>
           {x.note && <small className="warnline">{x.note}</small>}
         </dd>

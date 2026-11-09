@@ -4,6 +4,20 @@ import { getWeather, describeCode, tokyoHourKey, formatTokyo, dailySummary, WEAT
 const DOW = (d) => new Date(d + 'T00:00:00+09:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', timeZone: 'Asia/Tokyo' });
 const fmt = (v, unit, digits = 1) => (v == null ? 'no value' : `${digits === 0 ? Math.round(v) : v.toFixed(digits)}${unit}`);
 
+function RollNum({ value }) {
+  const [v, setV] = useState(value);
+  const from = useRef(0);
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setV(value); return; }
+    const a = from.current, t0 = performance.now();
+    let raf;
+    const f = (now) => { const k = Math.min(1, (now - t0) / 700), e = 1 - Math.pow(1 - k, 3); setV(a + (value - a) * e); if (k < 1) raf = requestAnimationFrame(f); else from.current = value; };
+    raf = requestAnimationFrame(f);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return <>{v.toFixed(1)}</>;
+}
+
 export function WxIcon({ kind, size = 22 }) {
   const s = { width: size, height: size };
   const sun = <><circle cx="12" cy="12" r="4.2" fill="#f2b233" /><g stroke="#f2b233" strokeWidth="1.6" strokeLinecap="round">{[0, 45, 90, 135, 180, 225, 270, 315].map((a) => <line key={a} x1="12" y1="2.6" x2="12" y2="4.6" transform={`rotate(${a} 12 12)`} />)}</g></>;
@@ -114,7 +128,7 @@ export default function Weather({ target }) {
           <div className="wx-now">
             <WxIcon kind={describeCode(data.current?.code).icon} size={44} />
             <div>
-              <div className="wx-temp">{fmt(data.current?.temperature, data.units.temperature)}</div>
+              <div className="wx-temp">{data.current?.temperature == null ? 'no value' : <><RollNum value={data.current.temperature} />{data.units.temperature}</>}</div>
               <div>{describeCode(data.current?.code).label}</div>
               <div className="muted xs">Current model value · valid {data.current?.time ? data.current.time.replace('T', ' ') + ' JST' : 'no time given'}{data.current?.interval ? ` (${data.current.interval / 60}-min interval)` : ''}</div>
             </div>

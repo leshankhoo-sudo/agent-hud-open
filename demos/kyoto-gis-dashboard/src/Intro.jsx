@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { TEAM } from './Outro.jsx';
+import { loadAsBlob } from './lib/media.js';
 
 // Scroll intro: the page scroll scrubs one video (canal dolly → tilt up into the night sky),
 // text panels appear in turn, and cherry petals are drawn on a canvas (so they always fall
@@ -34,6 +35,7 @@ export default function Intro({ manifest, photos, kdeMeta, walkInfo }) {
     const reduce = reduceMotion();
     let raf;
     v.pause();
+    const release = loadAsBlob(v, `${import.meta.env.BASE_URL}media/sakura_scroll.mp4`);
     const frame = () => {
       const r = root.current.getBoundingClientRect();
       const span = r.height - innerHeight;
@@ -55,7 +57,7 @@ export default function Intro({ manifest, photos, kdeMeta, walkInfo }) {
       raf = requestAnimationFrame(frame);
     };
     raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    return () => { cancelAnimationFrame(raf); release(); };
   }, []);
 
   // Petals on a canvas. They fall in screen space; scroll speed adds wind; near the end they
@@ -135,7 +137,7 @@ export default function Intro({ manifest, photos, kdeMeta, walkInfo }) {
   return (
     <section className="intro-s" ref={root} aria-label="Introduction">
       <div className="intro-sticky">
-        <video ref={video} className="intro-v" src={`${base}media/sakura_scroll.mp4`} poster={`${base}media/sakura_poster.jpg`} muted playsInline preload="auto" aria-hidden="true" />
+        <video ref={video} className="intro-v" poster={`${base}media/sakura_poster.jpg`} muted playsInline preload="auto" aria-hidden="true" />
         <div className="intro-shade" />
         <canvas ref={canvas} className="intro-petals" aria-hidden="true" />
 

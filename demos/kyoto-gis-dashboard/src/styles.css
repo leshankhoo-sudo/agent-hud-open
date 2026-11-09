@@ -481,3 +481,27 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
   .outro-card { position: relative; left: auto; top: auto; translate: none; width: auto; grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: reduce) { .op, .op-t, .outro-card, .op canvas { transition: none; } }
+
+/* ================= motion borrowed from the earlier dashboard ================= */
+/* conic glow border + breathing backlight on the selected record (Conic Glow chapter) */
+@property --ang { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.detail { isolation: isolate; }
+.detail::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 1;
+  background: conic-gradient(from var(--ang), rgba(127,179,255,.08) 0deg, rgba(127,179,255,0) 200deg, rgba(79,157,255,.85) 290deg, #e6f1ff 336deg, rgba(79,157,255,0) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: spinAng 7s linear infinite; }
+.detail::after { content: ''; position: absolute; left: 10%; right: 10%; bottom: -14px; height: 40px; border-radius: 50%; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(61,123,255,.55), rgba(61,123,255,0)); filter: blur(12px); animation: breathe 3.6s ease-in-out infinite; }
+@keyframes spinAng { to { --ang: 360deg; } }
+@keyframes breathe { 50% { opacity: .35; transform: scaleX(.85); } }
+
+/* light curtain sweep when a sheet opens (chapter transition) */
+.sheet::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(105deg, transparent 30%, rgba(180,215,255,.16) 45%, rgba(230,244,255,.32) 50%, rgba(180,215,255,.16) 55%, transparent 70%) no-repeat;
+  background-size: 250% 100%; animation: curtain 1.1s .15s cubic-bezier(.4,0,.2,1) both; }
+@keyframes curtain { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+
+/* linked hover: the hovered filter row lights up */
+.chk:hover .sw { transform: scale(1.35); box-shadow: 0 0 10px currentColor; }
+
+@media (prefers-reduced-motion: reduce) { .detail::before, .detail::after, .sheet::after { animation: none; } }
