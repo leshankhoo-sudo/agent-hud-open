@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import MapView, { BASEMAPS, KDE_BREAKS, KDE_COLORS, OFFLINE_PREVIEW } from './MapView.jsx';
 import Weather from './Weather.jsx';
+import Intro from './Intro.jsx';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport } from './lib/data.js';
 import { walkingAvailability, indexWalking, walkingCoverage } from './lib/walking.js';
 
@@ -39,7 +40,17 @@ export default function App() {
   const [walkShow, setWalkShow] = useState(false);
   const mapRef = useRef(null);
   const [introDone, setIntroDone] = useState(false);
-  useEffect(() => { if (loaded) { const t = setTimeout(() => setIntroDone(true), 2400); return () => clearTimeout(t); } }, [loaded]);
+  // The dashboard's own entrance plays when it first scrolls into view (it sits below the intro).
+  const [dashSeen, setDashSeen] = useState(false);
+  useEffect(() => {
+    if (!loaded) return;
+    const el = document.getElementById('dashboard');
+    if (location.hash === '#dashboard') el?.scrollIntoView();
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.intersectionRatio > 0.55 || e.intersectionRect.height > innerHeight * 0.5)) { setDashSeen(true); io.disconnect(); } }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.55, 0.7, 1] });
+    if (el) io.observe(el);
+    return () => io.disconnect();
+  }, [loaded]);
+  useEffect(() => { if (dashSeen) { const t = setTimeout(() => setIntroDone(true), 2400); return () => clearTimeout(t); } }, [dashSeen]);
 
   useEffect(() => { loadAll().then(setLoaded); }, []);
 
@@ -107,7 +118,8 @@ export default function App() {
     return () => removeEventListener('keydown', k);
   }, []);
 
-  if (!loaded) return <div className="boot"><div className="boot-mark" /><p>Loading Kyoto Prefecture data…</p></div>;
+  const intro = <Intro manifest={d?.manifest} photos={d?.photos} kdeMeta={d?.kdeMeta} walkInfo={walk.available ? walk.scopeIds.size : null} />;
+  if (!loaded) return <>{intro}<div className="boot" id="dashboard"><div className="boot-mark" /><p>Loading Kyoto Prefecture data…</p></div></>;
   const failed = Object.entries(loaded.status).filter(([, v]) => !v.ok);
   const core = d.attractions && d.transport;
   const selHit = sel ? byId.get(sel.id) : null;
@@ -115,7 +127,9 @@ export default function App() {
   const matches = query.trim() ? [...fa.slice(0, 40), ...ft.slice(0, 40)] : [];
 
   return (
-    <div className={'app' + (introDone ? '' : ' intro')}>
+    <>
+    {intro}
+    <div id="dashboard" className={'app' + (introDone ? '' : dashSeen ? ' intro' : ' waiting')}>
       <header className="top">
         <div className="brand">
           <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect x="3" y="7" width="26" height="3.4" rx="1.4" fill="#ff7a45" /><rect x="6" y="12.5" width="20" height="2.4" rx="1" fill="#ff7a45" /><rect x="8.4" y="10" width="2.6" height="18" rx="1" fill="#ff7a45" /><rect x="21" y="10" width="2.6" height="18" rx="1" fill="#ff7a45" /></svg>
@@ -254,7 +268,7 @@ export default function App() {
       <main className="center">
         <i className="corner c1" /><i className="corner c2" /><i className="corner c3" /><i className="corner c4" />
         {core ? (
-          <MapView data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={sel} onSelect={(s) => select(s, false)} onHover={setHover} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} />
+          <MapView data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={sel} active={dashSeen} onSelect={(s) => select(s, false)} onHover={setHover} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} />
         ) : (
           <div className="alert big" role="alert"><b>Map data could not be loaded.</b>{failed.map(([k, v]) => <span key={k}>{v.file}: {v.error}</span>)}</div>
         )}
@@ -290,6 +304,7 @@ export default function App() {
         )}
       </aside>
     </div>
+    </>
   );
 }
 

@@ -28,6 +28,22 @@ await page.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.getLayer
 await page.waitForTimeout(2500);
 await page.screenshot({ path: `${out}/01-initial.png` });
 
+// 0. scroll intro: video scrubs with scroll and ends on the dashboard
+const intro0 = await page.evaluate(async () => {
+  const v = document.querySelector('.intro-v');
+  const span = document.querySelector('.intro-s').offsetHeight - innerHeight;
+  scrollTo(0, span * 0.5);
+  await new Promise((r) => setTimeout(r, 2500));
+  const mid = v.currentTime;
+  scrollTo(0, span);
+  await new Promise((r) => setTimeout(r, 2500));
+  return { mid, end: v.currentTime, duration: v.duration };
+});
+check('intro video follows the scroll (middle ≈ half, end ≈ end)', Math.abs(intro0.mid - intro0.duration / 2) < 1.2 && intro0.end > intro0.duration - 0.6, JSON.stringify(intro0));
+await page.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+await page.waitForTimeout(800);
+check('dashboard follows the intro', await page.evaluate(() => { const r = document.getElementById('dashboard').getBoundingClientRect(); return Math.abs(r.top) < 2; }));
+
 // 1. data loading
 const fileStatus = await page.evaluate(async () => {
   const names = ['attractions.geojson', 'transport.geojson', 'municipalities_display.geojson', 'prefecture_outline.geojson', 'sample_journeys_display.json', 'walking_routes.geojson', 'manifest.json', 'point_municipality.json', 'analysis/density_kde.geojson', 'analysis/density_kde_meta.json'];

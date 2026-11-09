@@ -43,13 +43,17 @@ function styleFor(basemap) {
   };
 }
 
-export default function MapView({ data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk }) {
+export default function MapView({ active = true, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk }) {
   const el = useRef(null);
   const mapRef = useRef(null);
   const marker = useRef(null);
   const callout = useRef(null);
   const latest = useRef({});
-  latest.current = { onSelect, onHover, cats, types, query, densityMode };
+  latest.current = { onSelect, onHover, cats, types, query, densityMode, active };
+  const introPending = useRef(false);
+  useEffect(() => {
+    if (active && introPending.current && mapRef.current) { introPending.current = false; mapRef.current.resize(); intro(mapRef.current); }
+  }, [active]);
 
   // Create the map once.
   useEffect(() => {
@@ -72,7 +76,8 @@ export default function MapView({ data, cats, types, query, densityMode, basemap
 
     map.on('load', () => {
       addDataLayers(map, data);
-      intro(map);
+      if (latest.current.active) intro(map);
+      else introPending.current = true;
     });
     map.on('style.load', () => {
       if (!map.getSource('attractions')) addDataLayers(map, data);
