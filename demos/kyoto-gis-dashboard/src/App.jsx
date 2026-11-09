@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import MapView, { BASEMAPS, KDE_BREAKS, KDE_COLORS, OFFLINE_PREVIEW } from './MapView.jsx';
 import Weather from './Weather.jsx';
 import Intro from './Intro.jsx';
+import Outro from './Outro.jsx';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport } from './lib/data.js';
 import { walkingAvailability, indexWalking, walkingCoverage } from './lib/walking.js';
 
@@ -304,6 +305,7 @@ export default function App() {
         )}
       </aside>
     </div>
+    <Outro manifest={d.manifest} />
     </>
   );
 }

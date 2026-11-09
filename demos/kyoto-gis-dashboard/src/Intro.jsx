@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { TEAM } from './Outro.jsx';
 
 // Scroll intro: the page scroll scrubs one video (canal dolly → tilt up into the night sky),
 // text panels appear in turn, and cherry petals are drawn on a canvas (so they always fall
@@ -142,6 +143,7 @@ export default function Intro({ manifest, photos, kdeMeta, walkInfo }) {
           <p className="ist-eb">KYOTO PREFECTURE · 京都府</p>
           <h1>Kyoto Prefecture<br />Tourism GIS</h1>
           <p className="ist-sub">Attractions, transit stops and walking access across the prefecture. A university GIS prototype.</p>
+          <div className="ist-team"><span>Prepared by</span>{TEAM.map((n, i) => <b key={n} style={{ '--j': i }}>{n}</b>)}</div>
           <button type="button" className="ist-skip" onClick={skip}>Skip to dashboard ↓</button>
         </div>
 
