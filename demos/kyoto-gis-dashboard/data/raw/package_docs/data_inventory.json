@@ -1,0 +1,25 @@
+{
+  "attractions": {
+    "records": 523,
+    "categories": {
+      "attraction": 156,
+      "viewpoint": 246,
+      "museum": 102,
+      "castle": 19
+    },
+    "unnamed": 218,
+    "duplicate_osm_ids": 0
+  },
+  "transport": {
+    "records": 5479,
+    "categories": {
+      "railway_station": 240,
+      "bus_stop": 5215,
+      "railway_halt": 8,
+      "bus_station": 14,
+      "tram_stop": 2
+    },
+    "unnamed": 28,
+    "duplicate_osm_ids": 1
+  }
+}

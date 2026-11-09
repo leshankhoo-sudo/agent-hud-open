@@ -1,0 +1,77 @@
+[
+  {
+    "path": "CLAUDE_BUILD_PROMPT.md",
+    "bytes": 4255,
+    "sha256": "40514a7d773c36c0eb5c95589e4f772501f9c100fdaad3b2039e01cc81a1e3d6"
+  },
+  {
+    "path": "DATA_GUIDE.md",
+    "bytes": 4881,
+    "sha256": "68fae3e5d9765d0ab6bf474b649b944acfca7da4c21b094c4bd60da0771d4d42"
+  },
+  {
+    "path": "data_inventory.json",
+    "bytes": 474,
+    "sha256": "525074df9612ad94a30e6ab7427ada5e0f11561d46bed255da8f241784addd39"
+  },
+  {
+    "path": "START_HERE.md",
+    "bytes": 1739,
+    "sha256": "fcf286813e52895814b61d315c647b60824075a120786ffc2fcf457701779701"
+  },
+  {
+    "path": "data\\attractions.csv",
+    "bytes": 68228,
+    "sha256": "dd52381b690f7c261cf960f2ad86c75a3819fd4ca8917b73084882ee2ad43b4d"
+  },
+  {
+    "path": "data\\attractions.geojson",
+    "bytes": 155525,
+    "sha256": "b7a1f128e8243ca70fc4714e34876575ac8c035fd3a0ebfc5233fe43d1e02274"
+  },
+  {
+    "path": "data\\kyoto_boundary.geojson",
+    "bytes": 6192962,
+    "sha256": "51e8d704532299a95541b9b8da6fdca11b10487f2878927fd2d25c3cd4bf88d2"
+  },
+  {
+    "path": "data\\sample_journeys.json",
+    "bytes": 8935,
+    "sha256": "eb8232a9b3c64c0d321f9b85958131c9a20a756717d48f9e0ea72ba773753cf1"
+  },
+  {
+    "path": "data\\transport.csv",
+    "bytes": 683110,
+    "sha256": "2982969ce6263beb4aa9ba318aea9c3643ec61be127d6fc837d437a947db7286"
+  },
+  {
+    "path": "data\\transport.geojson",
+    "bytes": 1702145,
+    "sha256": "cf788db278f1a118d19e489c7c8cb9590640f3c62582f52218ccfb25dc569487"
+  },
+  {
+    "path": "data\\walking_routes.geojson",
+    "bytes": 73,
+    "sha256": "b403ca42734b003504e45761b400f9720c0c4149e939c73fa0549f8308b8cf9c"
+  },
+  {
+    "path": "documents\\Kyoto_OSM_GIS_Data.xlsx",
+    "bytes": 247390,
+    "sha256": "5f670696e2db67518e5c49c03104b531279c189bf311a54727daf22e14db6c9d"
+  },
+  {
+    "path": "documents\\Kyoto_Sample_Routes_and_Fares_EN.pdf",
+    "bytes": 5629,
+    "sha256": "ada3892c0832c92002167e497e2a9405183052c90675f8c4073f2438edf7a477"
+  },
+  {
+    "path": "documents\\Kyoto_Sample_Routes_and_Fares_EN.xlsx",
+    "bytes": 10434,
+    "sha256": "cce4802c2722553276e94ce4843e8e478906bfd71aaed1a4a0d0d3381e0055e1"
+  },
+  {
+    "path": "documents\\Kyoto_Tourism_Data_EN.xlsx",
+    "bytes": 10644,
+    "sha256": "ce4837b51d51b6eaeb74bf566ebce685281ffb4de00faa5d77537024a249b054"
+  }
+]

@@ -1,0 +1,27 @@
+{
+ "analysis": "Kernel density of preliminary attraction point records",
+ "computed_at": "2026-11-09T19:56:00+00:00",
+ "input": "data/raw/attractions.geojson (523 records, weight 1 each; unnamed records included; not deduplicated)",
+ "crs": "EPSG:6674 JGD2011 / Japan Plane Rectangular CS VI (metres)",
+ "kernel": "quartic (biweight): K(u) = 3/pi * (1-u^2)^2 for u<1",
+ "search_radius_m": 2000.0,
+ "cell_size_m": 500.0,
+ "units": "point records per km^2",
+ "extent": "cells whose centre is inside the dissolved raw N03 Kyoto Prefecture boundary",
+ "edge_correction": "none (values near the prefecture edge are biased low)",
+ "cells_in_extent": 18446,
+ "cells_written": 4122,
+ "cells_written_rule": "cells with total density >= 0.01 records/km^2",
+ "prefecture_area_km2_projected": 4611.5,
+ "points_inside_dissolved_boundary": 523,
+ "check_sum_density_x_cell_area": 499.5,
+ "check_note": "Sum of density x cell area should be close to the number of points; differences come from edge loss, the 500 m grid and points outside the boundary.",
+ "categories": [
+  "attraction",
+  "viewpoint",
+  "museum",
+  "castle"
+ ],
+ "max_total_density": 12.635,
+ "not_a_measure_of": "visitor numbers, crowding or popularity"
+}

@@ -1,0 +1,68 @@
+{
+ "built_at": "2026-11-09T20:11:24+00:00",
+ "raw_hash_check": {
+  "attractions.csv": "match",
+  "attractions.geojson": "match",
+  "kyoto_boundary.geojson": "match",
+  "sample_journeys.json": "match",
+  "transport.csv": "match",
+  "transport.geojson": "match",
+  "walking_routes.geojson": "match"
+ },
+ "attractions": {
+  "records": 523,
+  "by_category": {
+   "attraction": 156,
+   "viewpoint": 246,
+   "museum": 102,
+   "castle": 19
+  },
+  "unnamed": 218
+ },
+ "transport": {
+  "records": 5479,
+  "by_category": {
+   "railway_station": 240,
+   "bus_stop": 5215,
+   "railway_halt": 8,
+   "bus_station": 14,
+   "tram_stop": 2
+  },
+  "by_type": {
+   "rail": 248,
+   "bus": 5229,
+   "tram": 2
+  },
+  "unnamed": 28,
+  "duplicate_osm_ids": [
+   {
+    "osm_id": "2771085349",
+    "ids": [
+     "S00395",
+     "S00396"
+    ]
+   }
+  ]
+ },
+ "boundary": {
+  "raw_features": 999,
+  "display_municipalities": 36,
+  "raw_crs": "EPSG:6668 (JGD2011 geographic)",
+  "display_note": "Simplified with mapshaper (6% of vertices, shapes kept) for drawing only."
+ },
+ "walking_routes": {
+  "status": "CALCULATED",
+  "scope": "pilot",
+  "features": 38,
+  "raw_package_status": "NOT_CALCULATED"
+ },
+ "point_municipality": {
+  "joined": 6002,
+  "outside_all_polygons": 0
+ },
+ "journeys": {
+  "records": 9,
+  "matched_attraction_id": 0,
+  "matched_stop_id": 0
+ }
+}

@@ -1,0 +1,524 @@
+﻿id,osm_id,name,display_name,category,source,validation_status,longitude,latitude
+A00001,335672848,もみじのトンネル,もみじのトンネル,attraction,OpenStreetMap via Geofabrik,preliminary,135.7648858,35.0956526
+A00002,562648011,経ヶ岬山頂展望台,経ヶ岬山頂展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.2229091,35.7751976
+A00003,562648015,,Unnamed viewpoint (A00003),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.2227975,35.7762978
+A00004,715390591,琴引浜鳴き砂文化館,琴引浜鳴き砂文化館,museum,OpenStreetMap via Geofabrik,preliminary,135.0571412,35.6975246
+A00005,720256665,笠松展望台,笠松展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1957584,35.5864958
+A00006,720256669,,Unnamed viewpoint (A00006),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1946076,35.5868098
+A00007,749326853,三つ辻 (Mittsu tsuji),三つ辻 (Mittsu tsuji),attraction,OpenStreetMap via Geofabrik,preliminary,135.7787682,34.970147
+A00008,749327219,四ツ辻 (Yottsu tsuji),四ツ辻 (Yottsu tsuji),attraction,OpenStreetMap via Geofabrik,preliminary,135.7814186,34.9690927
+A00009,749327432,,Unnamed viewpoint (A00009),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7813624,34.9699684
+A00010,823929624,大内峠 一字観公園 展望台,大内峠 一字観公園 展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1364806,35.564408
+A00011,832671775,天橋立ビューランド,天橋立ビューランド,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1819174,35.5531496
+A00012,847889883,,Unnamed viewpoint (A00012),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.2453668,35.7576155
+A00013,847889885,,Unnamed viewpoint (A00013),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.2513445,35.756039
+A00014,847895509,福知山城,福知山城,castle,OpenStreetMap via Geofabrik,preliminary,135.1295995,35.2968244
+A00015,850377050,五老山展望台,五老山展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.3435973,35.4648867
+A00016,910536177,,Unnamed viewpoint (A00016),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.3713208,35.5484062
+A00017,1058638426,織成館(Orinasu-kan),織成館(Orinasu-kan),museum,OpenStreetMap via Geofabrik,preliminary,135.7453938,35.032868
+A00018,1180840647,京都市立考古資料館,京都市立考古資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7496545,35.0299042
+A00019,1212123735,,Unnamed viewpoint (A00019),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6748983,35.0091132
+A00020,1311314959,菖蒲ヶ丘展望台,菖蒲ヶ丘展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6710324,35.0422378
+A00021,1311315469,保津峡展望台,保津峡展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6542033,35.032023
+A00022,1422959043,与謝野町立江山文庫,与謝野町立江山文庫,museum,OpenStreetMap via Geofabrik,preliminary,135.1040128,35.4811397
+A00023,1422959592,亀岡市文化資料館,亀岡市文化資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.585232,35.0135
+A00024,1422959988,京の田舎民具資料館,京の田舎民具資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.836354,34.984791
+A00025,1422960064,京菓子資料館,京菓子資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.75896,35.032418
+A00026,1422960069,京都ギリシアローマ美術館,京都ギリシアローマ美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7715007,35.0487963
+A00027,1422960567,京都大学フィールド科学教育研究センター舞鶴水産実験所水産生物標本館,京都大学フィールド科学教育研究センター舞鶴水産実験所水産生物標本館,museum,OpenStreetMap via Geofabrik,preliminary,135.3678837,35.4890359
+A00028,1422960588,京都大学総合博物館,京都大学総合博物館,museum,OpenStreetMap via Geofabrik,preliminary,135.7792615,35.0273566
+A00029,1422960940,京都嵐山オルゴール博物館,京都嵐山オルゴール博物館,museum,OpenStreetMap via Geofabrik,preliminary,135.6760276,35.0185672
+A00030,1422960943,嵯峨美術大学・嵯峨美術短期大学附属博物館,嵯峨美術大学・嵯峨美術短期大学附属博物館,museum,OpenStreetMap via Geofabrik,preliminary,135.688667,35.01243
+A00031,1422960948,京都工芸繊維大学美術工芸資料館,京都工芸繊維大学美術工芸資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.781151,35.0494546
+A00032,1422961100,京都市学校歴史博物館,京都市学校歴史博物館,museum,OpenStreetMap via Geofabrik,preliminary,135.7657254,35.0007007
+A00033,1422961228,京都市歴史資料館,京都市歴史資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7676014,35.0191504
+A00034,1422961307,京都芸大附属芸術資料館,京都芸大附属芸術資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7639168,34.9867719
+A00035,1422961323,京都市考古資料館,京都市考古資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.749673,35.030006
+A00036,1422961473,堂本印象美術館,堂本印象美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.726055,35.035166
+A00037,1422961487,京都府立山城郷土資料館（ふるさとミュージアム山城）,京都府立山城郷土資料館（ふるさとミュージアム山城）,museum,OpenStreetMap via Geofabrik,preliminary,135.833867,34.752137
+A00038,1422961692,京都精華大学ギャラリーフロール,京都精華大学ギャラリーフロール,museum,OpenStreetMap via Geofabrik,preliminary,135.7704418,35.0727365
+A00039,1422961787,京都芸術センター,京都芸術センター,museum,OpenStreetMap via Geofabrik,preliminary,135.7582688,35.005437
+A00040,1422961845,京都芸術大学芸術館,京都芸術大学芸術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7927481,35.0374601
+A00041,1422962103,何必館・京都現代美術館,何必館・京都現代美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7754288,35.0040072
+A00042,1422962158,八幡市立松花堂庭園・美術館,八幡市立松花堂庭園・美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7048389,34.8630104
+A00043,1422962267,くにのみや学習館,くにのみや学習館,museum,OpenStreetMap via Geofabrik,preliminary,135.864157,34.765695
+A00044,1422962447,博物館さがの人形の家,博物館さがの人形の家,museum,OpenStreetMap via Geofabrik,preliminary,135.6687428,35.0241671
+A00045,1422962530,同志社大学歴史資料館,同志社大学歴史資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.773275,34.802968
+A00046,1422962775,城陽市歴史民俗資料館,城陽市歴史民俗資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.772517,34.849064
+A00047,1422962839,大山崎町歴史資料館,大山崎町歴史資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.682873,34.892701
+A00048,1422962861,大西清右衛門美術館,大西清右衛門美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7557561,35.0084203
+A00049,1422962863,大谷大学博物館,大谷大学博物館,museum,OpenStreetMap via Geofabrik,preliminary,135.758486,35.041835
+A00050,1422963056,宇治市歴史資料館,宇治市歴史資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.804104,34.87935
+A00051,1422963059,宇治市源氏物語ミュージアム,宇治市源氏物語ミュージアム,museum,OpenStreetMap via Geofabrik,preliminary,135.810169,34.894103
+A00052,1422963164,小松均美術館,小松均美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.816306,35.110188
+A00053,1422963538,川島織物文化館,川島織物文化館,museum,OpenStreetMap via Geofabrik,preliminary,135.7583686,35.0859391
+A00054,1422964771,幕末維新ミュージアム霊山歴史館,幕末維新ミュージアム霊山歴史館,museum,OpenStreetMap via Geofabrik,preliminary,135.782717,34.999059
+A00055,1422965148,FUREAIKAN ART & CRAFTS 日図デザイン博物館,FUREAIKAN ART & CRAFTS 日図デザイン博物館,museum,OpenStreetMap via Geofabrik,preliminary,135.7810163,35.0127156
+A00056,1422965547,朝日焼窯芸資料館,朝日焼窯芸資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.8105887,34.8900184
+A00057,1422966440,樂美術館,樂美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.75327,35.025676
+A00058,1422966559,池大雅美術館,池大雅美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.685503,34.992115
+A00059,1422967954,白沙村荘橋本関雪記念館,白沙村荘橋本関雪記念館,museum,OpenStreetMap via Geofabrik,preliminary,135.7930398,35.0270223
+A00060,1422969298,福知山市佐藤太清記念美術館,福知山市佐藤太清記念美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.1302325,35.2974715
+A00061,1422970994,細見美術館,細見美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7796211,35.0137793
+A00062,1422971804,花園大学歴史博物館,花園大学歴史博物館,museum,OpenStreetMap via Geofabrik,preliminary,135.726567,35.017325
+A00063,1422971835,茶道資料館,茶道資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7518151,35.0347064
+A00064,1422971893,藤井斉成会有鄰館,藤井斉成会有鄰館,museum,OpenStreetMap via Geofabrik,preliminary,135.7812083,35.0116305
+A00065,1422972202,豊国神社宝物館,豊国神社宝物館,museum,OpenStreetMap via Geofabrik,preliminary,135.772511,34.990973
+A00066,1422972380,遠藤剛キ美術館,遠藤剛キ美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.750857,34.999693
+A00067,1422972578,鉄眼一切経版木収蔵庫,鉄眼一切経版木収蔵庫,museum,OpenStreetMap via Geofabrik,preliminary,135.80434,34.915243
+A00068,1422972907,風俗博物館,風俗博物館,museum,OpenStreetMap via Geofabrik,preliminary,135.753275,34.993226
+A00069,1422972931,高津古文化会館,高津古文化会館,museum,OpenStreetMap via Geofabrik,preliminary,135.734509,35.026615
+A00070,1422972974,高麗美術館,高麗美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7508317,35.0543369
+A00071,1422973103,ＫＣＩギャラリー,ＫＣＩギャラリー,museum,OpenStreetMap via Geofabrik,preliminary,135.732952,34.982735
+A00072,1434345385,海軍記念館,海軍記念館,museum,OpenStreetMap via Geofabrik,preliminary,135.3720502,35.475204
+A00073,1435052713,,Unnamed viewpoint (A00073),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.39435,35.5106319
+A00074,1494857741,京都タワー,京都タワー,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7593295,34.9875524
+A00075,1621848983,,Unnamed viewpoint (A00075),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7611343,34.9291289
+A00076,1621849490,黄桜記念館,黄桜記念館,museum,OpenStreetMap via Geofabrik,preliminary,135.7603195,34.9307451
+A00077,1977407608,高台寺掌美術館,高台寺掌美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7798039,35.000624
+A00078,1978980326,西から見た二条城東南隅櫓の眺め,西から見た二条城東南隅櫓の眺め,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7469344,35.0134787
+A00079,2309497933,石寺の茶畑,石寺の茶畑,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8820083,34.7847879
+A00080,2310870660,綾部市天文館パオ,綾部市天文館パオ,museum,OpenStreetMap via Geofabrik,preliminary,135.2640741,35.3113306
+A00081,2483594171,園部城,園部城,castle,OpenStreetMap via Geofabrik,preliminary,135.4679511,35.107373
+A00082,2657629427,五百羅漢,五百羅漢,attraction,OpenStreetMap via Geofabrik,preliminary,135.7758317,34.964651
+A00083,2657629431,伊藤若冲の墓,伊藤若冲の墓,attraction,OpenStreetMap via Geofabrik,preliminary,135.7752119,34.9645025
+A00084,2661423323,きっづ光科学館ふぉとん (The Kids Science Museum of Photons),きっづ光科学館ふぉとん (The Kids Science Museum of Photons),museum,OpenStreetMap via Geofabrik,preliminary,135.8356644,34.7138345
+A00085,2697500339,おもかる石,おもかる石,attraction,OpenStreetMap via Geofabrik,preliminary,135.7756967,34.9665075
+A00086,2722622181,日本三景の松,日本三景の松,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1857822,35.5580029
+A00087,2722622183,はまなす群生地,はまなす群生地,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1874183,35.5559409
+A00088,2722650624,,Unnamed viewpoint (A00088),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.2879084,35.6748319
+A00089,2784781505,,Unnamed viewpoint (A00089),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7000706,34.8811972
+A00090,2810298522,琴引浜,琴引浜,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.0509838,35.7028057
+A00091,2810298525,立岩,立岩,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1054059,35.743517
+A00092,2810298529,屏風岩,屏風岩,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1262151,35.7452478
+A00093,2814753854,雪舟観,雪舟観,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.2055326,35.5558688
+A00094,2814753861,sakurayama,sakurayama,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1754724,35.5533555
+A00095,2815277818,,Unnamed viewpoint (A00095),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1881216,35.6010542
+A00096,2815304855,成相山展望台,成相山展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1860469,35.6044912
+A00097,2854305106,,Unnamed viewpoint (A00097),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6781775,35.0135761
+A00098,2854305122,,Unnamed viewpoint (A00098),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6884691,35.0268309
+A00099,2925674896,京都伝統産業ふれあい館,京都伝統産業ふれあい館,museum,OpenStreetMap via Geofabrik,preliminary,135.7806273,35.0126264
+A00100,3004516172,頂上展望台,頂上展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.669874,35.01534
+A00101,3004516173,,Unnamed viewpoint (A00101),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6690225,35.0163312
+A00102,3233974299,,Unnamed viewpoint (A00102),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7909225,35.0083537
+A00103,3259188761,UN MOMENT POOR SOI 矢田作十路記念館,UN MOMENT POOR SOI 矢田作十路記念館,museum,OpenStreetMap via Geofabrik,preliminary,135.676318,35.01791
+A00104,3259294861,愛の泉,愛の泉,attraction,OpenStreetMap via Geofabrik,preliminary,135.672637,35.016438
+A00105,3406566118,兎楽の樹,兎楽の樹,attraction,OpenStreetMap via Geofabrik,preliminary,135.8099897,34.8905339
+A00106,3467694619,,Unnamed viewpoint (A00106),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7835388,34.995055
+A00107,3475118096,,Unnamed viewpoint (A00107),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7855007,34.9945875
+A00108,3494101787,,Unnamed viewpoint (A00108),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7809265,34.9694633
+A00109,3494102024,,Unnamed viewpoint (A00109),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7813832,34.9691106
+A00110,3537286851,,Unnamed viewpoint (A00110),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7287879,35.0389864
+A00111,3537375396,,Unnamed viewpoint (A00111),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7286743,35.0395325
+A00112,3540488353,,Unnamed viewpoint (A00112),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7290707,35.0400239
+A00113,3591555729,展望所,展望所,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7990438,35.0267302
+A00114,3591682919,,Unnamed viewpoint (A00114),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7984017,35.0263954
+A00115,3624434595,Floréal,Floréal,attraction,OpenStreetMap via Geofabrik,preliminary,135.8287127,35.0645392
+A00116,3624475076,見晴らしの 丘,見晴らしの 丘,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8299822,35.0646531
+A00117,3666640431,,Unnamed viewpoint (A00117),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6785629,35.0600661
+A00118,3689747276,,Unnamed viewpoint (A00118),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1819143,35.552977
+A00119,3689747278,天橋立(飛龍観)展望所,天橋立(飛龍観)展望所,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1824367,35.5527215
+A00120,3693807452,舟屋群展望所,舟屋群展望所,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.2910172,35.6744372
+A00121,3710127914,,Unnamed viewpoint (A00121),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7543199,35.0596804
+A00122,3740796912,二の丸御殿,二の丸御殿,castle,OpenStreetMap via Geofabrik,preliminary,135.7497214,35.0135345
+A00123,3740796913,本丸御殿,本丸御殿,castle,OpenStreetMap via Geofabrik,preliminary,135.747817,35.0141367
+A00124,3752787070,,Unnamed viewpoint (A00124),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7791887,34.9985543
+A00125,3752885628,,Unnamed viewpoint (A00125),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.779392,35.0005422
+A00126,3794334578,,Unnamed viewpoint (A00126),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7131519,35.0287852
+A00127,3797579042,,Unnamed viewpoint (A00127),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7132379,35.0290589
+A00128,3931904262,,Unnamed viewpoint (A00128),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8782166,34.9380871
+A00129,3962948759,,Unnamed viewpoint (A00129),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8346629,34.9449818
+A00130,3979075898,,Unnamed viewpoint (A00130),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8405667,34.9445702
+A00131,4000585592,,Unnamed viewpoint (A00131),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.784926,34.9929824
+A00132,4045618965,柳原銀行記念資料館,柳原銀行記念資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7647494,34.9861652
+A00133,4102670115,,Unnamed viewpoint (A00133),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6677576,35.0569523
+A00134,4119071997,かわらけ投げ,かわらけ投げ,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6688122,35.0534316
+A00135,4198049508,gion 衹园,gion 衹园,attraction,OpenStreetMap via Geofabrik,preliminary,135.7747856,35.002524
+A00136,4209380113,京都動物園,京都動物園,attraction,OpenStreetMap via Geofabrik,preliminary,135.7803282,35.0127946
+A00137,4230208589,Kira Karacho,Kira Karacho,attraction,OpenStreetMap via Geofabrik,preliminary,135.759365,35.0031498
+A00138,4233370290,先斗町,先斗町,attraction,OpenStreetMap via Geofabrik,preliminary,135.7712126,35.0042456
+A00139,4237203174,Kyoto Lookout,Kyoto Lookout,attraction,OpenStreetMap via Geofabrik,preliminary,135.7876107,35.0000696
+A00140,4241187492,Green Peace Hotel,Green Peace Hotel,attraction,OpenStreetMap via Geofabrik,preliminary,135.7736017,35.0509528
+A00141,4242307490,行者橋,行者橋,attraction,OpenStreetMap via Geofabrik,preliminary,135.7786745,35.007111
+A00142,4259712692,石塀小路,石塀小路,attraction,OpenStreetMap via Geofabrik,preliminary,135.7786703,35.0009533
+A00143,4259721789,寧寧之道,寧寧之道,attraction,OpenStreetMap via Geofabrik,preliminary,135.7798699,35.0000375
+A00144,4273144996,,Unnamed viewpoint (A00144),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6977808,34.9142187
+A00145,4273214089,,Unnamed viewpoint (A00145),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6925637,34.9138853
+A00146,4278396510,,Unnamed viewpoint (A00146),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6765815,35.0119957
+A00147,4297224259,望京の丘,望京の丘,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6724155,35.0162056
+A00148,4314501406,,Unnamed viewpoint (A00148),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7342138,35.0306932
+A00149,4314501446,,Unnamed viewpoint (A00149),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7342511,35.0307929
+A00150,4317581591,地蔵院,地蔵院,attraction,OpenStreetMap via Geofabrik,preliminary,135.6871642,34.9906345
+A00151,4349281889,山崎城址,山崎城址,castle,OpenStreetMap via Geofabrik,preliminary,135.6765627,34.901212
+A00152,4377406691,やまびこくらぶ,やまびこくらぶ,attraction,OpenStreetMap via Geofabrik,preliminary,135.7157782,35.04485
+A00153,4411125600,Daimonji Hitoko,Daimonji Hitoko,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.804312,35.0230738
+A00154,4411208590,,Unnamed viewpoint (A00154),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8031694,35.0252351
+A00155,4459193690,,Unnamed attraction (A00155),attraction,OpenStreetMap via Geofabrik,preliminary,135.7805489,34.998533
+A00156,4459993292,中央広場,中央広場,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.4153653,35.1669914
+A00157,4463130361,展望良し,展望良し,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6502669,34.9249951
+A00158,4558124689,,Unnamed attraction (A00158),attraction,OpenStreetMap via Geofabrik,preliminary,135.7541642,34.9828295
+A00159,4566707526,万灯呂山展望台,万灯呂山展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8230543,34.8134514
+A00160,4605178896,,Unnamed attraction (A00160),attraction,OpenStreetMap via Geofabrik,preliminary,135.6607488,35.0124782
+A00161,4605180389,,Unnamed attraction (A00161),attraction,OpenStreetMap via Geofabrik,preliminary,135.6720276,35.0060055
+A00162,4608980494,最勝院奥の院,最勝院奥の院,attraction,OpenStreetMap via Geofabrik,preliminary,135.7974866,35.0096509
+A00163,4648090890,,Unnamed attraction (A00163),attraction,OpenStreetMap via Geofabrik,preliminary,135.6744961,35.0090473
+A00164,4663300572,かやぶきの里,かやぶきの里,attraction,OpenStreetMap via Geofabrik,preliminary,135.6228654,35.313039
+A00165,4723794995,,Unnamed viewpoint (A00165),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8129169,34.9927379
+A00166,4742101443,千本鳥居,千本鳥居,attraction,OpenStreetMap via Geofabrik,preliminary,135.7748299,34.9669136
+A00167,4770497121,,Unnamed viewpoint (A00167),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6798209,34.8977101
+A00168,4782783521,Kyoto Seishu Netsuke Art Museum,Kyoto Seishu Netsuke Art Museum,museum,OpenStreetMap via Geofabrik,preliminary,135.7446225,35.0014634
+A00169,4785634456,旗立松展望台,旗立松展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.680416,34.8995327
+A00170,4786435478,桂川の早瀬,桂川の早瀬,attraction,OpenStreetMap via Geofabrik,preliminary,135.6862311,34.8920749
+A00171,4796562721,,Unnamed attraction (A00171),attraction,OpenStreetMap via Geofabrik,preliminary,135.7910609,35.010411
+A00172,4798098775,唐子の間,唐子の間,attraction,OpenStreetMap via Geofabrik,preliminary,135.7738834,35.0012125
+A00173,4799846802,ジオラマ京都JAPAN,ジオラマ京都JAPAN,attraction,OpenStreetMap via Geofabrik,preliminary,135.68006,35.0186388
+A00174,4806643498,黒田の百年桜,黒田の百年桜,attraction,OpenStreetMap via Geofabrik,preliminary,135.7204499,35.2038622
+A00175,4828484323,神泉苑,神泉苑,attraction,OpenStreetMap via Geofabrik,preliminary,135.7480717,35.0112545
+A00176,4828484324,二条陣屋,二条陣屋,attraction,OpenStreetMap via Geofabrik,preliminary,135.7486973,35.0103111
+A00177,4833673592,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1961198,35.5863203
+A00178,4866111228,,Unnamed attraction (A00178),attraction,OpenStreetMap via Geofabrik,preliminary,135.755073,35.0108461
+A00179,4900800422,,Unnamed attraction (A00179),attraction,OpenStreetMap via Geofabrik,preliminary,135.7679279,35.0243707
+A00180,4902517026,京都三条会商店街,京都三条会商店街,attraction,OpenStreetMap via Geofabrik,preliminary,135.7431278,35.0085565
+A00181,4907314281,大吉山展望台,大吉山展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8129342,34.8929378
+A00182,4921611222,平等院,平等院,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8129363,34.8928749
+A00183,4921620821,宇治橋,宇治橋,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8128827,34.8929255
+A00184,4921633023,,Unnamed viewpoint (A00184),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8127011,34.8926454
+A00185,4921633024,,Unnamed viewpoint (A00185),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8127199,34.8926234
+A00186,4921644322,旧宇治橋三の間,旧宇治橋三の間,attraction,OpenStreetMap via Geofabrik,preliminary,135.8069587,34.8932507
+A00187,4936942221,,Unnamed museum (A00187),museum,OpenStreetMap via Geofabrik,preliminary,135.7732216,34.9989417
+A00188,4946001221,,Unnamed attraction (A00188),attraction,OpenStreetMap via Geofabrik,preliminary,135.7606563,34.9888369
+A00189,4966399522,,Unnamed attraction (A00189),attraction,OpenStreetMap via Geofabrik,preliminary,135.7543472,35.0105136
+A00190,4968138821,,Unnamed attraction (A00190),attraction,OpenStreetMap via Geofabrik,preliminary,135.7784528,34.9888074
+A00191,4968235322,,Unnamed attraction (A00191),attraction,OpenStreetMap via Geofabrik,preliminary,135.7800589,35.0021092
+A00192,4968235323,,Unnamed attraction (A00192),attraction,OpenStreetMap via Geofabrik,preliminary,135.7821847,35.0026854
+A00193,4968235421,,Unnamed attraction (A00193),attraction,OpenStreetMap via Geofabrik,preliminary,135.7786846,34.9934086
+A00194,4968235521,,Unnamed attraction (A00194),attraction,OpenStreetMap via Geofabrik,preliminary,135.782676,35.0029471
+A00195,4976664421,,Unnamed attraction (A00195),attraction,OpenStreetMap via Geofabrik,preliminary,135.7724655,34.9768484
+A00196,5091913485,亀山城跡（亀岡城）,亀山城跡（亀岡城）,castle,OpenStreetMap via Geofabrik,preliminary,135.5812813,35.013573
+A00197,5092046874,弁天山展望台,弁天山展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1860996,35.5935613
+A00198,5110367297,Daisen-in Zen Garden,Daisen-in Zen Garden,attraction,OpenStreetMap via Geofabrik,preliminary,135.7458331,35.0447122
+A00199,5118914756,,Unnamed viewpoint (A00199),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7728767,34.9774967
+A00200,5190414123,,Unnamed viewpoint (A00200),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7804379,35.0002323
+A00201,5207499323,ルイ・イカール美術館,ルイ・イカール美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.8093954,35.0644415
+A00202,5227965122,青龙苑,青龙苑,attraction,OpenStreetMap via Geofabrik,preliminary,135.7813886,34.9971337
+A00203,5237337828,コロッセオ,コロッセオ,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1959819,35.5862923
+A00204,5257681372,板列展望台,板列展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.142367,35.573538
+A00205,5260350491,平等院多宝塔跡,平等院多宝塔跡,attraction,OpenStreetMap via Geofabrik,preliminary,135.8088349,34.8883379
+A00206,5267854829,龍王の滝,龍王の滝,attraction,OpenStreetMap via Geofabrik,preliminary,135.447722,35.2611517
+A00207,5302145693,宮津市みやづ歴史の館,宮津市みやづ歴史の館,museum,OpenStreetMap via Geofabrik,preliminary,135.1971679,35.5388819
+A00208,5309600324,中山美術館,中山美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7744005,35.0071011
+A00209,5320394467,,Unnamed viewpoint (A00209),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6720508,34.907368
+A00210,5358493432,若狭ダイビングサービス,若狭ダイビングサービス,attraction,OpenStreetMap via Geofabrik,preliminary,135.3285783,35.4521985
+A00211,5364405984,御室八十八カ所霊場,御室八十八カ所霊場,attraction,OpenStreetMap via Geofabrik,preliminary,135.7095837,35.037569
+A00212,5364406531,御室八十八カ所霊場,御室八十八カ所霊場,attraction,OpenStreetMap via Geofabrik,preliminary,135.7110912,35.0322234
+A00213,5369869254,東郷邸,東郷邸,attraction,OpenStreetMap via Geofabrik,preliminary,135.3677956,35.4781827
+A00214,5389330053,らんらんらん綾部店,らんらんらん綾部店,attraction,OpenStreetMap via Geofabrik,preliminary,135.2575659,35.3022792
+A00215,5389351729,メトロ,メトロ,attraction,OpenStreetMap via Geofabrik,preliminary,135.2530699,35.2996415
+A00216,5395846924,,Unnamed viewpoint (A00216),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7787643,34.9985665
+A00217,5439772627,田村家住宅（旧鈴木医院）,田村家住宅（旧鈴木医院）,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6797512,34.9317265
+A00218,5439783035,河合家住宅（河合辰直旧居）,河合家住宅（河合辰直旧居）,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6790782,34.9363378
+A00219,5464510921,,Unnamed attraction (A00219),attraction,OpenStreetMap via Geofabrik,preliminary,135.7767745,35.0056034
+A00220,5474437421,Studios Ghibli shop,Studios Ghibli shop,museum,OpenStreetMap via Geofabrik,preliminary,135.7807414,34.9961506
+A00221,5490442621,ALC Gallery,ALC Gallery,museum,OpenStreetMap via Geofabrik,preliminary,135.7851754,35.0169388
+A00222,5502313424,Best Breakfast Point,Best Breakfast Point,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7674775,34.9847116
+A00223,5502313425,Best Breakfast Point,Best Breakfast Point,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7674501,34.9846779
+A00224,5502354121,Breakfast Point,Breakfast Point,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7675101,34.9847129
+A00225,5502354221,Best Breakfast Point,Best Breakfast Point,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7674865,34.9846678
+A00226,5502354222,,Unnamed viewpoint (A00226),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7674572,34.9847296
+A00227,5555705821,Miyagawa,Miyagawa,attraction,OpenStreetMap via Geofabrik,preliminary,135.7709518,34.99952
+A00228,5556969810,間ノ町口,間ノ町口,attraction,OpenStreetMap via Geofabrik,preliminary,135.7612306,35.0176202
+A00229,5586453224,花見小路 開始點,花見小路 開始點,attraction,OpenStreetMap via Geofabrik,preliminary,135.775438,35.0093706
+A00230,5589968421,五条坂,五条坂,attraction,OpenStreetMap via Geofabrik,preliminary,135.7763256,34.9944348
+A00231,5590010221,石塀小路,石塀小路,attraction,OpenStreetMap via Geofabrik,preliminary,135.7795165,34.9999654
+A00232,5646294788,東山山頂公園 展望台,東山山頂公園 展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7875516,35.0001227
+A00233,5660324924,プラザアピア峰山,プラザアピア峰山,attraction,OpenStreetMap via Geofabrik,preliminary,135.063611,35.611702
+A00234,5660660032,Durham 800,Durham 800,attraction,OpenStreetMap via Geofabrik,preliminary,135.1335473,35.2906841
+A00235,5660695421,サンケイボウル,サンケイボウル,attraction,OpenStreetMap via Geofabrik,preliminary,135.1328508,35.2907435
+A00236,5660714079,長岡京市埋蔵文化財調査センター,長岡京市埋蔵文化財調査センター,museum,OpenStreetMap via Geofabrik,preliminary,135.6777683,34.9242855
+A00237,5665665228,嵯峨鳥居本,嵯峨鳥居本,attraction,OpenStreetMap via Geofabrik,preliminary,135.6668057,35.0264196
+A00238,5679163221,京都御所入口,京都御所入口,attraction,OpenStreetMap via Geofabrik,preliminary,135.7609261,35.0258134
+A00239,5714525322,スタジアム2001,スタジアム2001,attraction,OpenStreetMap via Geofabrik,preliminary,135.7112336,34.8584985
+A00240,5744244375,,Unnamed viewpoint (A00240),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.808385,35.0418539
+A00241,5744244964,,Unnamed viewpoint (A00241),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8172733,35.0608546
+A00242,5744245160,つつじヶ丘,つつじヶ丘,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8299556,35.0673934
+A00243,5755521721,京都サムライ忍者体験ミュージアム,京都サムライ忍者体験ミュージアム,museum,OpenStreetMap via Geofabrik,preliminary,135.7667948,35.0048435
+A00244,5770731353,,Unnamed museum (A00244),museum,OpenStreetMap via Geofabrik,preliminary,135.7674247,35.0044973
+A00245,5843263146,宇治十帖,宇治十帖,attraction,OpenStreetMap via Geofabrik,preliminary,135.809775,34.8905408
+A00246,5893974087,大仏鉄道遺構 ランプ小屋,大仏鉄道遺構 ランプ小屋,attraction,OpenStreetMap via Geofabrik,preliminary,135.8691503,34.752395
+A00247,5913657386,,Unnamed viewpoint (A00247),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7797559,35.0021308
+A00248,5919987092,やすらぎの道,やすらぎの道,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8580315,34.8525981
+A00249,5936885886,松下資料館,松下資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7546664,34.9837651
+A00250,5974332759,Shizushi Cave,Shizushi Cave,attraction,OpenStreetMap via Geofabrik,preliminary,135.3200583,35.2373776
+A00251,5982571407,,Unnamed viewpoint (A00251),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8610413,34.7769051
+A00252,5999636330,丹後松島展望所,丹後松島展望所,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1398687,35.7505225
+A00253,6007513785,カラオケSKY,カラオケSKY,attraction,OpenStreetMap via Geofabrik,preliminary,135.1306763,35.5394896
+A00254,6050969728,,Unnamed viewpoint (A00254),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.829686,34.732187
+A00255,6050969738,,Unnamed viewpoint (A00255),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.829837,34.7324143
+A00256,6050969778,,Unnamed viewpoint (A00256),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8300524,34.7316687
+A00257,6050971313,,Unnamed viewpoint (A00257),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8306793,34.732428
+A00258,6126022593,京都御所,京都御所,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7614492,35.0231604
+A00259,6128145343,,Unnamed viewpoint (A00259),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8509604,34.9362486
+A00260,6153077969,豪商 稲葉本家,豪商 稲葉本家,attraction,OpenStreetMap via Geofabrik,preliminary,134.8974919,35.6060321
+A00261,6163744231,,Unnamed attraction (A00261),attraction,OpenStreetMap via Geofabrik,preliminary,135.7744924,35.0053718
+A00262,6189906186,,Unnamed viewpoint (A00262),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7885287,34.989728
+A00263,6189914485,,Unnamed attraction (A00263),attraction,OpenStreetMap via Geofabrik,preliminary,135.7818013,34.9847942
+A00264,6199656002,,Unnamed attraction (A00264),attraction,OpenStreetMap via Geofabrik,preliminary,135.771058,35.0071404
+A00265,6199656003,金閣,金閣,attraction,OpenStreetMap via Geofabrik,preliminary,135.7284537,35.0395179
+A00266,6222358041,,Unnamed viewpoint (A00266),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7807495,35.0011441
+A00267,6340452493,おおしあま展望の里,おおしあま展望の里,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.3983887,35.5413735
+A00268,6341311886,,Unnamed viewpoint (A00268),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6696065,35.0157526
+A00269,6341311887,じゅうたん苔,じゅうたん苔,attraction,OpenStreetMap via Geofabrik,preliminary,135.674259,35.0178641
+A00270,6341312586,,Unnamed viewpoint (A00270),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6722866,35.0168184
+A00271,6342496039,,Unnamed viewpoint (A00271),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6440021,34.9393681
+A00272,6342536413,,Unnamed viewpoint (A00272),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6449288,34.9385096
+A00273,6342820494,竹久夢二旧跡,竹久夢二旧跡,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7365433,34.8826245
+A00274,6355813537,,Unnamed viewpoint (A00274),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6437717,34.9393461
+A00275,6402085697,成合山パノラマ展望所,成合山パノラマ展望所,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.187927,35.6007283
+A00276,6412911585,,Unnamed museum (A00276),museum,OpenStreetMap via Geofabrik,preliminary,135.7754286,35.004046
+A00277,6431886180,,Unnamed viewpoint (A00277),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1363568,35.5654365
+A00278,6433376185,,Unnamed attraction (A00278),attraction,OpenStreetMap via Geofabrik,preliminary,135.7571194,34.9870399
+A00279,6435093729,,Unnamed viewpoint (A00279),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1362436,35.5648288
+A00280,6442050144,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1961701,35.5863141
+A00281,6442050149,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1954,35.5865129
+A00282,6442050150,,Unnamed viewpoint (A00282),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1956457,35.5863718
+A00283,6442608536,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1823577,35.552784
+A00284,6442608537,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1823325,35.5527936
+A00285,6442608538,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1823047,35.5527982
+A00286,6442715615,,Unnamed viewpoint (A00286),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1825163,35.5525925
+A00287,6442715617,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1825416,35.5525537
+A00288,6442715618,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1824776,35.552632
+A00289,6442803223,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1820592,35.5527603
+A00290,6442803224,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1820332,35.5527744
+A00291,6442803237,,Unnamed viewpoint (A00291),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1818088,35.552946
+A00292,6466159686,OHARA citta da visitare,OHARA citta da visitare,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7883552,35.1095981
+A00293,6501778140,太鼓浜,太鼓浜,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.0459945,35.7021955
+A00294,6540969790,嵐山ハイブリッド美術館,嵐山ハイブリッド美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.6817689,35.0098276
+A00295,6544614886,,Unnamed attraction (A00295),attraction,OpenStreetMap via Geofabrik,preliminary,135.7748314,35.0024305
+A00296,6578053381,絵馬展示資料館,絵馬展示資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7942309,35.0679725
+A00297,6578080296,絵馬展示資料館,絵馬展示資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7942661,35.0679807
+A00298,6612942886,大将軍商店街 一条妖怪ストリート,大将軍商店街 一条妖怪ストリート,attraction,OpenStreetMap via Geofabrik,preliminary,135.7353975,35.0261813
+A00299,6613016085,清滝トンネル,清滝トンネル,attraction,OpenStreetMap via Geofabrik,preliminary,135.6603441,35.0346422
+A00300,6615844952,ちりめん織機展示・実演場,ちりめん織機展示・実演場,museum,OpenStreetMap via Geofabrik,preliminary,135.0924815,35.5054558
+A00301,6643079185,Cours de calligraphie japonaise,Cours de calligraphie japonaise,attraction,OpenStreetMap via Geofabrik,preliminary,135.7493039,35.0235324
+A00302,6680911405,羅城門,羅城門,attraction,OpenStreetMap via Geofabrik,preliminary,135.7604012,34.9865798
+A00303,6796435487,天,天,museum,OpenStreetMap via Geofabrik,preliminary,135.7456853,35.0325304
+A00304,6802213585,,Unnamed museum (A00304),museum,OpenStreetMap via Geofabrik,preliminary,135.8050955,34.891753
+A00305,6855829264,かめおか霧のテラス,かめおか霧のテラス,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.5615125,34.9926914
+A00306,6865347485,伏見稲荷大社,伏見稲荷大社,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7747604,34.966983
+A00307,6869136585,,Unnamed attraction (A00307),attraction,OpenStreetMap via Geofabrik,preliminary,135.6746914,35.008936
+A00308,6883971486,宝ホールディングス 歴史記念館,宝ホールディングス 歴史記念館,museum,OpenStreetMap via Geofabrik,preliminary,135.7624566,34.9374826
+A00309,6959761785,魚谷峠,魚谷峠,attraction,OpenStreetMap via Geofabrik,preliminary,135.7375483,35.1460885
+A00310,6981927985,キモノフォレスト,キモノフォレスト,attraction,OpenStreetMap via Geofabrik,preliminary,135.6784525,35.0152928
+A00311,6984187196,コキーナタウン 福知山店,コキーナタウン 福知山店,attraction,OpenStreetMap via Geofabrik,preliminary,135.0996056,35.3187898
+A00312,6986458597,芦田家住宅,芦田家住宅,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1262518,35.3030345
+A00313,6986458603,福知山市 治水記念館,福知山市 治水記念館,museum,OpenStreetMap via Geofabrik,preliminary,135.1255262,35.3035579
+A00314,6986471591,ニューラッキー,ニューラッキー,attraction,OpenStreetMap via Geofabrik,preliminary,135.1184195,35.2987411
+A00315,6986471697,ビリヤードセブン,ビリヤードセブン,attraction,OpenStreetMap via Geofabrik,preliminary,135.1182627,35.2987646
+A00316,6986471990,出口なお生家,出口なお生家,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1251436,35.3012683
+A00317,7005686716,,Unnamed viewpoint (A00317),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6790797,35.0281091
+A00318,7085048285,,Unnamed attraction (A00318),attraction,OpenStreetMap via Geofabrik,preliminary,135.6500998,35.1419755
+A00319,7093098577,,Unnamed viewpoint (A00319),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6245059,35.3141636
+A00320,7106043494,車石広場,車石広場,attraction,OpenStreetMap via Geofabrik,preliminary,135.7932378,34.9998363
+A00321,7178359741,,Unnamed viewpoint (A00321),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.644845,34.9386752
+A00322,7178359755,,Unnamed viewpoint (A00322),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6450605,34.9385964
+A00323,7178359776,,Unnamed viewpoint (A00323),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6451487,34.9382561
+A00324,7201389132,ガラシャ大滝展望所,ガラシャ大滝展望所,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1580197,35.6512549
+A00325,7215836712,,Unnamed viewpoint (A00325),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1379118,35.5641898
+A00326,7217899709,野村克也ベースボールギャラリー,野村克也ベースボールギャラリー,museum,OpenStreetMap via Geofabrik,preliminary,135.0256017,35.6816794
+A00327,7226642698,,Unnamed attraction (A00327),attraction,OpenStreetMap via Geofabrik,preliminary,135.676659,35.017494
+A00328,7229288786,,Unnamed attraction (A00328),attraction,OpenStreetMap via Geofabrik,preliminary,135.7809483,34.9992834
+A00329,7229373585,,Unnamed attraction (A00329),attraction,OpenStreetMap via Geofabrik,preliminary,135.7771017,34.9987036
+A00330,7233551628,福知山市児童科学館,福知山市児童科学館,museum,OpenStreetMap via Geofabrik,preliminary,135.1363067,35.3121759
+A00331,7234629692,通天台,通天台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7739447,34.9772147
+A00332,7248317765,股のぞき台,股のぞき台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1962244,35.5863031
+A00333,7261474993,,Unnamed viewpoint (A00333),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1946492,35.5868021
+A00334,7261474994,,Unnamed viewpoint (A00334),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.194556,35.5868212
+A00335,7265482383,静御前生誕の地,静御前生誕の地,attraction,OpenStreetMap via Geofabrik,preliminary,134.9938234,35.6898857
+A00336,7273694149,,Unnamed viewpoint (A00336),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6766248,35.0115874
+A00337,7312232914,Historic Kyoto view,Historic Kyoto view,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.787501,35.0026551
+A00338,7312525539,ヌマスギ呼吸根,ヌマスギ呼吸根,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7641153,35.0487503
+A00339,7318123859,,Unnamed attraction (A00339),attraction,OpenStreetMap via Geofabrik,preliminary,135.7495864,35.0137059
+A00340,7319933585,本能寺大寶殿宝物館,本能寺大寶殿宝物館,museum,OpenStreetMap via Geofabrik,preliminary,135.7675663,35.0102889
+A00341,7327194615,,Unnamed attraction (A00341),attraction,OpenStreetMap via Geofabrik,preliminary,135.748342,35.0139501
+A00342,7327194622,,Unnamed attraction (A00342),attraction,OpenStreetMap via Geofabrik,preliminary,135.7459791,35.0147198
+A00343,7401079796,beach,beach,attraction,OpenStreetMap via Geofabrik,preliminary,135.6689651,35.0147947
+A00344,7550970769,花サト,花サト,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6656666,34.9473281
+A00345,7813581896,,Unnamed viewpoint (A00345),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.792511,35.0112996
+A00346,7944302775,,Unnamed viewpoint (A00346),viewpoint,OpenStreetMap via Geofabrik,preliminary,134.9643534,35.6611797
+A00347,7944360308,,Unnamed viewpoint (A00347),viewpoint,OpenStreetMap via Geofabrik,preliminary,134.9665797,35.664564
+A00348,8078224617,,Unnamed attraction (A00348),attraction,OpenStreetMap via Geofabrik,preliminary,135.553726,35.01475
+A00349,8220721011,神谷磐座,神谷磐座,attraction,OpenStreetMap via Geofabrik,preliminary,134.8919272,35.6044803
+A00350,8308469073,,Unnamed viewpoint (A00350),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7736361,34.9772868
+A00351,8378650512,,Unnamed viewpoint (A00351),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.773242,34.9773567
+A00352,8591800011,,Unnamed viewpoint (A00352),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6689409,35.0194269
+A00353,8700019833,,Unnamed viewpoint (A00353),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6677144,35.0194261
+A00354,8817872743,,Unnamed viewpoint (A00354),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7850397,34.9946377
+A00355,8867485285,,Unnamed viewpoint (A00355),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.341894,35.5361849
+A00356,8910996340,,Unnamed viewpoint (A00356),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.667974,35.0195137
+A00357,8993716101,,Unnamed viewpoint (A00357),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6675958,35.0207743
+A00358,9308844634,大岩山展望所,大岩山展望所,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.792979,34.9504167
+A00359,9342783969,京都万華鏡ミュージアム,京都万華鏡ミュージアム,museum,OpenStreetMap via Geofabrik,preliminary,135.7613759,35.0096386
+A00360,9664306045,おもかる石,おもかる石,attraction,OpenStreetMap via Geofabrik,preliminary,135.775698,34.9664964
+A00361,9669730629,アカマツ尾根,アカマツ尾根,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8009541,35.0229618
+A00362,9673171297,,Unnamed viewpoint (A00362),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7812029,34.9690749
+A00363,9673171303,,Unnamed viewpoint (A00363),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.780671,34.9695697
+A00364,9696458556,,Unnamed viewpoint (A00364),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.779855,34.9808089
+A00365,9706484859,,Unnamed viewpoint (A00365),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7890978,34.9999428
+A00366,9717801301,,Unnamed viewpoint (A00366),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8117057,35.0195545
+A00367,9751338532,,Unnamed viewpoint (A00367),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1098316,35.7447277
+A00368,9763493719,鳥羽の大石,鳥羽の大石,attraction,OpenStreetMap via Geofabrik,preliminary,135.7414082,34.9385999
+A00369,9772852729,,Unnamed viewpoint (A00369),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1525721,35.4305264
+A00370,9775078149,保津峡展望台,保津峡展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6506642,35.0310231
+A00371,9788618675,,Unnamed viewpoint (A00371),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8036424,35.010942
+A00372,9822826635,,Unnamed viewpoint (A00372),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7991005,35.0385243
+A00373,9836581200,,Unnamed viewpoint (A00373),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8140451,35.0558796
+A00374,9858450793,,Unnamed viewpoint (A00374),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8224048,35.0626874
+A00375,9858654732,,Unnamed viewpoint (A00375),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8224276,35.0639081
+A00376,9881169080,,Unnamed viewpoint (A00376),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.775662,34.9889727
+A00377,10099337517,京都写真美術館 ギャラリー・ジャパネスク,京都写真美術館 ギャラリー・ジャパネスク,museum,OpenStreetMap via Geofabrik,preliminary,135.7826315,35.0099553
+A00378,10105413434,,Unnamed viewpoint (A00378),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.822382,35.0646389
+A00379,10220777419,,Unnamed viewpoint (A00379),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6453108,35.0474214
+A00380,10278240762,,Unnamed viewpoint (A00380),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7493033,35.0902771
+A00381,10281473155,,Unnamed viewpoint (A00381),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7404198,35.0844516
+A00382,10292382798,,Unnamed viewpoint (A00382),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7184283,35.0711499
+A00383,10292583964,,Unnamed viewpoint (A00383),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7190157,35.0675
+A00384,10300134954,さくらであい館展望塔,さくらであい館展望塔,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7014513,34.8905798
+A00385,10593372645,,Unnamed viewpoint (A00385),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1923373,35.3803351
+A00386,10684917511,岩倉花園城,岩倉花園城,castle,OpenStreetMap via Geofabrik,preliminary,135.8038143,35.0761848
+A00387,10684930069,岩倉長谷城,岩倉長谷城,castle,OpenStreetMap via Geofabrik,preliminary,135.7953249,35.0820994
+A00388,10684930070,三宅八幡城,三宅八幡城,castle,OpenStreetMap via Geofabrik,preliminary,135.7972416,35.0698254
+A00389,10684930071,八瀬城,八瀬城,castle,OpenStreetMap via Geofabrik,preliminary,135.8033863,35.0660355
+A00390,10684930091,御蔭山城,御蔭山城,castle,OpenStreetMap via Geofabrik,preliminary,135.8066792,35.0623324
+A00391,10684930092,松ヶ崎城,松ヶ崎城,castle,OpenStreetMap via Geofabrik,preliminary,135.7888239,35.0552402
+A00392,10684930093,小倉山城,小倉山城,castle,OpenStreetMap via Geofabrik,preliminary,135.7872161,35.0797183
+A00393,10684930103,岩倉上蔵城,岩倉上蔵城,castle,OpenStreetMap via Geofabrik,preliminary,135.7802393,35.0803837
+A00394,10684941824,将軍山城,将軍山城,castle,OpenStreetMap via Geofabrik,preliminary,135.8028658,35.0396417
+A00395,10700828049,任天堂株式会社旧本社,任天堂株式会社旧本社,attraction,OpenStreetMap via Geofabrik,preliminary,135.7662717,34.9918066
+A00396,10705489903,,Unnamed viewpoint (A00396),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.602225,35.0398062
+A00397,10705494617,,Unnamed viewpoint (A00397),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6028469,35.0394266
+A00398,10705494676,,Unnamed viewpoint (A00398),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6008323,35.0343208
+A00399,10741137005,,Unnamed viewpoint (A00399),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6690076,35.0163957
+A00400,10757429761,,Unnamed viewpoint (A00400),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.4234081,35.5514986
+A00401,10760299631,花脊の三本杉,花脊の三本杉,attraction,OpenStreetMap via Geofabrik,preliminary,135.7995642,35.2238189
+A00402,10799220435,蹴上インクライン ドラム室,蹴上インクライン ドラム室,attraction,OpenStreetMap via Geofabrik,preliminary,135.7875365,35.0124348
+A00403,10813957705,床紅葉,床紅葉,attraction,OpenStreetMap via Geofabrik,preliminary,135.7814428,35.0791311
+A00404,10829064906,,Unnamed attraction (A00404),attraction,OpenStreetMap via Geofabrik,preliminary,135.6702072,35.0134364
+A00405,10829067605,,Unnamed viewpoint (A00405),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6752017,35.0132192
+A00406,10858526713,一念坂,一念坂,attraction,OpenStreetMap via Geofabrik,preliminary,135.7805808,34.9990493
+A00407,10869930856,福知山市丹波生活衣館,福知山市丹波生活衣館,museum,OpenStreetMap via Geofabrik,preliminary,135.129107,35.2973868
+A00408,10892565151,,Unnamed viewpoint (A00408),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.0657698,35.7113126
+A00409,10948388903,,Unnamed viewpoint (A00409),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7484765,34.8725334
+A00410,10948388904,,Unnamed viewpoint (A00410),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7503574,34.870022
+A00411,11077836761,地蔵院の桜,地蔵院の桜,attraction,OpenStreetMap via Geofabrik,preliminary,135.7405896,35.2071643
+A00412,11079292506,,Unnamed attraction (A00412),attraction,OpenStreetMap via Geofabrik,preliminary,135.7604572,34.9309028
+A00413,11082181476,,Unnamed museum (A00413),museum,OpenStreetMap via Geofabrik,preliminary,135.7735869,34.9878833
+A00414,11135357281,さすてな展望台,さすてな展望台,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7359231,34.917865
+A00415,11147753008,,Unnamed viewpoint (A00415),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6613154,35.031089
+A00416,11250678085,,Unnamed viewpoint (A00416),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7638163,34.9913532
+A00417,11279029634,,Unnamed viewpoint (A00417),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8123051,35.0108927
+A00418,11289610453,鴨社資料館,鴨社資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7727003,35.0331011
+A00419,11340994922,,Unnamed viewpoint (A00419),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8847173,34.7192416
+A00420,11361092269,ゴジラ岩,ゴジラ岩,attraction,OpenStreetMap via Geofabrik,preliminary,135.1741975,35.7602598
+A00421,11381014163,,Unnamed viewpoint (A00421),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.664902,35.0204362
+A00422,11432734331,,Unnamed viewpoint (A00422),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.764679,34.7719804
+A00423,11508598143,淀水路の河津桜,淀水路の河津桜,attraction,OpenStreetMap via Geofabrik,preliminary,135.7162463,34.9015403
+A00424,11659227840,,Unnamed viewpoint (A00424),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7954527,35.0047875
+A00425,11757332320,,Unnamed viewpoint (A00425),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.9428426,34.7555663
+A00426,11757332321,,Unnamed viewpoint (A00426),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.9430486,34.7556665
+A00427,11757453893,,Unnamed viewpoint (A00427),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.9425081,34.7550087
+A00428,11764492501,,Unnamed viewpoint (A00428),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.1873542,35.5931754
+A00429,11821166169,,Unnamed viewpoint (A00429),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6648431,35.0206441
+A00430,11824611069,,Unnamed attraction (A00430),attraction,OpenStreetMap via Geofabrik,preliminary,135.7853375,34.9687993
+A00431,11824611169,,Unnamed attraction (A00431),attraction,OpenStreetMap via Geofabrik,preliminary,135.7858455,34.9686039
+A00432,11824611170,,Unnamed attraction (A00432),attraction,OpenStreetMap via Geofabrik,preliminary,135.7835266,34.9695266
+A00433,11824611171,,Unnamed attraction (A00433),attraction,OpenStreetMap via Geofabrik,preliminary,135.7760821,34.9691862
+A00434,11824620669,,Unnamed attraction (A00434),attraction,OpenStreetMap via Geofabrik,preliminary,135.7854781,34.9669199
+A00435,11861165328,,Unnamed viewpoint (A00435),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.776242,34.9745554
+A00436,11885679749,つつじのトンネル,つつじのトンネル,attraction,OpenStreetMap via Geofabrik,preliminary,135.7890522,35.006958
+A00437,11888155846,,Unnamed viewpoint (A00437),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7889369,35.0057541
+A00438,11888155847,,Unnamed viewpoint (A00438),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7889852,35.005887
+A00439,11888580569,,Unnamed attraction (A00439),attraction,OpenStreetMap via Geofabrik,preliminary,135.7871587,35.1695002
+A00440,11899014950,,Unnamed viewpoint (A00440),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.5192012,35.1486424
+A00441,11919654070,,Unnamed attraction (A00441),attraction,OpenStreetMap via Geofabrik,preliminary,135.6933513,35.0143842
+A00442,11974721769,,Unnamed attraction (A00442),attraction,OpenStreetMap via Geofabrik,preliminary,135.609244,35.0148023
+A00443,12105551661,,Unnamed museum (A00443),museum,OpenStreetMap via Geofabrik,preliminary,135.7557053,35.0172492
+A00444,12123947852,,Unnamed viewpoint (A00444),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8282535,35.0642284
+A00445,12124012458,,Unnamed viewpoint (A00445),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.829036,35.0647433
+A00446,12135100167,たてくんミュージアム,たてくんミュージアム,museum,OpenStreetMap via Geofabrik,preliminary,135.7537533,35.0295928
+A00447,12162376001,ロッククライミング・ゲレンデ,ロッククライミング・ゲレンデ,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.810747,35.1160632
+A00448,12189675719,シナリー金沢翔子美術館,シナリー金沢翔子美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7594822,34.9890921
+A00449,12199097354,TinToy&Doll Museum,TinToy&Doll Museum,museum,OpenStreetMap via Geofabrik,preliminary,135.7531292,35.0035349
+A00450,12222822764,アートギャラリー メイジ,アートギャラリー メイジ,museum,OpenStreetMap via Geofabrik,preliminary,135.7539835,35.0035166
+A00451,12293284933,,Unnamed viewpoint (A00451),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7876421,35.0069855
+A00452,12324840064,天使の里霞中庵,天使の里霞中庵,museum,OpenStreetMap via Geofabrik,preliminary,135.6822746,35.0203131
+A00453,12365440401,Sagano Romantic Train,Sagano Romantic Train,attraction,OpenStreetMap via Geofabrik,preliminary,135.6807544,35.0185493
+A00454,12365440501,Toronto Kameoka Station,Toronto Kameoka Station,attraction,OpenStreetMap via Geofabrik,preliminary,135.6067614,35.013131
+A00455,12403607701,宇治橋,宇治橋,attraction,OpenStreetMap via Geofabrik,preliminary,135.8063355,34.8930374
+A00456,12403607801,天ヶ瀬吊り橋,天ヶ瀬吊り橋,attraction,OpenStreetMap via Geofabrik,preliminary,135.8210319,34.8816928
+A00457,12428178458,,Unnamed viewpoint (A00457),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7636404,35.105839
+A00458,12458495143,河童資料館,河童資料館,museum,OpenStreetMap via Geofabrik,preliminary,135.7602702,34.9309756
+A00459,12458508640,黄桜記念館,黄桜記念館,museum,OpenStreetMap via Geofabrik,preliminary,135.7602675,34.9308611
+A00460,12473100284,,Unnamed viewpoint (A00460),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8784962,34.8007957
+A00461,12473113035,,Unnamed viewpoint (A00461),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8841166,34.798235
+A00462,12528695145,京都市平安京創生館,京都市平安京創生館,attraction,OpenStreetMap via Geofabrik,preliminary,135.7382633,35.0189821
+A00463,12638666552,,Unnamed viewpoint (A00463),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7346141,35.029545
+A00464,12679372793,,Unnamed viewpoint (A00464),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7129503,35.0245334
+A00465,12747848894,,Unnamed viewpoint (A00465),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.741327,35.0390865
+A00466,12749348037,細辻伊兵衛美術館,細辻伊兵衛美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7582358,35.0092756
+A00467,12779876903,,Unnamed castle (A00467),castle,OpenStreetMap via Geofabrik,preliminary,135.7651844,35.0228073
+A00468,12779877702,,Unnamed castle (A00468),castle,OpenStreetMap via Geofabrik,preliminary,135.760259,35.0179478
+A00469,12782917901,,Unnamed attraction (A00469),attraction,OpenStreetMap via Geofabrik,preliminary,135.7661553,35.0220499
+A00470,12782918001,,Unnamed attraction (A00470),attraction,OpenStreetMap via Geofabrik,preliminary,135.7663992,35.021335
+A00471,12782918002,,Unnamed attraction (A00471),attraction,OpenStreetMap via Geofabrik,preliminary,135.7727415,35.0237496
+A00472,12782918003,,Unnamed attraction (A00472),attraction,OpenStreetMap via Geofabrik,preliminary,135.7680852,35.013122
+A00473,12786661703,,Unnamed attraction (A00473),attraction,OpenStreetMap via Geofabrik,preliminary,135.7594417,35.0060084
+A00474,12810571511,京都市京北文化遺産センター,京都市京北文化遺産センター,museum,OpenStreetMap via Geofabrik,preliminary,135.6617032,35.180755
+A00475,12813476822,方丈石,方丈石,attraction,OpenStreetMap via Geofabrik,preliminary,135.8238003,34.9335624
+A00476,12841034947,Tea Ceremony Ju-an at Jotokuji,Tea Ceremony Ju-an at Jotokuji,attraction,OpenStreetMap via Geofabrik,preliminary,135.7642552,34.9954572
+A00477,12850263611,KIMONO TEA CEREMONY MAIKOYA at GION KIYOMIZU,KIMONO TEA CEREMONY MAIKOYA at GION KIYOMIZU,attraction,OpenStreetMap via Geofabrik,preliminary,135.7740148,34.997695
+A00478,12850316688,KYOTO SAMURAI NINJA MUSEUM With Experience,KYOTO SAMURAI NINJA MUSEUM With Experience,attraction,OpenStreetMap via Geofabrik,preliminary,135.7635723,35.0072811
+A00479,12850366223,KYOTO SAMURAI NINJA MUSEUM With Experience (Experience Floor of the Kyoto Samurai Ninja Museum),KYOTO SAMURAI NINJA MUSEUM With Experience (Experience Floor of the Kyoto Samurai Ninja Museum),attraction,OpenStreetMap via Geofabrik,preliminary,135.7667701,35.0048744
+A00480,12850369649,PRIVATE KimonoTea Ceremony by MAIKOYA Karasuma Shijo,PRIVATE KimonoTea Ceremony by MAIKOYA Karasuma Shijo,attraction,OpenStreetMap via Geofabrik,preliminary,135.7574987,35.0015239
+A00481,12850396749,KIMONO PRIVATE TEA CEREMONY MAIKOYA GION,KIMONO PRIVATE TEA CEREMONY MAIKOYA GION,attraction,OpenStreetMap via Geofabrik,preliminary,135.7741432,34.9982265
+A00482,12850473560,Kyoto Samurai & Kyoto Swords (Annex of Kyoto Samurai Museum),Kyoto Samurai & Kyoto Swords (Annex of Kyoto Samurai Museum),attraction,OpenStreetMap via Geofabrik,preliminary,135.7635721,35.0072637
+A00483,12860318502,,Unnamed viewpoint (A00483),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7718409,35.0036685
+A00484,12925548240,,Unnamed viewpoint (A00484),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6800444,35.011821
+A00485,12952852346,海上自衛隊制服試着体験ブース,海上自衛隊制服試着体験ブース,attraction,OpenStreetMap via Geofabrik,preliminary,135.3848985,35.4743218
+A00486,12952852348,舞鶴海軍鎮守府跡,舞鶴海軍鎮守府跡,attraction,OpenStreetMap via Geofabrik,preliminary,135.3837523,35.4747601
+A00487,13006284568,南東から見た二条城東南隅櫓の眺め,南東から見た二条城東南隅櫓の眺め,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7512038,35.011972
+A00488,13006284569,西から見た二条城東南隅櫓の眺め,西から見た二条城東南隅櫓の眺め,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7509042,35.0122506
+A00489,13006284570,,Unnamed viewpoint (A00489),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7497403,35.0132699
+A00490,13006284571,北東から見た二条城本丸の城壁と内堀の眺望,北東から見た二条城本丸の城壁と内堀の眺望,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7489168,35.0149266
+A00491,13011586124,C58 113,C58 113,attraction,OpenStreetMap via Geofabrik,preliminary,135.369463,35.4764681
+A00492,13033314388,,Unnamed viewpoint (A00492),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8171581,34.9438023
+A00493,13124263329,,Unnamed viewpoint (A00493),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7868009,35.0018588
+A00494,13260786581,,Unnamed viewpoint (A00494),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7859658,35.0553105
+A00495,13264169397,,Unnamed viewpoint (A00495),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.770969,35.1179495
+A00496,13266078082,,Unnamed viewpoint (A00496),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7849283,35.0061326
+A00497,13316892240,,Unnamed viewpoint (A00497),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7851713,35.0082961
+A00498,13316950221,,Unnamed viewpoint (A00498),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8315427,35.0661349
+A00499,13316950222,,Unnamed viewpoint (A00499),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.8314435,35.0653796
+A00500,13321698501,重森三玲庭園美術館,重森三玲庭園美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.7821815,35.0240969
+A00501,13349618245,,Unnamed viewpoint (A00501),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6895302,34.8769338
+A00502,13360558540,teamLab BioVortex,teamLab BioVortex,attraction,OpenStreetMap via Geofabrik,preliminary,135.7654182,34.9837455
+A00503,13610776201,,Unnamed viewpoint (A00503),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6775795,35.0102493
+A00504,13613531301,,Unnamed attraction (A00504),attraction,OpenStreetMap via Geofabrik,preliminary,135.7507982,35.0130596
+A00505,13664582319,刑部城跡,刑部城跡,castle,OpenStreetMap via Geofabrik,preliminary,135.5422512,35.0787373
+A00506,13664582359,西田城跡,西田城跡,castle,OpenStreetMap via Geofabrik,preliminary,135.5451865,35.0757314
+A00507,13704681901,Sakura viewpoint,Sakura viewpoint,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7710436,35.0304516
+A00508,13751633772,竹林の道,竹林の道,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.6712658,35.0167957
+A00509,13913901761,Stamp Point №3,Stamp Point №3,attraction,OpenStreetMap via Geofabrik,preliminary,135.7589161,34.9921043
+A00510,13913901762,Stamp Point №1,Stamp Point №1,attraction,OpenStreetMap via Geofabrik,preliminary,135.7586886,34.9906654
+A00511,13913901763,Stamp Point №2,Stamp Point №2,attraction,OpenStreetMap via Geofabrik,preliminary,135.7586328,34.9905007
+A00512,13955687104,撮り鉄,撮り鉄,viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7674492,34.9856759
+A00513,13998480701,Turtle stepping stones,Turtle stepping stones,attraction,OpenStreetMap via Geofabrik,preliminary,135.7717386,35.0294645
+A00514,14088957423,,Unnamed viewpoint (A00514),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7461255,34.7994338
+A00515,14121444605,宇治橋三の間,宇治橋三の間,attraction,OpenStreetMap via Geofabrik,preliminary,135.8061406,34.8927096
+A00516,14135226006,御朱印所,御朱印所,attraction,OpenStreetMap via Geofabrik,preliminary,135.7475382,34.9815139
+A00517,14145368553,京都駅 駅スタンプ,京都駅 駅スタンプ,attraction,OpenStreetMap via Geofabrik,preliminary,135.758439,34.9852308
+A00518,14145368568,,Unnamed attraction (A00518),attraction,OpenStreetMap via Geofabrik,preliminary,135.7470593,34.9815303
+A00519,14145385836,御朱印所,御朱印所,attraction,OpenStreetMap via Geofabrik,preliminary,135.7759918,34.9998745
+A00520,14161661601,中信美術館,中信美術館,museum,OpenStreetMap via Geofabrik,preliminary,135.75379,35.0200888
+A00521,14257185302,,Unnamed viewpoint (A00521),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.2673185,35.288688
+A00522,14264667127,,Unnamed viewpoint (A00522),viewpoint,OpenStreetMap via Geofabrik,preliminary,135.7446107,34.8092734
+A00523,14350901465,ぎをん思いで博物館,ぎをん思いで博物館,museum,OpenStreetMap via Geofabrik,preliminary,135.7724239,35.004465

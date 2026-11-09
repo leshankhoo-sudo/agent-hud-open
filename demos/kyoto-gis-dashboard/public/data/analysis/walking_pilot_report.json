@@ -1,0 +1,163 @@
+{
+ "computed_at": "2026-11-09T20:10:03+00:00",
+ "scope": "PILOT ONLY - not a Kyoto Prefecture result",
+ "pilot": {
+  "name": "Gion – Kiyomizu pilot",
+  "bbox": [
+   135.77,
+   34.99,
+   135.786,
+   35.006
+  ],
+  "rule": "attraction records with a non-empty name whose point lies inside the bbox"
+ },
+ "road_data_check": {
+  "files": {
+   "Kyoto_Roads_part_01.geojson": 43915,
+   "Kyoto_Roads_part_02.geojson": 43035,
+   "Kyoto_Roads_part_03.geojson": 52541,
+   "Kyoto_Roads_part_04.geojson": 53662,
+   "Kyoto_Roads_part_05.geojson": 7571
+  },
+  "total": 200724,
+  "unique_osm_id": 200724,
+  "fields": [
+   "osm_id",
+   "code",
+   "fclass",
+   "name",
+   "ref",
+   "oneway",
+   "maxspeed",
+   "layer",
+   "bridge",
+   "tunnel"
+  ],
+  "bbox": [
+   134.841956,
+   34.6798589,
+   136.0732269,
+   35.7785818
+  ],
+  "fclass": {
+   "residential": 52805,
+   "footway": 33975,
+   "service": 31257,
+   "unclassified": 29042,
+   "path": 19585,
+   "track": 9521,
+   "tertiary": 6240,
+   "steps": 5113,
+   "secondary": 2880,
+   "primary": 2812,
+   "trunk": 2331,
+   "pedestrian": 1027,
+   "motorway": 949,
+   "track_grade1": 852,
+   "cycleway": 769,
+   "motorway_link": 683,
+   "trunk_link": 243,
+   "track_grade2": 184,
+   "track_grade3": 93,
+   "track_grade5": 76,
+   "tertiary_link": 73,
+   "track_grade4": 60,
+   "busway": 55,
+   "primary_link": 38,
+   "living_street": 31,
+   "secondary_link": 26,
+   "bridleway": 2,
+   "unknown": 2
+  },
+  "geometry": {
+   "LineString": 200724
+  }
+ },
+ "clip_bbox_deg": [
+  135.74200000000002,
+  34.967,
+  135.814,
+  35.029
+ ],
+ "segments_in_clip": 20048,
+ "segments_used_by_walk_class": {
+  "uncertain": 430,
+  "pedestrian": 11318,
+  "road": 8220
+ },
+ "segments_excluded_by_class": {
+  "motorway_link": 30,
+  "busway": 36,
+  "motorway": 14
+ },
+ "graph": {
+  "nodes": 77303,
+  "edges": 89708,
+  "components": 196,
+  "largest_component_nodes": 74976,
+  "small_components_under_20_nodes": 179
+ },
+ "pilot_attractions": 19,
+ "pilot_attractions_on_largest_component": 18,
+ "candidate_stops_in_clip": {
+  "rail": 34,
+  "bus": 652
+ },
+ "stops_snapped": {
+  "bus": 652,
+  "rail": 34
+ },
+ "stops_not_snapped": [],
+ "results": {
+  "bus:ok": 18,
+  "rail:ok": 18,
+  "bus:unreachable": 1,
+  "rail:unreachable": 1
+ },
+ "assumptions": {
+  "walkable_classes": [
+   "footway",
+   "living_street",
+   "path",
+   "pedestrian",
+   "primary",
+   "primary_link",
+   "residential",
+   "secondary",
+   "secondary_link",
+   "service",
+   "steps",
+   "tertiary",
+   "tertiary_link",
+   "unclassified"
+  ],
+  "uncertain_classes_used_flagged": [
+   "trunk",
+   "track",
+   "cycleway",
+   "bridleway",
+   "unknown"
+  ],
+  "excluded_classes": [
+   "busway",
+   "motorway",
+   "motorway_link"
+  ],
+  "ignored_fields": "oneway, maxspeed (vehicle rules)",
+  "connectivity": "shared identical vertex only; crossings do not connect",
+  "snap_limits_m": {
+   "attraction": 150.0,
+   "bus": 60.0,
+   "rail": 300.0
+  },
+  "cutoff_m": 3000.0,
+  "walk_speed_m_per_min": 80.0,
+  "crs": "EPSG:6674"
+ },
+ "limitations": [
+  "No foot/access/sidewalk tags: walkability is assumed from road class and may be wrong for private service roads, roads without sidewalks, closed paths or tunnels.",
+  "Attraction and stop points are not entrances or platforms; the straight access gap is reported separately and not added.",
+  "Temple grounds, opening hours, steps without ramps and fee gates are not modelled.",
+  "Stops outside the 2.5 km clip margin are not considered; the pilot area is far from the prefecture edge."
+ ]
+}
