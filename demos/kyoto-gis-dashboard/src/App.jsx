@@ -97,7 +97,9 @@ export default function App() {
     if (!hit) return;
     const [lon, lat] = hit.f.geometry.coordinates;
     const p = hit.f.properties;
-    setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, label: p.name || p.display_name, sub: `${p.id} · ${CATEGORY_LABEL[p.category]}`, color: dotColor(hit.f) });
+    const ph = d?.photos?.photos?.[s.id];
+    setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, label: p.name || p.display_name, sub: `${p.id} · ${CATEGORY_LABEL[p.category]}`, color: dotColor(hit.f),
+      photo: ph ? { src: `${import.meta.env.BASE_URL}${ph.src}`, related: ph.match === 'wikidata-related' ? ph.matched_label : null, credit: `${ph.artist} · ${ph.license}` } : null });
   };
   useEffect(() => {
     const k = (e) => { if (e.key === 'Escape') { setSheet(null); } };
@@ -138,6 +140,7 @@ export default function App() {
         <div className="status">
           <Chip ok={core && !failed.length} label={failed.length ? `${failed.length} file(s) failed` : 'Map data loaded'} />
           <Chip ok={!!d.kde} label={d.kde ? 'Density: KDE computed' : 'Density: missing'} />
+          {d.photos && <Chip ok label={`Photos: ${d.photos.with_photo} of ${d.photos.named_records} named`} />}
           <Chip ok={walk.available && !walk.pilot} warn={!walk.available || walk.pilot} label={!walk.available ? 'Walking: not calculated' : walk.pilot ? `Walking: pilot only (${walk.scopeIds.size} records)` : 'Walking: results loaded'} />
           <button className="btn" type="button" onClick={() => setSheet(sheet === 'journeys' ? null : 'journeys')} aria-expanded={sheet === 'journeys'}>Sample journeys & fares</button>
           <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'sources' ? null : 'sources')} aria-expanded={sheet === 'sources'}>Data & sources</button>
@@ -279,6 +282,7 @@ export default function App() {
           </section>
         ) : (
           <div className="stack" key={sel.id}>
+            {selHit.layer === 'attraction' && <Photo rec={selHit.f.properties} photos={d.photos} />}
             <Detail hit={selHit} pm={d.pointMuni} dup={dupOsm[sel.id]} onClose={() => setSel(null)} />
             {selHit.layer === 'attraction' && <Walking available={walk} index={walkIndex} id={sel.id} byId={byId} />}
             <Weather target={{ id: sel.id, lat: sel.coords[1], lon: sel.coords[0] }} />
@@ -300,6 +304,42 @@ function Clock() {
 
 function Chip({ ok, warn, label }) {
   return <span className={'chip ' + (ok ? 'ok' : warn ? 'warn' : 'bad')}><i />{label}</span>;
+}
+
+const MATCH_TEXT = {
+  'wikidata-exact': (p) => `Wikidata item with the same name, ${p.distance_m} m from this point`,
+  'wikidata-related': (p) => `Photo of a related place: ${p.matched_label} (Wikidata, ${p.distance_m} m away). It may not show this exact record.`,
+  'commons-geo': (p) => `Commons photo whose file name matches and which was taken ${p.distance_m} m from this point`,
+};
+
+function Photo({ rec, photos }) {
+  const [loaded, setLoaded] = useState(false);
+  if (!photos) return null;
+  const p = photos.photos?.[rec.id];
+  if (!p) {
+    return (
+      <section className="card photo-none">
+        <span className="ph-ico" aria-hidden="true" />
+        <p className="xs">{rec.name ? 'No verified photo found for this record. Only photos tied to it by name and location (within 300 m) are shown.' : 'No photo: this record has no name, so it cannot be matched reliably.'}</p>
+      </section>
+    );
+  }
+  return (
+    <figure className={'card photo' + (loaded ? ' loaded' : '')}>
+      <div className="ph-frame" style={{ aspectRatio: `${p.width} / ${p.height}` }}>
+        <img src={`${import.meta.env.BASE_URL}${p.src}`} alt={p.description || p.title} width={p.width} height={p.height} onLoad={() => setLoaded(true)} />
+        <span className={'ph-badge ' + p.match}>{p.match === 'wikidata-related' ? 'Related place' : p.match === 'commons-geo' ? 'Nearby photo' : 'Verified match'}</span>
+      </div>
+      <figcaption>
+        <span className="xs">{MATCH_TEXT[p.match](p)}</span>
+        <span className="xs muted">
+          Photo: {p.artist} · {p.license_url ? <a href={p.license_url} target="_blank" rel="noreferrer">{p.license}</a> : p.license} ·{' '}
+          <a href={p.page} target="_blank" rel="noreferrer">Wikimedia Commons</a>
+          {p.wikidata && <> · <a href={`https://www.wikidata.org/wiki/${p.wikidata}`} target="_blank" rel="noreferrer">{p.wikidata}</a></>}
+        </span>
+      </figcaption>
+    </figure>
+  );
 }
 
 function Detail({ hit, pm, dup, onClose }) {
@@ -459,6 +499,12 @@ function Sources({ d, status, onClose }) {
           {d.walkReport && <p className="xs">Road data: {d.walkReport.road_data_check.total.toLocaleString('en-US')} segments read from {Object.keys(d.walkReport.road_data_check.files).length} GeoJSON parts ({d.walkReport.road_data_check.unique_osm_id.toLocaleString('en-US')} unique OSM IDs). Pilot graph: {d.walkReport.graph.nodes.toLocaleString('en-US')} vertices, {d.walkReport.graph.components} connected pieces. Results: {Object.entries(d.walkReport.results).map(([k, v]) => `${k} ${v}`).join(', ')}. Computed {d.walkReport.computed_at.replace('T', ' ').replace('+00:00', ' UTC')}.</p>}
           {d.walkReport && <ul className="xs">{d.walkReport.limitations.map((x) => <li key={x}>{x}</li>)}</ul>}
         </section>
+        {d.photos && (
+          <section>
+            <h3>Attraction photos</h3>
+            <p className="xs">Wikidata (P18) and Wikimedia Commons, retrieved {d.photos.retrieved_at.replace('T', ' ').replace('Z', ' UTC')}. {d.photos.with_photo} of {d.photos.named_records} named records have a photo: {d.photos.by_match['wikidata-exact']} same-name Wikidata items, {d.photos.by_match['wikidata-related']} related places, {d.photos.by_match['commons-geo']} Commons photos taken within 300 m. Only CC0, public-domain, CC BY and CC BY-SA files are used; each photo shows its author and licence.</p>
+          </section>
+        )}
         <section>
           <h3>Data quality notes</h3>
           <ul className="xs">

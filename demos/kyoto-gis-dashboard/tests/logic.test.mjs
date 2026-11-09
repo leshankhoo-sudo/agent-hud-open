@@ -181,3 +181,21 @@ test('weather: nulls stay null, cache lasts 30 minutes, force refresh bypasses i
 test('Tokyo hour key', () => {
   assert.equal(tokyoHourKey(new Date('2026-11-09T19:30:00Z')), '2026-11-10T04:00');
 });
+
+test('photos: real files, free licences, credits, and only named records within 300 m', async () => {
+  const { existsSync } = await import('node:fs');
+  const ph = J('photos.json');
+  const A = J('attractions.geojson').features;
+  const named = new Set(A.filter((f) => (f.properties.name || '').trim()).map((f) => f.properties.id));
+  assert.equal(ph.named_records, named.size);
+  assert.equal(Object.keys(ph.photos).length, ph.with_photo);
+  for (const [id, p] of Object.entries(ph.photos)) {
+    assert.ok(named.has(id), `${id} has no name`);
+    assert.ok(existsSync(new URL('../public/' + p.src, import.meta.url)), p.src);
+    assert.match(p.license, /^(CC0|Public domain|CC BY(-SA)? [\d.]+)$/);
+    assert.ok(!/\b(NC|ND)\b/.test(p.license));
+    assert.ok(p.artist && p.page.startsWith('https://commons.wikimedia.org/'));
+    assert.ok(p.distance_m <= 300);
+    assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo'].includes(p.match));
+  }
+});

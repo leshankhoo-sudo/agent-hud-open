@@ -41,6 +41,7 @@ npm run preview      # 本地预览 dist/，http://localhost:4173
 |---|---|---|---|
 | 地理院タイル（GSI，pale） | 默认底图 | 不需要 | 免费，需显示出处（页面右下角已显示）。详见 https://maps.gsi.go.jp/development/ichiran.html |
 | OpenStreetMap 标准瓦片 | 备选底图 | 不需要 | 社区服务器，有[使用政策](https://operations.osmfoundation.org/policies/tiles/)，只适合低流量。不保证可用于正式生产 |
+| Wikidata / Wikimedia Commons | 景点照片（构建时抓取并打包，浏览器不连外网） | 不需要 | 免费；每张照片按授权标注作者与授权，只使用 CC0、公有领域、CC BY、CC BY-SA |
 | Open-Meteo Forecast API | 天气 | 不需要 | 非商业用途免费，有每日、每小时请求上限（[terms](https://open-meteo.com/en/terms)、[pricing](https://open-meteo.com/en/pricing)）。数据按 CC BY 4.0 授权，页面已注明出处 |
 
 页面为了显示效果，会把底图在显示时反色、调成深蓝。瓦片本身和上面的地理内容都没有改。
@@ -53,6 +54,7 @@ npm i -g mapshaper          # 或设定 MAPSHAPER=/path/to/mapshaper
 python3 scripts/prepare_data.py     # 校验原始文件 → 生成 public/data
 python3 scripts/kde_density.py      # Analysis 1：正式核密度
 python3 scripts/walking_pilot.py /path/to/Kyoto_Roads_GeoJSON   # Analysis 2：试点步行路线
+python3 scripts/fetch_photos.py                 # 景点照片（Wikidata / Commons，需联网）
 ```
 
 道路资料（5 个 GeoJSON 分片，约 80 MB）**没有放进仓库，也不会加载进浏览器**。请把 `Kyoto_Roads_GeoJSON.zip` 解压到任意文件夹，再把路径传给脚本。
@@ -115,6 +117,7 @@ kyoto-gis-dashboard/
   - 范围：祇園–清水一带的 19 条有名称的记录。
   - 沿道路网分别计算最近公交站和最近铁路站：18 条成功，1 条无法到达（单独标记）。
   - 输出路线 GeoJSON 和距离表，已接入 Dashboard。
+- 景点照片：54 / 305 个有名称的景点有照片（32 个名称一致的 Wikidata 条目，22 个相关地点，都在 300 m 内），每张都标注了作者、授权和来源；没有可靠配对的景点显示 "No verified photo"。
 - 示范行程与票价：独立面板，9 条行程全部列在"尚未连接地图"之下。票价、运行条件、来源年份、核实状态和官方链接都完整显示。
 - 资料来源与更新时间面板。手机、平板、电脑三种布局。
 

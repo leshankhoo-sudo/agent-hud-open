@@ -192,6 +192,19 @@ export default function MapView({ data, cats, types, query, densityMode, basemap
       const sub = document.createElement('span');
       sub.textContent = selected.sub || '';
       t.append(sw, nm, sub);
+      if (selected.photo) {
+        t.classList.add('has-photo');
+        const fig = document.createElement('div');
+        fig.className = 'sel-photo';
+        const img = document.createElement('img');
+        img.alt = '';
+        img.src = selected.photo.src;
+        img.addEventListener('load', () => fig.classList.add('in'));
+        const cap = document.createElement('small');
+        cap.textContent = (selected.photo.related ? `Related place: ${selected.photo.related} · ` : '') + selected.photo.credit;
+        fig.append(img, cap);
+        t.prepend(fig);
+      }
       c.append(document.createElement('s'), t);
       callout.current = new maplibregl.Marker({ element: c, anchor: 'bottom-left', offset: [6, -6] }).setLngLat(selected.coords).addTo(map);
     }

@@ -30,6 +30,7 @@ const FILES = {
   kde: 'analysis/density_kde.geojson',
   kdeMeta: 'analysis/density_kde_meta.json',
   walkReport: 'analysis/walking_pilot_report.json',
+  photos: 'photos.json',
 };
 
 // Each file is loaded on its own so one failure is reported without hiding the others.
