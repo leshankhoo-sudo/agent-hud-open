@@ -30,7 +30,7 @@ export default function Weather({ target }) {
   const ctrl = useRef(null);
 
   async function load(force = false) {
-    if (!target) return;
+    if (!target || import.meta.env.VITE_TARGET === 'artifact') return;
     ctrl.current?.abort();
     const c = new AbortController();
     ctrl.current = c;
@@ -65,6 +65,18 @@ export default function Weather({ target }) {
   }, [data, days]);
 
   if (!target) return null;
+  if (import.meta.env.VITE_TARGET === 'artifact') {
+    return (
+      <section className="card wx" aria-labelledby="wx-h">
+        <header className="card-h"><h3 id="wx-h">Weather forecast</h3></header>
+        <div className="alert" role="status">
+          <b>Live weather is off in this online preview</b>
+          <span>The claude.ai viewer blocks requests to outside servers, so Open-Meteo cannot be reached here. No forecast is shown instead.</span>
+          <span className="muted">In the deployed or locally run dashboard, selecting this point requests the Open-Meteo forecast for {target.lat.toFixed(4)}, {target.lon.toFixed(4)} (Asia/Tokyo, 7 days, 30-min cache).</span>
+        </div>
+      </section>
+    );
+  }
 
   const key = day && hour != null ? `${day}T${String(hour).padStart(2, '0')}:00` : null;
   const sel = data && key ? data.hourly.find((h) => h.time === key) : null;

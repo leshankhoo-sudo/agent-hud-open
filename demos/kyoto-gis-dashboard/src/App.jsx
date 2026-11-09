@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import MapView, { BASEMAPS, KDE_BREAKS, KDE_COLORS } from './MapView.jsx';
+import MapView, { BASEMAPS, KDE_BREAKS, KDE_COLORS, OFFLINE_PREVIEW } from './MapView.jsx';
 import Weather from './Weather.jsx';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport } from './lib/data.js';
 import { walkingAvailability, indexWalking, walkingCoverage } from './lib/walking.js';
@@ -209,9 +209,10 @@ export default function App() {
 
         <section className="card">
           <h3>Basemap</h3>
+          {OFFLINE_PREVIEW ? <p className="xs warnline">Online preview: basemap tiles are blocked by the viewer, so only the project data is drawn. Run or deploy the project for the GSI / OSM basemap.</p> : (
           <div className="seg">
             {Object.entries(BASEMAPS).map(([k, b]) => <button key={k} type="button" className={basemap === k ? 'on' : ''} onClick={() => setBasemap(k)}>{b.label}</button>)}
-          </div>
+          </div>)}
         </section>
       </aside>
 

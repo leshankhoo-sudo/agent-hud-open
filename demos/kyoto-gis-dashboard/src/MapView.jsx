@@ -31,7 +31,10 @@ const prefersReducedMotion = () => typeof matchMedia === 'function' && matchMedi
 // The real tiles are restyled for the dark dashboard: inverted, desaturated and tinted blue.
 // Only colours change; geometry and labels are the provider's.
 const basePaint = () => ({ 'raster-brightness-min': 1, 'raster-brightness-max': 0.06, 'raster-saturation': -0.85, 'raster-contrast': 0.18, 'raster-hue-rotate': 200 });
+// Offline preview build (claude.ai viewer blocks external tiles): background only, no fake basemap.
+export const OFFLINE_PREVIEW = import.meta.env.VITE_TARGET === 'artifact';
 function styleFor(basemap) {
+  if (OFFLINE_PREVIEW) return { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#071027' } }] };
   const b = BASEMAPS[basemap];
   return {
     version: 8,
