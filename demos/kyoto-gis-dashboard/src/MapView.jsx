@@ -43,7 +43,7 @@ function styleFor(basemap) {
   };
 }
 
-export default function MapView({ data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, routes }) {
+export default function MapView({ data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk }) {
   const el = useRef(null);
   const mapRef = useRef(null);
   const marker = useRef(null);
@@ -115,19 +115,56 @@ export default function MapView({ data, cats, types, query, densityMode, basemap
     map.addLayer({ id: 'base', type: 'raster', source: 'base', paint: basePaint() }, before);
   }, [basemap]);
 
-  // Walking routes for the selected attraction (real network results only).
+  // Walking reach: routes grow out from the attractions at one constant speed (metres per second),
+  // stopping at the chosen max distance. A stop lights up the moment its route reaches it.
+  // Only real network routes are drawn; nothing is extended or invented.
+  const stopMarkers = useRef(new Map());
+  const reach = useRef({ key: null, r: 0, raf: 0, items: [] });
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    const set = () => {
-      const src = map.getSource('walk');
-      if (!src) return;
-      src.setData({ type: 'FeatureCollection', features: routes || [] });
-      if (routes?.length) drawRoutes(map);
+    const run = () => {
+      const st = reach.current;
+      const key = walkSet?.key || null;
+      let delay = 0;
+      if (key !== st.key) {
+        delay = prefersReducedMotion() ? 0 : 1000; // let the camera settle before the routes start to grow
+        st.key = key;
+        st.r = 0;
+        st.items = (walkSet?.items || []).map((it) => ({ ...it, cum: cumulative(it.feature.geometry.coordinates) }));
+        stopMarkers.current.forEach((m) => m.marker.remove());
+        stopMarkers.current = new Map();
+        for (const it of st.items) {
+          const id = it.stop.id;
+          if (stopMarkers.current.has(id)) { stopMarkers.current.get(id).items.push(it); continue; }
+          const el = document.createElement('div');
+          el.className = `stop-tag ${it.stop.type}${walkSet.mode === 'all' ? ' compact' : ''}`;
+          const ring = document.createElement('i');
+          const card = document.createElement('div');
+          const kind = document.createElement('em');
+          kind.textContent = it.stop.type === 'rail' ? 'Rail station' : 'Bus stop';
+          const nm = document.createElement('b');
+          nm.lang = 'ja';
+          nm.textContent = it.stop.name;
+          const meta = document.createElement('span');
+          card.append(kind, nm, meta);
+          el.append(ring, card);
+          el.addEventListener('click', (e) => { e.stopPropagation(); latest.current.onSelect({ layer: 'transport', id }); });
+          const marker = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(it.stop.coords).addTo(map);
+          stopMarkers.current.set(id, { marker, el, meta, items: [it] });
+        }
+        if (st.items.length) {
+          const pts = walkSet.mode === 'one' && selected ? [selected.coords, ...st.items.map((x) => x.stop.coords)] : st.items.flatMap((x) => [x.feature.geometry.coordinates[0], x.stop.coords]);
+          const b = pts.reduce((bb, [x, y]) => [Math.min(bb[0], x), Math.min(bb[1], y), Math.max(bb[2], x), Math.max(bb[3], y)], [180, 90, -180, -90]);
+          map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: { top: 110, bottom: 80, left: 80, right: 220 }, maxZoom: 16.5, duration: prefersReducedMotion() ? 0 : 1100 });
+        }
+      }
+      paintReach(map, st, maxWalk, walkSet?.mode, stopMarkers.current, delay);
     };
-    if (map.getSource('walk')) set();
-    else map.once('idle', set);
-  }, [routes]);
+    if (map.getSource('walk')) run();
+    else map.once('idle', run);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walkSet, maxWalk]);
 
   // Selection marker and camera move.
   useEffect(() => {
@@ -166,35 +203,84 @@ export default function MapView({ data, cats, types, query, densityMode, basemap
 }
 
 const WALK_COLORS = [['bus', '#4fc3ff'], ['rail', '#f2c86b']];
-// line-progress gradient that reveals the route from the attraction (start) to the stop.
-const gradient = (col, t) => (t >= 1 ? ['interpolate', ['linear'], ['line-progress'], 0, col, 1, col]
-  : ['step', ['line-progress'], col, Math.max(0.0001, t), 'rgba(0,0,0,0)']);
 // Moving dash pattern: stepping through these looks like light travelling along the path.
 const DASH_STEPS = [[0, 4, 3], [0.5, 4, 2.5], [1, 4, 2], [1.5, 4, 1.5], [2, 4, 1], [2.5, 4, 0.5], [3, 4, 0], [0, 0.5, 3, 3.5], [0, 1, 3, 3], [0, 1.5, 3, 2.5], [0, 2, 3, 2], [0, 2.5, 3, 1.5], [0, 3, 3, 1], [0, 3.5, 3, 0.5]];
 
-let routeAnim = 0;
-function drawRoutes(map) {
-  cancelAnimationFrame(routeAnim);
+// Cumulative metres along a lon/lat line (equirectangular approximation, fine at route scale).
+function cumulative(coords) {
+  const out = [0];
+  for (let k = 1; k < coords.length; k++) {
+    const [x1, y1] = coords[k - 1], [x2, y2] = coords[k];
+    const kx = 111320 * Math.cos(((y1 + y2) / 2) * Math.PI / 180);
+    out.push(out[k - 1] + Math.hypot((x2 - x1) * kx, (y2 - y1) * 110574));
+  }
+  return out;
+}
+// Cut a line at a fraction of its length; returns [reached part, remaining part].
+function cut(coords, cum, frac) {
+  const total = cum[cum.length - 1] || 1;
+  const d = Math.max(0, Math.min(1, frac)) * total;
+  if (d <= 0) return [null, coords];
+  if (d >= total) return [coords, null];
+  let k = 1;
+  while (cum[k] < d) k++;
+  const t = (d - cum[k - 1]) / (cum[k] - cum[k - 1] || 1);
+  const [x1, y1] = coords[k - 1], [x2, y2] = coords[k];
+  const p = [x1 + (x2 - x1) * t, y1 + (y2 - y1) * t];
+  return [[...coords.slice(0, k), p], [p, ...coords.slice(k)]];
+}
+
+const SPEED = 380; // metres of route revealed per second
+let flowAnim = 0;
+function paintReach(map, st, maxWalk, mode, markers, delay = 0) {
+  cancelAnimationFrame(st.raf);
+  cancelAnimationFrame(flowAnim);
   const reduce = prefersReducedMotion();
+  const from = st.r, to = st.items.length ? maxWalk : 0;
+  const dur = reduce ? 0 : Math.max(250, (Math.abs(to - from) / SPEED) * 1000);
   const t0 = performance.now();
-  let lastStep = -1;
   const frame = (now) => {
-    if (!map.getLayer('walk-line-bus')) return;
-    const k = reduce ? 1 : Math.min(1, (now - t0 - 350) / 1300);
-    const e = k <= 0 ? 0 : 1 - Math.pow(1 - k, 3);
-    for (const [t, col] of WALK_COLORS) map.setPaintProperty(`walk-line-${t}`, 'line-gradient', gradient(col, e));
-    const flowOn = e >= 1 && !reduce;
-    for (const [t] of WALK_COLORS) map.setLayoutProperty(`walk-flow-${t}`, 'visibility', flowOn ? 'visible' : 'none');
-    if (flowOn) {
-      const step = Math.floor(now / 70) % DASH_STEPS.length;
-      if (step !== lastStep) {
-        for (const [t] of WALK_COLORS) map.setPaintProperty(`walk-flow-${t}`, 'line-dasharray', DASH_STEPS[step]);
-        lastStep = step;
-      }
+    const k = dur ? Math.max(0, Math.min(1, (now - t0 - delay) / dur)) : 1;
+    const r = from + (to - from) * k;
+    st.r = r;
+    const lit = [], rest = [];
+    for (const it of st.items) {
+      const p = it.feature.properties;
+      const [a, b] = cut(it.feature.geometry.coordinates, it.cum, r / p.distance_m);
+      if (a) lit.push({ type: 'Feature', properties: { stop_type: p.stop_type }, geometry: { type: 'LineString', coordinates: a } });
+      if (b) rest.push({ type: 'Feature', properties: { stop_type: p.stop_type }, geometry: { type: 'LineString', coordinates: b } });
     }
-    if (!reduce && map.getSource('walk')._data.features?.length) routeAnim = requestAnimationFrame(frame);
+    map.getSource('walk')?.setData({ type: 'FeatureCollection', features: lit });
+    map.getSource('walk-rest')?.setData({ type: 'FeatureCollection', features: rest });
+    markers.forEach((m) => {
+      const best = Math.min(...m.items.map((x) => x.feature.properties.distance_m));
+      const on = r >= best - 0.5;
+      m.el.classList.toggle('on', on);
+      m.el.classList.toggle('far', !on && k >= 1);
+      const n = m.items.length;
+      m.meta.textContent = mode === 'all'
+        ? `${n} attraction${n > 1 ? 's' : ''} · nearest ${Math.round(best).toLocaleString('en-US')} m`
+        : on ? `${m.items[0].stop.id} · ${Math.round(best).toLocaleString('en-US')} m walk · ≈${m.items[0].feature.properties.duration_min} min`
+          : `${m.items[0].stop.id} · ${Math.round(best).toLocaleString('en-US')} m — beyond ${maxWalk} m`;
+    });
+    if (k < 1) st.raf = requestAnimationFrame(frame);
+    else startFlow(map, reduce || !lit.length);
   };
-  routeAnim = requestAnimationFrame(frame);
+  st.raf = requestAnimationFrame(frame);
+}
+function startFlow(map, off) {
+  let last = -1;
+  for (const [t] of WALK_COLORS) if (map.getLayer(`walk-flow-${t}`)) map.setLayoutProperty(`walk-flow-${t}`, 'visibility', off ? 'none' : 'visible');
+  if (off) return;
+  const f = (now) => {
+    const step = Math.floor(now / 70) % DASH_STEPS.length;
+    if (step !== last) {
+      for (const [t] of WALK_COLORS) map.setPaintProperty(`walk-flow-${t}`, 'line-dasharray', DASH_STEPS[step]);
+      last = step;
+    }
+    flowAnim = requestAnimationFrame(f);
+  };
+  flowAnim = requestAnimationFrame(f);
 }
 
 // Opening sequence: outline appears, then stops, then attractions; afterwards the outline glow breathes slowly.
@@ -257,10 +343,12 @@ function addDataLayers(map, data) {
     map.addSource('pilot', { type: 'geojson', data: { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]] } } });
     map.addLayer({ id: 'pilot-line', type: 'line', source: 'pilot', paint: { 'line-color': '#f2c86b', 'line-width': 1.4, 'line-dasharray': [3, 2], 'line-opacity': 0.9 } });
   }
-  map.addSource('walk', { type: 'geojson', lineMetrics: true, data: { type: 'FeatureCollection', features: [] } });
+  map.addSource('walk', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+  map.addSource('walk-rest', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+  map.addLayer({ id: 'walk-rest', type: 'line', source: 'walk-rest', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['match', ['get', 'stop_type'], 'rail', '#f2c86b', '#4fc3ff'], 'line-width': 2, 'line-opacity': 0.28, 'line-dasharray': [1, 2] } });
   for (const [t, col] of WALK_COLORS) {
     map.addLayer({ id: `walk-glow-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': 11, 'line-blur': 7, 'line-opacity': 0.45 } });
-    map.addLayer({ id: `walk-line-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-width': 3.4, 'line-gradient': gradient(col, 1) } });
+    map.addLayer({ id: `walk-line-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-width': 3.4, 'line-color': col } });
     map.addLayer({ id: `walk-flow-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 1.6, 'line-opacity': 0.85, 'line-dasharray': DASH_STEPS[0] } });
   }
   map.addSource('attractions', { type: 'geojson', data: data.attractions });

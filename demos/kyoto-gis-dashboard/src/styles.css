@@ -324,3 +324,35 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
 .walk .wrow + .wrow { animation-delay: 0.12s; }
 .wdist b { display: inline-block; animation: popNum 0.6s 0.3s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
 @keyframes popNum { from { opacity: 0; transform: scale(0.6); } }
+
+/* Nearest stops of the selected walking route */
+.stop-tag { position: relative; width: 0; height: 0; cursor: pointer; }
+.stop-tag i { position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid #4fc3ff; background: rgba(79, 195, 255, 0.25); box-shadow: 0 0 12px #4fc3ff; animation: stopIn 0.45s var(--d, 1.3s) cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+.stop-tag.rail i { border-color: #f2c86b; background: rgba(242, 200, 107, 0.25); box-shadow: 0 0 12px #f2c86b; border-radius: 4px; }
+.stop-tag div { position: absolute; left: 16px; top: -40px; display: grid; padding: 6px 10px; border-radius: 9px; white-space: nowrap;
+  background: linear-gradient(140deg, rgba(20, 50, 100, 0.8), rgba(8, 18, 40, 0.86)); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(79, 195, 255, 0.55); box-shadow: 0 0 14px rgba(79, 195, 255, 0.3), 0 8px 18px rgba(0, 0, 0, 0.35);
+  transform-origin: left bottom; animation: calloutPop 0.5s calc(var(--d, 1.3s) + 0.1s) cubic-bezier(0.18, 1.35, 0.32, 1) both; }
+.stop-tag.rail div { border-color: rgba(242, 200, 107, 0.6); box-shadow: 0 0 14px rgba(242, 200, 107, 0.3), 0 8px 18px rgba(0, 0, 0, 0.35); top: 8px; }
+.stop-tag em { font: 600 9.5px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; font-style: normal; color: #4fc3ff; }
+.stop-tag.rail em { color: #f2c86b; }
+.stop-tag b { font-size: 13px; font-weight: 600; color: #fff; }
+.stop-tag span { font: 10.5px var(--mono); color: var(--ink-2); }
+.stop-tag:hover div { border-color: #fff; }
+@keyframes stopIn { from { opacity: 0; transform: scale(0.2); } }
+
+/* walking reach: stops start dim and light up when reached */
+.walk-map { margin: 10px 0 0; display: grid; gap: 6px; }
+.walk-map .btn { justify-self: start; }
+.stop-tag { width: 18px; height: 18px; margin: 0; }
+.stop-tag i { left: 0; top: 0; animation: none; opacity: 0.35; transform: scale(0.6); filter: grayscale(0.7); transition: opacity 0.3s, transform 0.45s cubic-bezier(0.2, 1.6, 0.4, 1), filter 0.3s, box-shadow 0.3s; box-shadow: none; }
+.stop-tag div { left: 24px; top: -30px; animation: none; opacity: 0; transform: translate(-8px, 6px) scale(0.85); filter: blur(4px); transition: opacity 0.3s, transform 0.5s cubic-bezier(0.18, 1.35, 0.32, 1), filter 0.3s; pointer-events: none; }
+.stop-tag.rail div { top: 14px; }
+.stop-tag.on i { opacity: 1; transform: none; filter: none; box-shadow: 0 0 14px #4fc3ff; animation: stopFlash 0.9s ease-out; }
+.stop-tag.rail.on i { box-shadow: 0 0 14px #f2c86b; }
+.stop-tag.on div { opacity: 1; transform: none; filter: none; pointer-events: auto; }
+.stop-tag.far div { opacity: 0.55; transform: none; filter: grayscale(0.8); }
+.stop-tag.compact div { padding: 4px 8px; }
+.stop-tag.compact.far div { opacity: 0; }
+.stop-tag.compact em { display: none; }
+@keyframes stopFlash { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.9), 0 0 14px currentColor; } 100% { box-shadow: 0 0 0 16px rgba(255, 255, 255, 0), 0 0 14px currentColor; } }

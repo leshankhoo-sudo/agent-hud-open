@@ -36,6 +36,7 @@ export default function App() {
   const [sheet, setSheet] = useState(null); // 'journeys' | 'sources' | null
   const [maxWalk, setMaxWalk] = useState(500);
   const [walkTypes, setWalkTypes] = useState(['bus', 'rail']);
+  const [walkShow, setWalkShow] = useState(false);
   const mapRef = useRef(null);
   const [introDone, setIntroDone] = useState(false);
   useEffect(() => { if (loaded) { const t = setTimeout(() => setIntroDone(true), 2400); return () => clearTimeout(t); } }, [loaded]);
@@ -63,7 +64,27 @@ export default function App() {
     const ids = A.filter((f) => cats.includes(f.properties.category) && walk.scopeIds.has(f.properties.id)).map((f) => f.properties.id);
     return walkingCoverage(walkIndex, ids, walkTypes, maxWalk);
   }, [walkIndex, walk, A, cats, walkTypes, maxWalk]);
-  const selRoutes = useMemo(() => (sel && walk.available ? (d.walking.features || []).filter((f) => f.geometry && f.properties.attraction_id === sel.id) : []), [sel, walk, d]);
+  // What the map animates: the selected pilot attraction's routes, or (after the walking
+  // controls are used) every pilot route for the chosen stop types and categories.
+  const walkSet = useMemo(() => {
+    if (!walk.available) return null;
+    const ok = (f) => f.geometry && f.properties.route_status === 'ok' && walkTypes.includes(f.properties.stop_type);
+    const item = (f) => {
+      const st = byId.get(f.properties.stop_id)?.f;
+      return st ? { feature: f, stop: { id: st.properties.id, name: st.properties.name || st.properties.display_name, coords: st.geometry.coordinates, type: f.properties.stop_type } } : null;
+    };
+    let mode = null, feats = [];
+    if (sel && sel.layer === 'attraction' && walk.scopeIds.has(sel.id)) {
+      mode = 'one';
+      feats = d.walking.features.filter((f) => f.properties.attraction_id === sel.id && ok(f));
+    } else if (walkShow && !(sel && sel.layer === 'attraction')) {
+      mode = 'all';
+      const inCats = new Set(A.filter((f) => cats.includes(f.properties.category)).map((f) => f.properties.id));
+      feats = d.walking.features.filter((f) => ok(f) && inCats.has(f.properties.attraction_id));
+    }
+    if (!mode) return null;
+    return { mode, key: `${mode}|${sel?.id || ''}|${walkTypes.join()}|${cats.join()}`, items: feats.map(item).filter(Boolean) };
+  }, [walk, d, sel, walkShow, walkTypes, cats, A, byId]);
   const dupOsm = useMemo(() => {
     const m = {};
     (d?.manifest?.transport?.duplicate_osm_ids || []).forEach((x) => x.ids.forEach((id) => (m[id] = x)));
@@ -191,12 +212,20 @@ export default function App() {
           {!walk.available && <p className="xs">Walking analysis not yet available. These controls stay disabled until real network results are loaded.</p>}
           {walk.pilot && <p className="xs warnline">Pilot area only ({walk.pilotInfo?.name}, {walk.scopeIds.size} named records, dashed box on the map). Not a Kyoto Prefecture result.</p>}
           <label className="xs" htmlFor="walkmax">Max network walking distance: <b className="mono">{maxWalk} m</b></label>
-          <input id="walkmax" type="range" min="100" max="2000" step="50" value={maxWalk} onChange={(e) => setMaxWalk(Number(e.target.value))} disabled={!walk.available} />
+          <input id="walkmax" type="range" min="100" max="2000" step="50" value={maxWalk} onChange={(e) => { setMaxWalk(Number(e.target.value)); setWalkShow(true); }} disabled={!walk.available} />
           <div className="seg sm">
             {[['bus', 'Nearest bus'], ['rail', 'Nearest rail']].map(([k, l]) => (
-              <button key={k} type="button" disabled={!walk.available} className={walkTypes.includes(k) ? 'on' : ''} aria-pressed={walkTypes.includes(k)} onClick={() => setWalkTypes(walkTypes.includes(k) ? (walkTypes.length > 1 ? walkTypes.filter((x) => x !== k) : walkTypes) : [...walkTypes, k])}>{l}</button>
+              <button key={k} type="button" disabled={!walk.available} className={walkTypes.includes(k) ? 'on' : ''} aria-pressed={walkTypes.includes(k)} onClick={() => { setWalkTypes(walkTypes.includes(k) ? (walkTypes.length > 1 ? walkTypes.filter((x) => x !== k) : walkTypes) : [...walkTypes, k]); setWalkShow(true); }}>{l}</button>
             ))}
           </div>
+          {walk.available && (
+            <div className="walk-map">
+              <button type="button" className={'btn sm' + (walkShow ? '' : ' ghost')} onClick={() => { if (sel?.layer === 'attraction') setSel(null); setWalkShow(!walkShow || sel?.layer === 'attraction'); }}>
+                {walkShow && !(sel?.layer === 'attraction') ? 'Hide routes on map' : 'Show pilot routes on map'}
+              </button>
+              <p className="xs muted">Routes grow along the road network up to the distance above; a stop lights up when its route reaches it. Click a pilot attraction to see only its routes.</p>
+            </div>
+          )}
           {coverage && (
             <div className="cov">
               <div className="cov-big"><b className="mono"><Rolling value={coverage.within} /></b><span>of {coverage.denominator} pilot records within {maxWalk} m of a {walkTypes.join(' or ')} stop</span></div>
@@ -222,7 +251,7 @@ export default function App() {
       <main className="center">
         <i className="corner c1" /><i className="corner c2" /><i className="corner c3" /><i className="corner c4" />
         {core ? (
-          <MapView data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={sel} onSelect={(s) => select(s, false)} onHover={setHover} mapRef={mapRef} routes={selRoutes} />
+          <MapView data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={sel} onSelect={(s) => select(s, false)} onHover={setHover} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} />
         ) : (
           <div className="alert big" role="alert"><b>Map data could not be loaded.</b>{failed.map(([k, v]) => <span key={k}>{v.file}: {v.error}</span>)}</div>
         )}
