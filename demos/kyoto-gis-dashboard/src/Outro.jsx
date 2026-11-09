@@ -73,7 +73,7 @@ export default function Outro({ manifest }) {
           <button type="button" className="ist-skip" onClick={top}>Back to the start ↑</button>
         </div>
       </div>
-      <p className="ist-credit">Illustrative AI-generated footage.</p>
+      <p className="ist-credit">Closing clips: social-media travel montage (creators incl. @camezi), used for a non-commercial university presentation.</p>
     </section>
   );
 }
