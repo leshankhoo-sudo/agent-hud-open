@@ -4,10 +4,37 @@ import MapView, { BASEMAPS, KDE_BREAKS, KDE_COLORS, OFFLINE_PREVIEW } from './Ma
 import Weather from './Weather.jsx';
 import Intro from './Intro.jsx';
 import Outro from './Outro.jsx';
-import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport } from './lib/data.js';
+import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart } from './lib/data.js';
 import { walkingAvailability, indexWalking, walkingCoverage } from './lib/walking.js';
 
 // Number that rolls to its new value (respects reduced motion).
+// 「日文名称 (English name)」 with the English part styled lighter; original alone if none is verified.
+function NameEn({ p }) {
+  if (!p.name) return <>{p.display_name}</>;
+  const en = englishPart(p.name, p.name_en);
+  return <>{p.name}{en && <span className="en" lang="en"> ({en})</span>}</>;
+}
+
+// English name "decodes" into place: random Latin letters settle left to right (~0.7 s).
+const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+function Decode({ text, className, lang }) {
+  const [shown, setShown] = useState(text);
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setShown(text); return; }
+    let raf;
+    const t0 = performance.now(), dur = 700;
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / dur);
+      const n = Math.floor(text.length * k);
+      setShown(text.slice(0, n) + [...text.slice(n)].map((ch) => (/[A-Za-z]/.test(ch) ? GLYPHS[(Math.random() * GLYPHS.length) | 0] : ch)).join(''));
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [text]);
+  return <span className={className} lang={lang} aria-label={text}><span aria-hidden="true">{shown}</span></span>;
+}
+
 function Rolling({ value }) {
   const [shown, setShown] = useState(value);
   const from = useRef(value);
@@ -85,7 +112,7 @@ export default function App() {
     const ok = (f) => f.geometry && f.properties.route_status === 'ok' && walkTypes.includes(f.properties.stop_type);
     const item = (f) => {
       const st = byId.get(f.properties.stop_id)?.f;
-      return st ? { feature: f, stop: { id: st.properties.id, name: st.properties.name || st.properties.display_name, coords: st.geometry.coordinates, type: f.properties.stop_type } } : null;
+      return st ? { feature: f, stop: { id: st.properties.id, name: recordLabel(st.properties), coords: st.geometry.coordinates, type: f.properties.stop_type } } : null;
     };
     let mode = null, feats = [];
     if (sel && sel.layer === 'attraction' && walk.scopeIds.has(sel.id)) {
@@ -112,7 +139,7 @@ export default function App() {
     const [lon, lat] = hit.f.geometry.coordinates;
     const p = hit.f.properties;
     const ph = d?.photos?.photos?.[s.id];
-    setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, label: p.name || p.display_name, sub: `${p.id} · ${CATEGORY_LABEL[p.category]}`, color: dotColor(hit.f),
+    setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, label: recordLabel(p), en: !!(p.name && englishPart(p.name, p.name_en)), sub: `${p.id} · ${CATEGORY_LABEL[p.category]}`, color: dotColor(hit.f),
       photo: ph ? { src: `${import.meta.env.BASE_URL}${ph.src}`, related: ph.match === 'wikidata-related' ? ph.matched_label : null, credit: `${ph.artist} · ${ph.license}` } : null });
   };
   // Press feedback from the Smart Build chapter: sink on press, squash and spring back on release.
@@ -134,6 +161,25 @@ export default function App() {
     };
     addEventListener('pointerdown', down, true);
     return () => removeEventListener('pointerdown', down, true);
+  }, []);
+  // Cursor spotlight on the side cards.
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let raf = 0, last = null;
+    const move = (e) => {
+      last = e;
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const c = last.target.closest?.('.card');
+        if (!c) return;
+        const r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', `${last.clientX - r.left}px`);
+        c.style.setProperty('--my', `${last.clientY - r.top}px`);
+      });
+    };
+    addEventListener('pointermove', move, { passive: true });
+    return () => { removeEventListener('pointermove', move); cancelAnimationFrame(raf); };
   }, []);
   useEffect(() => {
     const k = (e) => { if (e.key === 'Escape') { setSheet(null); } };
@@ -191,11 +237,11 @@ export default function App() {
           {query.trim() && (
             <ul className="results">
               {matches.length === 0 && <li className="muted">No records match.</li>}
-              {matches.slice(0, 12).map((f) => (
-                <li key={f.properties.id}>
+              {matches.slice(0, 12).map((f, i) => (
+                <li key={f.properties.id} style={{ '--i': i }}>
                   <button type="button" onClick={() => select({ id: f.properties.id })}>
                     <span className="dot" style={{ background: dotColor(f) }} />
-                    <span className="nm">{f.properties.display_name}</span>
+                    <span className="nm" lang="ja"><NameEn p={f.properties} /></span>
                     <span className="id">{f.properties.id}</span>
                   </button>
                 </li>
@@ -297,7 +343,7 @@ export default function App() {
         )}
         {hover && (
           <div className="tip" style={{ left: hover.x + 14, top: hover.y + 10 }}>
-            <b>{hover.feature.properties.display_name}</b>
+            <b lang="ja"><NameEn p={hover.feature.properties} /></b>
             <span>{hover.feature.properties.id} · {CATEGORY_LABEL[hover.feature.properties.category]}</span>
           </div>
         )}
@@ -320,7 +366,7 @@ export default function App() {
         ) : (
           <div className="stack" key={sel.id}>
             {selHit.layer === 'attraction' && <Photo rec={selHit.f.properties} photos={d.photos} />}
-            <Detail hit={selHit} pm={d.pointMuni} dup={dupOsm[sel.id]} onClose={() => setSel(null)} />
+            <Detail hit={selHit} pm={d.pointMuni} dup={dupOsm[sel.id]} photo={d.photos?.photos?.[sel.id]?.src} onClose={() => setSel(null)} />
             {selHit.layer === 'attraction' && <Walking available={walk} index={walkIndex} id={sel.id} byId={byId} />}
             <Weather target={{ id: sel.id, lat: sel.coords[1], lon: sel.coords[0] }} />
           </div>
@@ -381,24 +427,29 @@ function Photo({ rec, photos }) {
   );
 }
 
-function Detail({ hit, pm, dup, onClose }) {
+function Detail({ hit, pm, dup, photo, onClose }) {
   const p = hit.f.properties;
   const [lon, lat] = hit.f.geometry.coordinates;
   const muniCode = pm?.points?.[p.id];
   return (
     <section className="card detail">
+      {/* hazy moving backdrop: the record's own photo when there is one, else a soft colour field */}
+      <div className="haze" aria-hidden="true"><i key={p.id} style={{ backgroundImage: `url(${import.meta.env.BASE_URL}${photo || `media/haze-${(p.id.charCodeAt(p.id.length - 1) % 5) + 1}.jpg`})` }} /></div>
       <header className="card-h">
         <span className="kind" style={{ background: dotColor(hit.f) }}>{CATEGORY_LABEL[p.category]}</span>
         <button className="x" type="button" onClick={onClose} aria-label="Clear selection">×</button>
       </header>
-      <h2 lang={p.name ? 'ja' : 'en'}>{p.name || <span className="muted">{p.display_name}</span>}</h2>
+      <h2 lang={p.name ? 'ja' : 'en'} key={p.id}>
+        {p.name ? <>{p.name}{p.name_en && <> <Decode className="en" lang="en" text={`(${p.name_en})`} /></>}</> : <span className="muted">{p.display_name}</span>}
+      </h2>
       {!p.name && <p className="xs muted">This record has no name in the source. The label above is a fallback, not an official name.</p>}
+      {p.name && <p className="xs muted en-src">{p.name_en ? `English name: ${p.name_en_source}${p.osm_element ? ` (${p.osm_element})` : ''}` : 'No verified English name yet; the original name is shown.'}</p>}
       <dl className="kv">
         <div><dt>Record ID</dt><dd className="mono">{p.id}</dd></div>
-        <div><dt>OSM ID</dt><dd className="mono"><a href={`https://www.openstreetmap.org/node/${p.osm_id}`} target="_blank" rel="noreferrer">{p.osm_id}</a></dd></div>
+        <div><dt>OSM ID</dt><dd className="mono"><a href={`https://www.openstreetmap.org/${p.osm_element || `node/${p.osm_id}`}`} target="_blank" rel="noreferrer">{p.osm_id}</a></dd></div>
         <div><dt>Category</dt><dd>{CATEGORY_LABEL[p.category]} <span className="muted">({p.category})</span></dd></div>
         {p.transport_type && <div><dt>Transit type</dt><dd>{p.transport_type}</dd></div>}
-        <div><dt>Municipality</dt><dd lang="ja">{muniCode ? pm.names[muniCode] : 'outside all N03 polygons'}<span className="muted xs"> · N03 spatial join</span></dd></div>
+        <div><dt>Municipality</dt><dd lang="ja">{muniCode ? muniLabel(pm, muniCode) : 'outside all N03 polygons'}<span className="muted xs"> · N03 spatial join</span></dd></div>
         <div><dt>Coordinates</dt><dd className="mono">{lat.toFixed(5)}, {lon.toFixed(5)}</dd></div>
         <div><dt>Status</dt><dd>{p.validation_status} · {p.source}</dd></div>
       </dl>
@@ -435,7 +486,7 @@ function Walking({ available, index, id, byId }) {
       <div className="wrow">
         <dt><i className={'wkey ' + t} />{label}</dt>
         <dd>
-          <b lang="ja">{s?.name || s?.display_name || x.stop_id}</b> <span className="mono muted">{x.stop_id}</span>
+          <b lang="ja">{s ? <NameEn p={s} /> : x.stop_id}</b> <span className="mono muted">{x.stop_id}</span>
           <span className="wdist"><b className="mono"><Rolling value={Math.round(x.distance_m)} /> m</b> · ≈{x.duration_min} min at 80 m/min</span>
           <small>Access gaps (straight, not added): attraction {x.attraction_snap_gap_m} m, stop {x.stop_snap_gap_m} m</small>
           {x.note && <small className="warnline">{x.note}</small>}

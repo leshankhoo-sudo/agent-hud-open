@@ -31,6 +31,7 @@ const FILES = {
   kdeMeta: 'analysis/density_kde_meta.json',
   walkReport: 'analysis/walking_pilot_report.json',
   photos: 'photos.json',
+  namesEn: 'names_en.json',
 };
 
 // Each file is loaded on its own so one failure is reported without hiding the others.
@@ -50,8 +51,45 @@ export async function loadAll(base = import.meta.env.BASE_URL) {
       }
     }),
   );
+  applyEnglishNames(out);
   return { data: out, status };
 }
+
+// English names: adds name_en / name_en_source (new fields) next to the original name fields,
+// which stay unchanged. Only verified names from names_en.json are used.
+export function applyEnglishNames(data) {
+  const en = data?.namesEn;
+  if (!en) return data;
+  for (const key of ['attractions', 'transport']) {
+    const m = en[key] || {};
+    for (const f of data[key]?.features || []) {
+      const e = m[f.properties.id];
+      if (e && englishPart(f.properties.name, e.en)) {
+        f.properties.name_en = e.en;
+        f.properties.name_en_source = e.source;
+        if (e.osm) f.properties.osm_element = e.osm;
+      }
+    }
+  }
+  if (data.pointMuni?.names) {
+    data.pointMuni.names_en = {};
+    for (const [code, v] of Object.entries(en.municipalities || {})) if (data.pointMuni.names[code]) data.pointMuni.names_en[code] = v.en;
+  }
+  return data;
+}
+
+// 「日文名称 (English name)」; the original alone when no verified English name exists.
+// Skipped when the original already contains that English (e.g. "兜台三丁目 (Kabutodai 3-chōme)")
+// or is itself written in Latin letters.
+const fold = (t) => t.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const hasJapanese = (t) => /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/.test(t);
+export const englishPart = (ja, en) => (ja && en && en !== ja && hasJapanese(ja) && !fold(ja).includes(fold(en)) ? en : '');
+export const withEnglish = (ja, en) => {
+  const e = englishPart(ja, en);
+  return e ? `${ja} (${e})` : ja || en || '';
+};
+export const recordLabel = (p) => (p.name ? withEnglish(p.name, p.name_en) : p.display_name);
+export const muniLabel = (pm, code) => (code && pm?.names?.[code] ? withEnglish(pm.names[code], pm.names_en?.[code]) : '');
 
 export function countBy(features, key) {
   const m = {};
@@ -69,5 +107,5 @@ export function filterTransport(features, types, query = '') {
 }
 function matches(f, q) {
   const p = f.properties;
-  return (p.name || '').toLowerCase().includes(q) || (p.display_name || '').toLowerCase().includes(q) || p.id.toLowerCase() === q || p.osm_id === q;
+  return (p.name || '').toLowerCase().includes(q) || (p.display_name || '').toLowerCase().includes(q) || (p.name_en || '').toLowerCase().includes(q) || p.id.toLowerCase() === q || p.osm_id === q;
 }

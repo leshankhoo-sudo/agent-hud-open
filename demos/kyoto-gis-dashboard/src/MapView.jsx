@@ -259,7 +259,15 @@ export default function MapView({ active = true, focus = null, data, cats, types
       const sw = document.createElement('i');
       sw.style.background = selected.color || '#7fb3ff';
       const nm = document.createElement('b');
-      nm.textContent = selected.label;
+      const m = /^(.*?) \(([^()]*)\)$/.exec(selected.label || '');
+      if (selected.en && m) {
+        nm.append(m[1]);
+        const e = document.createElement('span');
+        e.className = 'en';
+        e.lang = 'en';
+        e.textContent = ` (${m[2]})`;
+        nm.append(e);
+      } else nm.textContent = selected.label;
       nm.lang = 'ja';
       const sub = document.createElement('span');
       sub.textContent = selected.sub || '';
@@ -517,7 +525,7 @@ function addDataLayers(map, data) {
 function applyFilters(map, { cats, types, query, densityMode }) {
   const q = (query || '').trim().toLowerCase();
   const qExpr = q
-    ? ['any', ['in', q, ['downcase', ['coalesce', ['get', 'name'], '']]], ['in', q, ['downcase', ['get', 'display_name']]], ['==', ['downcase', ['get', 'id']], q], ['==', ['get', 'osm_id'], q]]
+    ? ['any', ['in', q, ['downcase', ['coalesce', ['get', 'name'], '']]], ['in', q, ['downcase', ['get', 'display_name']]], ['in', q, ['downcase', ['coalesce', ['get', 'name_en'], '']]], ['==', ['downcase', ['get', 'id']], q], ['==', ['get', 'osm_id'], q]]
     : true;
   map.setFilter('attractions-pt', ['all', catExpr(cats), qExpr]);
   map.setFilter('attractions-glow', ['all', catExpr(cats), qExpr]);

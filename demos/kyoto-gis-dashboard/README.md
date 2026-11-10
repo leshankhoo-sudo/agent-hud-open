@@ -56,6 +56,7 @@ python3 scripts/prepare_data.py     # 校验原始文件 → 生成 public/data
 python3 scripts/kde_density.py      # Analysis 1：正式核密度
 python3 scripts/walking_pilot.py /path/to/Kyoto_Roads_GeoJSON   # Analysis 2：试点步行路线
 python3 scripts/fetch_photos.py                 # 景点照片（Wikidata / Commons，需联网）
+python3 scripts/fetch_names_en.py               # 英文名称（OSM name:en / Wikidata，需联网）
 ```
 
 道路资料（5 个 GeoJSON 分片，约 80 MB）**没有放进仓库，也不会加载进浏览器**。请把 `Kyoto_Roads_GeoJSON.zip` 解压到任意文件夹，再把路径传给脚本。
@@ -130,6 +131,12 @@ kyoto-gis-dashboard/
 - 景点照片：54 / 305 个有名称的景点有照片（32 个名称一致的 Wikidata 条目，22 个相关地点，都在 300 m 内），每张都标注了作者、授权和来源；没有可靠配对的景点显示 "No verified photo"。
 - 示范行程与票价：独立面板，9 条行程全部列在"尚未连接地图"之下。票价、运行条件、来源年份、核实状态和官方链接都完整显示。
 - 资料来源与更新时间面板。手机、平板、电脑三种布局。
+- 英文名称：景点、站点和市区町村统一显示为「日文名称 (English name)」，地图弹窗、搜索结果、详情面板都一样，也可以用英文搜索。
+  - 原始名称字段不变，英文名放在新增的 `name_en`、`name_en_source` 字段里，数据文件是 `public/data/names_en.json`。
+  - 英文名来源只有三种：OSM 的 `name:en` 或罗马字标签；同一个 OSM 对象关联的 Wikidata 英文标签；日文名完全相同、且距离在 300 m 内的 Wikidata 条目。
+  - 不做机器翻译，找不到可靠英文名的只显示日文原名。
+  - 目前有英文名的：景点 125 / 305（有名称的），站点 2,558 / 5,479，市区町村 36 / 36（官方罗马字名称）。
+  - 逐条来源可以在 `public/data/analysis/names_en_review.csv` 核对。
 
 **待完成 / 需要你决定**
 - 步行分析扩展到全府：需要先人工检查试点的问题（入口、步道断点、trunk 道路），确认分类假设，再分区批量计算。

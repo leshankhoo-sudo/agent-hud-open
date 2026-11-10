@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { parseWeather, getWeather, weatherUrl, WEATHER_TTL_MS, WeatherError, dailySummary, tokyoHourKey, clearWeatherCache } from '../src/lib/weather.js';
 import { walkingAvailability, indexWalking, walkingCoverage } from '../src/lib/walking.js';
-import { filterAttractions, filterTransport, countBy } from '../src/lib/data.js';
+import { filterAttractions, filterTransport, countBy, applyEnglishNames, withEnglish, recordLabel, muniLabel } from '../src/lib/data.js';
 
 const J = (p) => JSON.parse(readFileSync(new URL('../public/data/' + p, import.meta.url), 'utf8'));
 const A = J('attractions.geojson').features;
@@ -198,4 +198,24 @@ test('photos: real files, free licences, credits, and only named records within 
     assert.ok(p.distance_m <= 300);
     assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo'].includes(p.match));
   }
+});
+
+test('English names: added as new fields, originals unchanged, shown as 日文 (English)', () => {
+  const en = J('names_en.json');
+  const data = { attractions: J('attractions.geojson'), transport: J('transport.geojson'), pointMuni: J('point_municipality.json'), namesEn: en };
+  const before = data.attractions.features.map((f) => [f.properties.id, f.properties.name, f.properties.display_name]);
+  applyEnglishNames(data);
+  assert.deepEqual(data.attractions.features.map((f) => [f.properties.id, f.properties.name, f.properties.display_name]), before);
+  const ids = new Set([...data.attractions.features, ...data.transport.features].map((f) => f.properties.id));
+  for (const k of ['attractions', 'transport']) for (const [id, v] of Object.entries(en[k])) { assert.ok(ids.has(id), id); assert.ok(v.en && v.source, id); }
+  const withEn = data.transport.features.filter((f) => f.properties.name_en);
+  assert.ok(withEn.length > 1000);
+  for (const f of withEn) assert.equal(recordLabel(f.properties), `${f.properties.name} (${f.properties.name_en})`);
+  assert.equal(withEnglish('清水寺', 'Kiyomizu-dera'), '清水寺 (Kiyomizu-dera)');
+  assert.equal(withEnglish('上川口', undefined), '上川口');
+  assert.equal(withEnglish('兜台三丁目 (Kabutodai 3-chōme)', 'Kabutodai 3-chome'), '兜台三丁目 (Kabutodai 3-chōme)');
+  const unnamed = data.attractions.features.find((f) => !f.properties.name);
+  assert.equal(recordLabel(unnamed.properties), unnamed.properties.display_name);
+  assert.equal(Object.keys(data.pointMuni.names_en).length, 36);
+  assert.equal(muniLabel(data.pointMuni, '26105'), '京都市 東山区 (Higashiyama Ward, Kyoto City)');
 });

@@ -94,7 +94,7 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
 .results { list-style: none; padding: 0; margin: 8px 0 0; max-height: 240px; overflow: auto; }
 .results button { width: 100%; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 8px; align-items: center; border: 0; background: none; padding: 6px 4px; cursor: pointer; text-align: left; border-radius: 6px; }
 .results button:hover { background: rgba(61,123,255,.14); }
-.results .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.results .nm { line-height: 1.35; overflow-wrap: anywhere; }
 .results .id { font: 11px var(--mono); color: var(--mute); }
 .dot { width: 9px; height: 9px; border-radius: 50%; }
 
@@ -518,3 +518,52 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
 
 /* while the scroll intro is on screen the map is not painted (it still loads and keeps its size) */
 .app.waiting .map { visibility: hidden; }
+
+/* ---------- hazy moving card backdrops + cursor spotlight ----------
+   Each side card carries a tiny pre-blurred image that drifts slowly behind the content.
+   It stays at low opacity under a dark scrim, so text contrast is unchanged in practice. */
+.left .card:not(.detail), .right .card:not(.detail) { isolation: isolate; overflow: clip; }
+.left .card:not(.detail)::before, .right .card:not(.detail)::before {
+  content: ''; position: absolute; inset: -25%; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 16, 36, .35), rgba(8, 16, 36, .55)), var(--haze, url(/media/haze-5.jpg)) center / cover no-repeat;
+  opacity: .5; animation: hazeDrift 34s ease-in-out infinite alternate; will-change: transform;
+}
+.left .card:nth-child(5n+1) { --haze: url(/media/haze-1.jpg); }
+.left .card:nth-child(5n+2) { --haze: url(/media/haze-5.jpg); }
+.left .card:nth-child(5n+3) { --haze: url(/media/haze-2.jpg); }
+.left .card:nth-child(5n+4) { --haze: url(/media/haze-3.jpg); }
+.left .card:nth-child(5n+5) { --haze: url(/media/haze-4.jpg); }
+.right .card:nth-child(odd) { --haze: url(/media/haze-5.jpg); }
+.right .card:nth-child(even) { --haze: url(/media/haze-1.jpg); }
+.left .card:nth-child(2n)::before, .right .card:nth-child(2n)::before { animation-duration: 41s; animation-direction: alternate-reverse; }
+.left .card:not(.detail)::after, .right .card:not(.detail)::after {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit; opacity: 0;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(127, 179, 255, .16), transparent 65%);
+  transition: opacity .35s var(--ez);
+}
+.left .card:hover::after, .right .card:not(.detail):hover::after { opacity: 1; }
+@keyframes hazeDrift {
+  0% { transform: translate3d(-5%, -4%, 0) scale(1.05); }
+  50% { transform: translate3d(4%, 3%, 0) scale(1.14); }
+  100% { transform: translate3d(-2%, 5%, 0) scale(1.08); }
+}
+/* detail card: its own photo, blurred, drifting; a scrim keeps the text readable */
+.detail { isolation: isolate; }
+.detail .haze { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; z-index: -1; pointer-events: none; }
+.detail .haze i {
+  position: absolute; inset: -20%; background: center / cover no-repeat; filter: blur(18px) saturate(1.3);
+  opacity: 0; animation: hazeIn 1.2s var(--ez) forwards, hazeDrift 28s 1.2s ease-in-out infinite alternate;
+}
+.detail .haze::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8, 16, 36, .62), rgba(8, 16, 36, .82)); }
+@keyframes hazeIn { from { opacity: 0; transform: scale(1.25); } to { opacity: .55; transform: translate3d(-5%, -4%, 0) scale(1.05); } }
+.detail h2 .en { color: var(--ink-2, #b8c7e6); font-weight: 500; font-size: .78em; letter-spacing: .01em; }
+.en-src { margin: -2px 0 8px; }
+/* search results slide in one after another */
+.results li { animation: resIn .38s var(--ez) both; animation-delay: calc(var(--i, 0) * 28ms); }
+@keyframes resIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .left .card::before, .right .card::before, .detail .haze i { animation: none !important; opacity: .45; }
+}
+
+.results .nm .en, .tip .en, .wrow .en, .sel-card .en { color: var(--ink-2); font-weight: 400; }
+.sel-card b .en { display: inline; font: inherit; letter-spacing: 0; text-transform: none; margin: 0; }
