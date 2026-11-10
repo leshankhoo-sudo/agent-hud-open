@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { iconURL } from './lib/icons.js';
 import MapView, { BASEMAPS, KDE_BREAKS, KDE_COLORS, OFFLINE_PREVIEW } from './MapView.jsx';
 import Weather from './Weather.jsx';
 import Intro from './Intro.jsx';
@@ -32,7 +33,7 @@ export default function App() {
   const [types, setTypes] = useState(TRANSPORT_TYPES.map((t) => t.key));
   const [query, setQuery] = useState('');
   const [densityMode, setDensityMode] = useState('off');
-  const [basemap, setBasemap] = useState('gsi');
+  const [basemap, setBasemap] = useState('night');
   const [sel, setSel] = useState(null);
   const [hover, setHover] = useState(null);
   const [sheet, setSheet] = useState(null); // 'journeys' | 'sources' | null
@@ -221,7 +222,7 @@ export default function App() {
           {TRANSPORT_TYPES.map((t) => (
             <label className="chk" key={t.key} onMouseEnter={() => setFocus({ kind: 'type', key: t.key })} onMouseLeave={() => setFocus(null)}>
               <input type="checkbox" checked={types.includes(t.key)} onChange={() => toggle(types, setTypes, t.key)} />
-              <span className="sw round" style={{ background: t.color }} />
+              <img className="sw ico" src={iconURL(t.key)} alt="" />
               <span>{t.label}<small className="sub">{t.cats.map((c) => `${subCount[c] || 0} ${CATEGORY_LABEL[c].toLowerCase()}${(subCount[c] || 0) === 1 ? '' : 's'}`).join(' + ')}</small></span>
               <span className="n">{(typeCount[t.key] || 0).toLocaleString('en-US')}</span>
             </label>
@@ -280,7 +281,7 @@ export default function App() {
 
         <section className="card">
           <h3>Basemap</h3>
-          {OFFLINE_PREVIEW ? <p className="xs warnline">Online preview: basemap tiles are blocked by the viewer, so only the project data is drawn. Run or deploy the project for the GSI / OSM basemap.</p> : (
+          {OFFLINE_PREVIEW ? <p className="xs warnline">Online preview: basemap tiles are blocked by the viewer, so only the project data is drawn. Run or deploy the project for the night (OSM vector), GSI or OSM basemap.</p> : (
           <div className="seg">
             {Object.entries(BASEMAPS).map(([k, b]) => <button key={k} type="button" className={basemap === k ? 'on' : ''} onClick={() => setBasemap(k)}>{b.label}</button>)}
           </div>)}
@@ -313,7 +314,7 @@ export default function App() {
             <p>Click an attraction or a stop on the map, or search on the left. Weather is requested for the selected point.</p>
             <ol className="xs">
               <li>Attractions: coloured circles by category.</li>
-              <li>Stops: small blue (bus), white (rail), pink (tram).</li>
+              <li>Stops: small dots when zoomed out; bus, rail and tram pictograms when zoomed in.</li>
             </ol>
           </section>
         ) : (

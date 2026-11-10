@@ -18,14 +18,14 @@ const tiles = { ok: 0, fail: 0 };
 const weatherCalls = [];
 page.on('response', (r) => {
   const u = r.url();
-  if (u.includes('cyberjapandata.gsi.go.jp') || u.includes('tile.openstreetmap.org')) r.ok() ? tiles.ok++ : tiles.fail++;
+  if (u.includes('cyberjapandata.gsi.go.jp') || u.includes('tile.openstreetmap.org') || u.includes('tiles.openfreemap.org')) r.ok() ? tiles.ok++ : tiles.fail++;
   if (u.includes('api.open-meteo.com')) weatherCalls.push({ status: r.status(), url: u });
 });
 page.on('requestfailed', (r) => { if (r.url().includes('api.open-meteo.com')) weatherCalls.push({ status: 'failed', error: r.failure()?.errorText, url: r.url() }); });
 
 await page.goto(url);
 await page.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.getLayer('attractions-pt') && window.__kyotoMap.loaded(), null, { timeout: 30000 });
-await page.waitForTimeout(2500);
+await page.waitForTimeout(8000); // vector basemap tiles are parsed after load; slow on software WebGL
 await page.screenshot({ path: `${out}/01-initial.png` });
 
 // 0. scroll intro: video scrubs with scroll and ends on the dashboard
@@ -68,11 +68,11 @@ check('top counts at start', c[0] === '523/523' && c[1] === '5,479/5,479', c.joi
 const pos = await page.evaluate(async () => {
   const m = window.__kyotoMap;
   m.jumpTo({ center: [135.758, 34.985], zoom: 15 });
-  await new Promise((r) => m.once('idle', r));
+  await new Promise((r) => { m.once('idle', r); setTimeout(r, 6000); }); // the glow animation can keep the map busy
   const p = m.project([135.7588, 34.9853]);
   const hit = m.queryRenderedFeatures([[p.x - 6, p.y - 6], [p.x + 6, p.y + 6]], { layers: ['transport-pt'] }).map((f) => f.properties.id);
   m.jumpTo({ center: [135.7284537, 35.0395179], zoom: 15 });
-  await new Promise((r) => m.once('idle', r));
+  await new Promise((r) => { m.once('idle', r); setTimeout(r, 6000); }); // the glow animation can keep the map busy
   const q = m.project([135.7284537, 35.0395179]);
   const hit2 = m.queryRenderedFeatures([[q.x - 4, q.y - 4], [q.x + 4, q.y + 4]], { layers: ['attractions-pt'] }).map((f) => f.properties.id);
   return { kyotoStation: hit, kinkaku: hit2 };
@@ -92,7 +92,7 @@ c = await counts();
 check('uncheck Bus → 250 stops (248 rail + 2 tram)', c[1] === '250/5,479', c[1]);
 const rendered = await page.evaluate(async () => {
   const m = window.__kyotoMap;
-  await new Promise((r) => (m.loaded() ? r() : m.once('idle', r)));
+  await new Promise((r) => (m.loaded() ? r() : (m.once('idle', r), setTimeout(r, 6000))));
   const f = m.queryRenderedFeatures({ layers: ['transport-pt'] });
   return { types: [...new Set(f.map((x) => x.properties.transport_type))].sort(), viewpoints: m.queryRenderedFeatures({ layers: ['attractions-pt'] }).filter((x) => x.properties.category === 'viewpoint').length };
 });

@@ -505,3 +505,16 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
 .chk:hover .sw { transform: scale(1.35); box-shadow: 0 0 10px currentColor; }
 
 @media (prefers-reduced-motion: reduce) { .detail::before, .detail::after, .sheet::after { animation: none; } }
+
+/* transit legend uses the same pictograms as the map */
+.chk .sw.ico { width: 18px; height: 18px; border-radius: 50%; background: none; }
+
+/* opening reveal of the map (see reveal() in MapView.jsx) */
+.map.revealing canvas.maplibregl-canvas {
+  -webkit-mask-image: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), #000 var(--rr, 0px), transparent calc(var(--rr, 0px) + 110px));
+  mask-image: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), #000 var(--rr, 0px), transparent calc(var(--rr, 0px) + 110px));
+}
+.map.revealing .maplibregl-marker { opacity: 0; }
+
+/* while the scroll intro is on screen the map is not painted (it still loads and keeps its size) */
+.app.waiting .map { visibility: hidden; }

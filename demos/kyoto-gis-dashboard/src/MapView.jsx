@@ -2,17 +2,23 @@ import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { ATTRACTION_CATS, TRANSPORT_TYPES } from './lib/data.js';
+import { addTransitIcons } from './lib/icons.js';
 
-// Basemaps: raster tiles, no API key. See README for usage terms.
+// Basemaps, no API key. See README for usage terms.
+// "night" is a vector basemap (OpenFreeMap, OSM data) drawn in our own dark style: near-black land,
+// cyan water, green parks, thin road lines and only a few town names, so the project data stays readable.
+const OFM_ATTR = '<a href="https://openfreemap.org" target="_blank" rel="noreferrer">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank" rel="noreferrer">© OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>';
+const GLYPHS = 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf';
 export const BASEMAPS = {
+  night: { label: 'Night', vector: 'https://tiles.openfreemap.org/planet', attribution: OFM_ATTR },
   gsi: {
-    label: 'GSI pale (地理院タイル)',
+    label: 'GSI pale',
     tiles: ['https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png'],
     maxzoom: 18,
     attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noreferrer">地理院タイル (GSI Japan)</a>',
   },
   osm: {
-    label: 'OpenStreetMap',
+    label: 'OSM raster',
     tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
     maxzoom: 19,
     attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>',
@@ -33,15 +39,44 @@ const prefersReducedMotion = () => typeof matchMedia === 'function' && matchMedi
 const basePaint = () => ({ 'raster-brightness-min': 1, 'raster-brightness-max': 0.06, 'raster-saturation': -0.85, 'raster-contrast': 0.18, 'raster-hue-rotate': 200 });
 // Offline preview build (claude.ai viewer blocks external tiles): background only, no fake basemap.
 export const OFFLINE_PREVIEW = import.meta.env.VITE_TARGET === 'artifact';
-function styleFor(basemap) {
-  if (OFFLINE_PREVIEW) return { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#071027' } }] };
-  const b = BASEMAPS[basemap];
+const lineW = (z0, w0, z1, w1) => ['interpolate', ['linear'], ['zoom'], z0, w0, z1, w1];
+const placeName = ['upcase', ['coalesce', ['get', 'name:en'], ['get', 'name_en'], ['get', 'name:latin'], ['get', 'name']]];
+const placeLayer = (id, cls, minzoom, size) => ({
+  id, type: 'symbol', source: 'omt', 'source-layer': 'place', minzoom, filter: ['==', ['get', 'class'], cls],
+  layout: { 'text-field': placeName, 'text-font': ['Noto Sans Regular'], 'text-size': size, 'text-letter-spacing': 0.14, 'text-max-width': 9, 'text-padding': 30, 'symbol-sort-key': ['coalesce', ['get', 'rank'], 99] },
+  paint: { 'text-color': '#e8eefc', 'text-opacity': 0.78, 'text-halo-color': '#04060b', 'text-halo-width': 1.4 },
+});
+// Culverted rivers and road/rail tunnels are hidden: they are underground and only add clutter.
+const NO_TUNNEL = ['!=', ['get', 'brunnel'], 'tunnel'];
+const NIGHT_LAYERS = [
+  { id: 'bm-landuse', type: 'fill', source: 'omt', 'source-layer': 'landuse', filter: ['in', ['get', 'class'], ['literal', ['residential', 'commercial', 'industrial', 'retail']]], paint: { 'fill-color': '#0d121c', 'fill-opacity': 0.9 } },
+  { id: 'bm-landcover', type: 'fill', source: 'omt', 'source-layer': 'landcover', filter: ['in', ['get', 'class'], ['literal', ['wood', 'grass']]], paint: { 'fill-color': ['match', ['get', 'class'], 'wood', '#0c2418', '#123020'], 'fill-opacity': 0.75 } },
+  { id: 'bm-park', type: 'fill', source: 'omt', 'source-layer': 'park', paint: { 'fill-color': '#1d4a2a', 'fill-opacity': 0.55 } },
+  { id: 'bm-water', type: 'fill', source: 'omt', 'source-layer': 'water', paint: { 'fill-color': ['match', ['get', 'class'], 'ocean', '#0a0f16', '#2bb3c8'], 'fill-opacity': ['match', ['get', 'class'], 'ocean', 1, 0.85] } },
+  { id: 'bm-waterway', type: 'line', source: 'omt', 'source-layer': 'waterway', filter: NO_TUNNEL, paint: { 'line-color': '#36bfd6', 'line-opacity': ['match', ['get', 'class'], 'river', 0.6, 0.35], 'line-width': ['interpolate', ['linear'], ['zoom'], 8, ['match', ['get', 'class'], 'river', 0.4, 0.15], 14, ['match', ['get', 'class'], 'river', 1.6, 0.7]] } },
+  { id: 'bm-building', type: 'fill', source: 'omt', 'source-layer': 'building', minzoom: 14, paint: { 'fill-color': '#161e2c', 'fill-opacity': 0.9 } },
+  { id: 'bm-road-minor', type: 'line', source: 'omt', 'source-layer': 'transportation', minzoom: 11, filter: ['all', NO_TUNNEL, ['in', ['get', 'class'], ['literal', ['minor', 'service', 'track', 'path']]]], paint: { 'line-color': '#7d98c0', 'line-opacity': 0.14, 'line-width': lineW(11, 0.3, 16, 1.4) } },
+  { id: 'bm-road', type: 'line', source: 'omt', 'source-layer': 'transportation', filter: ['all', NO_TUNNEL, ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']]]], paint: { 'line-color': '#7d98c0', 'line-opacity': ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'class'], ['motorway', 'trunk'], 0.28, 0.1], 13, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 0.38, 0.22]], 'line-width': ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'class'], ['motorway', 'trunk'], 0.6, 0.25], 14, ['match', ['get', 'class'], ['motorway', 'trunk'], 1.6, 1]], 'line-blur': 0.3 } },
+  { id: 'bm-rail', type: 'line', source: 'omt', 'source-layer': 'transportation', filter: ['all', NO_TUNNEL, ['in', ['get', 'class'], ['literal', ['rail', 'transit']]]], paint: { 'line-color': '#e6eefc', 'line-opacity': 0.5, 'line-width': lineW(8, 0.6, 14, 1.4), 'line-dasharray': [3, 2] } },
+  placeLayer('bm-place-city', 'city', 7, lineW(7, 10, 13, 14)),
+  placeLayer('bm-place-town', 'town', 10.5, lineW(10.5, 9.5, 14, 12)),
+];
+// Basemap sources and layers (ids start with "bm-"; all sit under the project data).
+function baseParts(key) {
+  const b = BASEMAPS[key] || BASEMAPS.night;
+  if (b.vector) return { bg: '#05080f', sources: { omt: { type: 'vector', url: b.vector, attribution: b.attribution } }, layers: NIGHT_LAYERS };
   return {
-    version: 8,
+    bg: '#071027',
     sources: { base: { type: 'raster', tiles: b.tiles, tileSize: 256, maxzoom: b.maxzoom, attribution: b.attribution } },
-    layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#071027' } }, { id: 'base', type: 'raster', source: 'base', paint: basePaint() }],
+    layers: [{ id: 'bm-raster', type: 'raster', source: 'base', paint: basePaint() }],
   };
 }
+function styleFor(basemap) {
+  if (OFFLINE_PREVIEW) return { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#071027' } }] };
+  const p = baseParts(basemap);
+  return { version: 8, glyphs: GLYPHS, sources: p.sources, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': p.bg } }, ...p.layers] };
+}
+const TRANSIT_LAYERS = ['transport-pt', 'transport-sym-rail', 'transport-sym-bus'];
 
 export default function MapView({ active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk }) {
   const el = useRef(null);
@@ -75,7 +110,8 @@ export default function MapView({ active = true, focus = null, data, cats, types
     window.__kyotoMap = map; // used by the automated tests
 
     map.on('load', () => {
-      addDataLayers(map, data);
+      // style.load can fire first and add the layers already (vector style)
+      if (!map.getSource('attractions')) addDataLayers(map, data);
       if (latest.current.active) intro(map);
       else introPending.current = true;
     });
@@ -84,7 +120,7 @@ export default function MapView({ active = true, focus = null, data, cats, types
       applyFilters(map, latest.current);
     });
 
-    const interactive = ['attractions-pt', 'transport-pt'];
+    const interactive = ['attractions-pt', ...TRANSIT_LAYERS];
     map.on('mousemove', (e) => {
       const f = map.getLayer('attractions-pt') ? map.queryRenderedFeatures(e.point, { layers: interactive }) : [];
       map.getCanvas().style.cursor = f.length ? 'pointer' : '';
@@ -95,7 +131,7 @@ export default function MapView({ active = true, focus = null, data, cats, types
       const pad = 4;
       const box = [[e.point.x - pad, e.point.y - pad], [e.point.x + pad, e.point.y + pad]];
       const a = map.queryRenderedFeatures(box, { layers: ['attractions-pt'] });
-      const s = a.length ? [] : map.queryRenderedFeatures(box, { layers: ['transport-pt'] });
+      const s = a.length ? [] : map.queryRenderedFeatures(box, { layers: TRANSIT_LAYERS.filter((l) => map.getLayer(l)) });
       const f = a[0] || s[0];
       latest.current.onSelect(f ? { layer: a[0] ? 'attraction' : 'transport', id: f.properties.id } : null);
     });
@@ -126,20 +162,29 @@ export default function MapView({ active = true, focus = null, data, cats, types
     map.setPaintProperty('attractions-pt', 'circle-stroke-opacity', aOp);
     map.setPaintProperty('attractions-glow', 'circle-opacity', !focus ? 0.45 : aMatch ? ['case', aMatch, 0.9, 0.05] : 0.05);
     map.setPaintProperty('transport-pt', 'circle-opacity', tOp);
+    const iOp = !focus ? 1 : tMatch ? ['case', tMatch, 1, 0.1] : 0.12;
+    for (const l of ['transport-sym-rail', 'transport-sym-bus']) {
+      map.setPaintProperty(l, 'icon-opacity-transition', T);
+      map.setPaintProperty(l, 'icon-opacity', iOp);
+    }
     map.setPaintProperty('attractions-pt', 'circle-radius', grow(['interpolate', ['linear'], ['zoom'], 7, 3, 12, 5.5, 16, 8], aMatch));
     map.setPaintProperty('transport-pt', 'circle-radius', grow(['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'transport_type'], 'bus', 0.9, 2.4], 12, ['match', ['get', 'transport_type'], 'bus', 2.6, 4.5], 16, ['match', ['get', 'transport_type'], 'bus', 5, 7]], tMatch));
   }, [focus]);
 
-  // Swap the basemap tiles without rebuilding the data layers.
+  // Swap the basemap without rebuilding the data layers.
+  const firstBase = useRef(true);
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.getSource('base')) return;
-    const b = BASEMAPS[basemap];
-    const before = map.getStyle().layers[2]?.id;
-    map.removeLayer('base');
-    map.removeSource('base');
-    map.addSource('base', { type: 'raster', tiles: b.tiles, tileSize: 256, maxzoom: b.maxzoom, attribution: b.attribution });
-    map.addLayer({ id: 'base', type: 'raster', source: 'base', paint: basePaint() }, before);
+    if (firstBase.current) { firstBase.current = false; return; }
+    if (!map || OFFLINE_PREVIEW || !map.getLayer('bg')) return;
+    const layers = map.getStyle().layers;
+    const before = layers.find((l) => l.id !== 'bg' && !l.id.startsWith('bm-'))?.id;
+    layers.filter((l) => l.id.startsWith('bm-')).forEach((l) => map.removeLayer(l.id));
+    for (const s of ['base', 'omt']) if (map.getSource(s)) map.removeSource(s);
+    const p = baseParts(basemap);
+    for (const [k, v] of Object.entries(p.sources)) map.addSource(k, v);
+    for (const l of p.layers) map.addLayer(l, before);
+    map.setPaintProperty('bg', 'background-color', p.bg);
   }, [basemap]);
 
   // Walking reach: routes grow out from the attractions at one constant speed (metres per second),
@@ -336,11 +381,14 @@ function intro(map) {
       map.setPaintProperty(layer, prop, to);
     });
   };
+  if (!reduce) reveal(map);
   set('outline-line', 'line-opacity', 0, 1, 900, 0);
   set('outline-glow', 'line-opacity', 0, 0.55, 1400, 200);
   set('outline-fill', 'fill-opacity', 0, 0.1, 1200, 300);
   set('muni-line', 'line-opacity', 0, 0.35, 900, 500);
   set('transport-pt', 'circle-opacity', 0, ['match', ['get', 'transport_type'], 'bus', 0.75, 1], 900, 700);
+  set('transport-sym-rail', 'icon-opacity', 0, 1, 900, 800);
+  set('transport-sym-bus', 'icon-opacity', 0, 1, 900, 900);
   set('attractions-glow', 'circle-opacity', 0, 0.45, 900, 1100);
   set('attractions-pt', 'circle-opacity', 0, 1, 700, 1100);
   set('attractions-pt', 'circle-stroke-opacity', 0, 1, 700, 1100);
@@ -361,6 +409,33 @@ function intro(map) {
       breathe();
     }, 1800);
   }
+}
+
+const RAIL_F = ['!=', ['get', 'transport_type'], 'bus'];
+const BUS_F = ['==', ['get', 'transport_type'], 'bus'];
+// Opening reveal: the map grows out of the Kyoto City centre as a widening circle until it fills
+// the frame with a soft edge. Only a CSS mask on the canvas, data unchanged.
+const REVEAL_FROM = [135.7595, 35.0107]; // Karasuma-Oike, centre of Kyoto City
+function reveal(map) {
+  const box = map.getContainer();
+  const canvas = map.getCanvas();
+  const { width: W, height: H } = box.getBoundingClientRect();
+  const c = map.project(REVEAL_FROM);
+  const x = Math.max(0, Math.min(W, c.x)), y = Math.max(0, Math.min(H, c.y));
+  const far = Math.max(Math.hypot(x, y), Math.hypot(W - x, y), Math.hypot(x, H - y), Math.hypot(W - x, H - y)) + 140;
+  const dur = 2600, t0 = performance.now();
+  box.classList.add('revealing');
+  canvas.style.setProperty('--rx', `${x}px`);
+  canvas.style.setProperty('--ry', `${y}px`);
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  const frame = (now) => {
+    const t = Math.min(1, (now - t0) / dur);
+    const r = 20 + (far - 20) * ease(t);
+    canvas.style.setProperty('--rr', `${r}px`);
+    if (t < 1) requestAnimationFrame(frame);
+    else box.classList.remove('revealing');
+  };
+  requestAnimationFrame(frame);
 }
 
 function addDataLayers(map, data) {
@@ -412,6 +487,18 @@ function addDataLayers(map, data) {
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 7, 0, 11, ['match', ['get', 'transport_type'], 'bus', 0.5, 1.2]],
     },
   });
+  // Stations and stops as pictograms once zoomed in (rail from z9, bus from z13); below that, and where
+  // icons would overlap, the small dots above still mark every record.
+  addTransitIcons(map);
+  const iconSize = (a, b, c) => ['interpolate', ['linear'], ['zoom'], 9, a, 13, b, 17, c];
+  map.addLayer({
+    id: 'transport-sym-bus', type: 'symbol', source: 'transport', minzoom: 13, filter: BUS_F,
+    layout: { 'icon-image': 'ic-bus', 'icon-size': iconSize(0.5, 0.6, 0.85), 'icon-padding': 2 },
+  });
+  map.addLayer({
+    id: 'transport-sym-rail', type: 'symbol', source: 'transport', minzoom: 9, filter: RAIL_F,
+    layout: { 'icon-image': ['match', ['get', 'transport_type'], 'tram', 'ic-tram', 'ic-rail'], 'icon-size': iconSize(0.5, 0.75, 1), 'icon-padding': 1, 'symbol-sort-key': ['match', ['get', 'transport_type'], 'rail', 0, 1] },
+  });
   map.addLayer({
     id: 'attractions-glow', type: 'circle', source: 'attractions',
     paint: { 'circle-color': ['match', ['get', 'category'], ...ATTRACTION_CATS.flatMap((c) => [c.key, c.color]), '#888'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 7, 12, 12, 16, 16], 'circle-blur': 1, 'circle-opacity': 0.45 },
@@ -435,6 +522,8 @@ function applyFilters(map, { cats, types, query, densityMode }) {
   map.setFilter('attractions-pt', ['all', catExpr(cats), qExpr]);
   map.setFilter('attractions-glow', ['all', catExpr(cats), qExpr]);
   map.setFilter('transport-pt', ['all', typeExpr(types), qExpr]);
+  map.setFilter('transport-sym-rail', ['all', RAIL_F, typeExpr(types), qExpr]);
+  map.setFilter('transport-sym-bus', ['all', BUS_F, typeExpr(types), qExpr]);
   map.setFilter('heat', catExpr(cats));
   map.setLayoutProperty('heat', 'visibility', densityMode === 'heat' ? 'visible' : 'none');
   if (map.getLayer('kde-fill')) {

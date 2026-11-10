@@ -2,7 +2,7 @@
 
 大学 GIS 项目原型。界面英文，说明中文。范围暂定为**京都府（Kyoto Prefecture）**，不是京都市。
 
-技术：React 18 + Vite 5 + MapLibre GL 4（无需账号的栅格底图）。数据处理：Python（pyproj、shapely、networkx）+ mapshaper。
+技术：React 18 + Vite 5 + MapLibre GL 4（底图无需账号）。数据处理：Python（pyproj、shapely、networkx）+ mapshaper。
 
 ---
 
@@ -39,12 +39,13 @@ npm run preview      # 本地预览 dist/，http://localhost:4173
 
 | 服务 | 用途 | 账号 / API key | 费用与限制 |
 |---|---|---|---|
-| 地理院タイル（GSI，pale） | 默认底图 | 不需要 | 免费，需显示出处（页面右下角已显示）。详见 https://maps.gsi.go.jp/development/ichiran.html |
+| OpenFreeMap（OSM 矢量瓦片） | 默认底图 "Night" | 不需要 | 免费、无需账号，需显示出处（页面右下角已显示）。详见 https://openfreemap.org |
+| 地理院タイル（GSI，pale） | 备选底图 | 不需要 | 免费，需显示出处（页面右下角已显示）。详见 https://maps.gsi.go.jp/development/ichiran.html |
 | OpenStreetMap 标准瓦片 | 备选底图 | 不需要 | 社区服务器，有[使用政策](https://operations.osmfoundation.org/policies/tiles/)，只适合低流量。不保证可用于正式生产 |
 | Wikidata / Wikimedia Commons | 景点照片（构建时抓取并打包，浏览器不连外网） | 不需要 | 免费；每张照片按授权标注作者与授权，只使用 CC0、公有领域、CC BY、CC BY-SA |
 | Open-Meteo Forecast API | 天气 | 不需要 | 非商业用途免费，有每日、每小时请求上限（[terms](https://open-meteo.com/en/terms)、[pricing](https://open-meteo.com/en/pricing)）。数据按 CC BY 4.0 授权，页面已注明出处 |
 
-页面为了显示效果，会把底图在显示时反色、调成深蓝。瓦片本身和上面的地理内容都没有改。
+默认的 Night 底图是用 OpenFreeMap 的 OSM 矢量数据重新配色画出来的：深色陆地、青色水体、绿色公园、细线道路，地图上只保留少量城市名，不显示道路名和 POI 文字；地下河道和隧道也隐藏了。GSI / OSM 栅格底图在显示时会被反色、调成深蓝，瓦片本身和上面的地理内容都没有改。
 
 ## 4. 数据处理（可重跑）
 
@@ -94,7 +95,7 @@ kyoto-gis-dashboard/
    - 筛选：景点四个类别、交通三种类型（公交 / 铁路 / 电车）。
    - Analysis 1：在 KDE 结果和 Visual heatmap 之间切换。
    - Analysis 2：步行距离滑块和公交 / 铁路切换，只统计试点的 19 条记录。
-3. **地图**：拖动、缩放，点击点位即可选中。金色虚线框是步行试点范围。
+3. **地图**：拖动、缩放，点击点位即可选中。金色虚线框是步行试点范围。缩小时站点是小圆点；放大后铁路站（第 9 级起）和公交站（第 13 级起）会变成图标，图标重叠时会自动让位，下面的小圆点仍然保留。打开 Dashboard 时，地图会从京都市中心向外慢慢展开。
 4. **右侧**：选中记录的名称、ID、类别、所属市区町村；步行结果（只有试点记录才有）；天气预报（可选日期和小时，有刷新按钮）。
 5. **顶部按钮**：
    - "Sample journeys & fares"：示范行程与参考票价面板。
