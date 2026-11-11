@@ -572,7 +572,7 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
    Phone: explore is a drawer, details are a bottom sheet. One scroll area per panel.
    ===================================================================== */
 [hidden] { display: none !important; }
-.top { gap: 16px; padding: 8px calc(96px + env(safe-area-inset-right, 0px)) 8px 14px; z-index: 9; min-height: 54px; }
+.top { gap: 16px; padding: 8px calc(100px + env(safe-area-inset-right, 0px)) 8px 14px; z-index: 9; min-height: 54px; }
 .brand h1 { font-size: 17px; }
 .brand p { font-size: 11.5px; }
 .counts { gap: 14px; margin-left: 6px; }
@@ -687,22 +687,38 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 .mini td.r { text-align: right; }
 .sheet-meta .clock { margin-left: auto; }
 
-/* ---------- theme switch (fixed, top right) + petals ---------- */
-.theme-toggle { position: fixed; z-index: 60; top: max(10px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); width: 64px; height: 34px; padding: 0; border: 0; border-radius: 999px; background: none; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
-.theme-toggle::before { content: ''; position: absolute; inset: -6px; border-radius: 999px; }
-.tt-track { position: absolute; inset: 0; border-radius: 999px; background: #0b0e18; box-shadow: inset 0 2px 5px rgba(0, 0, 0, .7), 0 0 0 1px rgba(127, 179, 255, .38), 0 6px 16px rgba(0, 0, 0, .4); transition: background .4s var(--ez), box-shadow .4s var(--ez); }
-.theme-toggle.to-light .tt-track { background: #f0ebe1; box-shadow: inset 0 2px 5px rgba(90, 70, 50, .22), 0 0 0 1px rgba(120, 95, 70, .4), 0 6px 16px rgba(90, 70, 50, .2); }
-.tt-knob { position: absolute; left: 4px; top: 4px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; transform: translateX(calc(var(--k, 0) * 30px)); color: #fff;
-  background: radial-gradient(circle at 35% 30%, #46527c, #161b2e); box-shadow: 0 3px 0 -1px #9aa9ff, 0 7px 14px rgba(110, 130, 255, .7);
-  transition: transform .42s cubic-bezier(.3, 1.35, .4, 1), background .4s, box-shadow .4s, color .3s; }
-.theme-toggle.dragging .tt-knob { transition: background .4s, box-shadow .4s, color .3s; }
-.theme-toggle.to-light .tt-knob { color: #33291f; background: radial-gradient(circle at 35% 30%, #ffffff, #f4ead6); box-shadow: 0 -3px 0 -1px #f3b23a, 0 -6px 14px rgba(243, 170, 40, .65), 0 2px 6px rgba(90, 70, 50, .25); }
-.tt-ico { position: absolute; display: grid; transition: opacity .3s, transform .4s var(--ez); }
-.tt-ico.sun { opacity: 0; transform: rotate(-70deg) scale(.5); }
-.theme-toggle.to-light .tt-ico.sun { opacity: 1; transform: none; }
-.theme-toggle.to-light .tt-ico.moon { opacity: 0; transform: rotate(70deg) scale(.5); }
+/* ---------- theme switch (fixed, top right) + petals ----------
+   Follows the reference clip: frosted glass pill, a large glass knob with a dot-matrix icon whose
+   dots scatter while it travels, and a light arc that swings round the knob (violet below in the
+   dark, amber above in the light). --k is the knob position 0..1, --s the scatter amount. */
+.theme-toggle { position: fixed; z-index: 60; top: max(9px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); width: 70px; height: 38px; padding: 0; border: 0; border-radius: 999px; background: none; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; view-transition-name: theme-toggle; --mix: calc(var(--k, 0) * 100%); }
+.theme-toggle.dragging { cursor: grabbing; }
+.theme-toggle::before { content: ''; position: absolute; inset: -5px; border-radius: 999px; }
+.tt-track { position: absolute; inset: 0; border-radius: 999px;
+  background: color-mix(in srgb, #ecebe7 var(--mix), #06070c);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, rgba(255, 255, 255, .9) var(--mix), rgba(255, 255, 255, .08)), inset 0 -2px 6px color-mix(in srgb, rgba(120, 110, 100, .18) var(--mix), rgba(0, 0, 0, .8)),
+    0 0 0 1px color-mix(in srgb, rgba(150, 140, 128, .45) var(--mix), rgba(140, 150, 200, .28)), 0 8px 18px color-mix(in srgb, rgba(90, 80, 70, .28) var(--mix), rgba(0, 0, 0, .55));
+  opacity: calc(1 - var(--s, 0) * .22); }
+.tt-knob { position: absolute; left: 3px; top: 3px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; transform: translateX(calc(var(--k, 0) * 32px));
+  color: color-mix(in srgb, #2e2620 var(--mix), #f4f6ff);
+  background: radial-gradient(circle at 34% 26%, color-mix(in srgb, #ffffff var(--mix), #59648c), color-mix(in srgb, #f3ecdc var(--mix), #1b2036) 62%, color-mix(in srgb, #efe3c8 var(--mix), #0d1020));
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .55), inset 0 -3px 6px color-mix(in srgb, rgba(190, 160, 110, .28) var(--mix), rgba(0, 0, 0, .55)), 0 2px 6px color-mix(in srgb, rgba(90, 70, 50, .3) var(--mix), rgba(0, 0, 0, .6)); }
+/* the light arc: a thin ring segment that rotates from the bottom (dark) past the left to the top right (light) */
+.tt-arc { position: absolute; inset: -3px; border-radius: 50%; pointer-events: none; transform: rotate(calc(180deg + var(--k, 0) * 205deg));
+  border: 2.5px solid transparent; border-top-color: color-mix(in srgb, #f6b638 var(--mix), #aab4ff);
+  filter: drop-shadow(0 -3px 5px color-mix(in srgb, rgba(246, 170, 40, .95) var(--mix), rgba(130, 145, 255, .95))) drop-shadow(0 -6px 12px color-mix(in srgb, rgba(246, 170, 40, .55) var(--mix), rgba(110, 125, 255, .7))); }
+.tt-ico { position: absolute; display: grid; }
+.tt-ico.moon { opacity: clamp(0, calc((0.5 - var(--k, 0)) * 6 + 0.5), 1); }
+.tt-ico.sun { opacity: clamp(0, calc((var(--k, 0) - 0.5) * 6 + 0.5), 1); }
 .tt-state { display: none; }
 .theme-toggle:focus-visible { outline: 2px solid var(--indigo-2); outline-offset: 4px; }
+/* the new theme grows out of the knob as a circle */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: themeReveal .75s cubic-bezier(.45, 0, .2, 1) both; }
+::view-transition-group(theme-toggle) { z-index: 2; }
+::view-transition-old(theme-toggle) { display: none; }
+::view-transition-new(theme-toggle) { animation: none; }
+@keyframes themeReveal { from { clip-path: circle(0 at var(--vt-x, 100%) var(--vt-y, 0)); } to { clip-path: circle(160vmax at var(--vt-x, 100%) var(--vt-y, 0)); } }
 .petal-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 59; }
 .petal-layer i { position: absolute; display: block; border-radius: 100% 0 100% 0; background: linear-gradient(135deg, var(--petal), color-mix(in srgb, var(--petal) 78%, #fff)); box-shadow: inset -1px -1px 0 var(--petal-edge); opacity: 0; will-change: transform, opacity; }
 
@@ -719,7 +735,7 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 /* ---------- phone: drawer + bottom sheet ---------- */
 @media (max-width: 760px) {
   .app { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'top' 'center'; }
-  .top { gap: 8px; padding: 8px calc(88px + env(safe-area-inset-right, 0px)) 8px max(10px, env(safe-area-inset-left, 0px)); }
+  .top { gap: 8px; padding: 8px calc(94px + env(safe-area-inset-right, 0px)) 8px max(10px, env(safe-area-inset-left, 0px)); }
   .nav-btn { display: inline-flex; min-height: 40px; }
   .brand svg, .brand p, .counts { display: none; }
   .brand h1 { font-size: 15px; line-height: 1.2; }

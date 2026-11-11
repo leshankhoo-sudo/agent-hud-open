@@ -186,9 +186,9 @@ const before = await page.evaluate(() => { const m = window.__kyotoMap; return {
 const tg = page.getByRole('switch', { name: 'Light theme' });
 const tb = await tg.boundingBox();
 const fromLeft = before.theme === 'dark';
-await page.mouse.move(tb.x + (fromLeft ? 17 : 47), tb.y + 17);
+await page.mouse.move(tb.x + (fromLeft ? 19 : 51), tb.y + 19);
 await page.mouse.down();
-for (let i = 1; i <= 10; i++) { await page.mouse.move(tb.x + (fromLeft ? 17 + i * 3.2 : 47 - i * 3.2), tb.y + 17); await page.waitForTimeout(80); }
+for (let i = 1; i <= 10; i++) { await page.mouse.move(tb.x + (fromLeft ? 19 + i * 3.4 : 51 - i * 3.4), tb.y + 19); await page.waitForTimeout(80); }
 const petalsMid = await page.locator('.petal-layer i').count();
 await page.mouse.up();
 await page.waitForTimeout(1500);

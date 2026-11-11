@@ -97,7 +97,7 @@ export default function App() {
   useEffect(() => { loadAll().then(setLoaded); }, []);
   // Theme: only colours change. Filters, selection, analysis state and the planned visit are untouched.
   useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
-  const setTheme = (t) => { setThemeState(t); rememberTheme(t); };
+  const setTheme = (t) => { document.documentElement.dataset.theme = t; setThemeState(t); rememberTheme(t); };
   const T = themeOf(theme);
   const dotColor = (f) => pointColor(f.properties, theme);
 
