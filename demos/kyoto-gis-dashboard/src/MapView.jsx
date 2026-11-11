@@ -3,14 +3,16 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { ATTRACTION_CATS, TRANSPORT_TYPES } from './lib/data.js';
 import { addTransitIcons } from './lib/icons.js';
+import { themeOf } from './lib/theme.js';
 
 // Basemaps, no API key. See README for usage terms.
-// "night" is a vector basemap (OpenFreeMap, OSM data) drawn in our own dark style: near-black land,
-// cyan water, green parks, thin road lines and only a few town names, so the project data stays readable.
+// "night" is a vector basemap (OpenFreeMap, OSM data) drawn in our own style, with only a few town names so
+// the project data stays readable. Dark theme: near-black land, cyan water, green parks, thin road lines.
+// Light theme: warm paper land, soft grey-blue water, pale green parks, brown-grey roads.
 const OFM_ATTR = '<a href="https://openfreemap.org" target="_blank" rel="noreferrer">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank" rel="noreferrer">© OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>';
 const GLYPHS = 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf';
 export const BASEMAPS = {
-  night: { label: 'Night', vector: 'https://tiles.openfreemap.org/planet', attribution: OFM_ATTR },
+  night: { label: 'Styled', vector: 'https://tiles.openfreemap.org/planet', attribution: OFM_ATTR },
   gsi: {
     label: 'GSI pale',
     tiles: ['https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png'],
@@ -30,61 +32,60 @@ const catExpr = (cats) => ['in', ['get', 'category'], ['literal', cats]];
 const typeExpr = (types) => ['in', ['get', 'transport_type'], ['literal', types]];
 const sumExpr = (cats) => (cats.length ? ['+', 0, ...cats.map((c) => ['get', c])] : 0);
 export const KDE_BREAKS = [0.05, 0.5, 1, 2, 4, 8];
-export const KDE_COLORS = ['#163a7a', '#1f5bbf', '#2e8cf0', '#3fc4f0', '#9ee8d6', '#f2e28b'];
+export const kdeColors = (theme) => themeOf(theme).kde;
 
 const prefersReducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// The real tiles are restyled for the dark dashboard: inverted, desaturated and tinted blue.
-// Only colours change; geometry and labels are the provider's.
-const basePaint = () => ({ 'raster-brightness-min': 1, 'raster-brightness-max': 0.06, 'raster-saturation': -0.85, 'raster-contrast': 0.18, 'raster-hue-rotate': 200 });
 // Offline preview build (claude.ai viewer blocks external tiles): background only, no fake basemap.
 export const OFFLINE_PREVIEW = import.meta.env.VITE_TARGET === 'artifact';
 const lineW = (z0, w0, z1, w1) => ['interpolate', ['linear'], ['zoom'], z0, w0, z1, w1];
 const placeName = ['upcase', ['coalesce', ['get', 'name:en'], ['get', 'name_en'], ['get', 'name:latin'], ['get', 'name']]];
-const placeLayer = (id, cls, minzoom, size) => ({
+const placeLayer = (id, cls, minzoom, size, B) => ({
   id, type: 'symbol', source: 'omt', 'source-layer': 'place', minzoom, filter: ['==', ['get', 'class'], cls],
   layout: { 'text-field': placeName, 'text-font': ['Noto Sans Regular'], 'text-size': size, 'text-letter-spacing': 0.14, 'text-max-width': 9, 'text-padding': 30, 'symbol-sort-key': ['coalesce', ['get', 'rank'], 99] },
-  paint: { 'text-color': '#e8eefc', 'text-opacity': 0.78, 'text-halo-color': '#04060b', 'text-halo-width': 1.4 },
+  paint: { 'text-color': B.label, 'text-opacity': B.labelOp, 'text-halo-color': B.halo, 'text-halo-width': 1.4 },
 });
 // Culverted rivers and road/rail tunnels are hidden: they are underground and only add clutter.
 const NO_TUNNEL = ['!=', ['get', 'brunnel'], 'tunnel'];
-const NIGHT_LAYERS = [
-  { id: 'bm-landuse', type: 'fill', source: 'omt', 'source-layer': 'landuse', filter: ['in', ['get', 'class'], ['literal', ['residential', 'commercial', 'industrial', 'retail']]], paint: { 'fill-color': '#0d121c', 'fill-opacity': 0.9 } },
-  { id: 'bm-landcover', type: 'fill', source: 'omt', 'source-layer': 'landcover', filter: ['in', ['get', 'class'], ['literal', ['wood', 'grass']]], paint: { 'fill-color': ['match', ['get', 'class'], 'wood', '#0c2418', '#123020'], 'fill-opacity': 0.75 } },
-  { id: 'bm-park', type: 'fill', source: 'omt', 'source-layer': 'park', paint: { 'fill-color': '#1d4a2a', 'fill-opacity': 0.55 } },
-  { id: 'bm-water', type: 'fill', source: 'omt', 'source-layer': 'water', paint: { 'fill-color': ['match', ['get', 'class'], 'ocean', '#0a0f16', '#2bb3c8'], 'fill-opacity': ['match', ['get', 'class'], 'ocean', 1, 0.85] } },
-  { id: 'bm-waterway', type: 'line', source: 'omt', 'source-layer': 'waterway', filter: NO_TUNNEL, paint: { 'line-color': '#36bfd6', 'line-opacity': ['match', ['get', 'class'], 'river', 0.6, 0.35], 'line-width': ['interpolate', ['linear'], ['zoom'], 8, ['match', ['get', 'class'], 'river', 0.4, 0.15], 14, ['match', ['get', 'class'], 'river', 1.6, 0.7]] } },
-  { id: 'bm-building', type: 'fill', source: 'omt', 'source-layer': 'building', minzoom: 14, paint: { 'fill-color': '#161e2c', 'fill-opacity': 0.9 } },
-  { id: 'bm-road-minor', type: 'line', source: 'omt', 'source-layer': 'transportation', minzoom: 11, filter: ['all', NO_TUNNEL, ['in', ['get', 'class'], ['literal', ['minor', 'service', 'track', 'path']]]], paint: { 'line-color': '#7d98c0', 'line-opacity': 0.14, 'line-width': lineW(11, 0.3, 16, 1.4) } },
-  { id: 'bm-road', type: 'line', source: 'omt', 'source-layer': 'transportation', filter: ['all', NO_TUNNEL, ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']]]], paint: { 'line-color': '#7d98c0', 'line-opacity': ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'class'], ['motorway', 'trunk'], 0.28, 0.1], 13, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 0.38, 0.22]], 'line-width': ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'class'], ['motorway', 'trunk'], 0.6, 0.25], 14, ['match', ['get', 'class'], ['motorway', 'trunk'], 1.6, 1]], 'line-blur': 0.3 } },
-  { id: 'bm-rail', type: 'line', source: 'omt', 'source-layer': 'transportation', filter: ['all', NO_TUNNEL, ['in', ['get', 'class'], ['literal', ['rail', 'transit']]]], paint: { 'line-color': '#e6eefc', 'line-opacity': 0.5, 'line-width': lineW(8, 0.6, 14, 1.4), 'line-dasharray': [3, 2] } },
-  placeLayer('bm-place-city', 'city', 7, lineW(7, 10, 13, 14)),
-  placeLayer('bm-place-town', 'town', 10.5, lineW(10.5, 9.5, 14, 12)),
+const BIG = ['motorway', 'trunk'];
+const vectorLayers = (B) => [
+  { id: 'bm-landuse', type: 'fill', source: 'omt', 'source-layer': 'landuse', filter: ['in', ['get', 'class'], ['literal', ['residential', 'commercial', 'industrial', 'retail']]], paint: { 'fill-color': B.landuse, 'fill-opacity': 0.9 } },
+  { id: 'bm-landcover', type: 'fill', source: 'omt', 'source-layer': 'landcover', filter: ['in', ['get', 'class'], ['literal', ['wood', 'grass']]], paint: { 'fill-color': ['match', ['get', 'class'], 'wood', B.wood, B.grass], 'fill-opacity': B.coverOp } },
+  { id: 'bm-park', type: 'fill', source: 'omt', 'source-layer': 'park', paint: { 'fill-color': B.park, 'fill-opacity': B.parkOp } },
+  { id: 'bm-water', type: 'fill', source: 'omt', 'source-layer': 'water', paint: { 'fill-color': ['match', ['get', 'class'], 'ocean', B.ocean, B.water], 'fill-opacity': ['match', ['get', 'class'], 'ocean', 1, B.waterOp] } },
+  { id: 'bm-waterway', type: 'line', source: 'omt', 'source-layer': 'waterway', filter: NO_TUNNEL, paint: { 'line-color': B.waterway, 'line-opacity': ['match', ['get', 'class'], 'river', B.riverOp, B.streamOp], 'line-width': ['interpolate', ['linear'], ['zoom'], 8, ['match', ['get', 'class'], 'river', 0.4, 0.15], 14, ['match', ['get', 'class'], 'river', 1.6, 0.7]] } },
+  { id: 'bm-building', type: 'fill', source: 'omt', 'source-layer': 'building', minzoom: 14, paint: { 'fill-color': B.building, 'fill-opacity': 0.9 } },
+  { id: 'bm-road-minor', type: 'line', source: 'omt', 'source-layer': 'transportation', minzoom: 11, filter: ['all', NO_TUNNEL, ['in', ['get', 'class'], ['literal', ['minor', 'service', 'track', 'path']]]], paint: { 'line-color': B.roadMinor, 'line-opacity': B.roadMinorOp, 'line-width': lineW(11, 0.3, 16, 1.4) } },
+  { id: 'bm-road', type: 'line', source: 'omt', 'source-layer': 'transportation', filter: ['all', NO_TUNNEL, ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']]]], paint: { 'line-color': B.road, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'class'], BIG, B.roadOp[0], B.roadOp[1]], 13, ['match', ['get', 'class'], [...BIG, 'primary'], B.roadOp[2], B.roadOp[3]]], 'line-width': ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'class'], BIG, 0.6, 0.25], 14, ['match', ['get', 'class'], BIG, 1.6, 1]], 'line-blur': 0.3 } },
+  { id: 'bm-rail', type: 'line', source: 'omt', 'source-layer': 'transportation', filter: ['all', NO_TUNNEL, ['in', ['get', 'class'], ['literal', ['rail', 'transit']]]], paint: { 'line-color': B.rail, 'line-opacity': B.railOp, 'line-width': lineW(8, 0.6, 14, 1.4), 'line-dasharray': [3, 2] } },
+  placeLayer('bm-place-city', 'city', 7, lineW(7, 10, 13, 14), B),
+  placeLayer('bm-place-town', 'town', 10.5, lineW(10.5, 9.5, 14, 12), B),
 ];
 // Basemap sources and layers (ids start with "bm-"; all sit under the project data).
-function baseParts(key) {
+function baseParts(key, theme) {
   const b = BASEMAPS[key] || BASEMAPS.night;
-  if (b.vector) return { bg: '#05080f', sources: { omt: { type: 'vector', url: b.vector, attribution: b.attribution } }, layers: NIGHT_LAYERS };
+  const B = themeOf(theme).base;
+  if (b.vector) return { bg: B.bg, sources: { omt: { type: 'vector', url: b.vector, attribution: b.attribution } }, layers: vectorLayers(B) };
   return {
-    bg: '#071027',
+    bg: B.rasterBg,
     sources: { base: { type: 'raster', tiles: b.tiles, tileSize: 256, maxzoom: b.maxzoom, attribution: b.attribution } },
-    layers: [{ id: 'bm-raster', type: 'raster', source: 'base', paint: basePaint() }],
+    layers: [{ id: 'bm-raster', type: 'raster', source: 'base', paint: { ...B.raster } }],
   };
 }
-function styleFor(basemap) {
-  if (OFFLINE_PREVIEW) return { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#071027' } }] };
-  const p = baseParts(basemap);
+function styleFor(basemap, theme) {
+  if (OFFLINE_PREVIEW) return { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': themeOf(theme).offlineBg } }] };
+  const p = baseParts(basemap, theme);
   return { version: 8, glyphs: GLYPHS, sources: p.sources, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': p.bg } }, ...p.layers] };
 }
 const TRANSIT_LAYERS = ['transport-pt', 'transport-sym-rail', 'transport-sym-bus'];
 
-export default function MapView({ active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk }) {
+export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk }) {
   const el = useRef(null);
   const mapRef = useRef(null);
   const marker = useRef(null);
   const callout = useRef(null);
   const latest = useRef({});
-  latest.current = { onSelect, onHover, cats, types, query, densityMode, active };
+  latest.current = { onSelect, onHover, cats, types, query, densityMode, active, theme };
   const introPending = useRef(false);
   useEffect(() => {
     if (active && introPending.current && mapRef.current) { introPending.current = false; mapRef.current.resize(); intro(mapRef.current); }
@@ -94,7 +95,7 @@ export default function MapView({ active = true, focus = null, data, cats, types
   useEffect(() => {
     const map = new maplibregl.Map({
       container: el.current,
-      style: styleFor(basemap),
+      style: styleFor(basemap, theme),
       bounds: [[134.85, 34.7], [136.06, 35.79]],
       fitBoundsOptions: { padding: 24 },
       attributionControl: false,
@@ -102,7 +103,7 @@ export default function MapView({ active = true, focus = null, data, cats, types
       dragRotate: false,
     });
     map.touchZoomRotate.disableRotation();
-    map.addControl(new maplibregl.AttributionControl({ compact: false, customAttribution: DATA_ATTR }), 'bottom-right');
+    map.addControl(new maplibregl.AttributionControl({ compact: innerWidth <= 760, customAttribution: DATA_ATTR }), 'bottom-right');
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
     mapRef.current = map;
@@ -111,12 +112,12 @@ export default function MapView({ active = true, focus = null, data, cats, types
 
     map.on('load', () => {
       // style.load can fire first and add the layers already (vector style)
-      if (!map.getSource('attractions')) addDataLayers(map, data);
+      if (!map.getSource('attractions')) addDataLayers(map, data, latest.current.theme);
       if (latest.current.active) intro(map);
       else introPending.current = true;
     });
     map.on('style.load', () => {
-      if (!map.getSource('attractions')) addDataLayers(map, data);
+      if (!map.getSource('attractions')) addDataLayers(map, data, latest.current.theme);
       applyFilters(map, latest.current);
     });
 
@@ -141,7 +142,7 @@ export default function MapView({ active = true, focus = null, data, cats, types
 
   useEffect(() => {
     const map = mapRef.current;
-    if (map && map.getSource('attractions') && map.getLayer('attractions-pt')) applyFilters(map, { cats, types, query, densityMode });
+    if (map && map.getSource('attractions') && map.getLayer('attractions-pt')) applyFilters(map, { cats, types, query, densityMode, theme });
   }, [cats, types, query, densityMode]);
 
   // Linked hover from the earlier dashboard: hovering a category or transit type in the filter
@@ -171,21 +172,34 @@ export default function MapView({ active = true, focus = null, data, cats, types
     map.setPaintProperty('transport-pt', 'circle-radius', grow(['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'transport_type'], 'bus', 0.9, 2.4], 12, ['match', ['get', 'transport_type'], 'bus', 2.6, 4.5], 16, ['match', ['get', 'transport_type'], 'bus', 5, 7]], tMatch));
   }, [focus]);
 
-  // Swap the basemap without rebuilding the data layers.
+  // Swap the basemap or the colour theme without rebuilding the data sources: the camera, filters,
+  // selection, walking routes and density layer all stay as they are; only colours change.
   const firstBase = useRef(true);
   useEffect(() => {
     const map = mapRef.current;
     if (firstBase.current) { firstBase.current = false; return; }
-    if (!map || OFFLINE_PREVIEW || !map.getLayer('bg')) return;
-    const layers = map.getStyle().layers;
-    const before = layers.find((l) => l.id !== 'bg' && !l.id.startsWith('bm-'))?.id;
-    layers.filter((l) => l.id.startsWith('bm-')).forEach((l) => map.removeLayer(l.id));
-    for (const s of ['base', 'omt']) if (map.getSource(s)) map.removeSource(s);
-    const p = baseParts(basemap);
-    for (const [k, v] of Object.entries(p.sources)) map.addSource(k, v);
-    for (const l of p.layers) map.addLayer(l, before);
-    map.setPaintProperty('bg', 'background-color', p.bg);
-  }, [basemap]);
+    if (!map) return;
+    const apply = () => {
+      if (!map.getLayer('bg')) return;
+      if (OFFLINE_PREVIEW) map.setPaintProperty('bg', 'background-color', themeOf(theme).offlineBg);
+      else {
+        const layers = map.getStyle().layers;
+        const before = layers.find((l) => l.id !== 'bg' && !l.id.startsWith('bm-'))?.id;
+        layers.filter((l) => l.id.startsWith('bm-')).forEach((l) => map.removeLayer(l.id));
+        for (const s of ['base', 'omt']) if (map.getSource(s)) map.removeSource(s);
+        const p = baseParts(basemap, theme);
+        for (const [k, v] of Object.entries(p.sources)) map.addSource(k, v);
+        for (const l of p.layers) map.addLayer(l, before);
+        map.setPaintProperty('bg', 'background-color', p.bg);
+      }
+      if (map.getLayer('attractions-pt')) {
+        restyleData(map, theme);
+        applyFilters(map, { ...latest.current, theme });
+      }
+    };
+    if (map.isStyleLoaded() || map.getLayer('bg')) apply();
+    else map.once('style.load', apply);
+  }, [basemap, theme]);
 
   // Walking reach: routes grow out from the attractions at one constant speed (metres per second),
   // stopping at the chosen max distance. A stop lights up the moment its route reaches it.
@@ -289,13 +303,13 @@ export default function MapView({ active = true, focus = null, data, cats, types
       callout.current = new maplibregl.Marker({ element: c, anchor: 'bottom-left', offset: [6, -6] }).setLngLat(selected.coords).addTo(map);
     }
     const z = Math.max(map.getZoom(), 13.5);
-    if (selected.fly !== false) map.flyTo({ center: selected.coords, zoom: z, duration: prefersReducedMotion() ? 0 : 1100, essential: true, offset: [0, 0] });
+    if (selected.fly !== false) map.flyTo({ center: selected.coords, zoom: z, duration: prefersReducedMotion() ? 0 : 1100, essential: true, offset: [0, innerWidth <= 760 ? -map.getContainer().clientHeight * 0.27 : 0] }); // on phones the details sheet covers the lower map
   }, [selected]);
 
   return <div ref={el} className="map" role="region" aria-label="Map of Kyoto Prefecture" />;
 }
 
-const WALK_COLORS = [['bus', '#4fc3ff'], ['rail', '#f2c86b']];
+const WALK_TYPES = ['bus', 'rail'];
 // Moving dash pattern: stepping through these looks like light travelling along the path.
 const DASH_STEPS = [[0, 4, 3], [0.5, 4, 2.5], [1, 4, 2], [1.5, 4, 1.5], [2, 4, 1], [2.5, 4, 0.5], [3, 4, 0], [0, 0.5, 3, 3.5], [0, 1, 3, 3], [0, 1.5, 3, 2.5], [0, 2, 3, 2], [0, 2.5, 3, 1.5], [0, 3, 3, 1], [0, 3.5, 3, 0.5]];
 
@@ -363,12 +377,12 @@ function paintReach(map, st, maxWalk, mode, markers, delay = 0) {
 }
 function startFlow(map, off) {
   let last = -1;
-  for (const [t] of WALK_COLORS) if (map.getLayer(`walk-flow-${t}`)) map.setLayoutProperty(`walk-flow-${t}`, 'visibility', off ? 'none' : 'visible');
+  for (const t of WALK_TYPES) if (map.getLayer(`walk-flow-${t}`)) map.setLayoutProperty(`walk-flow-${t}`, 'visibility', off ? 'none' : 'visible');
   if (off) return;
   const f = (now) => {
     const step = Math.floor(now / 70) % DASH_STEPS.length;
     if (step !== last) {
-      for (const [t] of WALK_COLORS) map.setPaintProperty(`walk-flow-${t}`, 'line-dasharray', DASH_STEPS[step]);
+      for (const t of WALK_TYPES) map.setPaintProperty(`walk-flow-${t}`, 'line-dasharray', DASH_STEPS[step]);
       last = step;
     }
     flowAnim = requestAnimationFrame(f);
@@ -446,16 +460,40 @@ function reveal(map) {
   requestAnimationFrame(frame);
 }
 
-function addDataLayers(map, data) {
+const catColorExpr = (T) => ['match', ['get', 'category'], ...ATTRACTION_CATS.flatMap((c) => [c.key, T.cat[c.key]]), '#888'];
+const transitColorExpr = (T) => ['match', ['get', 'transport_type'], ...TRANSPORT_TYPES.flatMap((t) => [t.key, T.transit[t.key]]), '#888'];
+const heatExpr = (T) => ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.2, T.heat[0], 0.45, T.heat[1], 0.7, T.heat[2], 1, T.heat[3]];
+const walkRestExpr = (T) => ['match', ['get', 'stop_type'], 'rail', T.walk.rail, T.walk.bus];
+// Recolour the project layers for a theme. Sources, filters and visibility are left alone.
+function restyleData(map, theme) {
+  const T = themeOf(theme);
+  const set = (l, p, v) => { if (map.getLayer(l)) map.setPaintProperty(l, p, v); };
+  set('muni-line', 'line-color', T.muni);
+  set('outline-fill', 'fill-color', T.outline.fill);
+  set('outline-glow', 'line-color', T.outline.glow);
+  set('outline-line', 'line-color', T.outline.line);
+  set('pilot-line', 'line-color', T.pilot);
+  set('walk-rest', 'line-color', walkRestExpr(T));
+  for (const t of WALK_TYPES) { set(`walk-glow-${t}`, 'line-color', T.walk[t]); set(`walk-line-${t}`, 'line-color', T.walk[t]); }
+  set('heat', 'heatmap-color', heatExpr(T));
+  set('transport-pt', 'circle-color', transitColorExpr(T));
+  set('transport-pt', 'circle-stroke-color', T.stroke);
+  set('attractions-glow', 'circle-color', catColorExpr(T));
+  set('attractions-pt', 'circle-color', catColorExpr(T));
+  set('attractions-pt', 'circle-stroke-color', T.stroke);
+}
+
+function addDataLayers(map, data, theme) {
+  const T = themeOf(theme);
   if (data.municipalities) {
     map.addSource('muni', { type: 'geojson', data: data.municipalities });
-    map.addLayer({ id: 'muni-line', type: 'line', source: 'muni', paint: { 'line-color': '#7fb3ff', 'line-opacity': 0.35, 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 0.5, 12, 1.2], 'line-dasharray': [2, 2] } });
+    map.addLayer({ id: 'muni-line', type: 'line', source: 'muni', paint: { 'line-color': T.muni, 'line-opacity': 0.35, 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 0.5, 12, 1.2], 'line-dasharray': [2, 2] } });
   }
   if (data.outline) {
     map.addSource('outline', { type: 'geojson', data: data.outline });
-    map.addLayer({ id: 'outline-fill', type: 'fill', source: 'outline', paint: { 'fill-color': '#2e6bff', 'fill-opacity': 0.1 } }, 'muni-line');
-    map.addLayer({ id: 'outline-glow', type: 'line', source: 'outline', paint: { 'line-color': '#3d8bff', 'line-width': 14, 'line-blur': 12, 'line-opacity': 0.55 } });
-    map.addLayer({ id: 'outline-line', type: 'line', source: 'outline', paint: { 'line-color': '#9fd0ff', 'line-width': 1.8 } });
+    map.addLayer({ id: 'outline-fill', type: 'fill', source: 'outline', paint: { 'fill-color': T.outline.fill, 'fill-opacity': 0.1 } }, 'muni-line');
+    map.addLayer({ id: 'outline-glow', type: 'line', source: 'outline', paint: { 'line-color': T.outline.glow, 'line-width': 14, 'line-blur': 12, 'line-opacity': 0.55 } });
+    map.addLayer({ id: 'outline-line', type: 'line', source: 'outline', paint: { 'line-color': T.outline.line, 'line-width': 1.8 } });
   }
   if (data.kde) {
     map.addSource('kde', { type: 'geojson', data: data.kde });
@@ -464,12 +502,13 @@ function addDataLayers(map, data) {
   if (data.walking?.pilot?.bbox) {
     const [x0, y0, x1, y1] = data.walking.pilot.bbox;
     map.addSource('pilot', { type: 'geojson', data: { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]] } } });
-    map.addLayer({ id: 'pilot-line', type: 'line', source: 'pilot', paint: { 'line-color': '#f2c86b', 'line-width': 1.4, 'line-dasharray': [3, 2], 'line-opacity': 0.9 } });
+    map.addLayer({ id: 'pilot-line', type: 'line', source: 'pilot', paint: { 'line-color': T.pilot, 'line-width': 1.4, 'line-dasharray': [3, 2], 'line-opacity': 0.9 } });
   }
   map.addSource('walk', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
   map.addSource('walk-rest', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
-  map.addLayer({ id: 'walk-rest', type: 'line', source: 'walk-rest', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['match', ['get', 'stop_type'], 'rail', '#f2c86b', '#4fc3ff'], 'line-width': 2, 'line-opacity': 0.28, 'line-dasharray': [1, 2] } });
-  for (const [t, col] of WALK_COLORS) {
+  map.addLayer({ id: 'walk-rest', type: 'line', source: 'walk-rest', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': walkRestExpr(T), 'line-width': 2, 'line-opacity': 0.28, 'line-dasharray': [1, 2] } });
+  for (const t of WALK_TYPES) {
+    const col = T.walk[t];
     map.addLayer({ id: `walk-glow-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': col, 'line-width': 11, 'line-blur': 7, 'line-opacity': 0.45 } });
     map.addLayer({ id: `walk-line-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-width': 3.4, 'line-color': col } });
     map.addLayer({ id: `walk-flow-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 1.6, 'line-opacity': 0.85, 'line-dasharray': DASH_STEPS[0] } });
@@ -482,16 +521,16 @@ function addDataLayers(map, data) {
       'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 7, 10, 11, 22, 14, 40],
       'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 7, 0.8, 13, 1.6],
       'heatmap-opacity': 0.75,
-      'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(0,0,0,0)', 0.2, '#1f4fae', 0.45, '#2e9bf0', 0.7, '#7fe3e0', 1, '#fff2a8'],
+      'heatmap-color': heatExpr(T),
     },
   });
   map.addLayer({
     id: 'transport-pt', type: 'circle', source: 'transport',
     paint: {
-      'circle-color': ['match', ['get', 'transport_type'], ...TRANSPORT_TYPES.flatMap((t) => [t.key, t.color]), '#888'],
+      'circle-color': transitColorExpr(T),
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'transport_type'], 'bus', 0.9, 2.4], 12, ['match', ['get', 'transport_type'], 'bus', 2.6, 4.5], 16, ['match', ['get', 'transport_type'], 'bus', 5, 7]],
       'circle-opacity': ['match', ['get', 'transport_type'], 'bus', 0.75, 1],
-      'circle-stroke-color': '#071027',
+      'circle-stroke-color': T.stroke,
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 7, 0, 11, ['match', ['get', 'transport_type'], 'bus', 0.5, 1.2]],
     },
   });
@@ -509,20 +548,21 @@ function addDataLayers(map, data) {
   });
   map.addLayer({
     id: 'attractions-glow', type: 'circle', source: 'attractions',
-    paint: { 'circle-color': ['match', ['get', 'category'], ...ATTRACTION_CATS.flatMap((c) => [c.key, c.color]), '#888'], 'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 7, 12, 12, 16, 16], 'circle-blur': 1, 'circle-opacity': 0.45 },
+    paint: { 'circle-color': catColorExpr(T), 'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 7, 12, 12, 16, 16], 'circle-blur': 1, 'circle-opacity': 0.45 },
   });
   map.addLayer({
     id: 'attractions-pt', type: 'circle', source: 'attractions',
     paint: {
-      'circle-color': ['match', ['get', 'category'], ...ATTRACTION_CATS.flatMap((c) => [c.key, c.color]), '#888'],
+      'circle-color': catColorExpr(T),
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 3, 12, 5.5, 16, 8],
-      'circle-stroke-color': '#071027',
+      'circle-stroke-color': T.stroke,
       'circle-stroke-width': 1.2,
     },
   });
 }
 
-function applyFilters(map, { cats, types, query, densityMode }) {
+function applyFilters(map, { cats, types, query, densityMode, theme }) {
+  const KDE_COLORS = kdeColors(theme);
   const q = (query || '').trim().toLowerCase();
   const qExpr = q
     ? ['any', ['in', q, ['downcase', ['coalesce', ['get', 'name'], '']]], ['in', q, ['downcase', ['get', 'display_name']]], ['in', q, ['downcase', ['coalesce', ['get', 'name_en'], '']]], ['==', ['downcase', ['get', 'id']], q], ['==', ['get', 'osm_id'], q]]

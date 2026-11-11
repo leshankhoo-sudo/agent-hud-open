@@ -37,10 +37,16 @@ export function WxIcon({ kind, size = 22 }) {
   return <svg viewBox="0 0 24 24" style={s} aria-hidden="true">{body}</svg>;
 }
 
-export default function Weather({ target }) {
+// `visit` / `onVisit` (optional) keep the planned visit date and hour in the parent, so the choice
+// survives a change of tab, theme or selected place.
+export default function Weather({ target, visit, onVisit }) {
   const [state, setState] = useState({ status: 'idle' });
-  const [day, setDay] = useState(null);
-  const [hour, setHour] = useState(null);
+  const [own, setOwn] = useState({ day: null, hour: null });
+  const v = visit || own;
+  const setV = onVisit || setOwn;
+  const day = v.day, hour = v.hour;
+  const setDay = (d) => setV((o) => ({ ...o, day: typeof d === 'function' ? d(o.day) : d }));
+  const setHour = (h) => setV((o) => ({ ...o, hour: typeof h === 'function' ? h(o.hour) : h }));
   const ctrl = useRef(null);
 
   async function load(force = false) {
@@ -105,7 +111,7 @@ export default function Weather({ target }) {
           Refresh
         </button>
       </header>
-      <p className="note">Model estimate for the grid cell around this point (Open-Meteo), not an on-site measurement.</p>
+      <p className="note">Model estimate for this place (Open-Meteo), not an on-site measurement. Times are Asia/Tokyo.</p>
 
       {state.status === 'loading' && (
         <div className="wx-skel" aria-live="polite" aria-busy="true">
@@ -211,13 +217,13 @@ function HourChart({ hours, selected, onPick }) {
           const on = h.time === selected;
           return (
             <g key={h.time} onClick={() => onPick(h.time)} className="hc-col">
-              <rect x={pad + bw * i} y={0} width={bw} height={H} fill={on ? 'rgba(79,157,255,.16)' : 'transparent'} />
-              {pp != null && <rect className="hc-bar" style={{ '--d': `${i * 12}ms` }} x={pad + bw * i + 1} y={H - 14 - pp * 0.3} width={bw - 2} height={pp * 0.3} rx="1" fill={on ? '#7fb3ff' : '#2e6bdc'} />}
+              <rect x={pad + bw * i} y={0} width={bw} height={H} style={{ fill: on ? 'var(--chart-pick)' : 'transparent' }} />
+              {pp != null && <rect className="hc-bar" x={pad + bw * i + 1} y={H - 14 - pp * 0.3} width={bw - 2} height={pp * 0.3} rx="1" style={{ '--d': `${i * 12}ms`, fill: on ? 'var(--chart-bar-on)' : 'var(--chart-bar)' }} />}
               {i % 3 === 0 && <text x={pad + bw * (i + 0.5)} y={H - 2} textAnchor="middle">{h.time.slice(11, 13)}</text>}
             </g>
           );
         })}
-        <path d={path} fill="none" stroke="#f2c86b" strokeWidth="1.8" strokeLinejoin="round" className="hc-line" />
+        <path d={path} fill="none" style={{ stroke: 'var(--chart-line)' }} strokeWidth="1.8" strokeLinejoin="round" className="hc-line" />
         <text x={W - pad} y={9} textAnchor="end">{Math.round(tmax)}°</text>
         <text x={W - pad} y={50} textAnchor="end">{Math.round(tmin)}°</text>
       </svg>

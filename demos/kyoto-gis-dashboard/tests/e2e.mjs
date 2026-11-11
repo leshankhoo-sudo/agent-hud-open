@@ -101,7 +101,8 @@ await page.screenshot({ path: `${out}/02-filtered.png` });
 await page.getByLabel('Viewpoint').check();
 await page.getByLabel('Bus').check();
 
-// 4. density modes
+// 4. density modes (the analysis panels are closed until opened)
+await page.getByRole('button', { name: /Attraction Density/ }).click();
 await page.getByRole('radio', { name: 'KDE result' }).click();
 await page.waitForTimeout(1200);
 const kdeVis = await page.evaluate(() => window.__kyotoMap.getLayoutProperty('kde-fill', 'visibility'));
@@ -116,13 +117,19 @@ await page.getByRole('radio', { name: 'Off' }).click();
 await page.locator('#q').fill('A00265');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1800);
+await page.getByRole('tab', { name: 'Walking Routes' }).click();
 const walkText = await page.locator('.walk-na').innerText();
-check('walking panel says "Walking analysis not yet available"', walkText.includes('Walking analysis not yet available'));
-check('walking card marked as pilot only', (await page.locator('aside.left').innerText()).includes('Pilot area only'));
-const detail = await page.locator('.detail').innerText();
+check('outside the pilot the walking tab says "Not calculated yet", with no distance', walkText.includes('Not calculated yet') && !/\d+ m\b/.test(walkText.replace(/\d+ named/, '')), walkText.replace(/\n/g, ' / '));
+check('walking entry marked as pilot only', (await page.locator('aside.left').innerText()).includes('Pilot · 19 records'));
+await page.getByRole('tab', { name: 'Overview' }).click();
+await page.locator('.tech summary').click();
+const ovText = await page.locator('#pane-overview').innerText();
+check('overview shows the municipal tourism count with year, unit and source', ovText.includes('62,787,000') && ovText.includes('2025') && ovText.includes('not this ward and not this place') && ovText.includes('Tourism Report'), ovText.replace(/\n/g, ' / ').slice(0, 200));
+const detail = await page.locator('aside.right').innerText();
 check('detail shows name, ID, category, municipality', detail.includes('金閣') && detail.includes('A00265') && detail.includes('Attraction') && detail.includes('京都市 北区'), detail.replace(/\n/g, ' / ').slice(0, 160));
 
 // 6. weather
+await page.getByRole('tab', { name: 'Weather' }).click();
 await page.waitForSelector('.wx-body, .alert', { timeout: 30000 });
 const wxOk = await page.locator('.wx-body').count();
 const wxText = (await page.locator('.wx').innerText()).replace(/\n/g, ' / ');
@@ -143,6 +150,7 @@ await p2.goto(url);
 await p2.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.loaded(), null, { timeout: 30000 });
 await p2.locator('#q').fill('S00019');
 await p2.locator('.results button').first().click();
+await p2.getByRole('tab', { name: 'Weather' }).click();
 await p2.waitForSelector('.alert', { timeout: 15000 });
 const failText = await p2.locator('.wx').innerText();
 check('offline: weather error shown, no temperature displayed', /Weather unavailable/.test(failText) && !/°C/.test(failText), failText.replace(/\n/g, ' / ').slice(0, 160));
@@ -153,10 +161,12 @@ await p2.close();
 await page.locator('#q').fill('A00230');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(2200);
+await page.getByRole('tab', { name: 'Walking Routes' }).click();
 const wt = await page.locator('.walk').innerText();
 await page.waitForTimeout(1500);
 const routesOnMap = await page.evaluate(() => window.__kyotoMap.getSource('walk')._data.features.map((f) => f.properties.stop_type).sort());
 const litStops = await page.evaluate(() => [...document.querySelectorAll('.stop-tag.on')].map((e) => e.innerText.replace(/\n/g, ' ')));
+check('within / beyond the chosen distance are labelled separately', wt.includes('Within 500 m') && wt.includes('Beyond 500 m'));
 check('pilot record A00230: bus and rail network distances shown', wt.includes('S00602') && wt.includes('74.7') === false && /75 m/.test(wt) && wt.includes('S01877'), wt.replace(/\n/g, ' / ').slice(0, 220));
 check('route lines drawn on map for both stop types', JSON.stringify(routesOnMap) === '["bus","rail"]', JSON.stringify(routesOnMap));
 check('at 500 m only the bus stop (75 m) lights up; rail (749 m) stays dim', litStops.length === 1 && litStops[0].includes('五条坂'), JSON.stringify(litStops));
@@ -165,21 +175,52 @@ await page.locator('#q').fill('A00172');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
 const ut = await page.locator('.walk').innerText();
-check('A00172 shows unreachable with no distance', ut.includes('unreachable') && ut.includes('distance not available') && !/\d+ m ·/.test(ut));
-await page.getByRole('radio', { name: 'Off' }).click();
+check('A00172 shows unreachable with no distance', ut.includes('No connectable network route') && ut.includes('unreachable') && ut.includes('distance not available') && !/\d+ m ·/.test(ut));
+await page.getByRole('button', { name: /Walking Access/ }).click();
 const cov = await page.locator('.cov').innerText();
 check('coverage panel uses the 19 pilot records as denominator', cov.includes('of 19 pilot records'), cov.replace(/\n/g, ' / '));
 
 // 8. journeys panel
-await page.getByRole('button', { name: 'Sample journeys & fares' }).click();
+// 7c. theme switch keeps the place, tab, filters, routes and camera; petals appear and are removed
+const before = await page.evaluate(() => { const m = window.__kyotoMap; return { theme: document.documentElement.dataset.theme, z: m.getZoom().toFixed(3), c: m.getCenter().toArray().map((v) => v.toFixed(5)).join(), routes: m.getSource('walk')._data.features.length, name: document.querySelector('.detail h2').innerText, tab: document.querySelector('.tabs .on').innerText }; });
+const tg = page.getByRole('switch', { name: 'Light theme' });
+const tb = await tg.boundingBox();
+const fromLeft = before.theme === 'dark';
+await page.mouse.move(tb.x + (fromLeft ? 17 : 47), tb.y + 17);
+await page.mouse.down();
+for (let i = 1; i <= 10; i++) { await page.mouse.move(tb.x + (fromLeft ? 17 + i * 3.2 : 47 - i * 3.2), tb.y + 17); await page.waitForTimeout(80); }
+const petalsMid = await page.locator('.petal-layer i').count();
+await page.mouse.up();
+await page.waitForTimeout(1500);
+const after = await page.evaluate(() => { const m = window.__kyotoMap; return { theme: document.documentElement.dataset.theme, z: m.getZoom().toFixed(3), c: m.getCenter().toArray().map((v) => v.toFixed(5)).join(), routes: m.getSource('walk')._data.features.length, name: document.querySelector('.detail h2').innerText, tab: document.querySelector('.tabs .on').innerText, layers: ['attractions-pt', 'transport-pt', 'kde-fill', 'walk-line-bus', 'outline-glow', 'bm-water'].filter((l) => m.getLayer(l)).length, stored: localStorage.getItem('kyoto-gis-theme'), checked: document.querySelector('.theme-toggle').getAttribute('aria-checked') }; });
+check('dragging the switch knob changes the theme and remembers it', after.theme !== before.theme && after.stored === after.theme && after.checked === String(after.theme === 'light'), JSON.stringify(after));
+check('theme change keeps camera, selected place, tab and walking routes', after.z === before.z && after.c === before.c && after.name === before.name && after.tab === before.tab && after.routes === before.routes, `${before.name} · ${before.tab} · z${before.z}`);
+check('map data, analysis and basemap layers are all present after the change', after.layers === 6, String(after.layers));
+check('a drag releases only a few petals (1 to 5)', petalsMid >= 1 && petalsMid <= 5, String(petalsMid));
+await page.screenshot({ path: `${out}/05b-theme-switched.png` });
+await page.waitForTimeout(3600);
+check('petals are removed when their animation ends', (await page.locator('.petal-layer i').count()) === 0);
+check('petal layer cannot take clicks and adds no scrollbars', await page.evaluate(() => { const l = document.querySelector('.petal-layer'); const s = getComputedStyle(l); return s.pointerEvents === 'none' && s.overflow === 'hidden' && document.documentElement.scrollWidth <= innerWidth; }));
+await tg.focus();
+await page.keyboard.press('Enter');
+await page.waitForTimeout(600);
+check('keyboard toggles the theme back', (await page.evaluate(() => document.documentElement.dataset.theme)) === before.theme);
+await page.evaluate(() => scrollTo(0, 0));
+await page.waitForTimeout(300);
+check('switch stays in the viewport when the page is scrolled to the intro', await page.evaluate(() => { const r = document.querySelector('.theme-toggle').getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight && r.right <= innerWidth; }));
+await page.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+await page.waitForTimeout(400);
+
+await page.getByRole('button', { name: 'Journeys & Fares' }).click();
 await page.waitForTimeout(900);
 const jt = await page.locator('.sheet').innerText();
 check('journeys panel: 9 journeys, 0 linked, fares and sources visible', jt.includes('9 journeys') && jt.includes('Linked to map: 0') && jt.includes('¥230') && jt.includes('¥500') && jt.includes('Weekends / holidays') && jt.includes('Fare source'));
 await page.screenshot({ path: `${out}/06-journeys.png` });
 await page.keyboard.press('Escape');
-await page.getByRole('button', { name: 'Data & sources' }).click();
+await page.getByRole('button', { name: 'Data & Sources' }).click();
 await page.waitForTimeout(900);
 const st = await page.locator('.sheet').innerText();
+check('sources panel holds the status chips and visitor statistics', st.includes('Map data loaded') && st.includes('Walking: pilot only') && st.includes('Visitor statistics'));
 check('sources panel: OSM, N03, Open-Meteo, hash check, quality notes', st.includes('ODbL') && st.includes('N03') && st.includes('Open-Meteo') && st.includes('all match') && st.includes('2771085349'));
 await page.screenshot({ path: `${out}/07-sources.png` });
 
@@ -190,6 +231,15 @@ await ph.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.loaded(), 
 await ph.waitForTimeout(1500);
 const sw = await ph.evaluate(() => document.documentElement.scrollWidth);
 check('phone 390 px: no horizontal page scroll', sw <= 390, `scrollWidth ${sw}`);
+await ph.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+check('phone: explore panel starts closed and the map fills the width', (await ph.locator('aside.left').isVisible()) === false && (await ph.evaluate(() => document.querySelector('.center').offsetWidth)) === 390);
+await ph.locator('.nav-btn').click();
+await ph.locator('#q').fill('A00230');
+await ph.locator('.results button').first().click();
+await ph.waitForTimeout(1500);
+const phs = await ph.evaluate(() => { const r = document.querySelector('aside.right').getBoundingClientRect(); const t = document.querySelector('.theme-toggle').getBoundingClientRect(); const x = document.querySelector('.detail .x:not(.hide-btn)').getBoundingClientRect(); const d = document.getElementById('dashboard').getBoundingClientRect(); return { sheetTop: r.top - d.top, sheetBottom: r.bottom - d.top, vh: d.height, leftShown: getComputedStyle(document.querySelector('aside.left')).display !== 'none', overlap: !(t.right < x.left || t.left > x.right || t.bottom < x.top || t.top > x.bottom), sw: document.documentElement.scrollWidth }; });
+check('phone: picking a result closes the drawer and opens a bottom sheet', !phs.leftShown && phs.sheetTop > phs.vh * 0.25 && Math.abs(phs.sheetBottom - phs.vh) < 2, JSON.stringify(phs));
+check('phone: theme switch does not cover the close button; still no horizontal scroll', !phs.overlap && phs.sw <= 390);
 await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
 
 check('no page errors', errors.length === 0, errors.join(' | '));

@@ -1,0 +1,466 @@
+{
+ "generated": "2026-11-11T15:00:08+0000",
+ "source_file": "data/raw/documents/Kyoto_Tourism_Data_EN.xlsx",
+ "municipalities": {
+  "title": "Tourism Counts by Municipality",
+  "scope": "Kyoto Prefecture | Published old-standard series | Calendar years",
+  "source_url": "https://www.pref.kyoto.jp/kanko/research/documents/r7hyou1.pdf",
+  "accessed": "Accessed: 8 November 2026. English labels translated for this workbook.",
+  "notes": [
+   "Source: Kyoto Prefecture, 2025 Tourism Report, Table 1 (printed p.5).",
+   "Municipal totals, not individual attraction attendance. Do not allocate them to site points.",
+   "Use the published old-standard series consistently; do not mix with new-standard estimates."
+  ],
+  "unit": "reported tourism count (persons, published old-standard series)",
+  "years": [
+   2025,
+   2024
+  ],
+  "counts": {
+   "Kyoto City": {
+    "2025": 62787000,
+    "2024": 56061000
+   },
+   "Muko City": {
+    "2025": 320785,
+    "2024": 319469
+   },
+   "Nagaokakyo City": {
+    "2025": 691926,
+    "2024": 781270
+   },
+   "Oyamazaki Town": {
+    "2025": 432593,
+    "2024": 432703
+   },
+   "Uji City": {
+    "2025": 6194960,
+    "2024": 6144980
+   },
+   "Joyo City": {
+    "2025": 792534,
+    "2024": 807983
+   },
+   "Kumiyama Town": {
+    "2025": 92410,
+    "2024": 82672
+   },
+   "Yawata City": {
+    "2025": 1823212,
+    "2024": 1782608
+   },
+   "Kyotanabe City": {
+    "2025": 982621,
+    "2024": 936826
+   },
+   "Ide Town": {
+    "2025": 269038,
+    "2024": 280600
+   },
+   "Ujitawara Town": {
+    "2025": 197854,
+    "2024": 186277
+   },
+   "Kizugawa City": {
+    "2025": 813436,
+    "2024": 757444
+   },
+   "Kasagi Town": {
+    "2025": 137014,
+    "2024": 156471
+   },
+   "Wazuka Town": {
+    "2025": 203438,
+    "2024": 188332
+   },
+   "Seika Town": {
+    "2025": 570445,
+    "2024": 599853
+   },
+   "Minamiyamashiro Village": {
+    "2025": 649842,
+    "2024": 697930
+   },
+   "Kameoka City": {
+    "2025": 3250163,
+    "2024": 3149612
+   },
+   "Nantan City": {
+    "2025": 2565191,
+    "2024": 2591128
+   },
+   "Kyotamba Town": {
+    "2025": 4245097,
+    "2024": 4226975
+   },
+   "Ayabe City": {
+    "2025": 486574,
+    "2024": 488809
+   },
+   "Fukuchiyama City": {
+    "2025": 1033553,
+    "2024": 1021891
+   },
+   "Maizuru City": {
+    "2025": 2462624,
+    "2024": 2282509
+   },
+   "Miyazu City": {
+    "2025": 3130800,
+    "2024": 3005700
+   },
+   "Yosano Town": {
+    "2025": 333772,
+    "2024": 305465
+   },
+   "Ine Town": {
+    "2025": 535144,
+    "2024": 481497
+   },
+   "Kyotango City": {
+    "2025": 1687012,
+    "2024": 1851088
+   }
+  }
+ },
+ "reference_tables": [
+  {
+   "title": "Tourist Site Visits, 2015",
+   "scope": "Kyoto Prefecture excluding Kyoto City | Historical source ranking",
+   "columns": [
+    "Tourist site / attraction",
+    "Municipality",
+    "2015 visits",
+    "2014 visits"
+   ],
+   "source_url": "https://www.pref.kyoto.jp/kanko/documents/16hyou12.pdf",
+   "accessed": "Accessed: 8 November 2026. English labels translated for this workbook.",
+   "notes": [
+    "Source: Kyoto Prefecture, 2015 Tourism Report, Table 12 (printed p.16).",
+    "Historical records, not current popularity. Counts include sites, areas and a railway service.",
+    "Blank 2014 cells reproduce unavailable source values; do not interpret them as zero."
+   ],
+   "rows": [
+    [
+     "Amanohashidate",
+     "Miyazu City",
+     1943700,
+     1787500
+    ],
+    [
+     "Yamashiro Sports Park (Taiyogaoka)",
+     "Uji City",
+     1371480,
+     1281414
+    ],
+    [
+     "Sagano Romantic Train",
+     "Kameoka City",
+     1223610,
+     1107412
+    ],
+    [
+     "Iwashimizu Hachimangu Shrine",
+     "Yawata City",
+     1050000,
+     1080000
+    ],
+    [
+     "Maizuru Port Toretore Center",
+     "Maizuru City",
+     866940,
+     780386
+    ],
+    [
+     "Roadside Station Nagomi",
+     "Kyotamba Town",
+     746293,
+     870824
+    ],
+    [
+     "Kyotamba Ajimu-no-Sato",
+     "Kyotamba Town",
+     726972,
+     null
+    ],
+    [
+     "Nagaoka Tenmangu Shrine",
+     "Nagaokakyo City",
+     707100,
+     705300
+    ],
+    [
+     "Keihanna Commemorative Park",
+     "Seika Town",
+     596817,
+     647151
+    ],
+    [
+     "Kyoto Prefectural Uji Park",
+     "Uji City",
+     595800,
+     542500
+    ],
+    [
+     "Kyoto Tamba Nature Sports Park",
+     "Kyotamba Town",
+     574039,
+     531561
+    ],
+    [
+     "Springs Hiyoshi",
+     "Nantan City",
+     437384,
+     411234
+    ],
+    [
+     "Tango Kingdom Shoku-no-Miyako",
+     "Kyotango City",
+     400128,
+     null
+    ],
+    [
+     "Maizuru Red Brick Park",
+     "Maizuru City",
+     399014,
+     332795
+    ],
+    [
+     "Uji Shrine",
+     "Uji City",
+     360000,
+     354000
+    ],
+    [
+     "Central Miyazu area",
+     "Miyazu City",
+     333200,
+     289300
+    ],
+    [
+     "Yodogawa River Park, Sewaritei",
+     "Yawata City",
+     319056,
+     266147
+    ],
+    [
+     "Rurikei",
+     "Nantan City",
+     269817,
+     266718
+    ],
+    [
+     "Roadside Station Silk-no-Machi Kaya",
+     "Yosano Town",
+     266645,
+     253341
+    ],
+    [
+     "Flat Miyama",
+     "Nantan City",
+     254196,
+     120160
+    ]
+   ],
+   "unit": "visits per year"
+  },
+  {
+   "title": "Places Visited by Foreign Tourists",
+   "scope": "Kyoto City | 2023 survey | Overall response percentages",
+   "columns": [
+    "Place visited",
+    "Visit share (%)",
+    "Geographic scope"
+   ],
+   "source_url": "https://www.kyokanko.or.jp/wp/wp-content/uploads/kyoto_tourism_stat_2023.pdf",
+   "accessed": "Accessed: 8 November 2026. English labels translated for this workbook.",
+   "notes": [
+    "Source: Kyoto City Tourism Survey 2023 (revised), printed p.65 / PDF p.67.",
+    "Multiple responses allowed. Percentages do not sum to 100% and are not visitor counts.",
+    "Areas overlap with individual sites. Scope labels are added for GIS interpretation."
+   ],
+   "rows": [
+    [
+     "Kiyomizu-dera Temple",
+     0.666,
+     "Individual site"
+    ],
+    [
+     "Nijo Castle",
+     0.571,
+     "Individual site"
+    ],
+    [
+     "Gion area",
+     0.513,
+     "Area"
+    ],
+    [
+     "Fushimi Inari Taisha Shrine",
+     0.501,
+     "Individual site"
+    ],
+    [
+     "Kinkaku-ji Temple",
+     0.486,
+     "Individual site"
+    ],
+    [
+     "Arashiyama / Sagano area",
+     0.409,
+     "Area"
+    ],
+    [
+     "Kyoto Station area",
+     0.369,
+     "Area"
+    ],
+    [
+     "Nishiki Market area",
+     0.364,
+     "Area"
+    ],
+    [
+     "Kyoto Imperial Palace",
+     0.322,
+     "Individual site"
+    ],
+    [
+     "Ginkaku-ji Temple",
+     0.258,
+     "Individual site"
+    ],
+    [
+     "Kyoto Tower",
+     0.255,
+     "Individual site"
+    ],
+    [
+     "Gion Corner",
+     0.253,
+     "Individual site"
+    ],
+    [
+     "Yasaka Shrine",
+     0.236,
+     "Individual site"
+    ],
+    [
+     "Higashiyama area",
+     0.204,
+     "Area"
+    ],
+    [
+     "Nanzen-ji Temple",
+     0.153,
+     "Individual site"
+    ],
+    [
+     "Fushimi area (excluding Inari Shrine)",
+     0.143,
+     "Area"
+    ],
+    [
+     "To-ji Temple",
+     0.134,
+     "Individual site"
+    ],
+    [
+     "Kodai-ji Temple",
+     0.129,
+     "Individual site"
+    ],
+    [
+     "Kawaramachi / Shijo area",
+     0.122,
+     "Area"
+    ],
+    [
+     "Ryoan-ji Temple",
+     0.121,
+     "Individual site"
+    ],
+    [
+     "Heian Jingu Shrine",
+     0.12,
+     "Individual site"
+    ],
+    [
+     "Shimogamo Shrine",
+     0.107,
+     "Individual site"
+    ],
+    [
+     "Tofuku-ji Temple",
+     0.096,
+     "Individual site"
+    ],
+    [
+     "Arashiyama Monkey Park",
+     0.096,
+     "Individual site"
+    ],
+    [
+     "Sanjusangendo Temple",
+     0.078,
+     "Individual site"
+    ]
+   ],
+   "unit": "share of survey respondents (multiple answers)"
+  },
+  {
+   "title": "Nijo Castle Admissions",
+   "scope": "Kyoto City | Total admissions by Japanese fiscal year",
+   "columns": [
+    "Fiscal year",
+    "Reporting period",
+    "Total admissions"
+   ],
+   "source_url": "https://www.city.kyoto.lg.jp/bunshi/cmsfiles/contents/0000341/341266/siryo.pdf",
+   "accessed": "Accessed: 8 November 2026. English labels translated for this workbook.",
+   "notes": [
+    "Source: Kyoto City Nijo Castle Preservation Committee, 21 April 2025, Material 3.",
+    "Printed p.13 / PDF p.15. Fiscal years run from April to March.",
+    "Admission records are not a count of distinct individual tourists."
+   ],
+   "rows": [
+    [
+     "FY 2018",
+     "2018-04-01 to 2019-03-31",
+     2157205
+    ],
+    [
+     "FY 2019",
+     "2019-04-01 to 2020-03-31",
+     2058152
+    ],
+    [
+     "FY 2020",
+     "2020-04-01 to 2021-03-31",
+     597490
+    ],
+    [
+     "FY 2021",
+     "2021-04-01 to 2022-03-31",
+     536193
+    ],
+    [
+     "FY 2022",
+     "2022-04-01 to 2023-03-31",
+     1267422
+    ],
+    [
+     "FY 2023",
+     "2023-04-01 to 2024-03-31",
+     1856673
+    ],
+    [
+     "FY 2024",
+     "2024-04-01 to 2025-03-31",
+     2046329
+    ]
+   ],
+   "unit": "admissions per fiscal year"
+  }
+ ]
+}

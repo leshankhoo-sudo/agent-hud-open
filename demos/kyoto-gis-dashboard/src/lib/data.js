@@ -32,6 +32,7 @@ const FILES = {
   walkReport: 'analysis/walking_pilot_report.json',
   photos: 'photos.json',
   namesEn: 'names_en.json',
+  tourism: 'tourism_stats.json',
 };
 
 // Each file is loaded on its own so one failure is reported without hiding the others.
@@ -108,4 +109,14 @@ export function filterTransport(features, types, query = '') {
 function matches(f, q) {
   const p = f.properties;
   return (p.name || '').toLowerCase().includes(q) || (p.display_name || '').toLowerCase().includes(q) || (p.name_en || '').toLowerCase().includes(q) || p.id.toLowerCase() === q || p.osm_id === q;
+}
+
+// Published tourism count for the municipality a point falls in. These are municipal totals
+// (for a Kyoto City ward: the whole city), never an attendance figure for one attraction.
+export function muniTourism(tourism, pm, code) {
+  const en = code && pm?.names_en?.[code];
+  const counts = tourism?.municipalities?.counts;
+  if (!en || !counts) return null;
+  const part = en.split(', ').find((x) => counts[x]);
+  return part ? { name: part, wholeCity: part !== en, ...counts[part] } : null;
 }

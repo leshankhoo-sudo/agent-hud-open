@@ -18,7 +18,7 @@
 cd demos/kyoto-gis-dashboard
 npm install
 npm run dev          # 开发模式，打开 http://localhost:5173
-npm test             # 13 项逻辑测试（使用真实数据文件）
+npm test             # 15 项逻辑测试（使用真实数据文件）
 npm run build        # 生成 dist/ 静态网站
 npm run preview      # 本地预览 dist/，http://localhost:4173
 ```
@@ -57,6 +57,7 @@ python3 scripts/kde_density.py      # Analysis 1：正式核密度
 python3 scripts/walking_pilot.py /path/to/Kyoto_Roads_GeoJSON   # Analysis 2：试点步行路线
 python3 scripts/fetch_photos.py                 # 景点照片（Wikidata / Commons，需联网）
 python3 scripts/fetch_names_en.py               # 英文名称（OSM name:en / Wikidata，需联网）
+python3 scripts/prepare_tourism_stats.py        # 参观人次统计（读取 data/raw/documents 里的 Excel）
 ```
 
 道路资料（5 个 GeoJSON 分片，约 80 MB）**没有放进仓库，也不会加载进浏览器**。请把 `Kyoto_Roads_GeoJSON.zip` 解压到任意文件夹，再把路径传给脚本。
@@ -101,6 +102,18 @@ kyoto-gis-dashboard/
 5. **顶部按钮**：
    - "Sample journeys & fares"：示范行程与参考票价面板。
    - "Data & sources"：资料来源、更新时间和数据质量说明。
+
+## 6a. 明暗主题与新版布局
+
+- **主题按钮**：固定在浏览器右上角，滚动到哪里都在。可以拖动里面的滑块，也可以直接点击，或用键盘（Enter / 空格 / 左右方向键）。第一次打开跟随系统设置，手动切换后会记住。
+- **切换主题只换颜色**：地图位置和缩放、选中的景点、筛选、密度图层、步行路线、计划访问时间都保留。
+- **樱花花瓣**：拖动或点击按钮时，从按钮位置飘出 3–5 片花瓣，约 3 秒后自动清除。系统开启"减少动画"时不出现。
+- **浅色地图**：仍然是真实的 OSM 矢量底图，只是换成米色、浅灰蓝、淡绿的配色。景点类别在两种主题下用同一色相，浅色主题用较深的色调。
+- **左侧**：默认只有搜索和两组筛选。Attraction Density 和 Walking Access 是两个入口，点开才显示参数、图例和统计。
+- **地图左上角**：Study area（回到研究范围）、Legend（图例和底图样式）。地图左右边缘的小把手可以收起两侧面板。
+- **右侧**：选中后先显示照片、名称、类别、所在地，下面是标签页 Overview / Walking Routes / Weather / Journeys & Fares。Record ID、OSM ID、坐标等放在 Overview 里的 Technical Details。
+- **参观人次**：Overview 显示所在市町村的公布数字（2025、2024 年），并注明这是市町村合计，不是该景点的人数。其余三张表（2015 年景点表、2023 年外国游客到访比例、二条城入场人数）没有和地图记录连接，放在 Data & Sources 里作为参考。
+- **手机**：左侧变成抽屉（点 Explore 打开），详情变成底部面板，可以收起。
 
 ## 6b. 樱花滚动开场
 
