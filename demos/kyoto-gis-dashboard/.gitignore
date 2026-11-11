@@ -3,3 +3,4 @@ dist/
 data/roads/
 test-output/
 dist-artifact/
+data/cache/explore/*.jpg

@@ -1,0 +1,258 @@
+{
+ "generated": "2026-11-11T15:55:06+0000",
+ "note": "Area photos for the introduction; not attached to attraction records.",
+ "places": [
+  {
+   "key": "kiyomizu",
+   "ja": "清水寺",
+   "en": "Kiyomizu-dera",
+   "tag": "Temple",
+   "text": "A wooden stage on the hillside above the old streets of Higashiyama. It sits inside the walking pilot area, so road-network routes to the nearest stops are available here.",
+   "view": [
+    135.785,
+    34.9948,
+    15.2
+   ],
+   "municipality": {
+    "code": "26105",
+    "ja": "京都市 東山区",
+    "en": "Higashiyama Ward, Kyoto City"
+   },
+   "src": "explore/kiyomizu.jpg",
+   "thumb": "explore/kiyomizu-s.jpg",
+   "width": 1400,
+   "height": 925,
+   "bytes": 316209,
+   "color": "#84878c",
+   "credit": {
+    "artist": "Martin Falbisoner",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Kiyomizu-dera,_Kyoto,_November_2016_-02.jpg",
+    "file": "Kiyomizu-dera, Kyoto, November 2016 -02.jpg",
+    "taken": "2016-11-16",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q221716",
+    "method": "photo coordinates inside the N03 polygon"
+   }
+  },
+  {
+   "key": "sanneizaka",
+   "ja": "産寧坂",
+   "en": "Sannenzaka",
+   "tag": "Old street",
+   "text": "A stone-paved slope lined with wooden townhouses on the way up to Kiyomizu-dera.",
+   "view": [
+    135.7809,
+    34.9965,
+    16
+   ],
+   "municipality": {
+    "code": "26105",
+    "ja": "京都市 東山区",
+    "en": "Higashiyama Ward, Kyoto City"
+   },
+   "src": "explore/sanneizaka.jpg",
+   "thumb": "explore/sanneizaka-s.jpg",
+   "width": 1400,
+   "height": 933,
+   "bytes": 215736,
+   "color": "#616563",
+   "credit": {
+    "artist": "Aporon999",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Sanneizaka-kyoto.JPG",
+    "file": "Sanneizaka-kyoto.JPG",
+    "taken": "2013-05-08",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q11574990",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon); the file has no coordinates"
+   }
+  },
+  {
+   "key": "sagano",
+   "ja": "嵯峨野 竹林の小径",
+   "en": "Sagano Bamboo Grove",
+   "tag": "Nature",
+   "text": "A path through tall bamboo in the west of Kyoto City, near Arashiyama.",
+   "view": [
+    135.672,
+    35.017,
+    14.6
+   ],
+   "municipality": {
+    "code": "26108",
+    "ja": "京都市 右京区",
+    "en": "Ukyo Ward, Kyoto City"
+   },
+   "src": "explore/sagano.jpg",
+   "thumb": "explore/sagano-s.jpg",
+   "width": 1400,
+   "height": 957,
+   "bytes": 514997,
+   "color": "#6e8251",
+   "credit": {
+    "artist": "Naokijp",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:2021_Sagano_Bamboo_forest_in_Arashiyama,_Kyoto,_Japan.jpg",
+    "file": "2021 Sagano Bamboo forest in Arashiyama, Kyoto, Japan.jpg",
+    "taken": "2021-06-03",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q11477322",
+    "method": "photo coordinates inside the N03 polygon"
+   }
+  },
+  {
+   "key": "byodoin",
+   "ja": "平等院",
+   "en": "Byodo-in",
+   "tag": "Temple",
+   "text": "The Phoenix Hall and its pond in Uji, south of Kyoto City.",
+   "view": [
+    135.8077,
+    34.8893,
+    14.8
+   ],
+   "municipality": {
+    "code": "26204",
+    "ja": "宇治市",
+    "en": "Uji City"
+   },
+   "src": "explore/byodoin.jpg",
+   "thumb": "explore/byodoin-s.jpg",
+   "width": 1400,
+   "height": 732,
+   "bytes": 190654,
+   "color": "#7a808b",
+   "credit": {
+    "artist": "Martin Falbisoner",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Phoenix_Hall,_Byodo-in,_November_2016_-01.jpg",
+    "file": "Phoenix Hall, Byodo-in, November 2016 -01.jpg",
+    "taken": "2016-11-18",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q61094",
+    "method": "photo coordinates inside the N03 polygon"
+   }
+  },
+  {
+   "key": "amanohashidate",
+   "ja": "天橋立",
+   "en": "Amanohashidate",
+   "tag": "Coast",
+   "text": "A pine-covered sandbar across Miyazu Bay, on the Sea of Japan coast in the north of the prefecture.",
+   "view": [
+    135.19,
+    35.565,
+    12.6
+   ],
+   "municipality": {
+    "code": "26205",
+    "ja": "宮津市",
+    "en": "Miyazu City"
+   },
+   "src": "explore/amanohashidate.jpg",
+   "thumb": "explore/amanohashidate-s.jpg",
+   "width": 1400,
+   "height": 932,
+   "bytes": 224112,
+   "color": "#75808c",
+   "credit": {
+    "artist": "663highland",
+    "license": "CC BY 2.5",
+    "license_url": "https://creativecommons.org/licenses/by/2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:Amanohashidate_view_from_Mt_Moju02s3s4592.jpg",
+    "file": "Amanohashidate view from Mt Moju02s3s4592.jpg",
+    "taken": "2011-01-08",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q259727",
+    "method": "photo coordinates inside the N03 polygon"
+   }
+  },
+  {
+   "key": "ine",
+   "ja": "伊根の舟屋",
+   "en": "Ine Boat Houses",
+   "tag": "Fishing village",
+   "text": "Boat houses built directly on the water around Ine Bay.",
+   "view": [
+    135.2867,
+    35.6752,
+    14
+   ],
+   "municipality": {
+    "code": "26463",
+    "ja": "与謝郡 伊根町",
+    "en": "Ine Town, Yosa District"
+   },
+   "src": "explore/ine.jpg",
+   "thumb": "explore/ine-s.jpg",
+   "width": 1400,
+   "height": 790,
+   "bytes": 344597,
+   "color": "#626362",
+   "credit": {
+    "artist": "Naokijp",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Funaya_in_Ine_Town,_Yosa_District,_Kyoto_Prefecture_003.jpg",
+    "file": "Funaya in Ine Town, Yosa District, Kyoto Prefecture 003.jpg",
+    "taken": "2023-02-12",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q11379620",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon); the file has no coordinates"
+   }
+  },
+  {
+   "key": "randen",
+   "ja": "嵐電",
+   "en": "Randen tram",
+   "tag": "Public transport",
+   "text": "A Keifuku \"Randen\" tram at Sai Station. Tram stops, railway stations and bus stops are the three transit types on the map.",
+   "view": [
+    135.717,
+    35.01,
+    13.6
+   ],
+   "municipality": {
+    "code": "26108",
+    "ja": "京都市 右京区",
+    "en": "Ukyo Ward, Kyoto City"
+   },
+   "src": "explore/randen.jpg",
+   "thumb": "explore/randen-s.jpg",
+   "width": 1400,
+   "height": 933,
+   "bytes": 274456,
+   "color": "#7d7a76",
+   "credit": {
+    "artist": "Smiley.toerist",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Sai_station_2024_5.jpg",
+    "file": "Sai station 2024 5.jpg",
+    "taken": "20 May 202",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q10883225",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon); the file has no coordinates"
+   }
+  }
+ ]
+}

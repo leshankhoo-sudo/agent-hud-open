@@ -57,6 +57,7 @@ python3 scripts/kde_density.py      # Analysis 1：正式核密度
 python3 scripts/walking_pilot.py /path/to/Kyoto_Roads_GeoJSON   # Analysis 2：试点步行路线
 python3 scripts/fetch_photos.py                 # 景点照片（Wikidata / Commons，需联网）
 python3 scripts/fetch_names_en.py               # 英文名称（OSM name:en / Wikidata，需联网）
+python3 scripts/fetch_explore_photos.py         # Explore Kyoto 区块的照片（Wikimedia Commons，需联网）
 python3 scripts/prepare_tourism_stats.py        # 参观人次统计（读取 data/raw/documents 里的 Excel）
 ```
 
@@ -114,6 +115,17 @@ kyoto-gis-dashboard/
 - **右侧**：选中后先显示照片、名称、类别、所在地，下面是标签页 Overview / Walking Routes / Weather / Journeys & Fares。Record ID、OSM ID、坐标等放在 Overview 里的 Technical Details。
 - **参观人次**：Overview 显示所在市町村的公布数字（2025、2024 年），并注明这是市町村合计，不是该景点的人数。其余三张表（2015 年景点表、2023 年外国游客到访比例、二条城入场人数）没有和地图记录连接，放在 Data & Sources 里作为参考。
 - **手机**：左侧变成抽屉（点 Explore 打开），详情变成底部面板，可以收起。
+
+## 6c. Explore Kyoto 区块
+
+位置在樱花滚动开场之后、Dashboard 之前（原来的开场没有改动）。
+
+- 七张京都府内的照片：清水寺、産寧坂、嵯峨野竹林、平等院、天橋立、伊根的舟屋、嵐電。点下面一排缩略图切换，右侧三张照片叠放展示。
+- **Explore Kyoto** 按钮：滚动到 Dashboard，并把地图移到所选地点。旁边的"or see the whole prefecture"只滚动，不移动地图。
+- 照片全部来自 Wikimedia Commons，由 `scripts/fetch_explore_photos.py` 生成：只接受 CC0、公有领域、CC BY、CC BY-SA；用照片坐标（没有时用对应 Wikidata 条目的坐标）对照 N03 边界确认在京都府内；作者、许可、来源链接写在 `public/data/explore_places.json`，页面上逐张显示。
+- 这些是地区介绍用的照片，没有挂到任何景点记录上。景点详情里的照片仍然用原来的匹配规则。
+- 照片加载失败时显示该照片的平均色渐变和文字说明。
+- 布局参考了 ThreeUI 的 PocketQuestLandingPage（章节条、卡片选择、叠放卡片、圆形主按钮），没有使用它的代码、3D 场景、游戏和美术素材。
 
 ## 6b. 樱花滚动开场
 

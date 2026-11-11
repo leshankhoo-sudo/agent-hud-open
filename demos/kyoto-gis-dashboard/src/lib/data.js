@@ -33,6 +33,7 @@ const FILES = {
   photos: 'photos.json',
   namesEn: 'names_en.json',
   tourism: 'tourism_stats.json',
+  explore: 'explore_places.json',
 };
 
 // Each file is loaded on its own so one failure is reported without hiding the others.

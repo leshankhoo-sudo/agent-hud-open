@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle.jsx';
 import Weather from './Weather.jsx';
 import Intro from './Intro.jsx';
 import Outro from './Outro.jsx';
+import Explore from './Explore.jsx';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism } from './lib/data.js';
 import { themeOf, pointColor, initialTheme, rememberTheme } from './lib/theme.js';
 import { walkingAvailability, indexWalking, walkingCoverage } from './lib/walking.js';
@@ -210,6 +211,14 @@ export default function App() {
     return () => removeEventListener('keydown', k);
   }, []);
 
+  // "Explore Kyoto": go to the dashboard; with a place, move the map there once its own opening has played.
+  const enter = (place) => {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('dashboard')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+    if (!place) return;
+    const [lon, lat, zoom] = place.view;
+    setTimeout(() => mapRef.current?.flyTo({ center: [lon, lat], zoom, duration: reduce ? 0 : 1800, essential: true }), reduce ? 300 : dashSeen ? 900 : 3300);
+  };
   const toggleUi = <ThemeToggle theme={theme} onChange={setTheme} />;
   const intro = <Intro manifest={d?.manifest} photos={d?.photos} kdeMeta={d?.kdeMeta} walkInfo={walk.available ? walk.scopeIds.size : null} />;
   if (!loaded) return <>{toggleUi}{intro}<div className="boot" id="dashboard"><div className="boot-mark" /><p>Loading Kyoto Prefecture data…</p></div></>;
@@ -230,9 +239,10 @@ export default function App() {
     <>
     {toggleUi}
     {intro}
+    {d.explore?.places?.length > 0 && <Explore places={d.explore.places} attractions={A.length} stops={Tr.length} onEnter={enter} />}
     <div id="dashboard" className={cls}>
       <header className="top">
-        <button type="button" className="nav-btn" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore">
+        <button type="button" className="nav-btn" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore-panel">
           <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" /></svg>
           <span>Explore</span>
         </button>
@@ -261,7 +271,7 @@ export default function App() {
       </header>
 
       <button type="button" className="scrim" aria-label="Close the explore panel" tabIndex={leftOpen ? 0 : -1} onClick={() => setLeftOpen(false)} />
-      <aside className="left" id="explore" aria-label="Explore: search, filters and analysis">
+      <aside className="left" id="explore-panel" aria-label="Explore: search, filters and analysis">
         <section className="card">
           <h3>Find a place</h3>
           <input id="q" type="search" placeholder="Attraction or stop · 日本語 / English / ID" aria-label="Search attractions or stops" value={query} onChange={(e) => setQuery(e.target.value)} />
@@ -413,7 +423,7 @@ export default function App() {
             )}
           </div>
         )}
-        <button type="button" className="edge-btn l" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore" aria-label={leftOpen ? 'Hide the explore panel' : 'Show the explore panel'}><i /></button>
+        <button type="button" className="edge-btn l" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore-panel" aria-label={leftOpen ? 'Hide the explore panel' : 'Show the explore panel'}><i /></button>
         <button type="button" className="edge-btn r" onClick={() => setRightOpen(!rightOpen)} aria-expanded={rightOpen} aria-controls="details" aria-label={rightOpen ? 'Hide the details panel' : 'Show the details panel'}><i /><span>Details</span></button>
         {hover && (
           <div className="tip" style={{ left: hover.x + 14, top: hover.y + 10 }}>
