@@ -219,6 +219,13 @@ export default function App() {
     const [lon, lat, zoom] = place.view;
     setTimeout(() => mapRef.current?.flyTo({ center: [lon, lat], zoom, duration: reduce ? 0 : 1800, essential: true }), reduce ? 300 : dashSeen ? 900 : 3300);
   };
+  // Counts of our own records within 1 km of a place shown in the Explore section (plain great-circle distance).
+  const nearPlace = (pl) => {
+    const [lon, lat] = pl.view, kx = 111320 * Math.cos(lat * Math.PI / 180);
+    const within = (f) => Math.hypot((f.geometry.coordinates[0] - lon) * kx, (f.geometry.coordinates[1] - lat) * 110574) <= 1000;
+    const bb = d?.walking?.pilot?.bbox;
+    return { a: A.filter(within).length, s: Tr.filter(within).length, pilot: !!bb && lon >= bb[0] && lon <= bb[2] && lat >= bb[1] && lat <= bb[3] };
+  };
   const toggleUi = <ThemeToggle theme={theme} onChange={setTheme} />;
   const intro = <Intro manifest={d?.manifest} photos={d?.photos} kdeMeta={d?.kdeMeta} walkInfo={walk.available ? walk.scopeIds.size : null} />;
   if (!loaded) return <>{toggleUi}{intro}<div className="boot" id="dashboard"><div className="boot-mark" /><p>Loading Kyoto Prefecture data…</p></div></>;
@@ -239,7 +246,7 @@ export default function App() {
     <>
     {toggleUi}
     {intro}
-    {d.explore?.places?.length > 0 && <Explore places={d.explore.places} attractions={A.length} stops={Tr.length} onEnter={enter} />}
+    {d.explore?.places?.length > 0 && <Explore places={d.explore.places} attractions={A.length} stops={Tr.length} near={nearPlace} onEnter={enter} />}
     <div id="dashboard" className={cls}>
       <header className="top">
         <button type="button" className="nav-btn" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore-panel">

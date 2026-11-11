@@ -51,16 +51,16 @@ const ex = await page.evaluate(async () => {
   sec.scrollIntoView();
   await new Promise((r) => setTimeout(r, 1500));
   const order = [...document.querySelectorAll('.intro-s, #explore, #dashboard, #credits')].map((e) => e.id || 'intro');
-  return { n: d.places.length, licences: [...new Set(d.places.map((p) => p.credit.license))], allCredited: d.places.every((p) => p.credit.artist && p.credit.page && p.credit.license_url && p.municipality.code && p.verified.method), thumbs: sec.querySelectorAll('.ex-thumb').length, order, imgOk: [...sec.querySelectorAll('.ex-card.front img')].every((i) => i.complete && i.naturalWidth > 0) };
+  return { n: d.places.length, licences: [...new Set(d.places.map((p) => p.credit.license))], allCredited: d.places.every((p) => p.credit.artist && p.credit.page && p.credit.license_url && p.municipality.code && p.verified.method), thumbs: sec.querySelectorAll('.ex-dot').length, order, imgOk: [...sec.querySelectorAll('.ex-card.front img')].every((i) => i.complete && i.naturalWidth > 0) };
 });
 check('explore: 7 place photos, each with author, licence, source and a checked municipality', ex.n === 7 && ex.allCredited && ex.licences.every((l) => /^(CC0|Public domain|CC BY)/.test(l)), ex.licences.join(', '));
 check('explore sits between the original intro and the dashboard; front photo loaded', ex.order.join('>') === 'intro>explore>dashboard>credits' && ex.thumbs === 7 && ex.imgOk, ex.order.join('>'));
-await page.locator('.ex-thumb').nth(3).click();
+await page.locator('.ex-dot').nth(3).click();
 await page.waitForTimeout(4500); // smooth scroll, then the ring eases to its place
 const exText = await page.locator('#explore').innerText();
-check('picking a place shows its name, municipality and photo credit', exText.includes('平等院') && exText.includes('Uji City') && exText.includes('Martin Falbisoner') && exText.includes('CC BY-SA 4.0'));
-const ringA = await page.evaluate(() => ({ rot: +getComputedStyle(document.querySelector('.ex-ring')).getPropertyValue('--rot'), front: document.querySelector('.ex-card.front .ex-cap strong').innerText, pinned: Math.round(document.querySelector('.ex-sticky').getBoundingClientRect().top) }));
-check('scrolling turns the photo ring to the chosen card while the section stays pinned', Math.abs(ringA.rot - 3 * 360 / 7) < 4 && ringA.front === '平等院' && ringA.pinned > 0 && ringA.pinned < 80, JSON.stringify(ringA));
+check('picking a place shows its name, municipality and photo credit', exText.includes('平等院') && exText.includes('Uji City') && exText.includes('Martin Falbisoner') && exText.includes('CC BY-SA 4.0') && /\d+ attractions? within 1 km/.test(exText));
+const ringA = await page.evaluate(() => ({ rot: +document.querySelectorAll('.ex-card')[3].style.getPropertyValue('--o'), side: +document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--o'), front: document.querySelector('.ex-card.front .ex-cap strong').innerText, pinned: Math.round(document.querySelector('.ex-sticky').getBoundingClientRect().top) }));
+check('scrolling slides the card deck to the chosen card while the section stays pinned', Math.abs(ringA.rot) < 0.08 && Math.abs(ringA.side - 1) < 0.08 && ringA.front === '平等院' && ringA.pinned > 0 && ringA.pinned < 80, JSON.stringify(ringA));
 await page.locator('.ex-card.front .ex-flip').click();
 await page.waitForTimeout(1100);
 check('the front card flips to its photo credit', await page.evaluate(() => document.querySelector('.ex-card.front .ex-flip').classList.contains('flipped') && document.querySelector('.ex-card.front .ex-back').innerText.includes('Martin Falbisoner')));
