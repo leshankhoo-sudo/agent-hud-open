@@ -14,7 +14,7 @@
 | 项目目录 | `demos/kyoto-gis-dashboard/` |
 | Git 分支 | `ccr-bd068911-ydjxlc`（与 `origin` 同步） |
 | 最后一次功能提交 | `797d108` Kyoto GIS: Kyoto City Bus routes with line reveal and stop pop animation |
-| 可恢复版本标签 | `handoff-2026-11-12`（指向本交接文件提交，已推送） |
+| 可恢复版本 | 提交 `faf1ebe`（加入本交接文件的提交；代码与 `797d108` 相同）。远端只允许推送到本分支，**没有推送 Git 标签** |
 | 未提交改动 | 无（交接文件本身也已提交） |
 | 逻辑测试 `npm test` | **16 / 16 通过** |
 | 构建 `npm run build` | 通过（主 JS 1.09 MB，gzip 309 KB） |
@@ -368,9 +368,10 @@ PW_PATH=$(npm root -g)/playwright node tests/e2e.mjs http://localhost:4173/ test
 
 ### 恢复到交接版本
 ```bash
-git fetch origin --tags
-git checkout handoff-2026-11-12          # 只读查看
-git switch -c restore-handoff handoff-2026-11-12   # 从这个版本开新分支
+git fetch origin ccr-bd068911-ydjxlc
+git checkout faf1ebe                       # 只读查看交接时的版本
+git switch -c restore-handoff faf1ebe      # 从这个版本开新分支
+git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 ```
 
 ---
