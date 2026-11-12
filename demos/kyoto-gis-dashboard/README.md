@@ -1,5 +1,7 @@
 # Kyoto Prefecture Tourism GIS Dashboard
 
+> 新对话或接手开发前，请先读 [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md)：项目状态、数据清单、关联方式、已知问题和下一步任务。
+
 大学 GIS 项目原型。界面英文，说明中文。范围暂定为**京都府（Kyoto Prefecture）**，不是京都市。
 
 技术：React 18 + Vite 5 + MapLibre GL 4（底图无需账号）。数据处理：Python（pyproj、shapely、networkx）+ mapshaper。
