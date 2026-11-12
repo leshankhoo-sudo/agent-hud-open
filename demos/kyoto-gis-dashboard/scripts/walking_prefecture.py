@@ -339,6 +339,7 @@ def main(road_dir):
             unc = share([ewc[e] == 2 for e in es])
             tun = share([etn[e] for e in es])
             brg = share([ebr[e] for e in es])
+            steps_m = round(sum(l for e, l in zip(es, seglen) if fclass_names[efc[e]] == "steps"))
             flags = []
             if unc > 0:
                 uc = Counter()
@@ -372,14 +373,14 @@ def main(road_dir):
             row = {**base, "near_prefecture_boundary": bool(bf), "stop_type": t, "route_status": "ok", "reason": "same_access_point" if same else None, "stop_id": sf["properties"]["id"], "stop_name": sf["properties"]["name"], "stop_category": sf["properties"]["category"],
                    "distance_m": 0.0 if same else rn(dmin), "duration_min": 0.0 if same else dur, "stop_snap_gap_m": sgap, "segments": len(es),
                    "share_pedestrian": share([ewc[e] == 0 for e in es]), "share_road_assumed": share([ewc[e] == 1 for e in es]), "share_uncertain": unc,
-                   "share_tunnel": tun, "share_bridge": brg, "flags": "; ".join(flags)}
+                   "share_tunnel": tun, "share_bridge": brg, "steps_m": steps_m, "flags": "; ".join(flags)}
             rows.append(row)
             lon, lat = Transformer.from_crs(6674, 4326, always_xy=True).transform(all_x[path], all_y[path])
             coords = [[round(a, 6), round(b, 6)] for a, b in zip(lon, lat)]
             feats.append({"type": "Feature", "geometry": None if same else {"type": "LineString", "coordinates": coords},
                           "properties": {"attraction_id": aid, "stop_id": row["stop_id"], "stop_type": t, "route_status": "ok", "reason": row["reason"], "distance_m": row["distance_m"], "duration_min": row["duration_min"],
                                          "identity": idl, "near_prefecture_boundary": bool(bf),
-                                         "attraction_snap_gap_m": sr["gap_m"], "stop_snap_gap_m": sgap, "share_uncertain": unc, "share_tunnel": tun, "share_bridge": brg, "note": row["flags"]}})
+                                         "attraction_snap_gap_m": sr["gap_m"], "stop_snap_gap_m": sgap, "share_uncertain": unc, "share_tunnel": tun, "share_bridge": brg, "steps_m": steps_m, "note": row["flags"]}})
     print(f"routes done in {time.time()-t0:.0f}s", flush=True)
 
     now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
@@ -388,7 +389,7 @@ def main(road_dir):
     json.dump(out, open(os.path.join(DATA, "walking_routes_prefecture.geojson"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
     cols = ["attraction_id", "attraction_name", "category", "identity", "stop_type", "route_status", "reason", "stop_id", "stop_name", "stop_category", "distance_m", "duration_min",
             "attraction_snap_gap_m", "fragment_fallback", "stop_snap_gap_m", "outside_road_distance_m", "near_prefecture_boundary", "segments", "share_pedestrian", "share_road_assumed", "share_uncertain",
-            "share_tunnel", "share_bridge", "flags", "note"]
+            "share_tunnel", "share_bridge", "steps_m", "flags", "note"]
     with open(os.path.join(DATA, "analysis", "walking_prefecture_table.csv"), "w", newline="", encoding="utf-8-sig") as fh:
         w = csv.DictWriter(fh, fieldnames=cols)
         w.writeheader()
@@ -415,6 +416,7 @@ def main(road_dir):
         "attractions_not_snapped": [{"id": k, "gap_m": v["gap_m"]} for k, v in snap_res.items() if not v["ok"] and k.startswith("A")],
         "results": {":".join(k).rstrip(":"): v for k, v in sorted(res.items())},
         "ok_rows_with_flags": sum(1 for r in ok if r["flags"]),
+        "ok_rows_with_steps": sum(1 for r in ok if r.get("steps_m")),
         "points_attached_to_main_network_instead_of_fragment": {"attractions": sum(1 for k, v in snap_res.items() if k.startswith("A") and v.get("fallback")),
                                                                  "stops": sum(1 for k, v in snap_res.items() if k.startswith("S") and v.get("fallback"))},
         "assumptions": {"walkable_classes": sorted(PED | ROAD), "uncertain_classes_used_flagged": list(UNCERTAIN_PREFIX), "excluded_classes": sorted(EXCLUDED),

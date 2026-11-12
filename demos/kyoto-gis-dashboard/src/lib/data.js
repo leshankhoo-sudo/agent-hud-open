@@ -35,6 +35,7 @@ const FILES = {
   tourism: 'tourism_stats.json',
   explore: 'explore_places.json',
   bus: 'bus/index.json',
+  context: 'attraction_context.json',
 };
 
 // Each file is loaded on its own so one failure is reported without hiding the others.
@@ -55,6 +56,7 @@ export async function loadAll(base = import.meta.env.BASE_URL) {
     }),
   );
   applyEnglishNames(out);
+  applyContext(out);
   return { data: out, status };
 }
 
@@ -81,6 +83,29 @@ export function applyEnglishNames(data) {
   return data;
 }
 
+// Records with no OSM name: identity level, and an English name only from the name:en tag of the
+// SAME OSM record (scripts/prepare_context.py). The containing-site list stays in data.context and is
+// not copied into map feature properties.
+export function applyContext(data) {
+  const recs = data?.context?.records;
+  if (!recs) return data;
+  for (const f of data.attractions?.features || []) {
+    const c = recs[f.properties.id];
+    if (!c || f.properties.name) continue;
+    f.properties.identity = c.identity;
+    if (c.name_en) {
+      f.properties.name_en = c.name_en;
+      f.properties.name_en_source = c.name_en_source;
+    }
+  }
+  return data;
+}
+
+// Name order: 「日文 (English)」 by default; 「English (日文)」 when the visitor picks English first.
+let englishFirst = false;
+export const setEnglishFirst = (v) => { englishFirst = !!v; };
+export const isEnglishFirst = () => englishFirst;
+
 // 「日文名称 (English name)」; the original alone when no verified English name exists.
 // Skipped when the original already contains that English (e.g. "兜台三丁目 (Kabutodai 3-chōme)")
 // or is itself written in Latin letters.
@@ -89,9 +114,11 @@ const hasJapanese = (t) => /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/.test(t);
 export const englishPart = (ja, en) => (ja && en && en !== ja && hasJapanese(ja) && !fold(ja).includes(fold(en)) ? en : '');
 export const withEnglish = (ja, en) => {
   const e = englishPart(ja, en);
-  return e ? `${ja} (${e})` : ja || en || '';
+  if (!e) return ja || en || '';
+  return englishFirst ? `${e} (${ja})` : `${ja} (${e})`;
 };
-export const recordLabel = (p) => (p.name ? withEnglish(p.name, p.name_en) : p.display_name);
+// A record with no OSM name but an English name on the same OSM record shows that English name.
+export const recordLabel = (p) => (p.name ? withEnglish(p.name, p.name_en) : p.name_en || p.display_name);
 export const muniLabel = (pm, code) => (code && pm?.names?.[code] ? withEnglish(pm.names[code], pm.names_en?.[code]) : '');
 
 export function countBy(features, key) {

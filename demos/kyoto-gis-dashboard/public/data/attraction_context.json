@@ -1,0 +1,2090 @@
+{
+"meta": {
+"built_at": "2026-11-12T14:01:24+00:00",
+"scope": "attraction records with an empty OSM name",
+"sources": {
+"same_record_tags": "data/cache/osm_elements.json (OSM element tags, fetched with fetch_names_en.py)",
+"containing_areas": "data/cache/osm_is_in_unnamed.json (Overpass is_in, https://overpass-api.de/api/interpreter, OSM base 2026-11-12T13:33:48Z)"
+},
+"rules": [
+"English names come only from the name:en tag of the same OSM record; nothing is translated or romanised.",
+"'inside' lists named OSM areas that contain the point (temple grounds, parks, ...). It is a location relationship, not an identification.",
+"Administrative areas, islands, time zones and historic provinces are skipped."
+],
+"counts": {
+"osm_tags": 52,
+"unverified": 166,
+"with_english_name": 47,
+"inside_named_site": 97
+},
+"licence": "OpenStreetMap contributors, ODbL"
+},
+"records": {
+"A00003": {
+"identity": "unverified",
+"osm_element": "node/562648015"
+},
+"A00006": {
+"identity": "unverified",
+"osm_element": "node/720256669",
+"inside": [
+{
+"name": "傘松公園",
+"name_en": "Kasamatsu Park",
+"kind": "park",
+"overpass_area_id": 683931922
+}
+]
+},
+"A00009": {
+"identity": "unverified",
+"osm_element": "node/749327432",
+"inside": [
+{
+"name": "伏見稲荷大社",
+"name_en": "Fushimi Inari-taisha",
+"kind": "Shinto shrine",
+"overpass_area_id": 96291583
+}
+]
+},
+"A00012": {
+"identity": "unverified",
+"osm_element": "node/847889883"
+},
+"A00013": {
+"identity": "unverified",
+"osm_element": "node/847889885"
+},
+"A00016": {
+"identity": "unverified",
+"osm_element": "node/910536177"
+},
+"A00019": {
+"identity": "unverified",
+"osm_element": "node/1212123735",
+"inside": [
+{
+"name": "嵐山モンキーパークいわたやま",
+"name_en": "Monkey Park Iwatayama",
+"kind": "zoo",
+"overpass_area_id": 1343714212
+}
+]
+},
+"A00073": {
+"identity": "unverified",
+"osm_element": "node/1435052713",
+"inside": [
+{
+"name": "引揚記念公園",
+"name_en": null,
+"kind": "park",
+"overpass_area_id": 559784355
+}
+]
+},
+"A00075": {
+"identity": "unverified",
+"osm_element": "node/1621848983"
+},
+"A00088": {
+"identity": "unverified",
+"osm_element": "node/2722650624"
+},
+"A00089": {
+"identity": "unverified",
+"osm_element": "node/2784781505"
+},
+"A00095": {
+"identity": "unverified",
+"osm_element": "node/2815277818"
+},
+"A00097": {
+"identity": "unverified",
+"osm_element": "node/2854305106"
+},
+"A00098": {
+"identity": "unverified",
+"osm_element": "node/2854305122",
+"inside": [
+{
+"name": "広沢池",
+"name_en": "Hirosawa-no-ike Pond",
+"kind": "lake or pond",
+"overpass_area_id": 54478244
+}
+]
+},
+"A00101": {
+"identity": "unverified",
+"osm_element": "node/3004516173"
+},
+"A00102": {
+"identity": "unverified",
+"osm_element": "node/3233974299"
+},
+"A00106": {
+"identity": "unverified",
+"osm_element": "node/3467694619",
+"inside": [
+{
+"name": "清水寺",
+"name_en": "Kiyomizu-dera",
+"kind": "Buddhist temple",
+"overpass_area_id": 336641107
+}
+]
+},
+"A00107": {
+"identity": "unverified",
+"osm_element": "node/3475118096",
+"inside": [
+{
+"name": "清水寺",
+"name_en": "Kiyomizu-dera",
+"kind": "Buddhist temple",
+"overpass_area_id": 336641107
+},
+{
+"name": "奥ノ院",
+"name_en": null,
+"kind": "building",
+"overpass_area_id": 102164641
+}
+]
+},
+"A00108": {
+"identity": "unverified",
+"osm_element": "node/3494101787",
+"inside": [
+{
+"name": "伏見稲荷大社",
+"name_en": "Fushimi Inari-taisha",
+"kind": "Shinto shrine",
+"overpass_area_id": 96291583
+}
+]
+},
+"A00109": {
+"identity": "unverified",
+"osm_element": "node/3494102024",
+"inside": [
+{
+"name": "伏見稲荷大社",
+"name_en": "Fushimi Inari-taisha",
+"kind": "Shinto shrine",
+"overpass_area_id": 96291583
+}
+]
+},
+"A00110": {
+"identity": "unverified",
+"osm_element": "node/3537286851",
+"inside": [
+{
+"name": "金閣寺",
+"name_en": "Kinkaku-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 98115917
+}
+]
+},
+"A00111": {
+"identity": "unverified",
+"osm_element": "node/3537375396",
+"inside": [
+{
+"name": "金閣寺",
+"name_en": "Kinkaku-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 98115917
+}
+]
+},
+"A00112": {
+"identity": "unverified",
+"osm_element": "node/3540488353",
+"inside": [
+{
+"name": "金閣寺",
+"name_en": "Kinkaku-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 98115917
+}
+]
+},
+"A00114": {
+"identity": "unverified",
+"osm_element": "node/3591682919",
+"inside": [
+{
+"name": "銀閣寺",
+"name_en": "Ginkaku-ji temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 105817561
+}
+]
+},
+"A00117": {
+"identity": "unverified",
+"osm_element": "node/3666640431",
+"inside": [
+{
+"name": "石水院",
+"name_en": "Sekisui-in",
+"kind": "historic site",
+"overpass_area_id": 192895418
+},
+{
+"name": "高山寺",
+"name_en": "Kousanji Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 358636058
+}
+]
+},
+"A00118": {
+"identity": "osm_tags",
+"osm_element": "node/3689747276",
+"tags": {
+"description": "飛龍観回廊",
+"description:en": "hiryukan corridor view place"
+},
+"inside": [
+{
+"name": "天橋立ビューランド",
+"name_en": "Amanohashidate View Land",
+"kind": "theme park",
+"overpass_area_id": 539368280
+}
+]
+},
+"A00121": {
+"identity": "unverified",
+"osm_element": "node/3710127914"
+},
+"A00124": {
+"identity": "unverified",
+"osm_element": "node/3752787070",
+"inside": [
+{
+"name": "八坂の塔",
+"name_en": "Yasaka-no-To Pagoda",
+"kind": "historic site",
+"overpass_area_id": 371717416
+},
+{
+"name": "法観寺",
+"name_en": "Hōkan Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 371717423
+}
+]
+},
+"A00125": {
+"identity": "unverified",
+"osm_element": "node/3752885628",
+"inside": [
+{
+"name": "圓徳院",
+"name_en": "Entokuin",
+"kind": "Buddhist temple",
+"overpass_area_id": 371728884
+}
+]
+},
+"A00126": {
+"identity": "unverified",
+"osm_element": "node/3794334578",
+"inside": [
+{
+"name": "仁和寺",
+"name_en": "Ninna temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 98103060
+},
+{
+"name": "Ninna-ji Goten",
+"name_en": null,
+"kind": "visitor site",
+"overpass_area_id": 640560408
+},
+{
+"name": "白書院",
+"name_en": "Shiro-shoin",
+"kind": "building",
+"overpass_area_id": 372535199
+}
+]
+},
+"A00127": {
+"identity": "unverified",
+"osm_element": "node/3797579042",
+"inside": [
+{
+"name": "仁和寺",
+"name_en": "Ninna temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 98103060
+},
+{
+"name": "Ninna-ji Goten",
+"name_en": null,
+"kind": "visitor site",
+"overpass_area_id": 640560408
+}
+]
+},
+"A00128": {
+"identity": "unverified",
+"osm_element": "node/3931904262"
+},
+"A00129": {
+"identity": "unverified",
+"osm_element": "node/3962948759"
+},
+"A00130": {
+"identity": "unverified",
+"osm_element": "node/3979075898",
+"inside": [
+{
+"name": "上醍醐",
+"name_en": "Kami Daigo",
+"kind": "Buddhist temple",
+"overpass_area_id": 393100065
+}
+]
+},
+"A00131": {
+"identity": "unverified",
+"osm_element": "node/4000585592",
+"inside": [
+{
+"name": "清水寺",
+"name_en": "Kiyomizu-dera",
+"kind": "Buddhist temple",
+"overpass_area_id": 336641107
+}
+]
+},
+"A00133": {
+"identity": "unverified",
+"osm_element": "node/4102670115"
+},
+"A00144": {
+"identity": "unverified",
+"osm_element": "node/4273144996",
+"inside": [
+{
+"name": "恵解山古墳公園",
+"name_en": "Igenoyama Tumulus Park",
+"kind": "park",
+"overpass_area_id": 1496827624
+},
+{
+"name": "恵解山古墳",
+"name_en": "Igenoyama Tumulus",
+"kind": "burial mound",
+"overpass_area_id": 1496827625
+}
+]
+},
+"A00145": {
+"identity": "unverified",
+"osm_element": "node/4273214089"
+},
+"A00146": {
+"identity": "unverified",
+"osm_element": "node/4278396510"
+},
+"A00148": {
+"identity": "unverified",
+"osm_element": "node/4314501406",
+"inside": [
+{
+"name": "北野天満宮",
+"name_en": "Kitano Tenman Shrine",
+"kind": "Shinto shrine",
+"overpass_area_id": 432120699
+}
+]
+},
+"A00149": {
+"identity": "unverified",
+"osm_element": "node/4314501446",
+"inside": [
+{
+"name": "北野天満宮",
+"name_en": "Kitano Tenman Shrine",
+"kind": "Shinto shrine",
+"overpass_area_id": 432120699
+}
+]
+},
+"A00154": {
+"identity": "unverified",
+"osm_element": "node/4411208590"
+},
+"A00155": {
+"identity": "osm_tags",
+"osm_element": "node/4459193690",
+"tags": {
+"name:en": "Camellia Tea Ceremony",
+"website": "https://www.tea-kyoto.com/"
+},
+"name_en": "Camellia Tea Ceremony",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00158": {
+"identity": "osm_tags",
+"osm_element": "node/4558124689",
+"tags": {
+"name:en": "Namco Wonder Tower"
+},
+"name_en": "Namco Wonder Tower",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "イオンモールKYOTO",
+"name_en": "AEON Mall Kyoto",
+"kind": "building",
+"overpass_area_id": 202088298
+}
+]
+},
+"A00160": {
+"identity": "unverified",
+"osm_element": "node/4605178896"
+},
+"A00161": {
+"identity": "unverified",
+"osm_element": "node/4605180389"
+},
+"A00163": {
+"identity": "osm_tags",
+"osm_element": "node/4648090890",
+"tags": {
+"name:en": "Arashiyama",
+"wikidata": "Q2859566"
+},
+"name_en": "Arashiyama",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "嵐山モンキーパークいわたやま",
+"name_en": "Monkey Park Iwatayama",
+"kind": "zoo",
+"overpass_area_id": 1343714212
+}
+]
+},
+"A00165": {
+"identity": "unverified",
+"osm_element": "node/4723794995"
+},
+"A00167": {
+"identity": "osm_tags",
+"osm_element": "node/4770497121",
+"tags": {
+"description": "大阪平野一望",
+"description:en": "Best view of Osaka Plain"
+},
+"inside": [
+{
+"name": "青木葉谷展望広場",
+"name_en": "Aokibadani Lookout",
+"kind": "park",
+"overpass_area_id": 484301757
+}
+]
+},
+"A00171": {
+"identity": "osm_tags",
+"osm_element": "node/4796562721",
+"tags": {
+"name:en": "Crane, turtle and Mt. Peng Lai garden"
+},
+"name_en": "Crane, turtle and Mt. Peng Lai garden",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00178": {
+"identity": "osm_tags",
+"osm_element": "node/4866111228",
+"tags": {
+"name:en": "koyamaen"
+},
+"name_en": "koyamaen",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00179": {
+"identity": "osm_tags",
+"osm_element": "node/4900800422",
+"tags": {
+"name:en": "Genji / Murasaki Shikibu"
+},
+"name_en": "Genji / Murasaki Shikibu",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "廬山寺",
+"name_en": null,
+"kind": "Buddhist temple",
+"overpass_area_id": 1329256624
+}
+]
+},
+"A00184": {
+"identity": "unverified",
+"osm_element": "node/4921633023"
+},
+"A00185": {
+"identity": "unverified",
+"osm_element": "node/4921633024"
+},
+"A00187": {
+"identity": "osm_tags",
+"osm_element": "node/4936942221",
+"tags": {
+"name:en": "Ukiyoe Small Museum"
+},
+"name_en": "Ukiyoe Small Museum",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00188": {
+"identity": "osm_tags",
+"osm_element": "node/4946001221",
+"tags": {
+"name:en": "Tea Ceremony Ju-An"
+},
+"name_en": "Tea Ceremony Ju-An",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00189": {
+"identity": "unverified",
+"osm_element": "node/4966399522"
+},
+"A00190": {
+"identity": "osm_tags",
+"osm_element": "node/4968138821",
+"tags": {
+"name:en": "Imahie Jingu"
+},
+"name_en": "Imahie Jingu",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00191": {
+"identity": "osm_tags",
+"osm_element": "node/4968235322",
+"tags": {
+"name:en": "Daiun-in;Daiun-In Temple",
+"wikidata": "Q10938466",
+"wikipedia": "ja:大雲院 (京都市)",
+"opening_hours": "Mo-Su 10:00-16:00",
+"phone": "0752131717"
+},
+"name_en": "Daiun-in",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00192": {
+"identity": "osm_tags",
+"osm_element": "node/4968235323",
+"tags": {
+"name:en": "Otani Sobyo",
+"wikidata": "Q11439141",
+"wikipedia": "ja:大谷祖廟"
+},
+"name_en": "Otani Sobyo",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "太鼓堂",
+"name_en": null,
+"kind": "building",
+"overpass_area_id": 430590740
+}
+]
+},
+"A00193": {
+"identity": "osm_tags",
+"osm_element": "node/4968235421",
+"tags": {
+"name:en": "Otani Honbyo"
+},
+"name_en": "Otani Honbyo",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "大谷本廟",
+"name_en": null,
+"kind": "Buddhist temple",
+"overpass_area_id": 358473090
+},
+{
+"name": "明著堂",
+"name_en": null,
+"kind": "building",
+"overpass_area_id": 338084378
+}
+]
+},
+"A00194": {
+"identity": "osm_tags",
+"osm_element": "node/4968235521",
+"tags": {
+"name:en": "Choraku-ji"
+},
+"name_en": "Choraku-ji",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00195": {
+"identity": "osm_tags",
+"osm_element": "node/4976664421",
+"tags": {
+"name:en": "Tentoku-in"
+},
+"name_en": "Tentoku-in",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00199": {
+"identity": "unverified",
+"osm_element": "node/5118914756",
+"inside": [
+{
+"name": "臥雲橋",
+"name_en": "Bridge of Reclining Clouds",
+"kind": "building",
+"overpass_area_id": 775463884
+}
+]
+},
+"A00200": {
+"identity": "osm_tags",
+"osm_element": "node/5190414123",
+"tags": {
+"name:en": "View from Kodaiji parking lot"
+},
+"name_en": "View from Kodaiji parking lot",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "高台寺",
+"name_en": "Kōdai-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 759391880
+}
+]
+},
+"A00209": {
+"identity": "unverified",
+"osm_element": "node/5320394467"
+},
+"A00216": {
+"identity": "osm_tags",
+"osm_element": "node/5395846924",
+"tags": {
+"name:en": "Hokanji Temple and the Yasaka-no-to Pagoda"
+},
+"name_en": "Hokanji Temple and the Yasaka-no-to Pagoda",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00219": {
+"identity": "unverified",
+"osm_element": "node/5464510921"
+},
+"A00226": {
+"identity": "osm_tags",
+"osm_element": "node/5502354222",
+"tags": {
+"name:en": "Best Breakfast Point"
+},
+"name_en": "Best Breakfast Point",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "屋形町公園",
+"name_en": null,
+"kind": "park",
+"overpass_area_id": 379631473
+}
+]
+},
+"A00240": {
+"identity": "unverified",
+"osm_element": "node/5744244375"
+},
+"A00241": {
+"identity": "osm_tags",
+"osm_element": "node/5744244964",
+"tags": {
+"description": "view on Kyoto"
+}
+},
+"A00244": {
+"identity": "osm_tags",
+"osm_element": "node/5770731353",
+"tags": {
+"name:en": "Owls Forest Kyoto"
+},
+"name_en": "Owls Forest Kyoto",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00247": {
+"identity": "osm_tags",
+"osm_element": "node/5913657386",
+"tags": {
+"name:en": "Daiun-In Temple"
+},
+"name_en": "Daiun-In Temple",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00251": {
+"identity": "unverified",
+"osm_element": "node/5982571407",
+"inside": [
+{
+"name": "海住山寺",
+"name_en": "Kaijusen-ji Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 757853499
+}
+]
+},
+"A00254": {
+"identity": "unverified",
+"osm_element": "node/6050969728"
+},
+"A00255": {
+"identity": "unverified",
+"osm_element": "node/6050969738"
+},
+"A00256": {
+"identity": "unverified",
+"osm_element": "node/6050969778"
+},
+"A00257": {
+"identity": "unverified",
+"osm_element": "node/6050971313"
+},
+"A00259": {
+"identity": "unverified",
+"osm_element": "node/6128145343"
+},
+"A00261": {
+"identity": "osm_tags",
+"osm_element": "node/6163744231",
+"tags": {
+"name:en": "Old shop path"
+},
+"name_en": "Old shop path",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00262": {
+"identity": "unverified",
+"osm_element": "node/6189906186",
+"inside": [
+{
+"name": "清閑寺",
+"name_en": "Seikanji Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 497348742
+}
+]
+},
+"A00263": {
+"identity": "osm_tags",
+"osm_element": "node/6189914485",
+"tags": {
+"name:en": "trail entrance"
+},
+"name_en": "trail entrance",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00264": {
+"identity": "osm_tags",
+"osm_element": "node/6199656002",
+"tags": {
+"name:en": "Ponto-Cho Dori"
+},
+"name_en": "Ponto-Cho Dori",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00266": {
+"identity": "unverified",
+"osm_element": "node/6222358041",
+"inside": [
+{
+"name": "高台寺",
+"name_en": "Kōdai-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 759391880
+}
+]
+},
+"A00268": {
+"identity": "unverified",
+"osm_element": "node/6341311886",
+"inside": [
+{
+"name": "嵐山公園",
+"name_en": "Arashiyama Park",
+"kind": "park",
+"overpass_area_id": 319336216
+}
+]
+},
+"A00270": {
+"identity": "osm_tags",
+"osm_element": "node/6341312586",
+"tags": {
+"name:en": "Bamboo grove view"
+},
+"name_en": "Bamboo grove view",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "天龍寺",
+"name_en": "Tenryū Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 409723494
+}
+]
+},
+"A00271": {
+"identity": "unverified",
+"osm_element": "node/6342496039",
+"inside": [
+{
+"name": "善峯寺",
+"name_en": "Yoshimine Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 677361829
+},
+{
+"name": "けいしょう殿",
+"name_en": "Keishō Hall",
+"kind": "building",
+"overpass_area_id": 656685728
+}
+]
+},
+"A00272": {
+"identity": "unverified",
+"osm_element": "node/6342536413",
+"inside": [
+{
+"name": "善峯寺",
+"name_en": "Yoshimine Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 677361829
+}
+]
+},
+"A00274": {
+"identity": "unverified",
+"osm_element": "node/6355813537",
+"inside": [
+{
+"name": "善峯寺",
+"name_en": "Yoshimine Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 677361829
+}
+]
+},
+"A00276": {
+"identity": "osm_tags",
+"osm_element": "node/6412911585",
+"tags": {
+"name:en": "Kahitsukan, Kyoto Modern Art Museum",
+"website": "http://www.kahitsukan.or.jp/frame_e.html",
+"opening_hours": "Tu-Su 10:00-18:00",
+"phone": "+81-75-525-1311"
+},
+"name_en": "Kahitsukan, Kyoto Modern Art Museum",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00277": {
+"identity": "unverified",
+"osm_element": "node/6431886180"
+},
+"A00278": {
+"identity": "unverified",
+"osm_element": "node/6433376185"
+},
+"A00279": {
+"identity": "unverified",
+"osm_element": "node/6435093729",
+"inside": [
+{
+"name": "大内峠一字観公園",
+"name_en": null,
+"kind": "park",
+"overpass_area_id": 683930184
+}
+]
+},
+"A00282": {
+"identity": "unverified",
+"osm_element": "node/6442050150"
+},
+"A00286": {
+"identity": "unverified",
+"osm_element": "node/6442715615",
+"inside": [
+{
+"name": "天橋立ビューランド",
+"name_en": "Amanohashidate View Land",
+"kind": "theme park",
+"overpass_area_id": 539368280
+}
+]
+},
+"A00291": {
+"identity": "unverified",
+"osm_element": "node/6442803237",
+"inside": [
+{
+"name": "天橋立ビューランド",
+"name_en": "Amanohashidate View Land",
+"kind": "theme park",
+"overpass_area_id": 539368280
+}
+]
+},
+"A00295": {
+"identity": "osm_tags",
+"osm_element": "node/6544614886",
+"tags": {
+"name:en": "Geisha Watching Spot (between 5-6pm)"
+},
+"name_en": "Geisha Watching Spot (between 5-6pm)",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00304": {
+"identity": "osm_tags",
+"osm_element": "node/6802213585",
+"tags": {
+"name:en": "Kanbayashi Tea Museum"
+},
+"name_en": "Kanbayashi Tea Museum",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00307": {
+"identity": "osm_tags",
+"osm_element": "node/6869136585",
+"tags": {
+"name:en": "Monkey feeding station"
+},
+"name_en": "Monkey feeding station",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "嵐山モンキーパークいわたやま",
+"name_en": "Monkey Park Iwatayama",
+"kind": "zoo",
+"overpass_area_id": 1343714212
+}
+]
+},
+"A00317": {
+"identity": "unverified",
+"osm_element": "node/7005686716",
+"inside": [
+{
+"name": "大覚寺",
+"name_en": "Daikaku-ji Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 1157357955
+}
+]
+},
+"A00318": {
+"identity": "osm_tags",
+"osm_element": "node/7085048285",
+"tags": {
+"name:en": "Hiking Trails"
+},
+"name_en": "Hiking Trails",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00319": {
+"identity": "unverified",
+"osm_element": "node/7093098577"
+},
+"A00321": {
+"identity": "unverified",
+"osm_element": "node/7178359741",
+"inside": [
+{
+"name": "善峯寺",
+"name_en": "Yoshimine Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 677361829
+}
+]
+},
+"A00322": {
+"identity": "unverified",
+"osm_element": "node/7178359755",
+"inside": [
+{
+"name": "善峯寺",
+"name_en": "Yoshimine Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 677361829
+}
+]
+},
+"A00323": {
+"identity": "unverified",
+"osm_element": "node/7178359776",
+"inside": [
+{
+"name": "善峯寺",
+"name_en": "Yoshimine Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 677361829
+}
+]
+},
+"A00325": {
+"identity": "unverified",
+"osm_element": "node/7215836712",
+"inside": [
+{
+"name": "松の平",
+"name_en": null,
+"kind": "park",
+"overpass_area_id": 772858480
+}
+]
+},
+"A00327": {
+"identity": "osm_tags",
+"osm_element": "node/7226642698",
+"tags": {
+"name:en": "Arashiyama tourist area"
+},
+"name_en": "Arashiyama tourist area",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00328": {
+"identity": "osm_tags",
+"osm_element": "node/7229288786",
+"tags": {
+"name:en": "Higashiyama Street"
+},
+"name_en": "Higashiyama Street",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00329": {
+"identity": "osm_tags",
+"osm_element": "node/7229373585",
+"tags": {
+"name:en": "Hhhh"
+},
+"name_en": "Hhhh",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00333": {
+"identity": "unverified",
+"osm_element": "node/7261474993",
+"inside": [
+{
+"name": "傘松公園",
+"name_en": "Kasamatsu Park",
+"kind": "park",
+"overpass_area_id": 683931922
+}
+]
+},
+"A00334": {
+"identity": "unverified",
+"osm_element": "node/7261474994",
+"inside": [
+{
+"name": "傘松公園",
+"name_en": "Kasamatsu Park",
+"kind": "park",
+"overpass_area_id": 683931922
+}
+]
+},
+"A00336": {
+"identity": "unverified",
+"osm_element": "node/7273694149",
+"inside": [
+{
+"name": "櫟谷宗像神社社",
+"name_en": "Ichitani Munakata Shrine",
+"kind": "Shinto shrine",
+"overpass_area_id": 779025479
+}
+]
+},
+"A00339": {
+"identity": "osm_tags",
+"osm_element": "node/7318123859",
+"tags": {
+"name:en": "Uguisubari corridors (Nightingale Floor)"
+},
+"name_en": "Uguisubari corridors (Nightingale Floor)",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "二条城",
+"name_en": "Nijō Castle",
+"kind": "visitor site",
+"overpass_area_id": 57111281
+},
+{
+"name": "蘇鉄の間",
+"name_en": "Sotetsu-no-ma",
+"kind": "historic site",
+"overpass_area_id": 370314425
+}
+]
+},
+"A00341": {
+"identity": "osm_tags",
+"osm_element": "node/7327194615",
+"tags": {
+"name:en": "Tiger throat gateway"
+},
+"name_en": "Tiger throat gateway",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "二条城",
+"name_en": "Nijō Castle",
+"kind": "visitor site",
+"overpass_area_id": 57111281
+}
+]
+},
+"A00342": {
+"identity": "osm_tags",
+"osm_element": "node/7327194622",
+"tags": {
+"name:en": "Masugata gateway"
+},
+"name_en": "Masugata gateway",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "二条城",
+"name_en": "Nijō Castle",
+"kind": "visitor site",
+"overpass_area_id": 57111281
+}
+]
+},
+"A00345": {
+"identity": "unverified",
+"osm_element": "node/7813581896",
+"inside": [
+{
+"name": "南禅寺",
+"name_en": "Nanzen-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 352013907
+},
+{
+"name": "三門",
+"name_en": "Three Gate",
+"kind": "building",
+"overpass_area_id": 190876301
+}
+]
+},
+"A00346": {
+"identity": "unverified",
+"osm_element": "node/7944302775"
+},
+"A00347": {
+"identity": "unverified",
+"osm_element": "node/7944360308"
+},
+"A00348": {
+"identity": "osm_tags",
+"osm_element": "node/8078224617",
+"tags": {
+"name:en": "Yume Cosmos Garden",
+"website": "https://yume-cosmos.com/",
+"opening_hours": "Mo-Su 09:00-16:00",
+"phone": "0771559111"
+},
+"name_en": "Yume Cosmos Garden",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00350": {
+"identity": "unverified",
+"osm_element": "node/8308469073",
+"inside": [
+{
+"name": "東福寺",
+"name_en": "Tōfuku-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 768987591
+},
+{
+"name": "通天橋",
+"name_en": "Heaven-Crossing Bridge",
+"kind": "building",
+"overpass_area_id": 766621670
+}
+]
+},
+"A00351": {
+"identity": "unverified",
+"osm_element": "node/8378650512",
+"inside": [
+{
+"name": "東福寺",
+"name_en": "Tōfuku-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 768987591
+}
+]
+},
+"A00352": {
+"identity": "unverified",
+"osm_element": "node/8591800011",
+"inside": [
+{
+"name": "常寂光寺",
+"name_en": "Jōjakkō-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 925807376
+}
+]
+},
+"A00353": {
+"identity": "unverified",
+"osm_element": "node/8700019833",
+"inside": [
+{
+"name": "常寂光寺",
+"name_en": "Jōjakkō-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 925807376
+}
+]
+},
+"A00354": {
+"identity": "unverified",
+"osm_element": "node/8817872743",
+"inside": [
+{
+"name": "清水寺",
+"name_en": "Kiyomizu-dera",
+"kind": "Buddhist temple",
+"overpass_area_id": 336641107
+},
+{
+"name": "舞台",
+"name_en": "Stage",
+"kind": "building",
+"overpass_area_id": 340294693
+}
+]
+},
+"A00355": {
+"identity": "unverified",
+"osm_element": "node/8867485285"
+},
+"A00356": {
+"identity": "unverified",
+"osm_element": "node/8910996340",
+"inside": [
+{
+"name": "常寂光寺",
+"name_en": "Jōjakkō-ji",
+"kind": "Buddhist temple",
+"overpass_area_id": 925807376
+}
+]
+},
+"A00357": {
+"identity": "unverified",
+"osm_element": "node/8993716101",
+"inside": [
+{
+"name": "二尊院",
+"name_en": "Nison-in Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 961234250
+}
+]
+},
+"A00362": {
+"identity": "unverified",
+"osm_element": "node/9673171297",
+"inside": [
+{
+"name": "伏見稲荷大社",
+"name_en": "Fushimi Inari-taisha",
+"kind": "Shinto shrine",
+"overpass_area_id": 96291583
+}
+]
+},
+"A00363": {
+"identity": "unverified",
+"osm_element": "node/9673171303",
+"inside": [
+{
+"name": "伏見稲荷大社",
+"name_en": "Fushimi Inari-taisha",
+"kind": "Shinto shrine",
+"overpass_area_id": 96291583
+}
+]
+},
+"A00364": {
+"identity": "unverified",
+"osm_element": "node/9696458556"
+},
+"A00365": {
+"identity": "unverified",
+"osm_element": "node/9706484859",
+"inside": [
+{
+"name": "東山山頂公園",
+"name_en": "Higashiyama Mount Peak Park",
+"kind": "park",
+"overpass_area_id": 220473230
+}
+]
+},
+"A00366": {
+"identity": "unverified",
+"osm_element": "node/9717801301"
+},
+"A00367": {
+"identity": "osm_tags",
+"osm_element": "node/9751338532",
+"tags": {
+"name:ja": "大成古墳群展望台"
+}
+},
+"A00369": {
+"identity": "unverified",
+"osm_element": "node/9772852729"
+},
+"A00371": {
+"identity": "unverified",
+"osm_element": "node/9788618675"
+},
+"A00372": {
+"identity": "unverified",
+"osm_element": "node/9822826635"
+},
+"A00373": {
+"identity": "unverified",
+"osm_element": "node/9836581200"
+},
+"A00374": {
+"identity": "unverified",
+"osm_element": "node/9858450793"
+},
+"A00375": {
+"identity": "unverified",
+"osm_element": "node/9858654732"
+},
+"A00376": {
+"identity": "unverified",
+"osm_element": "node/9881169080",
+"inside": [
+{
+"name": "智積院",
+"name_en": "Chishaku-in",
+"kind": "Buddhist temple",
+"overpass_area_id": 31845891
+},
+{
+"name": "大書院",
+"name_en": null,
+"kind": "building",
+"overpass_area_id": 1013715871
+}
+]
+},
+"A00378": {
+"identity": "unverified",
+"osm_element": "node/10105413434"
+},
+"A00379": {
+"identity": "unverified",
+"osm_element": "node/10220777419"
+},
+"A00380": {
+"identity": "unverified",
+"osm_element": "node/10278240762"
+},
+"A00381": {
+"identity": "unverified",
+"osm_element": "node/10281473155"
+},
+"A00382": {
+"identity": "unverified",
+"osm_element": "node/10292382798"
+},
+"A00383": {
+"identity": "unverified",
+"osm_element": "node/10292583964"
+},
+"A00385": {
+"identity": "unverified",
+"osm_element": "node/10593372645",
+"inside": [
+{
+"name": "才の神の藤",
+"name_en": null,
+"kind": "park",
+"overpass_area_id": 1136367925
+}
+]
+},
+"A00396": {
+"identity": "unverified",
+"osm_element": "node/10705489903"
+},
+"A00397": {
+"identity": "unverified",
+"osm_element": "node/10705494617"
+},
+"A00398": {
+"identity": "unverified",
+"osm_element": "node/10705494676"
+},
+"A00399": {
+"identity": "unverified",
+"osm_element": "node/10741137005"
+},
+"A00400": {
+"identity": "unverified",
+"osm_element": "node/10757429761"
+},
+"A00404": {
+"identity": "osm_tags",
+"osm_element": "node/10829064906",
+"tags": {
+"name:en": "Path"
+},
+"name_en": "Path",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00405": {
+"identity": "unverified",
+"osm_element": "node/10829067605"
+},
+"A00408": {
+"identity": "unverified",
+"osm_element": "node/10892565151"
+},
+"A00409": {
+"identity": "unverified",
+"osm_element": "node/10948388903"
+},
+"A00410": {
+"identity": "unverified",
+"osm_element": "node/10948388904"
+},
+"A00412": {
+"identity": "osm_tags",
+"osm_element": "node/11079292506",
+"tags": {
+"name:en": "Kizakura Kapp Country"
+},
+"name_en": "Kizakura Kapp Country",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00413": {
+"identity": "unverified",
+"osm_element": "node/11082181476"
+},
+"A00415": {
+"identity": "unverified",
+"osm_element": "node/11147753008",
+"inside": [
+{
+"name": "愛宕念仏寺",
+"name_en": "Otagi Nenbutsu Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 1230442951
+},
+{
+"name": "日除地蔵菩薩",
+"name_en": null,
+"kind": "building",
+"overpass_area_id": 661172412
+}
+]
+},
+"A00416": {
+"identity": "unverified",
+"osm_element": "node/11250678085",
+"inside": [
+{
+"name": "渉成園",
+"name_en": "Shosei Garden",
+"kind": "garden",
+"overpass_area_id": 31840918
+},
+{
+"name": "印月池",
+"name_en": "Ingetsu-chi Pond",
+"kind": "lake or pond",
+"overpass_area_id": 3614745343
+},
+{
+"name": "回棹廊",
+"name_en": null,
+"kind": "building",
+"overpass_area_id": 1107969842
+}
+]
+},
+"A00417": {
+"identity": "unverified",
+"osm_element": "node/11279029634"
+},
+"A00419": {
+"identity": "unverified",
+"osm_element": "node/11340994922"
+},
+"A00421": {
+"identity": "unverified",
+"osm_element": "node/11381014163"
+},
+"A00422": {
+"identity": "unverified",
+"osm_element": "node/11432734331"
+},
+"A00424": {
+"identity": "unverified",
+"osm_element": "node/11659227840"
+},
+"A00425": {
+"identity": "unverified",
+"osm_element": "node/11757332320"
+},
+"A00426": {
+"identity": "unverified",
+"osm_element": "node/11757332321"
+},
+"A00427": {
+"identity": "unverified",
+"osm_element": "node/11757453893"
+},
+"A00428": {
+"identity": "unverified",
+"osm_element": "node/11764492501"
+},
+"A00429": {
+"identity": "unverified",
+"osm_element": "node/11821166169"
+},
+"A00430": {
+"identity": "osm_tags",
+"osm_element": "node/11824611069",
+"tags": {
+"name:en": "santuario yakurikisha"
+},
+"name_en": "santuario yakurikisha",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "伏見稲荷大社",
+"name_en": "Fushimi Inari-taisha",
+"kind": "Shinto shrine",
+"overpass_area_id": 96291583
+}
+]
+},
+"A00431": {
+"identity": "unverified",
+"osm_element": "node/11824611169",
+"inside": [
+{
+"name": "伏見稲荷大社",
+"name_en": "Fushimi Inari-taisha",
+"kind": "Shinto shrine",
+"overpass_area_id": 96291583
+}
+]
+},
+"A00432": {
+"identity": "unverified",
+"osm_element": "node/11824611170",
+"inside": [
+{
+"name": "伏見稲荷大社",
+"name_en": "Fushimi Inari-taisha",
+"kind": "Shinto shrine",
+"overpass_area_id": 96291583
+},
+{
+"name": "御膳谷奉拝所",
+"name_en": null,
+"kind": "Shinto shrine",
+"overpass_area_id": 301554315
+}
+]
+},
+"A00433": {
+"identity": "unverified",
+"osm_element": "node/11824611171"
+},
+"A00434": {
+"identity": "unverified",
+"osm_element": "node/11824620669",
+"inside": [
+{
+"name": "伏見稲荷大社",
+"name_en": "Fushimi Inari-taisha",
+"kind": "Shinto shrine",
+"overpass_area_id": 96291583
+},
+{
+"name": "末広屋",
+"name_en": null,
+"kind": "building",
+"overpass_area_id": 626313732
+}
+]
+},
+"A00435": {
+"identity": "unverified",
+"osm_element": "node/11861165328"
+},
+"A00437": {
+"identity": "unverified",
+"osm_element": "node/11888155846",
+"inside": [
+{
+"name": "最高区配水地",
+"name_en": null,
+"kind": "lake or pond",
+"overpass_area_id": 1280435433
+}
+]
+},
+"A00438": {
+"identity": "unverified",
+"osm_element": "node/11888155847"
+},
+"A00439": {
+"identity": "osm_tags",
+"osm_element": "node/11888580569",
+"tags": {
+"name:en": "Hanaseyama house (bird place)"
+},
+"name_en": "Hanaseyama house (bird place)",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00440": {
+"identity": "unverified",
+"osm_element": "node/11899014950",
+"inside": [
+{
+"name": "記念広場",
+"name_en": null,
+"kind": "park",
+"overpass_area_id": 1282301861
+}
+]
+},
+"A00441": {
+"identity": "unverified",
+"osm_element": "node/11919654070"
+},
+"A00442": {
+"identity": "unverified",
+"osm_element": "node/11974721769"
+},
+"A00443": {
+"identity": "osm_tags",
+"osm_element": "node/12105551661",
+"tags": {
+"name:ja": "つえ屋"
+}
+},
+"A00444": {
+"identity": "unverified",
+"osm_element": "node/12123947852",
+"inside": [
+{
+"name": "ガーデン ミュージアム 比叡",
+"name_en": "Garden Museum Hiei",
+"kind": "museum",
+"overpass_area_id": 357067732
+}
+]
+},
+"A00445": {
+"identity": "unverified",
+"osm_element": "node/12124012458",
+"inside": [
+{
+"name": "ガーデン ミュージアム 比叡",
+"name_en": "Garden Museum Hiei",
+"kind": "museum",
+"overpass_area_id": 357067732
+},
+{
+"name": "展望塔",
+"name_en": null,
+"kind": "building",
+"overpass_area_id": 303325452
+}
+]
+},
+"A00451": {
+"identity": "unverified",
+"osm_element": "node/12293284933"
+},
+"A00457": {
+"identity": "unverified",
+"osm_element": "node/12428178458",
+"inside": [
+{
+"name": "貴船口駅(Kibuneguchi Station)",
+"name_en": "Kibuneguchi Station",
+"kind": "building",
+"overpass_area_id": 296192587
+}
+]
+},
+"A00460": {
+"identity": "unverified",
+"osm_element": "node/12473100284"
+},
+"A00461": {
+"identity": "unverified",
+"osm_element": "node/12473113035"
+},
+"A00463": {
+"identity": "unverified",
+"osm_element": "node/12638666552",
+"inside": [
+{
+"name": "北野天満宮",
+"name_en": "Kitano Tenman Shrine",
+"kind": "Shinto shrine",
+"overpass_area_id": 432120699
+},
+{
+"name": "梅苑「花の庭」",
+"name_en": "Ume Blossom Garden",
+"kind": "park",
+"overpass_area_id": 1364738734
+}
+]
+},
+"A00464": {
+"identity": "unverified",
+"osm_element": "node/12679372793"
+},
+"A00465": {
+"identity": "unverified",
+"osm_element": "node/12747848894",
+"inside": [
+{
+"name": "船岡山公園",
+"name_en": "Funaokayama Park",
+"kind": "park",
+"overpass_area_id": 3609773721
+}
+]
+},
+"A00467": {
+"identity": "osm_tags",
+"osm_element": "node/12779876903",
+"tags": {
+"name:en": "Omiya Palace",
+"historic": "castle"
+},
+"name_en": "Omiya Palace",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "仙洞御所",
+"name_en": "Sento Imperial Palace",
+"kind": "visitor site",
+"overpass_area_id": 551409599
+},
+{
+"name": "京都御苑",
+"name_en": "Kyoto Imperial Palace Park",
+"kind": "park",
+"overpass_area_id": 3607925368
+}
+]
+},
+"A00468": {
+"identity": "osm_tags",
+"osm_element": "node/12779877702",
+"tags": {
+"name:en": "Kaninnomiya Residence",
+"historic": "castle"
+},
+"name_en": "Kaninnomiya Residence",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "京都御苑",
+"name_en": "Kyoto Imperial Palace Park",
+"kind": "park",
+"overpass_area_id": 3607925368
+},
+{
+"name": "閑院宮邸跡",
+"name_en": null,
+"kind": "building",
+"overpass_area_id": 3601423671
+}
+]
+},
+"A00469": {
+"identity": "osm_tags",
+"osm_element": "node/12782917901",
+"tags": {
+"name:en": "North Pond"
+},
+"name_en": "North Pond",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "仙洞御所",
+"name_en": "Sento Imperial Palace",
+"kind": "visitor site",
+"overpass_area_id": 551409599
+},
+{
+"name": "京都御苑",
+"name_en": "Kyoto Imperial Palace Park",
+"kind": "park",
+"overpass_area_id": 3607925368
+}
+]
+},
+"A00470": {
+"identity": "osm_tags",
+"osm_element": "node/12782918001",
+"tags": {
+"name:en": "South Pond"
+},
+"name_en": "South Pond",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "仙洞御所",
+"name_en": "Sento Imperial Palace",
+"kind": "visitor site",
+"overpass_area_id": 551409599
+},
+{
+"name": "京都御苑",
+"name_en": "Kyoto Imperial Palace Park",
+"kind": "park",
+"overpass_area_id": 3607925368
+}
+]
+},
+"A00471": {
+"identity": "osm_tags",
+"osm_element": "node/12782918002",
+"tags": {
+"name:en": "Church"
+},
+"name_en": "Church",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00472": {
+"identity": "osm_tags",
+"osm_element": "node/12782918003",
+"tags": {
+"name:en": "Wright Antiques"
+},
+"name_en": "Wright Antiques",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00473": {
+"identity": "osm_tags",
+"osm_element": "node/12786661703",
+"tags": {
+"name:en": "old building"
+},
+"name_en": "old building",
+"name_en_source": "OSM name:en of the same record"
+},
+"A00483": {
+"identity": "unverified",
+"osm_element": "node/12860318502"
+},
+"A00484": {
+"identity": "unverified",
+"osm_element": "node/12925548240",
+"inside": [
+{
+"name": "風風の湯",
+"name_en": "Fufunoyu",
+"kind": "building",
+"overpass_area_id": 427803005
+}
+]
+},
+"A00489": {
+"identity": "unverified",
+"osm_element": "node/13006284570",
+"inside": [
+{
+"name": "二条城",
+"name_en": "Nijō Castle",
+"kind": "visitor site",
+"overpass_area_id": 57111281
+}
+]
+},
+"A00492": {
+"identity": "unverified",
+"osm_element": "node/13033314388"
+},
+"A00493": {
+"identity": "unverified",
+"osm_element": "node/13124263329",
+"inside": [
+{
+"name": "西展望台",
+"name_en": "Shōgunzaka Western Observation Deck",
+"kind": "building",
+"overpass_area_id": 220473228
+}
+]
+},
+"A00494": {
+"identity": "unverified",
+"osm_element": "node/13260786581"
+},
+"A00495": {
+"identity": "unverified",
+"osm_element": "node/13264169397",
+"inside": [
+{
+"name": "鞍馬寺",
+"name_en": "Kurama-dera",
+"kind": "Buddhist temple",
+"overpass_area_id": 1243730752
+}
+]
+},
+"A00496": {
+"identity": "unverified",
+"osm_element": "node/13266078082",
+"inside": [
+{
+"name": "知恩院",
+"name_en": "Chion-in",
+"kind": "Buddhist temple",
+"overpass_area_id": 456122965
+}
+]
+},
+"A00497": {
+"identity": "unverified",
+"osm_element": "node/13316892240",
+"inside": [
+{
+"name": "粟田神社",
+"name_en": "Awata-jinjya",
+"kind": "Shinto shrine",
+"overpass_area_id": 440751886
+}
+]
+},
+"A00498": {
+"identity": "unverified",
+"osm_element": "node/13316950221"
+},
+"A00499": {
+"identity": "unverified",
+"osm_element": "node/13316950222"
+},
+"A00501": {
+"identity": "unverified",
+"osm_element": "node/13349618245",
+"inside": [
+{
+"name": "あらかし公園",
+"name_en": null,
+"kind": "park",
+"overpass_area_id": 1193114200
+}
+]
+},
+"A00503": {
+"identity": "unverified",
+"osm_element": "node/13610776201"
+},
+"A00504": {
+"identity": "osm_tags",
+"osm_element": "node/13613531301",
+"tags": {
+"name:en": "Phoenix Trer"
+},
+"name_en": "Phoenix Trer",
+"name_en_source": "OSM name:en of the same record",
+"inside": [
+{
+"name": "二条城",
+"name_en": "Nijō Castle",
+"kind": "visitor site",
+"overpass_area_id": 57111281
+}
+]
+},
+"A00514": {
+"identity": "unverified",
+"osm_element": "node/14088957423",
+"inside": [
+{
+"name": "東部公園",
+"name_en": null,
+"kind": "park",
+"overpass_area_id": 1389196519
+}
+]
+},
+"A00518": {
+"identity": "unverified",
+"osm_element": "node/14145368568",
+"inside": [
+{
+"name": "東寺",
+"name_en": "To-ji Temple",
+"kind": "Buddhist temple",
+"overpass_area_id": 359896810
+}
+]
+},
+"A00521": {
+"identity": "unverified",
+"osm_element": "node/14257185302",
+"inside": [
+{
+"name": "井根山公園",
+"name_en": null,
+"kind": "park",
+"overpass_area_id": 892309903
+}
+]
+},
+"A00522": {
+"identity": "unverified",
+"osm_element": "node/14264667127"
+}
+}
+}

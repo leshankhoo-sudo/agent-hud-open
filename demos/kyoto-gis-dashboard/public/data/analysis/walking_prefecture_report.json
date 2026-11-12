@@ -1,5 +1,5 @@
 {
- "computed_at": "2026-11-12T13:58:01+00:00",
+ "computed_at": "2026-11-12T14:03:05+00:00",
  "scope": "Kyoto Prefecture, all 523 attraction records (named and unnamed). Not validated record by record.",
  "road_data_check": {
   "files": {
@@ -107,6 +107,7 @@
   "rail:unreachable:no_stop_within_cutoff": 88
  },
  "ok_rows_with_flags": 554,
+ "ok_rows_with_steps": 319,
  "points_attached_to_main_network_instead_of_fragment": {
   "attractions": 26,
   "stops": 52

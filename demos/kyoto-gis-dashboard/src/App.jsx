@@ -8,16 +8,25 @@ import Outro from './Outro.jsx';
 import Explore from './Explore.jsx';
 import Features from './Features.jsx';
 import MusicPlayer from './MusicPlayer.jsx';
-import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism } from './lib/data.js';
+import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
+import { nameTerms } from './lib/terms.js';
 import { themeOf, pointColor, initialTheme, rememberTheme } from './lib/theme.js';
 import { walkingAvailability, indexWalking, walkingCoverage, IDENTITIES, CUTOFF_M } from './lib/walking.js';
 
 // 「日文名称 (English name)」 with the English part styled lighter; original alone if none is verified.
+// With "English first" on: English (日文). A record with no OSM name shows the English name of the same
+// OSM record if there is one, otherwise its fallback label.
 function NameEn({ p }) {
-  if (!p.name) return <>{p.display_name}</>;
+  if (!p.name) return <>{p.name_en || p.display_name}</>;
   const en = englishPart(p.name, p.name_en);
+  if (en && isEnglishFirst()) return <><span lang="en">{en}</span><span className="en" lang="ja"> ({p.name})</span></>;
   return <>{p.name}{en && <span className="en" lang="en"> ({en})</span>}</>;
 }
+
+// "English first" name order, remembered per browser (storage may be unavailable).
+const EN_KEY = 'kyoto-gis-en-first';
+const initialEnFirst = () => { try { return localStorage.getItem(EN_KEY) === '1'; } catch { return false; } };
+setEnglishFirst(initialEnFirst());
 
 // English name "decodes" into place: random Latin letters settle left to right (~0.7 s).
 const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -76,6 +85,8 @@ export default function App() {
   const [maxWalk, setMaxWalk] = useState(500);
   const [walkTypes, setWalkTypes] = useState(['bus', 'rail']);
   const [walkShow, setWalkShow] = useState(false);
+  const [enFirst, setEnFirstState] = useState(isEnglishFirst);
+  const toggleEnFirst = () => { const v = !enFirst; setEnglishFirst(v); setEnFirstState(v); try { localStorage.setItem(EN_KEY, v ? '1' : '0'); } catch { /* not stored */ } };
   // Which attraction records the walking summary and map include (unverified ones are off by default).
   const [walkIdent, setWalkIdent] = useState(['named', 'osm_tags']);
   const [focus, setFocus] = useState(null); // hovered category / transit type in the filter list
@@ -368,6 +379,7 @@ export default function App() {
         </div>
         <nav className="status" aria-label="Panels">
           {failed.length > 0 && <Chip label={`${failed.length} data file(s) failed to load`} />}
+          <button className={'btn ghost lang-order' + (enFirst ? ' on' : '')} type="button" onClick={toggleEnFirst} aria-pressed={enFirst} title="Name order: English first, Japanese in brackets"><span aria-hidden="true">{enFirst ? 'EN' : '日'}</span>English first</button>
           <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'journeys' ? null : 'journeys')} aria-expanded={sheet === 'journeys'}>Journeys & Fares</button>
           <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'sources' ? null : 'sources')} aria-expanded={sheet === 'sources'}>Data & Sources</button>
         </nav>
@@ -612,7 +624,7 @@ export default function App() {
               {tabs.map(([k, l]) => <button key={k} type="button" role="tab" id={`tab-${k}`} aria-selected={curTab === k} aria-controls={`pane-${k}`} className={curTab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
             </div>
             <div className="pane card" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" hidden={curTab !== 'overview'}>
-              <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} onWalk={() => setTab('walk')} />
+              <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} />
             </div>
             {selStopKeys && (
               <div className="pane card" role="tabpanel" id="pane-bus" aria-labelledby="tab-bus" hidden={curTab !== 'bus'}>
@@ -740,8 +752,11 @@ function Summary({ hit, pm, photos, color, onClose, onHide }) {
           <button className="x" type="button" onClick={onClose} aria-label="Clear selection">×</button>
         </span>
       </header>
-      <h2 lang={p.name ? 'ja' : 'en'} key={p.id}>
-        {p.name ? <>{p.name}{p.name_en && englishPart(p.name, p.name_en) && <> <Decode className="en" lang="en" text={`(${p.name_en})`} /></>}</> : <span className="muted">{p.display_name}</span>}
+      <h2 lang={p.name ? 'ja' : 'en'} key={p.id + (isEnglishFirst() ? 'en' : 'ja')}>
+        {p.name ? (englishPart(p.name, p.name_en) && isEnglishFirst()
+          ? <><Decode lang="en" text={p.name_en} /> <span className="en" lang="ja">({p.name})</span></>
+          : <>{p.name}{p.name_en && englishPart(p.name, p.name_en) && <> <Decode className="en" lang="en" text={`(${p.name_en})`} /></>}</>)
+          : p.name_en ? <span lang="en">{p.name_en}</span> : <span className="muted">{p.display_name}</span>}
       </h2>
       <p className="where" lang="ja">
         <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M8 14.5s4.5-4.2 4.5-8A4.5 4.5 0 0 0 3.500 6.5c0 3.800 4.500 8 4.500 8z" fill="none" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="6.4" r="1.6" fill="currentColor" /></svg>
@@ -752,7 +767,10 @@ function Summary({ hit, pm, photos, color, onClose, onHide }) {
   );
 }
 
-function Overview({ hit, pm, photos, tourism, dup, walk, onWalk }) {
+// How a containing OSM area is described: a location, never an identification of the point.
+const insidePhrase = (k) => (/temple|shrine|place of worship|church/.test(k) ? 'Inside the grounds of' : k === 'building' ? 'At' : 'Inside');
+
+function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk }) {
   const p = hit.f.properties;
   const [lon, lat] = hit.f.geometry.coordinates;
   const muniCode = pm?.points?.[p.id];
@@ -762,9 +780,23 @@ function Overview({ hit, pm, photos, tourism, dup, walk, onWalk }) {
   const inPilot = walk.available && (!walk.pilot || walk.scopeIds.has(p.id));
   return (
     <div className="ov">
-      {!p.name && <p className="xs limit">This record has no name in the source. The label above is a fallback, not an official name.</p>}
+      {!p.name && (p.name_en
+        ? <p className="xs limit">No Japanese name in the source. The English name comes from the same OpenStreetMap record (name:en).</p>
+        : <p className="xs limit">This record has no name in the source. The label above is a fallback, not an official name.</p>)}
       <dl className="kv">
         <div><dt>Category</dt><dd>{CATEGORY_LABEL[p.category]}</dd></div>
+        {ctx?.inside?.length > 0 && (
+          <div><dt>Location</dt><dd>
+            {ctx.inside.slice(0, 2).map((s, i) => <span key={i} className="inside">{insidePhrase(s.kind)} <b lang="ja">{s.name_en ? (isEnglishFirst() ? `${s.name_en} (${s.name})` : `${s.name} (${s.name_en})`) : s.name}</b> <small className="muted">· {s.kind}</small></span>)}
+            <small className="muted">OpenStreetMap area that contains this point. It tells where the point is, not what it is.</small>
+          </dd></div>
+        )}
+        {!p.name && ctx && (
+          <div><dt>Record</dt><dd>{ctx.identity === 'osm_tags' ? <>OSM-tagged: {Object.keys(ctx.tags || {}).join(', ')}</> : 'Unverified: only a category tag in OpenStreetMap'}</dd></div>
+        )}
+        {(() => { const terms = nameTerms(p.name, hit.layer === 'transport'); return terms.length > 0 && (
+          <div><dt>In the name</dt><dd className="terms">{terms.map((x) => <span key={x.t}><b lang="ja">{x.t}</b> {x.m}</span>)}<small className="muted">Meaning of common words in the name, not a translation.</small></dd></div>
+        ); })()}
         <div><dt>Area</dt><dd lang="ja">{muniCode ? muniLabel(pm, muniCode) : 'outside all boundary polygons'}</dd></div>
         {hit.layer === 'attraction' && (
           <div><dt>Walking access</dt><dd>{inPilot ? <button className="link" type="button" onClick={onWalk}>Network routes available · open Walking Routes</button> : walk.available ? `Not calculated yet (pilot covers ${walk.scopeIds.size} records in ${walk.pilotInfo?.name})` : 'Not calculated yet'}</dd></div>
@@ -842,6 +874,7 @@ function Walking({ available, index, id, byId, maxWalk }) {
           <b lang="ja">{s ? <NameEn p={s} /> : x.stop_id}</b>
           <span className="wdist"><b className="mono"><Rolling value={Math.round(x.distance_m)} /> m</b> · ≈{x.duration_min} min walk</span>
           <span className="state"><i className={'st ' + (within ? 'ok' : 'far')} />{within ? `Within ${maxWalk} m` : `Beyond ${maxWalk} m (selected distance)`}</span>
+          {x.steps_m > 0 && <span className="chip steps">Includes steps · about {x.steps_m} m</span>}
           {x.note && <small className="warnline">{x.note}</small>}
           <small className="mono muted">{x.stop_id} · 80 m/min · access gaps not added: {x.attraction_snap_gap_m} m + {x.stop_snap_gap_m} m</small>
         </dd>

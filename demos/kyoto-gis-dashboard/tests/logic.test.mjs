@@ -296,3 +296,51 @@ test('bus routes: one operator, directions kept apart, stop order and positions 
   assert.equal(ex.fare.adult, 500);
   assert.equal(idx.routes.find((r) => r.fare.type === 'stop_pair').fare.adult, null); // not filled in
 });
+
+test('context for unnamed records: same-record English names only, containing areas are locations', async () => {
+  const { applyContext, applyEnglishNames, recordLabel } = await import('../src/lib/data.js');
+  const ctx = J('attraction_context.json');
+  const unnamed = A.filter((f) => !(f.properties.name || '').trim());
+  assert.equal(Object.keys(ctx.records).length, unnamed.length);
+  const tags = JSON.parse(readFileSync(new URL('../data/cache/osm_elements.json', import.meta.url), 'utf8'));
+  for (const [id, c] of Object.entries(ctx.records)) {
+    assert.ok(['osm_tags', 'unverified'].includes(c.identity), id);
+    const t = tags[c.osm_element] || {};
+    if (c.name_en) assert.equal(c.name_en, t['name:en'].split(';')[0].trim(), `${id} English name must be the record's own name:en`);
+    else assert.ok(!t['name:en'], `${id} has name:en but none was taken`);
+    for (const s of c.inside || []) assert.ok(s.name && s.kind && !/administrative|island/.test(s.kind), id);
+  }
+  assert.equal(ctx.meta.counts.osm_tags + ctx.meta.counts.unverified, unnamed.length);
+  // applied to a copy of the data: original name fields untouched, English label shown
+  const data = { attractions: J('attractions.geojson'), transport: J('transport.geojson'), namesEn: J('names_en.json'), context: ctx };
+  applyEnglishNames(data);
+  applyContext(data);
+  const a191 = data.attractions.features.find((f) => f.properties.id === 'A00191').properties;
+  assert.equal(a191.name, '');
+  assert.equal(a191.name_en, 'Daiun-in');
+  assert.equal(recordLabel(a191), 'Daiun-in');
+  const a110 = data.attractions.features.find((f) => f.properties.id === 'A00110').properties;
+  assert.equal(a110.name_en, undefined);
+  assert.equal(recordLabel(a110), a110.display_name);
+  assert.equal(ctx.records.A00110.inside[0].name, '金閣寺');
+});
+
+test('name terms explain words, longest match first, stop-only words only for stops', async () => {
+  const { nameTerms } = await import('../src/lib/terms.js');
+  const t = (n, s) => nameTerms(n, s).map((x) => x.t).join(',');
+  assert.equal(t('伏見稲荷大社'), '大社');
+  assert.equal(t('金閣寺道', true), '寺,道');
+  assert.equal(t('金閣寺道', false), '寺');
+  assert.equal(t('京都駅前', true), '駅前');
+  assert.equal(t('城陽市'), '');
+  assert.equal(t(''), '');
+});
+
+test('English-first name order is a display choice only', async () => {
+  const { withEnglish, setEnglishFirst } = await import('../src/lib/data.js');
+  assert.equal(withEnglish('金閣', 'Golden Pavilion'), '金閣 (Golden Pavilion)');
+  setEnglishFirst(true);
+  assert.equal(withEnglish('金閣', 'Golden Pavilion'), 'Golden Pavilion (金閣)');
+  assert.equal(withEnglish('祇園', ''), '祇園');
+  setEnglishFirst(false);
+});
