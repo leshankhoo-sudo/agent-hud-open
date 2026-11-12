@@ -58,6 +58,7 @@ python3 scripts/walking_pilot.py /path/to/Kyoto_Roads_GeoJSON   # Analysis 2：�
 python3 scripts/fetch_photos.py                 # 景点照片（Wikidata / Commons，需联网）
 python3 scripts/fetch_names_en.py               # 英文名称（OSM name:en / Wikidata，需联网）
 python3 scripts/fetch_explore_photos.py         # Explore Kyoto 区块的照片（Wikimedia Commons，需联网）
+python3 scripts/prepare_bus_routes.py           # 巴士路线目录、走法和票价（读取 data/raw/bus_package）
 python3 scripts/prepare_tourism_stats.py        # 参观人次统计（读取 data/raw/documents 里的 Excel）
 ```
 
@@ -137,6 +138,17 @@ kyoto-gis-dashboard/
   - 循环：尾音叠回开头，并在缓冲区内按精确采样点循环，没有接缝。
 - **主题切换的水波**：切换明暗时，三圈波纹从按钮处荡开，新主题跟着一圈柔边的波铺满屏幕。
 - **暗色主题**：改成近黑的深蓝紫底、淡紫白柔光、细浅色边框。京都府边界的发光和呼吸动画保留，颜色改成淡紫白。
+
+## 6e. 巴士路线动画（京都市营巴士）
+
+- **范围**：只有京都市交通局的市营巴士这一家运营商，不是京都府所有巴士。
+- **两个入口**：左侧 Analysis 里的 Bus Routes（选路线，再选方向或走法）；或者点地图上的巴士站，在右侧的 Bus Routes 标签页里看经过该站的路线和方向，从这一站开始播放。
+- **动画**：先用浅色细线画出全线，再让亮线沿道路走线延伸到终点。线头到站时，站点从 70% 放大到 115% 再回到 100%，并显示站名。经过的站保持点亮。结束后路线保留，可以 Replay、Skip、Close route。系统开了"减少动画"时直接显示完整路线。
+- **数据来源**：走线和停站顺序来自 OpenStreetMap 的路线关系（ODbL），**不是官方 GTFS**。只有 EX100、EX101 的停站顺序另经官方资料核对。官方 GTFS 需要 ODPT 开发者账号的访问密钥，本项目没有使用。
+- **覆盖**：路线目录 105 条；其中 89 条有走线，共 175 个方向或走法、4,617 个停站记录。其余 16 条没有可用走线，只高亮关联的站点，并显示"Route animation not available yet"，不画线。
+- **票价**：来自独立的票价包，按官方路线编号关联。76 条均一票价，2 条观光特急，27 条按上下车站计价（只给官方票价表链接，没有逐站金额）。
+- **站点对照**：地图上原有的巴士站点是按站名和运营商的站点列表对上的，同名站可能是不同方向的站台，没有逐个核实。
+- 数据由 `scripts/prepare_bus_routes.py` 从 `data/raw/bus_package/` 生成到 `public/data/bus/`，每个走法一个小文件，选中才加载。
 
 ## 6b. 樱花滚动开场
 

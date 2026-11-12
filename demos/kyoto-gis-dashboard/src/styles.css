@@ -1104,3 +1104,52 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 :root[data-theme='light'] .music { box-shadow: 0 4px 14px rgba(90, 70, 50, .16); }
 @media (max-width: 760px) { .music { right: calc(max(14px, env(safe-area-inset-right, 0px)) + 78px); } .music.playing .music-t, .music .music-t { display: none; } }
 @media (prefers-reduced-motion: reduce) { .music-eq i { animation: none; } }
+
+/* ---------- bus routes ---------- */
+.sel { width: 100%; font: inherit; font-size: 13px; padding: 7px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-solid); color: var(--ink); }
+.bus-dirs { display: grid; gap: 6px; }
+.bus-dir { display: grid; gap: 1px; text-align: left; border: 1px solid var(--line); background: var(--field); color: var(--ink); border-radius: 9px; padding: 7px 10px; cursor: pointer; font-size: 13px; transition: border-color .2s, background .2s; }
+.bus-dir:hover { border-color: var(--bus); }
+.bus-dir.on { border-color: var(--bus); background: color-mix(in srgb, var(--bus) 14%, transparent); }
+.bus-dir small { font-size: 11px; color: var(--mute); }
+.bus-dir span small { color: var(--ink-2); }
+.bus-fare { margin: 0; color: var(--ink-2); }
+.bus-no { display: inline-grid; place-items: center; min-width: 34px; height: 24px; padding: 0 8px; border-radius: 7px; font: 600 12.5px var(--mono); color: #06140d; background: var(--bus); white-space: nowrap; }
+.bus-at { display: grid; gap: 8px; }
+.bus-at p { margin: 0; }
+.bus-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.bus-list li { display: grid; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line); }
+.bus-row-h { display: flex; align-items: center; gap: 8px; }
+.bus-bar { position: absolute; left: 50%; bottom: 44px; translate: -50% 0; z-index: 4; max-width: calc(100% - 28px); display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 12px; border-radius: 16px; background: var(--panel-solid); border: 1px solid var(--line); box-shadow: 0 12px 30px rgba(0, 0, 0, .35); animation: rise .35s var(--ez) both; }
+.bus-info { display: grid; min-width: 0; font-size: 13px; max-width: min(46vw, 520px); }
+.bus-info b { color: var(--ink-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bus-info span { font-size: 11.5px; color: var(--ink-2); }
+.bus-btns { display: flex; gap: 6px; flex: none; }
+:root { --bus: #7df0b4; }
+:root[data-theme='light'] { --bus: #0c8f5c; }
+:root[data-theme='light'] .bus-no { color: #fff; }
+:root[data-theme='light'] .bus-bar { box-shadow: 0 8px 22px rgba(90, 70, 50, .18); }
+/* stop markers of the shown route: quiet until the line reaches them, then pop 70% -> 115% -> 100% and stay lit */
+.bus-stop { width: 22px; height: 22px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.bus-stop i { width: 9px; height: 9px; border-radius: 50%; background: var(--panel-solid); border: 2px solid color-mix(in srgb, var(--bus) 55%, var(--mute)); opacity: .7; transform: scale(.7); transition: opacity .3s, background .3s, border-color .3s, transform .3s; }
+.bus-stop.before i { opacity: .4; }
+.bus-stop.passed i { opacity: 1; transform: scale(1); background: var(--bus); border-color: var(--panel-solid); box-shadow: 0 0 0 1.5px var(--bus); }
+.bus-stop.terminal i { width: 12px; height: 12px; border-radius: 3px; }
+.bus-stop.pop i { animation: busPop .55s cubic-bezier(.3, .7, .3, 1) both; }
+@keyframes busPop { 0% { transform: scale(.7); } 55% { transform: scale(1.15); } 100% { transform: scale(1); } }
+.bus-stop span { position: absolute; left: 50%; bottom: 20px; translate: -50% 0; display: grid; gap: 0; padding: 4px 8px; border-radius: 8px; white-space: nowrap; text-align: center; pointer-events: none; background: var(--panel-solid); border: 1px solid var(--bus); box-shadow: 0 6px 16px rgba(0, 0, 0, .3); opacity: 0; transform: translateY(4px); transition: opacity .25s, transform .3s var(--ez); }
+.bus-stop b { font-size: 12.5px; font-weight: 600; color: var(--ink-strong); }
+.bus-stop small { font: 10px var(--mono); color: var(--ink-2); }
+.bus-stop.now span, .bus-stop.pinned span, .bus-stop:hover span, .bus-stop:focus-visible span { opacity: 1; transform: none; }
+.bus-stop.now, .bus-stop.pinned, .bus-stop:hover { z-index: 3; }
+.bus-stop.review i { border-style: dashed; }
+@media (max-width: 760px) {
+  .bus-bar { left: 8px; right: 8px; translate: none; max-width: none; bottom: 40px; flex-wrap: wrap; gap: 8px; }
+  .bus-info { flex: 1 1 60%; }
+  .app.has-sel:not(.no-right) .bus-bar { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .bus-stop.pop i { animation: none; } }
+/* stop name labels never run off a narrow screen; touch-sized buttons on phones */
+.bus-stop span { width: max-content; max-width: min(240px, 70vw); }
+.bus-stop b, .bus-stop small { overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 760px) { .bus-btns .btn { min-height: 40px; padding: 8px 14px; } .bus-dir { padding: 10px 12px; } }

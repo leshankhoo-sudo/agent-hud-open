@@ -1,0 +1,1732 @@
+{
+  "kto00100": {
+    "route_number": "1",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00100.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00300": {
+    "route_number": "3",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00300.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00400": {
+    "route_number": "4",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00400.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00500": {
+    "route_number": "5",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00525": {
+    "route_number": "快速5",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00525.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00600": {
+    "route_number": "6",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00600.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00684": {
+    "route_number": "快速6",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00684.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00720": {
+    "route_number": "7",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00720.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00800": {
+    "route_number": "8",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00800.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00803": {
+    "route_number": "特8",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00803.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00900": {
+    "route_number": "9",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00900.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto00985": {
+    "route_number": "快速9",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/00985.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01000": {
+    "route_number": "10",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01000.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01100": {
+    "route_number": "11",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01100.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01200": {
+    "route_number": "12",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01200.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01300": {
+    "route_number": "13",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01300.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01303": {
+    "route_number": "特13",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01303.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01500": {
+    "route_number": "15",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01595": {
+    "route_number": "快速15",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01595.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01600": {
+    "route_number": "16",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01600.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01800": {
+    "route_number": "18",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01800.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01803": {
+    "route_number": "特18",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01803.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto01900": {
+    "route_number": "19",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01900.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=1",
+    "official_fare_chart_page": 1,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/01900.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto02000": {
+    "route_number": "20",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02000.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=1",
+    "official_fare_chart_page": 1,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02000.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto02200": {
+    "route_number": "22",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02200.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=1",
+    "official_fare_chart_page": 1,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02200.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto02300": {
+    "route_number": "23",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02300.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=3",
+    "official_fare_chart_page": 3,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02300.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto02500": {
+    "route_number": "25",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto02600": {
+    "route_number": "26",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02600.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto02700": {
+    "route_number": "27",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02700.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto02703": {
+    "route_number": "特27",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02703.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto02800": {
+    "route_number": "28",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02800.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto02900": {
+    "route_number": "29",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02900.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=3",
+    "official_fare_chart_page": 3,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/02900.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto03100": {
+    "route_number": "31",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/03100.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto03200": {
+    "route_number": "32",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/03200.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto03300": {
+    "route_number": "33",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/03300.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=3",
+    "official_fare_chart_page": 3,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/03300.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto03303": {
+    "route_number": "特33",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/03303.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=3",
+    "official_fare_chart_page": 3,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/03303.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto03700": {
+    "route_number": "37",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/03700.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto03703": {
+    "route_number": "特37",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/03703.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto04200": {
+    "route_number": "42",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/04200.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=3",
+    "official_fare_chart_page": 3,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/04200.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto04300": {
+    "route_number": "43",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/04300.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto04600": {
+    "route_number": "46",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/04600.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto05000": {
+    "route_number": "50",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/05000.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto05100": {
+    "route_number": "51",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/05100.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto05200": {
+    "route_number": "52",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/05200.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto05300": {
+    "route_number": "53",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/05300.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto05500": {
+    "route_number": "55",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/05500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto05800": {
+    "route_number": "58",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/05800.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto05900": {
+    "route_number": "59",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/05900.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto06500": {
+    "route_number": "65",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/06500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto06700": {
+    "route_number": "67",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/06700.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto06900": {
+    "route_number": "69",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/06900.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=3",
+    "official_fare_chart_page": 3,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/06900.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto07000": {
+    "route_number": "70",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/07000.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=3",
+    "official_fare_chart_page": 3,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/07000.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto07100": {
+    "route_number": "71",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/07100.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto07103": {
+    "route_number": "特71",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/07103.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto07500": {
+    "route_number": "75",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/07500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto07800": {
+    "route_number": "78",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/07800.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto08000": {
+    "route_number": "80",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/08000.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto08003": {
+    "route_number": "特80",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/08003.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=5",
+    "official_fare_chart_page": 5,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/08003.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "kto08100": {
+    "route_number": "81",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/08100.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto08400": {
+    "route_number": "84",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/08400.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto08500": {
+    "route_number": "85",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/08500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto08600": {
+    "route_number": "86",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/08600.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto09100": {
+    "route_number": "91",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/09100.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto09300": {
+    "route_number": "93",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/09300.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto09315": {
+    "route_number": "快速93",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/09315.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto10050": {
+    "route_number": "EX100",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/10050.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "sightseeing_express_flat",
+    "adult_jpy": 500,
+    "child_jpy": 250,
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/bus/limited_express.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html"
+    ]
+  },
+  "kto10100": {
+    "route_number": "EX101",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/10100.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "sightseeing_express_flat",
+    "adult_jpy": 500,
+    "child_jpy": 250,
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/bus/limited_express.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html"
+    ]
+  },
+  "kto10200": {
+    "route_number": "102",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/10200.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto10500": {
+    "route_number": "105",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/10500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto10600": {
+    "route_number": "106",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/10600.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto20100": {
+    "route_number": "201",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/20100.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto20200": {
+    "route_number": "202",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/20200.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto20300": {
+    "route_number": "203",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/20300.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto20400": {
+    "route_number": "204",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/20400.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto20500": {
+    "route_number": "205",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/20500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto20600": {
+    "route_number": "206",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/20600.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto20700": {
+    "route_number": "207",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/20700.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "kto20800": {
+    "route_number": "208",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/20800.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoD2050": {
+    "route_number": "立命館ダイレクト",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/D2050.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoK2020": {
+    "route_number": "快速202・立命館",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/K2020.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoK2050": {
+    "route_number": "快速205・立命館",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/K2050.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoKR001": {
+    "route_number": "立命館",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/KR001.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Blue route-number badge on official route page, interpreted using the operator's fare-zone FAQ.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/KR001.htm"
+    ]
+  },
+  "ktoM0010": {
+    "route_number": "M1",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/M0010.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoN0010": {
+    "route_number": "北1",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/N0010.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoN0030": {
+    "route_number": "北3",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/N0030.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoN0080": {
+    "route_number": "北8",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/N0080.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoS0010": {
+    "route_number": "南1",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0010.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=2",
+    "official_fare_chart_page": 2,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0010.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoS0013": {
+    "route_number": "特南1",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0013.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=2",
+    "official_fare_chart_page": 2,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0013.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoS0020": {
+    "route_number": "南2",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0020.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=2",
+    "official_fare_chart_page": 2,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0020.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoS0030": {
+    "route_number": "南3",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0030.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=2",
+    "official_fare_chart_page": 2,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0030.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoS0050": {
+    "route_number": "南5",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0050.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoS0500": {
+    "route_number": "南6",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S0500.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  },
+  "ktoS088D": {
+    "route_number": "南8",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S088D.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=2",
+    "official_fare_chart_page": 2,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/S088D.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0010": {
+    "route_number": "西1",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0010.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0010.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0020": {
+    "route_number": "西2",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0020.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0020.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0030": {
+    "route_number": "西3",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0030.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0030.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0033": {
+    "route_number": "特西3",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0033.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0033.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0040": {
+    "route_number": "西4",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0040.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0040.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0043": {
+    "route_number": "特西4",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0043.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0043.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0050": {
+    "route_number": "西5",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0050.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0050.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0053": {
+    "route_number": "特西5",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0053.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0053.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0060": {
+    "route_number": "西6",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0060.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0060.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0080": {
+    "route_number": "西8",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0080.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0080.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoW0090": {
+    "route_number": "西9",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0090.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "stop_pair",
+    "adult_jpy": null,
+    "child_jpy": null,
+    "official_fare_chart_url": "https://www2.city.kyoto.lg.jp/kotsu/webguide/files/fare/non_flat_fare_table.pdf#page=4",
+    "official_fare_chart_page": 4,
+    "trip_fare_lookup_url": "https://www.arukumachikyoto.jp/index.php?lang=en",
+    "source_urls": [
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/W0090.htm",
+      "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html"
+    ]
+  },
+  "ktoZ0550": {
+    "route_number": "四条烏丸→みぶ",
+    "official_route_url": "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/kto/Z0550.htm",
+    "currency": "JPY",
+    "basis": "standard_single_ride",
+    "checked_on": "2026-11-12",
+    "type": "standard_flat",
+    "adult_jpy": 230,
+    "child_jpy": 120,
+    "classification_evidence": "Fare class stated in the operator's route index.",
+    "source_urls": [
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+      "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+      "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+    ]
+  }
+}

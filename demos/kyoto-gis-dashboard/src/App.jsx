@@ -83,6 +83,15 @@ export default function App() {
   const [tab, setTab] = useState('overview');
   const [legend, setLegend] = useState(false);
   const [visit, setVisit] = useState({ day: null, hour: null }); // planned visit, shared by every place
+  // Bus routes (Kyoto City Bus only). busRun: one direction being shown; busHl: stop points of a route without a usable line.
+  const [busRoute, setBusRoute] = useState('');
+  const [busRun, setBusRun] = useState(null);
+  const [busHl, setBusHl] = useState(null);
+  const [busProg, setBusProg] = useState({ idx: -1, done: false });
+  const [busErr, setBusErr] = useState(null);
+  const busCache = useRef(new Map());
+  const busCtl = useRef(null);
+  const busToken = useRef(0);
   const mapRef = useRef(null);
   const resetViewRef = useRef(null);
   const [introDone, setIntroDone] = useState(false);
@@ -153,10 +162,61 @@ export default function App() {
     return m;
   }, [d]);
 
+  const closeBus = () => { busToken.current++; setBusRun(null); setBusHl(null); setBusErr(null); };
+  // Show one direction of a route, from a given stop (or from its first stop). Starting a new one replaces the old one at once.
+  const startBus = async (route, variantId, stopKey = null, fromPoint = null) => {
+    const token = ++busToken.current;
+    setBusHl(null);
+    setBusErr(null);
+    setBusRoute(route.key);
+    try {
+      let v = busCache.current.get(variantId);
+      if (!v) {
+        const r = await fetch(`${import.meta.env.BASE_URL}data/bus/variants/${variantId}.json`);
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        v = await r.json();
+        busCache.current.set(variantId, v);
+      }
+      if (token !== busToken.current) return; // a newer choice was made meanwhile
+      let startIdx = 0;
+      if (stopKey) {
+        const i = v.stops.findIndex((x, k) => x.key === stopKey && k < v.stops.length - 1);
+        startIdx = i >= 0 ? i : 0;
+      }
+      setBusProg({ idx: startIdx - 1, done: false });
+      setBusRun({ key: `${variantId}|${startIdx}|${token}`, route, variant: v, line: v.line, stops: v.stops, startIdx, stopKey, fromPoint });
+    } catch (e) {
+      if (token === busToken.current) { setBusRun(null); setBusErr(`Route data could not be loaded (${e.message}). Nothing is drawn instead.`); }
+    }
+  };
+  // A route with no verified line or stop order: only its associated stop points are highlighted.
+  const highlightBus = (route) => {
+    busToken.current++;
+    const ids = [...new Set(route.stop_keys.flatMap((k) => d.bus.stops[k]?.points || []))];
+    setBusRun(null);
+    setBusErr(null);
+    setBusRoute(route.key);
+    setBusHl({ route, ids });
+    const pts = ids.map((id) => byId.get(id)?.f.geometry.coordinates).filter(Boolean);
+    if (pts.length) {
+      const bb = pts.reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)], [180, 90, -180, -90]);
+      mapRef.current?.fitBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: 70, maxZoom: 15, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1000 });
+    }
+  };
+  const pickBusRoute = (key) => {
+    setBusRoute(key);
+    const route = d.bus.routes.find((r) => r.key === key);
+    if (!route) return closeBus();
+    if (route.variants.length) startBus(route, route.variants[0].id); else highlightBus(route);
+  };
+  const replayBus = () => { if (busRun) { const token = ++busToken.current; setBusProg({ idx: busRun.startIdx - 1, done: false }); setBusRun({ ...busRun, key: `${busRun.variant.id}|${busRun.startIdx}|${token}` }); } };
+
   const select = (s, fly = true) => {
     if (!s) return setSel(null);
     const hit = byId.get(s.id);
     if (!hit) return;
+    // choosing another stop ends the route that was started from the previous stop
+    if (hit.layer === 'transport' && busRun?.fromPoint && busRun.fromPoint !== s.id) closeBus();
     const [lon, lat] = hit.f.geometry.coordinates;
     const p = hit.f.properties;
     const ph = d?.photos?.photos?.[s.id];
@@ -164,6 +224,7 @@ export default function App() {
       photo: ph ? { src: `${import.meta.env.BASE_URL}${ph.src}`, related: ph.match === 'wikidata-related' ? ph.matched_label : null, credit: `${ph.artist} · ${ph.license}` } : null });
     setRightOpen(true);
     if (hit.layer !== 'attraction') setTab((t) => (t === 'walk' ? 'overview' : t));
+    if (!d?.bus?.point_stops?.[s.id]) setTab((t) => (t === 'bus' ? 'overview' : t));
     if (isPhone()) setLeftOpen(false);
   };
   // the callout swatch follows the theme without re-running the camera move
@@ -259,7 +320,9 @@ export default function App() {
   const resetView = () => mapRef.current?.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900 });
   resetViewRef.current = resetView;
   const isAttr = selHit?.layer === 'attraction';
-  const tabs = selHit ? [['overview', 'Overview'], ...(isAttr ? [['walk', 'Walking Routes']] : []), ['weather', 'Weather'], ['journeys', 'Journeys & Fares']] : [];
+  const selStopKeys = (sel && d.bus?.point_stops?.[sel.id]) || null;
+  const tabs = selHit ? [['overview', 'Overview'], ...(selStopKeys ? [['bus', 'Bus Routes']] : []), ...(isAttr ? [['walk', 'Walking Routes']] : []), ['weather', 'Weather'], ['journeys', 'Journeys & Fares']] : [];
+  const busRouteObj = d.bus?.routes.find((r) => r.key === busRoute) || null;
   const curTab = tabs.some(([k]) => k === tab) ? tab : 'overview';
   const densityLabel = densityMode === 'kde' ? 'KDE layer on' : densityMode === 'heat' ? 'Heatmap on' : 'Off';
   const pilotName = walk.pilotInfo?.name;
@@ -412,13 +475,36 @@ export default function App() {
               )}
             </div>
           )}
+
+          {d.bus && (
+            <>
+              <button type="button" className={'entry' + (panel === 'bus' ? ' open' : '')} aria-expanded={panel === 'bus'} aria-controls="an-bus" onClick={() => setPanel(panel === 'bus' ? null : 'bus')}>
+                <span className="entry-t">Bus Routes</span>
+                <span className={'entry-s' + (busRun || busHl ? ' on' : '')}>{busRun ? `Route ${busRun.route.number} shown` : busHl ? `Route ${busHl.route.number} stops` : `${d.bus.coverage.routes} routes`}</span>
+                <i aria-hidden="true" />
+              </button>
+              {panel === 'bus' && (
+                <div className="entry-body" id="an-bus">
+                  <p className="xs limit">Kyoto City Bus only (one operator), not every bus route in the prefecture. Line and stop order from OpenStreetMap; not live positions.</p>
+                  <label className="xs" htmlFor="bus-route">Route</label>
+                  <select id="bus-route" className="sel" value={busRoute} onChange={(e) => pickBusRoute(e.target.value)}>
+                    <option value="">Choose a route…</option>
+                    {d.bus.routes.map((r) => <option key={r.key} value={r.key}>{r.number}{r.variants.length ? '' : ' (stops only)'} · {r.via_ja}</option>)}
+                  </select>
+                  {busRouteObj && <BusVariants route={busRouteObj} active={busRun?.variant.id} onPick={(v) => startBus(busRouteObj, v.id)} />}
+                  {busRouteObj && <BusFare route={busRouteObj} />}
+                  {busErr && <p className="xs warnline" role="alert">{busErr}</p>}
+                </div>
+              )}
+            </>
+          )}
         </section>
       </aside>
 
       <main className="center">
         <i className="corner c1" /><i className="corner c2" /><i className="corner c3" /><i className="corner c4" />
         {core ? (
-          <MapView theme={theme} data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={selForMap} active={dashSeen} focus={focus} onSelect={(s) => select(s, false)} onHover={setHover} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} />
+          <MapView theme={theme} data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={selForMap} active={dashSeen} focus={focus} onSelect={(s) => select(s, false)} onHover={setHover} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} busRun={busRun} busHighlight={busHl?.ids} onBusProgress={setBusProg} busCtl={busCtl} />
         ) : (
           <div className="alert big" role="alert"><b>Map data could not be loaded.</b>{failed.map(([k, v]) => <span key={k}>{v.file}: {v.error}</span>)}</div>
         )}
@@ -440,6 +526,7 @@ export default function App() {
               {TRANSPORT_TYPES.map((t) => <li key={t.key}><img src={iconURL(t.key)} alt="" width="16" height="16" />{t.label} stop <span className="muted">(dot when zoomed out)</span></li>)}
               <li><span className="ln" style={{ borderColor: T.outline.line }} />Kyoto Prefecture boundary</li>
               {walk.pilot && <li><span className="ln dash" style={{ borderColor: T.pilot }} />Walking pilot area</li>}
+              {(busRun || busHl) && <li><span className="ln" style={{ borderColor: T.busLine }} />Kyoto City Bus route {(busRun || busHl).route.number}{busHl ? ' (stops only)' : ''}</li>}
               {walkSet && <li><span className="ln" style={{ borderColor: T.walk.bus }} />Walk to bus stop · <span className="ln" style={{ borderColor: T.walk.rail }} />to rail</li>}
               {densityMode === 'kde' && <li className="col"><span>Density, records per km²</span><span className="ramp">{kdeColors(theme).map((c) => <span key={c} style={{ background: c }} />)}</span><span className="ramp-l">{KDE_BREAKS.map((b) => <span key={b}>{b}</span>)}</span></li>}
               {densityMode === 'heat' && <li className="muted">Heatmap: display only</li>}
@@ -456,6 +543,27 @@ export default function App() {
         )}
         <button type="button" className="edge-btn l" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore-panel" aria-label={leftOpen ? 'Hide the explore panel' : 'Show the explore panel'}><i /></button>
         <button type="button" className="edge-btn r" onClick={() => setRightOpen(!rightOpen)} aria-expanded={rightOpen} aria-controls="details" aria-label={rightOpen ? 'Hide the details panel' : 'Show the details panel'}><i /><span>Details</span></button>
+        {(busRun || busHl) && (
+          <div className="bus-bar" role="region" aria-label="Bus route on the map">
+            <span className="bus-no">{(busRun || busHl).route.number}</span>
+            {busRun ? (
+              <div className="bus-info">
+                <b lang="ja">{busRun.stops[busRun.startIdx].ja} → {busRun.variant.terminal_ja}</b>
+                <span aria-live="polite">{busProg.idx >= busRun.startIdx ? <>Stop {busRun.stops[busProg.idx].seq} of {busRun.stops.length} · <span lang="ja">{busRun.stops[busProg.idx].ja}</span>{busProg.done ? ' · end of route' : ''}</> : 'Whole line shown; starting…'}</span>
+              </div>
+            ) : (
+              <div className="bus-info">
+                <b>Route animation not available yet</b>
+                <span>{busHl.ids.length} associated stop points are highlighted. No verified line or stop order for this route.</span>
+              </div>
+            )}
+            <div className="bus-btns">
+              {busRun && <button type="button" className="btn ghost sm" onClick={replayBus}>Replay</button>}
+              {busRun && !busProg.done && <button type="button" className="btn ghost sm" onClick={() => busCtl.current?.skip()}>Skip</button>}
+              <button type="button" className="btn ghost sm" onClick={closeBus}>Close route</button>
+            </div>
+          </div>
+        )}
         {hover && (
           <div className="tip" style={{ left: hover.x + 14, top: hover.y + 10 }}>
             <b lang="ja"><NameEn p={hover.feature.properties} /></b>
@@ -483,6 +591,11 @@ export default function App() {
             <div className="pane card" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" hidden={curTab !== 'overview'}>
               <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} onWalk={() => setTab('walk')} />
             </div>
+            {selStopKeys && (
+              <div className="pane card" role="tabpanel" id="pane-bus" aria-labelledby="tab-bus" hidden={curTab !== 'bus'}>
+                <BusAtStop bus={d.bus} stopKeys={selStopKeys} active={busRun?.variant.id} hlKey={busHl?.route.key} onStart={(route, v, key) => startBus(route, v.id, key, sel.id)} onHighlight={highlightBus} err={busErr} />
+              </div>
+            )}
             {isAttr && (
               <div className="pane card" role="tabpanel" id="pane-walk" aria-labelledby="tab-walk" hidden={curTab !== 'walk'}>
                 <Walking available={walk} index={walkIndex} id={sel.id} byId={byId} maxWalk={maxWalk} />
@@ -501,6 +614,64 @@ export default function App() {
     </div>
     <Outro manifest={d.manifest} />
     </>
+  );
+}
+
+const BUS_NA = 'Route animation not available yet';
+// Fare from the separate fare package, joined by the official route key.
+function BusFare({ route }) {
+  const f = route.fare;
+  if (!f) return <p className="xs muted">No fare record for this route.</p>;
+  if (f.adult != null) return <p className="xs bus-fare">Fare: <b className="mono">¥{f.adult}</b> adult · <b className="mono">¥{f.child}</b> child <span className="muted">({f.type === 'sightseeing_express_flat' ? 'sightseeing express, flat' : 'flat'}; checked {f.checked_on})</span></p>;
+  return <p className="xs bus-fare">Fare depends on the boarding and alighting stops. {f.chart_url && <a href={f.chart_url} target="_blank" rel="noreferrer">Official fare chart{f.chart_page ? `, p.${f.chart_page}` : ''}</a>}{f.planner_url && <> · <a href={f.planner_url} target="_blank" rel="noreferrer">trip fare lookup</a></>}</p>;
+}
+const dirLabel = (v) => <><span lang="ja">{v.origin_ja} → {v.terminal_ja}</span>{v.loop ? <small> via <span lang="ja">{v.via_ja}</span></small> : null}</>;
+function BusVariants({ route, active, onPick }) {
+  if (!route.variants.length) return <p className="xs limit">{BUS_NA}. Only the stop points linked to this route are highlighted; no line is drawn.</p>;
+  return (
+    <div className="bus-dirs" role="group" aria-label={`Directions and service patterns of route ${route.number}`}>
+      {route.variants.map((v) => (
+        <button key={v.id} type="button" className={'bus-dir' + (active === v.id ? ' on' : '')} aria-pressed={active === v.id} onClick={() => onPick(v)}>
+          <span>{dirLabel(v)}</span><small>{v.stops} stops · {(v.length_m / 1000).toFixed(1)} km</small>
+        </button>
+      ))}
+    </div>
+  );
+}
+// Details tab for a bus stop point: which Kyoto City Bus routes list this stop, and which way they go from here.
+function BusAtStop({ bus, stopKeys, active, hlKey, onStart, onHighlight, err }) {
+  const rows = [];
+  for (const key of stopKeys) for (const rk of bus.stops[key].routes) if (!rows.some((r) => r.route.key === rk)) rows.push({ route: bus.routes.find((r) => r.key === rk), key });
+  rows.sort((a, b) => bus.routes.indexOf(a.route) - bus.routes.indexOf(b.route));
+  const st = bus.stops[stopKeys[0]];
+  return (
+    <section className="bus-at">
+      <h4>Kyoto City Bus at <span lang="ja">{st.ja}</span>{st.en ? ` (${st.en})` : ''}</h4>
+      <p className="xs limit">Matched to the operator's stop list by stop name. Stops with the same name can be separate platforms, so check the direction before boarding. One operator only.</p>
+      {err && <p className="xs warnline" role="alert">{err}</p>}
+      <ul className="bus-list">
+        {rows.map(({ route, key }) => {
+          const here = route.variants.filter((v) => v.order.slice(0, -1).includes(key)); // the stop must have somewhere left to go
+          return (
+            <li key={route.key}>
+              <div className="bus-row-h"><span className="bus-no">{route.number}</span><span className="xs muted" lang="ja">{route.via_ja}</span></div>
+              {here.length ? (
+                <div className="bus-dirs">
+                  {here.map((v) => (
+                    <button key={v.id} type="button" className={'bus-dir' + (active === v.id ? ' on' : '')} aria-pressed={active === v.id} onClick={() => onStart(route, v, key)}>
+                      <span><span lang="ja">→ {v.terminal_ja}</span></span><small>next stop <span lang="ja">{bus.stops[v.order[v.order.indexOf(key) + 1]]?.ja || '—'}</span> · play from here</small>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="xs">{BUS_NA}{route.variants.length ? ' from this stop' : ''}. <button type="button" className="link" aria-pressed={hlKey === route.key} onClick={() => onHighlight(route)}>Highlight this route's stops</button></p>
+              )}
+              <BusFare route={route} />
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 
@@ -801,6 +972,14 @@ function Sources({ d, status, walk, failed, onClose }) {
                 <p className="xs muted">Unit: {t.unit}. {t.notes.join(' ')} <a href={t.source_url} target="_blank" rel="noreferrer">Source PDF</a>. {t.accessed}</p>
               </details>
             ))}
+          </section>
+        )}
+        {d.bus && (
+          <section>
+            <h3>Bus routes (Kyoto City Bus)</h3>
+            <p className="xs">Operator: {d.bus.operator}. {d.bus.coverage.routes} route entries in the catalogue; {d.bus.coverage.routes_with_animation} have at least one mapped direction ({d.bus.coverage.variants} directions or service patterns, {d.bus.coverage.stop_occurrences.toLocaleString('en-US')} stop calls).</p>
+            <p className="xs">{d.bus.sources.animation} Stop order cross-checked with the operator only for {d.bus.coverage.official_order_checked.join(', ')}. {d.bus.sources.catalogue}. {d.bus.sources.fares}.</p>
+            <p className="xs limit">Without a usable line ({d.bus.coverage.route_numbers_without_animation.length}): {d.bus.coverage.route_numbers_without_animation.join(', ')}. Records flagged for review: {d.bus.review.length}. The moving line is a presentation, not a live bus position or travel speed. Dashboard stop points are linked to operator stops by name and are not verified as the same platform.</p>
           </section>
         )}
         <section>

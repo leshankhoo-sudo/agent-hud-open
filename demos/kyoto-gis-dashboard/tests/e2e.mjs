@@ -236,6 +236,45 @@ const cov = await page.locator('.cov').innerText();
 check('coverage panel uses the 19 pilot records as denominator', cov.includes('of 19 pilot records'), cov.replace(/\n/g, ' / '));
 
 // 8. journeys panel
+// 7b2. bus routes (Kyoto City Bus): pick a route, the line grows along the supplied geometry and stops light up in order
+await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: 0 }));
+await page.locator('.entry', { hasText: 'Bus Routes' }).click();
+const busKey = await page.evaluate(() => [...document.querySelectorAll('#bus-route option')].find((o) => o.textContent.startsWith('206 ')).value);
+await page.locator('#bus-route').selectOption(busKey);
+await page.waitForFunction(() => document.querySelectorAll('.bus-stop.passed').length >= 3, null, { timeout: 20000 });
+const bus1 = await page.evaluate(() => { const m = window.__kyotoMap; const st = [...document.querySelectorAll('.bus-stop')]; const passed = st.map((e, i) => (e.classList.contains('passed') ? i : -1)).filter((i) => i >= 0); return { total: st.length, passed: passed.length, contiguous: passed.every((v, i) => v === i), full: m.getSource('bus-full')._data.geometry.coordinates.length, lit: m.getSource('bus-lit')._data.geometry?.coordinates.length || 0, dirs: document.querySelectorAll('#an-bus .bus-dir').length }; });
+check('bus route 206: whole line shown thin, bright line partly grown, stops lit in order from the first', bus1.total === 58 && bus1.passed < bus1.total && bus1.contiguous && bus1.lit > 1 && bus1.lit < bus1.full && bus1.dirs === 2, JSON.stringify(bus1));
+await page.locator('.bus-bar').getByRole('button', { name: 'Skip' }).click();
+await page.waitForTimeout(500);
+const bus2 = await page.evaluate(() => ({ passed: document.querySelectorAll('.bus-stop.passed').length, bar: document.querySelector('.bus-bar').innerText, lit: window.__kyotoMap.getSource('bus-lit')._data.geometry.coordinates.length, full: window.__kyotoMap.getSource('bus-full')._data.geometry.coordinates.length }));
+check('skip shows the complete route and all stops; Replay is offered', bus2.passed === 58 && bus2.lit === bus2.full && bus2.bar.includes('end of route') && bus2.bar.includes('Replay'), bus2.bar.replace(/\n/g, ' | '));
+await page.locator('.bus-stop').nth(4).click();
+check('clicking a route stop shows its name and sequence', (await page.locator('.bus-stop.pinned').innerText()).includes('stop 5 of 58'));
+await page.locator('#an-bus .bus-dir').nth(1).click();
+await page.waitForFunction(() => document.querySelectorAll('.bus-stop.passed').length >= 1 && document.querySelectorAll('.bus-stop.passed').length < 20, null, { timeout: 20000 });
+check('switching direction replaces the previous route and its highlights at once', (await page.locator('.bus-dir.on').count()) === 1 && (await page.locator('.bus-stop').count()) === 58 && (await page.locator('.bus-stop.pinned').count()) === 0);
+await page.locator('#bus-route').selectOption({ label: await page.evaluate(() => [...document.querySelectorAll('#bus-route option')].find((o) => o.textContent.includes('(stops only)')).textContent) });
+await page.waitForTimeout(800);
+const bus3 = await page.evaluate(() => ({ markers: document.querySelectorAll('.bus-stop').length, bar: document.querySelector('.bus-bar').innerText, hl: window.__kyotoMap.getFilter('bus-hl')[2][1].length, lit: window.__kyotoMap.getSource('bus-lit')._data.features?.length }));
+check('a route without a verified line draws no line: only its stop points are highlighted, with a notice', bus3.markers === 0 && bus3.hl > 0 && bus3.lit === 0 && bus3.bar.includes('Route animation not available yet'), JSON.stringify(bus3).slice(0, 200));
+await page.locator('.bus-bar').getByRole('button', { name: 'Close route' }).click();
+await page.locator('#q').fill('四条河原町');
+await page.locator('.results button').first().click();
+await page.waitForTimeout(1500);
+await page.getByRole('tab', { name: 'Bus Routes' }).click();
+const busAt = await page.evaluate(() => ({ routes: [...document.querySelectorAll('.bus-list .bus-no')].map((e) => e.innerText), first: document.querySelector('.bus-list .bus-dir').innerText, fare: document.querySelector('.bus-list .bus-fare').innerText }));
+check('a bus stop lists the routes serving it, each direction with its next stop, and the separate fare', busAt.routes.includes('205') && /next stop/.test(busAt.first) && busAt.fare.includes('¥230'), `${busAt.routes.length} routes · ${busAt.first.replace(/\n/g, ' / ')}`);
+await page.locator('.bus-list .bus-dir').first().click();
+await page.waitForFunction(() => document.querySelectorAll('.bus-stop.passed').length >= 2, null, { timeout: 20000 });
+const busFrom = await page.evaluate(() => { const st = [...document.querySelectorAll('.bus-stop')]; const before = st.filter((e) => e.classList.contains('before')).length; const firstLit = st.findIndex((e) => e.classList.contains('passed')); return { before, firstLit, name: st[firstLit].querySelector('b').innerText, bar: document.querySelector('.bus-bar b').innerText }; });
+check('from a stop, the animation starts at that stop and runs towards the terminal; earlier stops stay quiet', busFrom.firstLit === busFrom.before && busFrom.name === '四条河原町' && busFrom.bar.startsWith('四条河原町 →'), JSON.stringify(busFrom));
+await page.locator('.bus-bar').getByRole('button', { name: 'Close route' }).click();
+await page.locator('#q').fill('A00230');
+await page.locator('.results button').first().click();
+await page.waitForTimeout(2200);
+await page.getByRole('tab', { name: 'Walking Routes' }).click();
+await page.locator('.entry', { hasText: 'Bus Routes' }).click();
+
 // 7c. theme switch keeps the place, tab, filters, routes and camera; petals appear and are removed
 const before = await page.evaluate(() => { const m = window.__kyotoMap; return { theme: document.documentElement.dataset.theme, z: m.getZoom().toFixed(3), c: m.getCenter().toArray().map((v) => v.toFixed(5)).join(), routes: m.getSource('walk')._data.features.length, name: document.querySelector('.detail h2').innerText, tab: document.querySelector('.tabs .on').innerText }; });
 const tg = page.getByRole('switch', { name: 'Light theme' });

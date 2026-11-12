@@ -219,3 +219,33 @@ test('English names: added as new fields, originals unchanged, shown as 日文 (
   assert.equal(Object.keys(data.pointMuni.names_en).length, 36);
   assert.equal(muniLabel(data.pointMuni, '26105'), '京都市 東山区 (Higashiyama Ward, Kyoto City)');
 });
+
+test('bus routes: one operator, directions kept apart, stop order and positions consistent', () => {
+  const idx = J('bus/index.json');
+  assert.match(idx.operator, /Kyoto Municipal Transportation Bureau/);
+  assert.equal(idx.routes.length, 105);
+  const withLine = idx.routes.filter((r) => r.variants.length);
+  assert.equal(withLine.length, 89);
+  assert.equal(withLine.reduce((n, r) => n + r.variants.length, 0), 175);
+  assert.equal(idx.coverage.route_numbers_without_animation.length, 16);
+  assert.equal(new Set(idx.routes.flatMap((r) => r.variants.map((v) => v.id))).size, 175); // no variant shared between routes
+  let calls = 0;
+  for (const r of withLine) for (const v of r.variants) {
+    const d = J(`bus/variants/${v.id}.json`);
+    assert.equal(d.route_key, r.key);
+    assert.ok(d.line.length >= 2 && d.stops.length >= 2, v.id);
+    assert.deepEqual(d.stops.map((s) => s.key), v.order);
+    d.stops.forEach((s, i) => {
+      assert.equal(s.seq, i + 1, `${v.id} sequence`);
+      assert.ok(s.p >= 0 && s.p <= 1 && (i === 0 || s.p >= d.stops[i - 1].p - 1e-6), `${v.id} stop ${s.seq} position along the line`);
+      assert.ok(idx.stops[s.key], `${v.id} unknown stop key ${s.key}`);
+      assert.ok(r.stop_keys.includes(s.key), `${v.id}: ${s.key} is not in the operator's stop list of route ${r.number}`);
+    });
+    calls += d.stops.length;
+  }
+  assert.equal(calls, idx.coverage.stop_occurrences);
+  for (const r of idx.routes) assert.ok(r.fare && ['standard_flat', 'stop_pair', 'sightseeing_express_flat'].includes(r.fare.type), r.number);
+  const ex = idx.routes.find((r) => r.number === 'EX100');
+  assert.equal(ex.fare.adult, 500);
+  assert.equal(idx.routes.find((r) => r.fare.type === 'stop_pair').fare.adult, null); // not filled in
+});

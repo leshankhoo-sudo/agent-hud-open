@@ -79,13 +79,13 @@ function styleFor(basemap, theme) {
 }
 const TRANSIT_LAYERS = ['transport-pt', 'transport-sym-rail', 'transport-sym-bus'];
 
-export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk }) {
+export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk, busRun, busHighlight, onBusProgress, busCtl }) {
   const el = useRef(null);
   const mapRef = useRef(null);
   const marker = useRef(null);
   const callout = useRef(null);
   const latest = useRef({});
-  latest.current = { onSelect, onHover, cats, types, query, densityMode, active, theme };
+  latest.current = { onSelect, onHover, cats, types, query, densityMode, active, theme, onBusProgress };
   const introPending = useRef(false);
   useEffect(() => {
     if (active && introPending.current && mapRef.current) { introPending.current = false; mapRef.current.resize(); intro(mapRef.current); }
@@ -252,6 +252,98 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walkSet, maxWalk]);
 
+  // Bus route reveal. The whole line is drawn thin and pale first; then a bright line grows along the
+  // supplied road geometry from the starting stop to the terminal. When the head reaches a stop, that
+  // stop's marker pops (70% -> 115% -> 100%) and shows its name. Passed stops stay lit, the rest stay quiet.
+  // This is a presentation of the route, not a live bus position or a real travel speed.
+  const bus = useRef({ raf: 0, markers: [] });
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const B = bus.current;
+    const clear = () => {
+      cancelAnimationFrame(B.raf);
+      B.markers.forEach((m) => m.marker.remove());
+      B.markers = [];
+      map.getSource('bus-full')?.setData(EMPTY);
+      map.getSource('bus-lit')?.setData(EMPTY);
+    };
+    const start = () => {
+      clear();
+      if (!busRun) { if (busCtl) busCtl.current = null; return; }
+      const { line, stops, startIdx } = busRun;
+      const cum = cumulative(line);
+      const p0 = stops[startIdx].p;
+      map.getSource('bus-full').setData({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: line } });
+      B.markers = stops.map((s, i) => {
+        const el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'bus-stop' + (i < startIdx ? ' before' : '') + (i === stops.length - 1 ? ' terminal' : '') + (s.review ? ' review' : '');
+        el.setAttribute('aria-label', `Stop ${s.seq}: ${s.ja}${s.en ? ` (${s.en})` : ''}`);
+        const dot = document.createElement('i');
+        const tag = document.createElement('span');
+        const nm = document.createElement('b');
+        nm.lang = 'ja';
+        nm.textContent = s.ja;
+        const sub = document.createElement('small');
+        sub.textContent = `${s.en ? s.en + ' · ' : ''}stop ${s.seq} of ${stops.length}`;
+        tag.append(nm, sub);
+        el.append(dot, tag);
+        el.addEventListener('click', (e) => { e.stopPropagation(); B.markers.forEach((m) => m.el !== el && m.el.classList.remove('pinned')); el.classList.toggle('pinned'); });
+        return { el, s, i, marker: new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(s.xy).addTo(map) };
+      });
+      // frame the part that will be played
+      const [, rest] = cut(line, cum, p0);
+      const pts = [...(rest || line), ...stops.slice(startIdx).map((s) => s.xy)];
+      const bb = pts.reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)], [180, 90, -180, -90]);
+      const narrow = innerWidth <= 760;
+      map.fitBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: narrow ? { top: 70, bottom: 150, left: 30, right: 30 } : { top: 80, bottom: 130, left: 70, right: 70 }, maxZoom: 15.5, duration: prefersReducedMotion() ? 0 : 1200 });
+      let reached = startIdx - 1;
+      const paint = (frac, final) => {
+        const [upto] = cut(line, cum, frac);
+        const [, lit] = upto ? cut(upto, cumulative(upto), p0 / Math.max(frac, 1e-9)) : [null, null];
+        map.getSource('bus-lit')?.setData(lit && lit.length > 1 ? { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: lit } } : EMPTY);
+        let changed = false;
+        for (const m of B.markers) {
+          if (m.i < startIdx || m.i <= reached || m.s.p > frac + 1e-9) continue;
+          reached = m.i;
+          changed = true;
+          B.markers.forEach((o) => o.el.classList.remove('now'));
+          m.el.classList.add('passed', 'now');
+          if (!final) { m.el.classList.remove('pop'); void m.el.offsetWidth; m.el.classList.add('pop'); }
+        }
+        if (changed || final) latest.current.onBusProgress?.({ idx: reached, done: !!final });
+      };
+      const finish = () => { cancelAnimationFrame(B.raf); paint(1, true); };
+      if (busCtl) busCtl.current = { skip: finish };
+      latest.current.onBusProgress?.({ idx: startIdx - 1, done: false });
+      if (prefersReducedMotion()) { finish(); return; }
+      const remain = (1 - p0) * cum[cum.length - 1];
+      const dur = Math.max(5000, Math.min(22000, remain / 0.9)); // about 900 m of route per second, within 5-22 s
+      const t0 = performance.now() + 1300;                        // let the camera settle first
+      const frame = (now) => {
+        const k = Math.max(0, Math.min(1, (now - t0) / dur));
+        if (k >= 1) { finish(); return; }
+        if (now >= t0) paint(p0 + (1 - p0) * k, false);
+        B.raf = requestAnimationFrame(frame);
+      };
+      paint(p0, false);
+      B.raf = requestAnimationFrame(frame);
+    };
+    if (map.getSource('bus-full')) start();
+    else map.once('idle', start);
+    return () => { cancelAnimationFrame(B.raf); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [busRun]);
+  useEffect(() => () => { bus.current.markers.forEach((m) => m.marker.remove()); }, []);
+  // routes without a usable line: only their associated stop points are highlighted
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const apply = () => { if (map.getLayer('bus-hl')) map.setFilter('bus-hl', ['in', ['get', 'id'], ['literal', busHighlight || []]]); };
+    if (map.getLayer('bus-hl')) apply(); else map.once('idle', apply);
+  }, [busHighlight]);
+
   // Selection marker and camera move.
   useEffect(() => {
     const map = mapRef.current;
@@ -310,6 +402,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
 }
 
 const WALK_TYPES = ['bus', 'rail'];
+const EMPTY = { type: 'FeatureCollection', features: [] };
 // Moving dash pattern: stepping through these looks like light travelling along the path.
 const DASH_STEPS = [[0, 4, 3], [0.5, 4, 2.5], [1, 4, 2], [1.5, 4, 1.5], [2, 4, 1], [2.5, 4, 0.5], [3, 4, 0], [0, 0.5, 3, 3.5], [0, 1, 3, 3], [0, 1.5, 3, 2.5], [0, 2, 3, 2], [0, 2.5, 3, 1.5], [0, 3, 3, 1], [0, 3.5, 3, 0.5]];
 
@@ -475,6 +568,10 @@ function restyleData(map, theme) {
   set('pilot-line', 'line-color', T.pilot);
   set('walk-rest', 'line-color', walkRestExpr(T));
   for (const t of WALK_TYPES) { set(`walk-glow-${t}`, 'line-color', T.walk[t]); set(`walk-line-${t}`, 'line-color', T.walk[t]); }
+  set('bus-full', 'line-color', T.busPale);
+  set('bus-glow', 'line-color', T.busLine);
+  set('bus-lit', 'line-color', T.busLine);
+  set('bus-hl', 'circle-stroke-color', T.busLine);
   set('heat', 'heatmap-color', heatExpr(T));
   set('transport-pt', 'circle-color', transitColorExpr(T));
   set('transport-pt', 'circle-stroke-color', T.stroke);
@@ -513,6 +610,12 @@ function addDataLayers(map, data, theme) {
     map.addLayer({ id: `walk-line-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-width': 3.4, 'line-color': col } });
     map.addLayer({ id: `walk-flow-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 1.6, 'line-opacity': 0.85, 'line-dasharray': DASH_STEPS[0] } });
   }
+  map.addSource('bus-full', { type: 'geojson', data: EMPTY });
+  map.addSource('bus-lit', { type: 'geojson', data: EMPTY });
+  const round = { 'line-cap': 'round', 'line-join': 'round' };
+  map.addLayer({ id: 'bus-full', type: 'line', source: 'bus-full', layout: round, paint: { 'line-color': T.busPale, 'line-width': 2, 'line-opacity': 0.4 } });
+  map.addLayer({ id: 'bus-glow', type: 'line', source: 'bus-lit', layout: round, paint: { 'line-color': T.busLine, 'line-width': 12, 'line-blur': 8, 'line-opacity': 0.4 } });
+  map.addLayer({ id: 'bus-lit', type: 'line', source: 'bus-lit', layout: round, paint: { 'line-color': T.busLine, 'line-width': 4 } });
   map.addSource('attractions', { type: 'geojson', data: data.attractions });
   map.addSource('transport', { type: 'geojson', data: data.transport });
   map.addLayer({
@@ -534,6 +637,8 @@ function addDataLayers(map, data, theme) {
       'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 7, 0, 11, ['match', ['get', 'transport_type'], 'bus', 0.5, 1.2]],
     },
   });
+  map.addLayer({ id: 'bus-hl', type: 'circle', source: 'transport', filter: ['in', ['get', 'id'], ['literal', []]],
+    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3, 13, 6, 16, 9], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': T.busLine, 'circle-stroke-width': 2 } });
   // Stations and stops as pictograms once zoomed in (rail from z9, bus from z13); below that, and where
   // icons would overlap, the small dots above still mark every record.
   addTransitIcons(map);

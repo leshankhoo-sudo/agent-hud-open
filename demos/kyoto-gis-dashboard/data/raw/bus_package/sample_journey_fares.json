@@ -1,0 +1,201 @@
+[
+  {
+    "journey_id": "KYO-001",
+    "destination_name": "Kiyomizu-dera Temple",
+    "route_number": "206",
+    "route_key": "kto20600",
+    "origin_official_stop_key": "bs061",
+    "alighting_official_stop_key": "bs124",
+    "alighting_stop_name_en": "Gojozaka",
+    "fare": {
+      "currency": "JPY",
+      "basis": "standard_single_ride",
+      "checked_on": "2026-11-12",
+      "type": "standard_flat",
+      "adult_jpy": 230,
+      "child_jpy": 120,
+      "classification_evidence": "Fare class stated in the operator's route index.",
+      "source_urls": [
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+        "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+      ]
+    }
+  },
+  {
+    "journey_id": "KYO-002",
+    "destination_name": "Kinkaku-ji Temple",
+    "route_number": "205",
+    "route_key": "kto20500",
+    "origin_official_stop_key": "bs061",
+    "alighting_official_stop_key": "bs221",
+    "alighting_stop_name_en": "Kinkakuji-michi (Kinkakuji Temple)",
+    "fare": {
+      "currency": "JPY",
+      "basis": "standard_single_ride",
+      "checked_on": "2026-11-12",
+      "type": "standard_flat",
+      "adult_jpy": 230,
+      "child_jpy": 120,
+      "classification_evidence": "Fare class stated in the operator's route index.",
+      "source_urls": [
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+        "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+      ]
+    }
+  },
+  {
+    "journey_id": "KYO-003",
+    "destination_name": "Ginkaku-ji Temple",
+    "route_number": "7",
+    "route_key": "kto00720",
+    "origin_official_stop_key": "bs061",
+    "alighting_official_stop_key": "bs103",
+    "alighting_stop_name_en": "Ginkakuji-michi (Ginkakuji Temple)",
+    "fare": {
+      "currency": "JPY",
+      "basis": "standard_single_ride",
+      "checked_on": "2026-11-12",
+      "type": "standard_flat",
+      "adult_jpy": 230,
+      "child_jpy": 120,
+      "classification_evidence": "Fare class stated in the operator's route index.",
+      "source_urls": [
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+        "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+      ]
+    }
+  },
+  {
+    "journey_id": "KYO-004",
+    "destination_name": "Nijo-jo Castle",
+    "route_number": "9",
+    "route_key": "kto00900",
+    "origin_official_stop_key": "bs061",
+    "alighting_official_stop_key": "bs185",
+    "alighting_stop_name_en": "Nijojo-mae (Nijo-jo Castle)",
+    "fare": {
+      "currency": "JPY",
+      "basis": "standard_single_ride",
+      "checked_on": "2026-11-12",
+      "type": "standard_flat",
+      "adult_jpy": 230,
+      "child_jpy": 120,
+      "classification_evidence": "Fare class stated in the operator's route index.",
+      "source_urls": [
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+        "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+      ]
+    }
+  },
+  {
+    "journey_id": "KYO-005",
+    "destination_name": "Arashiyama area",
+    "route_number": "28",
+    "route_key": "kto02800",
+    "origin_official_stop_key": "bs061",
+    "alighting_official_stop_key": "bs422",
+    "alighting_stop_name_en": "Arashiyama Koen (Togetsukyo Minamizume)",
+    "fare": {
+      "currency": "JPY",
+      "basis": "standard_single_ride",
+      "checked_on": "2026-11-12",
+      "type": "standard_flat",
+      "adult_jpy": 230,
+      "child_jpy": 120,
+      "classification_evidence": "Fare class stated in the operator's route index.",
+      "source_urls": [
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000240682.html",
+        "https://www.city.kyoto.lg.jp/kotsu/page/0000204850.html",
+        "https://www2.city.kyoto.lg.jp/kotsu/busdia/keitou/keitou"
+      ]
+    }
+  },
+  {
+    "journey_id": "KYO-006",
+    "destination_name": "Kiyomizu-dera Temple",
+    "route_number": "EX101",
+    "route_key": "kto10100",
+    "origin_official_stop_key": "bs061",
+    "alighting_official_stop_key": "bs124",
+    "alighting_stop_name_en": "Gojozaka",
+    "fare": {
+      "currency": "JPY",
+      "basis": "standard_single_ride",
+      "checked_on": "2026-11-12",
+      "type": "sightseeing_express_flat",
+      "adult_jpy": 500,
+      "child_jpy": 250,
+      "source_urls": [
+        "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/bus/limited_express.html",
+        "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html"
+      ]
+    }
+  },
+  {
+    "journey_id": "KYO-007",
+    "destination_name": "Gion / Yasaka Jinja Shrine",
+    "route_number": "EX100",
+    "route_key": "kto10050",
+    "origin_official_stop_key": "bs061",
+    "alighting_official_stop_key": "bs127",
+    "alighting_stop_name_en": "Gion",
+    "fare": {
+      "currency": "JPY",
+      "basis": "standard_single_ride",
+      "checked_on": "2026-11-12",
+      "type": "sightseeing_express_flat",
+      "adult_jpy": 500,
+      "child_jpy": 250,
+      "source_urls": [
+        "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/bus/limited_express.html",
+        "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html"
+      ]
+    }
+  },
+  {
+    "journey_id": "KYO-008",
+    "destination_name": "Heian Jingu Shrine",
+    "route_number": "EX100",
+    "route_key": "kto10050",
+    "origin_official_stop_key": "bs061",
+    "alighting_official_stop_key": "bs111",
+    "alighting_stop_name_en": "Okazaki Koen Bijutsukan / Heian Jingu-mae",
+    "fare": {
+      "currency": "JPY",
+      "basis": "standard_single_ride",
+      "checked_on": "2026-11-12",
+      "type": "sightseeing_express_flat",
+      "adult_jpy": 500,
+      "child_jpy": 250,
+      "source_urls": [
+        "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/bus/limited_express.html",
+        "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html"
+      ]
+    }
+  },
+  {
+    "journey_id": "KYO-009",
+    "destination_name": "Ginkaku-ji Temple",
+    "route_number": "EX100",
+    "route_key": "kto10050",
+    "origin_official_stop_key": "bs061",
+    "alighting_official_stop_key": "bs464",
+    "alighting_stop_name_en": "Ginkakuji-mae (Ginkakuji Temple)",
+    "fare": {
+      "currency": "JPY",
+      "basis": "standard_single_ride",
+      "checked_on": "2026-11-12",
+      "type": "sightseeing_express_flat",
+      "adult_jpy": 500,
+      "child_jpy": 250,
+      "source_urls": [
+        "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/bus/limited_express.html",
+        "https://www2.city.kyoto.lg.jp/kotsu/webguide/en/fare/fare_bus.html"
+      ]
+    }
+  }
+]
