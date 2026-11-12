@@ -367,6 +367,7 @@ export default function App() {
     <Features items={features} onOpen={openFeature} />
     <div id="dashboard" className={cls}>
       <header className="top">
+        <span className="wa-band" aria-hidden="true" />
         <button type="button" className="nav-btn" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore-panel">
           <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" /></svg>
           <span>Explore</span>
@@ -729,6 +730,9 @@ function Clock() {
   return <span className="clock" title="Current time in Kyoto">{s} JST</span>;
 }
 
+// One kanji per record type for the seal on the details card (decoration; the English label is the text).
+const SEAL = { attraction: '名', viewpoint: '景', museum: '館', castle: '城', bus_stop: '停', bus_station: '停', railway_station: '駅', railway_halt: '駅', tram_stop: '停' };
+
 function Chip({ ok, warn, label }) {
   return <span className={'chip ' + (ok ? 'ok' : warn ? 'warn' : 'bad')}><i />{label}</span>;
 }
@@ -758,7 +762,7 @@ function Summary({ hit, pm, photos, color, onClose, onHide }) {
         </figure>
       )}
       <header className="card-h">
-        <span className="kind"><i style={{ background: color }} />{CATEGORY_LABEL[p.category]}</span>
+        <span className="kind"><i className="hanko" style={{ '--c': color }} aria-hidden="true" lang="ja">{SEAL[p.category] || '印'}</i>{CATEGORY_LABEL[p.category]}</span>
         <span className="card-h-btns">
           <button className="x hide-btn" type="button" onClick={onHide} aria-label="Hide details">⌄</button>
           <button className="x" type="button" onClick={onClose} aria-label="Clear selection">×</button>
@@ -815,6 +819,7 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk }) {
         )}
       </dl>
 
+      <hr className="mizuhiki" aria-hidden="true" />
       <section className="stat" aria-label="Tourism count for this municipality">
         <h4>Tourism count · {tc ? tc.name : 'municipality'}</h4>
         {tc ? (

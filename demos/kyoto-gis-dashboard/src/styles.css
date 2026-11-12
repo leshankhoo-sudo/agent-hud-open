@@ -1231,3 +1231,49 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 .season-pick { display: grid; gap: 4px; }
 .season-pick select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--field); color: var(--ink); }
 @media (max-width: 760px) { .s-txt { display: none; } .season-badge summary { padding: 3px; } }
+
+/* ---------- Wa (和) details: patterns, mincho headings, noren tabs, seal, mizuhiki ----------
+   Patterns are drawn for this project as plain geometry (asanoha, shippo, ichimatsu, a mizuhiki cord)
+   and used as masks, so they take the season colour in both themes. Kept off the map and the data. */
+:root {
+  --wa-asanoha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='41.57' viewBox='0 0 24 41.57'%3E%3Cpath d='M-12.0 6.93L0.0 0.0M-12.0 -20.78L0.0 0.0M0.0 41.57L12.0 62.35M12.0 20.78L36.0 20.78M0.0 41.57L0.0 55.43M12.0 62.35L24.0 83.14M0.0 69.28L12.0 62.35M-24.0 27.71L-12.0 20.78M0.0 0.0L12.0 20.78M12.0 -34.64L12.0 -20.78M24.0 0.0L36.0 -20.78M0.0 0.0L0.0 13.86M24.0 -13.86L24.0 0.0M-24.0 83.14L-12.0 62.35M36.0 62.35L60.0 62.35M0.0 41.57L24.0 41.57M36.0 62.35L48.0 55.43M24.0 41.57L36.0 34.64M-12.0 62.35L0.0 41.57M36.0 -20.78L48.0 -13.86M24.0 69.28L36.0 62.35M12.0 -20.78L24.0 -41.57M24.0 -27.71L36.0 -20.78M-36.0 -20.78L-12.0 -20.78M24.0 27.71L24.0 41.57M0.0 0.0L12.0 -6.93M24.0 41.57L36.0 20.78M12.0 6.93L12.0 20.78M-12.0 62.35L12.0 62.35M-36.0 20.78L-12.0 20.78M24.0 41.57L36.0 48.5M-12.0 62.35L0.0 55.43M0.0 -41.57L12.0 -20.78M-12.0 -6.93L0.0 0.0M24.0 0.0L48.0 0.0M0.0 27.71L12.0 20.78M-12.0 20.78L-12.0 34.64M0.0 83.14L12.0 62.35M36.0 -20.78L60.0 -20.78M-24.0 0.0L0.0 0.0M36.0 20.78L36.0 34.64M-12.0 34.64L0.0 41.57M12.0 20.78L24.0 41.57M-24.0 41.57L-12.0 48.5M24.0 0.0L36.0 6.93M-12.0 62.35L0.0 83.14M-12.0 -20.78L12.0 -20.78M12.0 20.78L24.0 27.71M-24.0 -41.57L-12.0 -20.78M12.0 62.35L12.0 76.21M-24.0 55.43L-12.0 62.35M-24.0 41.57L-12.0 34.64M24.0 41.57L36.0 62.35M-12.0 62.35L0.0 69.28M0.0 0.0L24.0 0.0M-24.0 41.57L-12.0 20.78M24.0 -13.86L36.0 -20.78M36.0 62.35L48.0 69.28M24.0 13.86L36.0 20.78M-12.0 20.78L12.0 20.78M-12.0 -20.78L0.0 -41.57M36.0 20.78L48.0 0.0M36.0 -20.78L36.0 -6.93M12.0 -20.78L24.0 0.0M-12.0 20.78L0.0 13.86M0.0 -27.71L12.0 -20.78M-24.0 0.0L-12.0 -20.78M36.0 20.78L60.0 20.78M36.0 -6.93L48.0 0.0M0.0 41.57L12.0 34.64M12.0 62.35L36.0 62.35M36.0 62.35L48.0 83.14M36.0 20.78L48.0 13.86M-12.0 48.5L-12.0 62.35M12.0 6.93L24.0 0.0M-12.0 -20.78L-12.0 -6.93M0.0 41.57L12.0 20.78M0.0 55.43L12.0 62.35M12.0 62.35L24.0 41.57M36.0 6.93L36.0 20.78M-24.0 13.86L-12.0 20.78M-12.0 48.5L0.0 41.57M0.0 0.0L12.0 -20.78M24.0 55.43L36.0 62.35M24.0 83.14L36.0 62.35M36.0 -20.78L48.0 -41.57M24.0 41.57L48.0 41.57M-12.0 -20.78L0.0 -27.71M24.0 41.57L24.0 55.43M-24.0 -27.71L-12.0 -20.78M12.0 -20.78L24.0 -13.86M-12.0 20.78L0.0 0.0M36.0 48.5L36.0 62.35M-12.0 20.78L0.0 27.71M0.0 -13.86L0.0 0.0M-12.0 -34.64L-12.0 -20.78M12.0 20.78L12.0 34.64M-24.0 0.0L-12.0 6.93M12.0 62.35L24.0 55.43M12.0 -6.93L24.0 0.0M0.0 27.71L0.0 41.57M24.0 0.0L36.0 -6.93M36.0 20.78L48.0 41.57M-12.0 6.93L-12.0 20.78M12.0 20.78L24.0 13.86M0.0 41.57L12.0 48.5M12.0 -20.78L36.0 -20.78M-24.0 0.0L-12.0 -6.93M0.0 13.86L12.0 20.78M-24.0 -13.86L-12.0 -20.78M36.0 20.78L48.0 27.71M0.0 0.0L12.0 6.93M36.0 48.5L48.0 41.57M12.0 34.64L24.0 41.57M24.0 0.0L36.0 20.78M36.0 -20.78L48.0 -27.71M-24.0 69.28L-12.0 62.35M24.0 0.0L24.0 13.86M36.0 -34.64L36.0 -20.78M36.0 62.35L36.0 76.21M-12.0 -20.78L0.0 -13.86M-12.0 20.78L0.0 41.57M12.0 -20.78L12.0 -6.93M-24.0 41.57L-12.0 62.35M24.0 27.71L36.0 20.78M12.0 48.5L12.0 62.35M-36.0 62.35L-12.0 62.35M36.0 6.93L48.0 0.0M0.0 -13.86L12.0 -20.78M-12.0 62.35L-12.0 76.21M36.0 62.35L48.0 41.57M36.0 -20.78L48.0 0.0M-24.0 0.0L-12.0 20.78M12.0 62.35L24.0 69.28M24.0 -41.57L36.0 -20.78M12.0 -20.78L24.0 -27.71M36.0 34.64L48.0 41.57M-24.0 41.57L0.0 41.57M12.0 20.78L24.0 0.0M12.0 48.5L24.0 41.57' fill='none' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E");
+  --wa-shippo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1'%3E%3Ccircle cx='0' cy='0' r='12'/%3E%3Ccircle cx='24' cy='0' r='12'/%3E%3Ccircle cx='0' cy='24' r='12'/%3E%3Ccircle cx='24' cy='24' r='12'/%3E%3Ccircle cx='12' cy='12' r='12'/%3E%3C/svg%3E");
+  --wa-ichimatsu: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect width='8' height='8'/%3E%3Crect x='8' y='8' width='8' height='8'/%3E%3C/svg%3E");
+  --wa-mizuhiki: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='14' viewBox='0 0 240 14' fill='none' stroke='%23000' stroke-width='1.1' stroke-linecap='round'%3E%3Cpath d='M2 5H100C108 5 112 1 118 1S128 9 120 11 104 9 112 5 132 1 138 5H238'/%3E%3Cpath d='M2 9H102C110 9 114 13 120 13S130 5 122 3 106 5 114 9 134 13 140 9H238'/%3E%3C/svg%3E");
+}
+:root { --serif: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif; }
+
+/* mincho for headings and place names; body text stays IBM Plex for legibility */
+.brand h1, .detail h2, .sheet-h h2, .card.empty h3, .s-ja, .hanko { font-family: var(--serif); }
+.brand h1 { font-weight: 600; letter-spacing: .01em; }
+.detail h2 { font-weight: 600; letter-spacing: .01em; }
+.detail h2 .en { font-family: var(--sans); }
+
+/* asanoha band fading in from the right of the top bar */
+.wa-band { position: absolute; top: 0; right: 0; bottom: 0; width: min(52vw, 620px); z-index: -1; pointer-events: none; background: var(--season); opacity: .2;
+  -webkit-mask-image: var(--wa-asanoha), linear-gradient(90deg, transparent, #000 70%); -webkit-mask-size: 24px auto, 100% 100%; -webkit-mask-composite: source-in;
+  mask-image: var(--wa-asanoha), linear-gradient(90deg, transparent, #000 70%); mask-size: 24px auto, 100% 100%; mask-composite: intersect; }
+:root[data-theme='light'] .wa-band { opacity: .16; }
+
+/* shippo behind the empty details card and the loading screen */
+.card.empty, .boot { position: relative; isolation: isolate; }
+.card.empty::after, .boot::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit; background: var(--season); opacity: .1;
+  -webkit-mask: var(--wa-shippo) 0 0 / 24px 24px repeat; mask: var(--wa-shippo) 0 0 / 24px 24px repeat; }
+
+/* ichimatsu strip on the sheets (Data & Sources, Journeys & Fares) */
+.sheet-h { position: relative; padding-top: 10px; }
+.sheet-h::before { content: ''; position: absolute; top: 0; left: 0; width: 96px; height: 4px; background: var(--season); opacity: .55;
+  -webkit-mask: var(--wa-ichimatsu) 0 0 / 8px 8px repeat; mask: var(--wa-ichimatsu) 0 0 / 8px 8px repeat; }
+
+/* noren: the chosen tab hangs like a shop curtain, split at the bottom */
+.tabs button { position: relative; }
+.tabs button.on { border-radius: 3px 3px 9px 9px; }
+.tabs button.on::before { content: ''; position: absolute; left: 6px; right: 6px; top: -3px; height: 2px; border-radius: 2px; background: var(--season); }
+.tabs button.on::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 1px; height: 32%; background: currentColor; opacity: .35; }
+
+/* seal (hanko) on the details card instead of the plain dot; its frame keeps the category colour */
+.kind i.hanko { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 3px; background: none; border: 1.5px solid var(--c); color: var(--c); font-size: 11.5px; font-style: normal; font-weight: 600; line-height: 1; transform: rotate(-4deg); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 25%, transparent); }
+
+/* mizuhiki cord between sections */
+hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-width: 240px; background: var(--season); opacity: .55;
+  -webkit-mask: var(--wa-mizuhiki) center / 240px 14px no-repeat; mask: var(--wa-mizuhiki) center / 240px 14px no-repeat; }
