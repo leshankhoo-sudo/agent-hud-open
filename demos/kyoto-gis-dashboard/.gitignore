@@ -5,3 +5,5 @@ test-output/
 dist-artifact/
 data/cache/explore/*.jpg
 music-master/
+__pycache__/
+*.pyc
