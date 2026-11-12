@@ -117,6 +117,53 @@ test('walking pilot results: 19 records, bus and rail separate, no zero or strai
   assert.equal(cov.within + cov.beyond + cov.noRoute + cov.notComputed, 19);
 });
 
+test('walking prefecture: all 523 records, reasons kept apart, pilot rows reproduced, no straight-line substitutes', () => {
+  const w = J('walking_routes_prefecture.geojson');
+  const a = walkingAvailability(w);
+  assert.equal(a.available, true);
+  assert.equal(a.pilot, false);
+  assert.equal(a.scopeIds.size, A.length);
+  const idx = indexWalking(w);
+  assert.equal(idx.invalid.length, 0);
+  assert.equal(w.features.length, A.length * 2);
+  const toM = ([x1, y1], [x2, y2]) => Math.hypot((x2 - x1) * 91290, (y2 - y1) * 111000);
+  const reasons = new Set();
+  for (const f of w.features) {
+    const p = f.properties;
+    assert.ok(['bus', 'rail'].includes(p.stop_type));
+    assert.ok(['named', 'osm_tags', 'unverified'].includes(p.identity));
+    const rec = A.find((x) => x.properties.id === p.attraction_id).properties;
+    assert.equal(p.identity === 'named', !!(rec.name || '').trim(), `${p.attraction_id} identity`);
+    if (p.route_status === 'ok' && p.reason === 'same_access_point') {
+      assert.equal(p.distance_m, 0);
+      assert.equal(f.geometry, null);
+    } else if (p.route_status === 'ok') {
+      const c = f.geometry.coordinates;
+      assert.ok(p.distance_m >= toM(c[0], c[c.length - 1]) * 0.97, `${p.attraction_id} shorter than a straight line`);
+      assert.ok(p.distance_m <= 3000);
+      assert.equal(T.find((t) => t.properties.id === p.stop_id).properties.transport_type, p.stop_type);
+    } else {
+      assert.equal(p.distance_m, null);
+      assert.equal(f.geometry, null);
+      assert.ok(['no_stop_within_cutoff', 'isolated_network', 'attraction_too_far_from_network'].includes(p.reason));
+      reasons.add(p.reason);
+    }
+  }
+  assert.equal(reasons.size, 3);
+  // The pilot rows come out the same, except A00172, which now attaches to the street instead of a fragment.
+  const pilot = J('walking_routes.geojson');
+  for (const f of pilot.features) {
+    const p = f.properties;
+    if (p.attraction_id === 'A00172') continue;
+    const q = idx.byAttraction.get(p.attraction_id)[p.stop_type];
+    assert.equal(q.stop_id, p.stop_id);
+    assert.ok(Math.abs(q.distance_m - p.distance_m) < 0.5, `${p.attraction_id} ${p.stop_type}`);
+  }
+  const cov = walkingCoverage(idx, [...a.scopeIds], ['bus', 'rail'], 800);
+  assert.equal(cov.within + cov.beyond + cov.noStop + cov.notConnected + cov.notComputed, A.length);
+  assert.equal(cov.notComputed, 0);
+});
+
 test('walking: parser keeps bus and rail apart, rejects zero and straight-line shortcuts (TEST FIXTURE)', () => {
   const line = { type: 'LineString', coordinates: [[135.7, 35], [135.701, 35.001], [135.702, 35.001]] };
   const fc = {
@@ -132,7 +179,7 @@ test('walking: parser keeps bus and rail apart, rejects zero and straight-line s
   const idx = indexWalking(fc);
   assert.equal(idx.invalid.length, 2);
   const cov = walkingCoverage(idx, ['A00001', 'A00002', 'A00003', 'A00005'], ['bus'], 500);
-  assert.deepEqual(cov, { denominator: 4, within: 1, beyond: 0, noRoute: 1, notComputed: 2, share: 0.25 });
+  assert.deepEqual(cov, { denominator: 4, within: 1, beyond: 0, noStop: 0, notConnected: 1, noRoute: 1, notComputed: 2, share: 0.25 });
   const rail = walkingCoverage(idx, ['A00001'], ['rail'], 500);
   assert.equal(rail.within, 0);
   assert.equal(rail.beyond, 1);

@@ -101,7 +101,7 @@ await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 
 
 // 1. data loading
 const fileStatus = await page.evaluate(async () => {
-  const names = ['attractions.geojson', 'transport.geojson', 'municipalities_display.geojson', 'prefecture_outline.geojson', 'sample_journeys_display.json', 'walking_routes.geojson', 'manifest.json', 'point_municipality.json', 'analysis/density_kde.geojson', 'analysis/density_kde_meta.json'];
+  const names = ['attractions.geojson', 'transport.geojson', 'municipalities_display.geojson', 'prefecture_outline.geojson', 'sample_journeys_display.json', 'walking_routes.geojson', 'walking_routes_prefecture.geojson', 'analysis/walking_prefecture_report.json', 'manifest.json', 'point_municipality.json', 'analysis/density_kde.geojson', 'analysis/density_kde_meta.json'];
   const r = {};
   for (const n of names) { const x = await fetch('data/' + n); r[n] = x.status; }
   return r;
@@ -168,14 +168,14 @@ await page.waitForTimeout(600);
 check('heatmap is labelled as display only', (await page.locator('.warnline').first().innerText()).includes('not a Kernel Density result'));
 await page.getByRole('radio', { name: 'Off' }).click();
 
-// 5. walking not available
+// 5. walking, prefecture-wide: a record far from the old pilot box has network results
 await page.locator('#q').fill('A00265');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1800);
 await page.getByRole('tab', { name: 'Walking Routes' }).click();
-const walkText = await page.locator('.walk-na').innerText();
-check('outside the pilot the walking tab says "Not calculated yet", with no distance', walkText.includes('Not calculated yet') && !/\d+ m\b/.test(walkText.replace(/\d+ named/, '')), walkText.replace(/\n/g, ' / '));
-check('walking entry marked as pilot only', (await page.locator('aside.left').innerText()).includes('Pilot · 19 records'));
+const walkText = await page.locator('.walk').innerText();
+check('Kinkaku-ji (outside the old pilot) now shows network walking distances', /\d+ m · ≈[\d.]+ min walk/.test(walkText) && !walkText.includes('Pilot result'), walkText.replace(/\n/g, ' / ').slice(0, 200));
+check('walking entry shows the prefecture record count', (await page.locator('aside.left').innerText()).includes('523 records'));
 await page.getByRole('tab', { name: 'Overview' }).click();
 await page.locator('.tech summary').click();
 const ovText = await page.locator('#pane-overview').innerText();
@@ -226,14 +226,33 @@ check('pilot record A00230: bus and rail network distances shown', wt.includes('
 check('route lines drawn on map for both stop types', JSON.stringify(routesOnMap) === '["bus","rail"]', JSON.stringify(routesOnMap));
 check('at 500 m only the bus stop (75 m) lights up; rail (749 m) stays dim', litStops.length === 1 && litStops[0].includes('五条坂'), JSON.stringify(litStops));
 await page.screenshot({ path: `${out}/04b-walking-route.png` });
-await page.locator('#q').fill('A00172');
+await page.locator('#q').fill('A00119');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
 const ut = await page.locator('.walk').innerText();
-check('A00172 shows unreachable with no distance', ut.includes('No connectable network route') && ut.includes('unreachable') && ut.includes('distance not available') && !/\d+ m ·/.test(ut));
+check('A00119 (hilltop paths not joined to the streets) says so, with no distance', ut.includes('Not connected to the street network') && ut.includes('unreachable') && ut.includes('distance not available') && !/\d+ m ·/.test(ut));
+await page.locator('#q').fill('A00401');
+await page.locator('.results button').first().click();
+await page.waitForTimeout(1500);
+const nt = await page.locator('.walk').innerText();
+check('A00401 says no bus stop within 3 km on foot, kept apart from "not connected"', nt.includes('No bus stop within 3 km on foot') && !nt.includes('Not connected'), nt.replace(/\n/g, ' / ').slice(0, 200));
+await page.locator('#q').fill('A00453');
+await page.locator('.results button').first().click();
+await page.waitForTimeout(1500);
+const zt = await page.locator('.walk').innerText();
+check('A00453 and its station share a street point: shown as "Next to this place", not as 0 m', zt.includes('Next to this place') && !/\b0 m\b/.test(zt), zt.replace(/\n/g, ' / ').slice(0, 220));
 await page.locator('.entry', { hasText: 'Walking Access' }).click();
 const cov = await page.locator('.cov').innerText();
-check('coverage panel uses the 19 pilot records as denominator', cov.includes('of 19 pilot records'), cov.replace(/\n/g, ' / '));
+check('coverage counts named + OSM-tagged records by default (357), five states listed', cov.includes('of 357 records') && cov.includes('within 3 km on foot') && cov.includes('Not connected to the street network'), cov.replace(/\n/g, ' / '));
+await page.getByRole('button', { name: /^Unverified/ }).click();
+check('including unverified records raises the denominator to 523', (await page.locator('.cov').innerText()).includes('of 523 records'));
+await page.getByRole('button', { name: /^Unverified/ }).click();
+await page.locator('#q').fill('');
+await page.getByRole('button', { name: 'Show routes on map' }).click();
+await page.waitForTimeout(2500);
+const bulk = await page.evaluate(() => ({ lines: window.__kyotoMap.getSource('walk')._data.features.length, rings: window.__kyotoMap.getSource('walk-stops')._data.features.length, tags: document.querySelectorAll('.stop-tag').length }));
+check('prefecture view draws hundreds of routes with ring markers instead of DOM labels', bulk.lines > 300 && bulk.rings > 100 && bulk.tags === 0, JSON.stringify(bulk));
+await page.getByRole('button', { name: 'Hide routes on map' }).click();
 
 // 8. journeys panel
 // 7b2. bus routes (Kyoto City Bus): pick a route, the line grows along the supplied geometry and stops light up in order
@@ -314,7 +333,7 @@ await page.keyboard.press('Escape');
 await page.locator('.status').getByRole('button', { name: 'Data & Sources' }).click();
 await page.waitForTimeout(900);
 const st = await page.locator('.sheet').innerText();
-check('sources panel holds the status chips and visitor statistics', st.includes('Map data loaded') && st.includes('Walking: pilot only') && st.includes('Visitor statistics'));
+check('sources panel holds the status chips and visitor statistics', st.includes('Map data loaded') && st.includes('Walking: prefecture (523 records)') && st.includes('Visitor statistics'));
 check('sources panel: OSM, N03, Open-Meteo, hash check, quality notes', st.includes('ODbL') && st.includes('N03') && st.includes('Open-Meteo') && st.includes('all match') && st.includes('2771085349'));
 await page.screenshot({ path: `${out}/07-sources.png` });
 

@@ -608,6 +608,10 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
 .st.far { background: var(--warn); }
 .st.none { background: var(--bad); border-radius: 2px; }
 .st.nc { background: none; border: 1.5px dashed var(--mute); }
+.st.cut { background: none; border: 2px solid var(--bad); }
+.ident-h { margin: 10px 0 4px; color: var(--mute); letter-spacing: .04em; }
+.seg.ident { flex-wrap: wrap; }
+.seg.ident button .mono { margin-left: 4px; font-size: 10px; opacity: .7; }
 .state { display: flex; align-items: center; font-size: 12.5px; margin: 3px 0 0; }
 p.state { margin: 0 0 6px; font-size: 14px; }
 details.more-d, details.tech { margin-top: 8px; border-top: 1px solid var(--line); padding-top: 6px; }

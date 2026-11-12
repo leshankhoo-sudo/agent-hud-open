@@ -177,7 +177,7 @@ export default function Intro({ manifest, photos, kdeMeta, walkInfo }) {
           <h2>Two questions</h2>
           <div className="ist-two">
             <div><i>A1</i><b>Where do attractions cluster?</b><span>Kernel density{kdeMeta ? `, ${kdeMeta.search_radius_m / 1000} km radius, ${kdeMeta.cell_size_m} m cells` : ''}</span></div>
-            <div><i>A2</i><b>How far is the walk to a stop?</b><span>Road-network routes to the nearest bus and rail stop{walkInfo ? `, pilot of ${walkInfo} records in Gion–Kiyomizu` : ''}</span></div>
+            <div><i>A2</i><b>How far is the walk to a stop?</b><span>Road-network routes to the nearest bus and rail stop{walkInfo ? (walkInfo.pilot ? `, pilot of ${walkInfo.n} records in Gion–Kiyomizu` : ` for all ${walkInfo.n} attraction records`) : ''}</span></div>
           </div>
         </div>
 

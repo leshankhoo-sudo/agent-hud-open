@@ -218,10 +218,18 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
         st.key = key;
         st.r = 0;
         st.items = (walkSet?.items || []).map((it) => ({ ...it, cum: cumulative(it.feature.geometry.coordinates) }));
+        // Many routes at once (prefecture view): no growing animation and no DOM labels; reached
+        // stops are drawn as rings on a map layer instead. The routes themselves are the same.
+        st.bulk = walkSet?.mode === 'all' && st.items.length > BULK_ROUTES;
         stopMarkers.current.forEach((m) => m.marker.remove());
         stopMarkers.current = new Map();
+        st.stops = new Map();
         for (const it of st.items) {
           const id = it.stop.id;
+          const d = it.feature.properties.distance_m;
+          const s = st.stops.get(id);
+          if (!s || d < s.best) st.stops.set(id, { coords: it.stop.coords, type: it.stop.type, best: d });
+          if (st.bulk) continue;
           if (stopMarkers.current.has(id)) { stopMarkers.current.get(id).items.push(it); continue; }
           const el = document.createElement('div');
           el.className = `stop-tag ${it.stop.type}${walkSet.mode === 'all' ? ' compact' : ''}`;
@@ -431,13 +439,14 @@ function cut(coords, cum, frac) {
 }
 
 const SPEED = 380; // metres of route revealed per second
+const BULK_ROUTES = 150; // above this many routes the map shows them without the growing animation
 let flowAnim = 0;
 function paintReach(map, st, maxWalk, mode, markers, delay = 0) {
   cancelAnimationFrame(st.raf);
   cancelAnimationFrame(flowAnim);
   const reduce = prefersReducedMotion();
   const from = st.r, to = st.items.length ? maxWalk : 0;
-  const dur = reduce ? 0 : Math.max(250, (Math.abs(to - from) / SPEED) * 1000);
+  const dur = reduce || st.bulk ? 0 : Math.max(250, (Math.abs(to - from) / SPEED) * 1000);
   const t0 = performance.now();
   const frame = (now) => {
     const k = dur ? Math.max(0, Math.min(1, (now - t0 - delay) / dur)) : 1;
@@ -452,6 +461,7 @@ function paintReach(map, st, maxWalk, mode, markers, delay = 0) {
     }
     map.getSource('walk')?.setData({ type: 'FeatureCollection', features: lit });
     map.getSource('walk-rest')?.setData({ type: 'FeatureCollection', features: rest });
+    map.getSource('walk-stops')?.setData({ type: 'FeatureCollection', features: st.bulk ? [...st.stops.values()].map((s) => ({ type: 'Feature', properties: { stop_type: s.type, on: r >= s.best - 0.5 }, geometry: { type: 'Point', coordinates: s.coords } })) : [] });
     markers.forEach((m) => {
       const best = Math.min(...m.items.map((x) => x.feature.properties.distance_m));
       const on = r >= best - 0.5;
@@ -568,6 +578,7 @@ function restyleData(map, theme) {
   set('pilot-line', 'line-color', T.pilot);
   set('walk-rest', 'line-color', walkRestExpr(T));
   for (const t of WALK_TYPES) { set(`walk-glow-${t}`, 'line-color', T.walk[t]); set(`walk-line-${t}`, 'line-color', T.walk[t]); }
+  set('walk-stops', 'circle-stroke-color', walkRestExpr(T));
   set('bus-full', 'line-color', T.busPale);
   set('bus-glow', 'line-color', T.busLine);
   set('bus-lit', 'line-color', T.busLine);
@@ -610,6 +621,8 @@ function addDataLayers(map, data, theme) {
     map.addLayer({ id: `walk-line-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-width': 3.4, 'line-color': col } });
     map.addLayer({ id: `walk-flow-${t}`, type: 'line', source: 'walk', filter: ['==', ['get', 'stop_type'], t], layout: { 'line-cap': 'butt', 'line-join': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 1.6, 'line-opacity': 0.85, 'line-dasharray': DASH_STEPS[0] } });
   }
+  map.addSource('walk-stops', { type: 'geojson', data: EMPTY });
+  map.addLayer({ id: 'walk-stops', type: 'circle', source: 'walk-stops', paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 2.5, 14, 7], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-width': ['case', ['get', 'on'], 2, 1], 'circle-stroke-color': walkRestExpr(T), 'circle-stroke-opacity': ['case', ['get', 'on'], 1, 0.3] } });
   map.addSource('bus-full', { type: 'geojson', data: EMPTY });
   map.addSource('bus-lit', { type: 'geojson', data: EMPTY });
   const round = { 'line-cap': 'round', 'line-join': 'round' };

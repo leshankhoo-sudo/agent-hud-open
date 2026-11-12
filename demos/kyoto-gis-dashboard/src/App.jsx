@@ -10,7 +10,7 @@ import Features from './Features.jsx';
 import MusicPlayer from './MusicPlayer.jsx';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism } from './lib/data.js';
 import { themeOf, pointColor, initialTheme, rememberTheme } from './lib/theme.js';
-import { walkingAvailability, indexWalking, walkingCoverage } from './lib/walking.js';
+import { walkingAvailability, indexWalking, walkingCoverage, IDENTITIES, CUTOFF_M } from './lib/walking.js';
 
 // 「日文名称 (English name)」 with the English part styled lighter; original alone if none is verified.
 function NameEn({ p }) {
@@ -76,6 +76,8 @@ export default function App() {
   const [maxWalk, setMaxWalk] = useState(500);
   const [walkTypes, setWalkTypes] = useState(['bus', 'rail']);
   const [walkShow, setWalkShow] = useState(false);
+  // Which attraction records the walking summary and map include (unverified ones are off by default).
+  const [walkIdent, setWalkIdent] = useState(['named', 'osm_tags']);
   const [focus, setFocus] = useState(null); // hovered category / transit type in the filter list
   const [leftOpen, setLeftOpen] = useState(() => !isPhone());
   const [rightOpen, setRightOpen] = useState(true);
@@ -130,13 +132,20 @@ export default function App() {
   const subCount = useMemo(() => countBy(Tr, 'category'), [Tr]);
   const walk = useMemo(() => walkingAvailability(d?.walking), [d]);
   const walkIndex = useMemo(() => (walk.available ? indexWalking(d.walking) : null), [walk, d]);
+  // Records without an identity level (pilot file) always count.
+  const identOk = (id) => { const v = walkIndex?.identity.get(id); return !v || walkIdent.includes(v); };
   const coverage = useMemo(() => {
     if (!walkIndex) return null;
-    const ids = A.filter((f) => cats.includes(f.properties.category) && walk.scopeIds.has(f.properties.id)).map((f) => f.properties.id);
+    const ids = A.filter((f) => cats.includes(f.properties.category) && walk.scopeIds.has(f.properties.id) && identOk(f.properties.id)).map((f) => f.properties.id);
     return walkingCoverage(walkIndex, ids, walkTypes, maxWalk);
-  }, [walkIndex, walk, A, cats, walkTypes, maxWalk]);
-  // What the map animates: the selected pilot attraction's routes, or (after the walking
-  // controls are used) every pilot route for the chosen stop types and categories.
+  }, [walkIndex, walk, A, cats, walkTypes, maxWalk, walkIdent]); // eslint-disable-line react-hooks/exhaustive-deps
+  const identCount = useMemo(() => {
+    const c = {};
+    walkIndex?.identity.forEach((v) => { c[v] = (c[v] || 0) + 1; });
+    return c;
+  }, [walkIndex]);
+  // What the map shows: the selected attraction's routes, or (after the walking controls are
+  // used) every route for the chosen stop types, categories and identity levels.
   const walkSet = useMemo(() => {
     if (!walk.available) return null;
     const ok = (f) => f.geometry && f.properties.route_status === 'ok' && walkTypes.includes(f.properties.stop_type);
@@ -151,11 +160,11 @@ export default function App() {
     } else if (walkShow && !(sel && sel.layer === 'attraction')) {
       mode = 'all';
       const inCats = new Set(A.filter((f) => cats.includes(f.properties.category)).map((f) => f.properties.id));
-      feats = d.walking.features.filter((f) => ok(f) && inCats.has(f.properties.attraction_id));
+      feats = d.walking.features.filter((f) => ok(f) && inCats.has(f.properties.attraction_id) && identOk(f.properties.attraction_id));
     }
     if (!mode) return null;
-    return { mode, key: `${mode}|${sel?.id || ''}|${walkTypes.join()}|${cats.join()}`, items: feats.map(item).filter(Boolean) };
-  }, [walk, d, sel, walkShow, walkTypes, cats, A, byId]);
+    return { mode, key: `${mode}|${sel?.id || ''}|${walkTypes.join()}|${cats.join()}|${walkIdent.join()}`, items: feats.map(item).filter(Boolean) };
+  }, [walk, d, sel, walkShow, walkTypes, cats, A, byId, walkIdent]); // eslint-disable-line react-hooks/exhaustive-deps
   const dupOsm = useMemo(() => {
     const m = {};
     (d?.manifest?.transport?.duplicate_osm_ids || []).forEach((x) => x.ids.forEach((id) => (m[id] = x)));
@@ -294,7 +303,7 @@ export default function App() {
   const features = [
     { key: 'map', hue: 232, title: 'Map & filters', action: 'Open the map', text: `${A.length.toLocaleString('en-US')} attraction records and ${Tr.length.toLocaleString('en-US')} transit stops across Kyoto Prefecture. Search by Japanese or English name and filter by category or transit type.`, note: 'Preliminary OpenStreetMap records, not official counts.' },
     { key: 'density', hue: 268, title: 'Attraction Density', action: 'Show the density layer', text: 'A kernel density surface shows where attraction records cluster, and follows the category filter.', note: 'It shows concentration of records, not visitor numbers or crowding.' },
-    { key: 'walk', hue: 196, title: 'Walking Access', action: 'Show the pilot routes', text: 'Routes along the road network from each attraction to its nearest bus stop and rail station. Drag the distance slider and watch the routes grow.', note: `Pilot only: ${walk.available ? walk.scopeIds.size : 0} records in Gion–Kiyomizu. No straight-line distances.` },
+    { key: 'walk', hue: 196, title: 'Walking Access', action: 'Show the walking routes', text: 'Routes along the road network from each attraction to its nearest bus stop and rail station, across the whole prefecture. Drag the distance slider to see which places are within reach.', note: walk.available && !walk.pilot ? `${walk.scopeIds.size} attraction records. Walkability is assumed from road class. No straight-line distances.` : `Pilot only: ${walk.available ? walk.scopeIds.size : 0} records in Gion–Kiyomizu. No straight-line distances.` },
     { key: 'weather', hue: 28, title: 'Weather', action: 'See a forecast', text: 'A 7-day hourly forecast for any place you select, with a planned visit date and hour. Times are Asia/Tokyo.', note: 'Open-Meteo model estimate. If it cannot load, no values are shown.' },
     { key: 'fares', hue: 340, title: 'Journeys & Fares', action: 'Open the fare table', text: 'Published sample journeys from Kyoto Station with reference adult and child fares, service conditions and source links.', note: 'Not yet linked to map records; shown as a separate list.' },
     { key: 'sources', hue: 150, title: 'Data & Sources', action: 'Open the sources', text: 'Where every layer comes from, its licence and update time, the visitor statistics tables and the data-quality notes.' },
@@ -310,7 +319,7 @@ export default function App() {
     if (key === 'map') resetViewRef.current?.();
   };
   const toggleUi = <><MusicPlayer /><ThemeToggle theme={theme} onChange={setTheme} /></>;
-  const intro = <Intro manifest={d?.manifest} photos={d?.photos} kdeMeta={d?.kdeMeta} walkInfo={walk.available ? walk.scopeIds.size : null} />;
+  const intro = <Intro manifest={d?.manifest} photos={d?.photos} kdeMeta={d?.kdeMeta} walkInfo={walk.available ? { n: walk.scopeIds.size, pilot: walk.pilot } : null} />;
   if (!loaded) return <>{toggleUi}{intro}<div className="boot" id="dashboard"><div className="boot-mark" /><p>Loading Kyoto Prefecture data…</p></div></>;
   const failed = Object.entries(loaded.status).filter(([, v]) => !v.ok);
   const core = d.attractions && d.transport;
@@ -439,13 +448,14 @@ export default function App() {
 
           <button type="button" className={'entry' + (panel === 'walk' ? ' open' : '')} aria-expanded={panel === 'walk'} aria-controls="an-walk" onClick={() => setPanel(panel === 'walk' ? null : 'walk')}>
             <span className="entry-t">Walking Access</span>
-            <span className={'entry-s' + (walkShow ? ' on' : '')}>{!walk.available ? 'Not calculated' : walk.pilot ? `Pilot · ${walk.scopeIds.size} records` : 'Results loaded'}</span>
+            <span className={'entry-s' + (walkShow ? ' on' : '')}>{!walk.available ? 'Not calculated' : walk.pilot ? `Pilot · ${walk.scopeIds.size} records` : `${walk.scopeIds.size} records`}</span>
             <i aria-hidden="true" />
           </button>
           {panel === 'walk' && (
             <div className="entry-body" id="an-walk" aria-disabled={!walk.available}>
               {!walk.available && <p className="xs limit">Walking analysis not yet available. These controls stay disabled until real network results are loaded.</p>}
               {walk.pilot && <p className="xs limit">Pilot area only: {pilotName}, {walk.scopeIds.size} named attraction records (dashed box on the map). Not a Kyoto Prefecture result.</p>}
+              {walk.available && !walk.pilot && <p className="xs limit">All {walk.scopeIds.size} attraction records in Kyoto Prefecture. Walkability is assumed from road class, and results are not checked one by one.</p>}
               <label className="xs" htmlFor="walkmax">Max walking distance along roads: <b className="mono">{maxWalk} m</b></label>
               <input id="walkmax" type="range" min="100" max="2000" step="50" value={maxWalk} onChange={(e) => { setMaxWalk(Number(e.target.value)); setWalkShow(true); }} disabled={!walk.available} />
               <div className="seg sm">
@@ -453,23 +463,36 @@ export default function App() {
                   <button key={k} type="button" disabled={!walk.available} className={walkTypes.includes(k) ? 'on' : ''} aria-pressed={walkTypes.includes(k)} onClick={() => { setWalkTypes(walkTypes.includes(k) ? (walkTypes.length > 1 ? walkTypes.filter((x) => x !== k) : walkTypes) : [...walkTypes, k]); setWalkShow(true); }}>{l}</button>
                 ))}
               </div>
+              {walk.available && !walk.pilot && (
+                <>
+                  <p className="xs ident-h" id="walk-ident-h">Include records</p>
+                  <div className="seg sm ident" role="group" aria-labelledby="walk-ident-h">
+                    {IDENTITIES.map(({ key, label, hint }) => (
+                      <button key={key} type="button" title={hint} className={walkIdent.includes(key) ? 'on' : ''} aria-pressed={walkIdent.includes(key)} onClick={() => { setWalkIdent(walkIdent.includes(key) ? (walkIdent.length > 1 ? walkIdent.filter((x) => x !== key) : walkIdent) : [...walkIdent, key]); setWalkShow(true); }}>
+                        {label} <span className="mono">{identCount[key] ?? 0}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
               {walk.available && (
                 <div className="walk-map">
                   <button type="button" className={'btn sm' + (walkShow ? '' : ' ghost')} onClick={() => { if (sel?.layer === 'attraction') setSel(null); setWalkShow(!walkShow || sel?.layer === 'attraction'); }}>
-                    {walkShow && !(sel?.layer === 'attraction') ? 'Hide routes on map' : 'Show pilot routes on map'}
+                    {walkShow && !(sel?.layer === 'attraction') ? 'Hide routes on map' : walk.pilot ? 'Show pilot routes on map' : 'Show routes on map'}
                   </button>
                 </div>
               )}
               {coverage && (
                 <div className="cov">
-                  <div className="cov-big"><b className="mono"><Rolling value={coverage.within} /></b><span>of {coverage.denominator} pilot records within {maxWalk} m of a {walkTypes.join(' or ')} stop</span></div>
+                  <div className="cov-big"><b className="mono"><Rolling value={coverage.within} /></b><span>of {coverage.denominator} {walk.pilot ? 'pilot ' : ''}records within {maxWalk} m of a {walkTypes.join(' or ')} stop</span></div>
                   <ul className="xs states">
                     <li><i className="st far" />Beyond {maxWalk} m: {coverage.beyond}</li>
-                    <li><i className="st none" />No connectable network route: {coverage.noRoute}</li>
-                    <li><i className="st nc" />Not calculated yet: {coverage.notComputed} in the pilot · {(A.length - walk.scopeIds.size).toLocaleString('en-US')} records outside it</li>
+                    <li><i className="st none" />No {walkTypes.join(' or ')} stop within {(CUTOFF_M / 1000).toFixed(0)} km on foot: {coverage.noStop}</li>
+                    <li><i className="st cut" />Not connected to the street network: {coverage.notConnected}</li>
+                    <li><i className="st nc" />Not calculated: {coverage.notComputed}{walk.pilot ? ` in the pilot · ${(A.length - walk.scopeIds.size).toLocaleString('en-US')} records outside it` : ''}</li>
                   </ul>
                   <details className="more-d"><summary>How this is counted</summary>
-                    <p className="xs">Routes follow the road network; no straight lines are used. Counted over pilot records in the current category filter, each attraction once, using its nearer selected stop type. Click a pilot attraction to see only its routes.</p>
+                    <p className="xs">Routes follow the road network; no straight lines are used. Counted over records in the current category and record filters, each attraction once, using its nearer selected stop type. "No stop within 3 km" can also mean the stop is missing from OpenStreetMap. Stops in neighbouring prefectures are not in the data; affected results are flagged. Click an attraction to see only its routes.</p>
                   </details>
                 </div>
               )}
@@ -799,11 +822,18 @@ function Walking({ available, index, id, byId, maxWalk }) {
     );
   }
   const r = index.byAttraction.get(id) || {};
+  const identity = index.identity.get(id);
   const row = (t, label) => {
     const x = r[t];
     if (!x) return <div className="wrow"><dt>{label}</dt><dd><span className="state"><i className="st nc" />Not calculated yet</span></dd></div>;
-    if (x.route_status !== 'ok') return <div className="wrow"><dt>{label}</dt><dd><span className="state"><i className="st none" /><b>No connectable network route</b></span><small>Result: {x.route_status} · distance not available</small>{x.note && <small>{x.note}</small>}</dd></div>;
+    if (x.route_status !== 'ok') {
+      const head = x.reason === 'no_stop_within_cutoff' ? `No ${t === 'rail' ? 'rail station' : 'bus stop'} within ${(CUTOFF_M / 1000).toFixed(0)} km on foot`
+        : x.reason === 'isolated_network' ? 'Not connected to the street network'
+          : x.reason === 'attraction_too_far_from_network' ? 'Too far from any mapped path' : 'No connectable network route';
+      return <div className="wrow"><dt>{label}</dt><dd><span className="state"><i className={'st ' + (x.reason === 'no_stop_within_cutoff' ? 'none' : 'cut')} /><b>{head}</b></span><small>Result: {x.route_status} · distance not available</small>{x.note && <small>{x.note}</small>}</dd></div>;
+    }
     const s = byId.get(x.stop_id)?.f.properties;
+    if (x.reason === 'same_access_point') return <div className="wrow"><dt><i className={'wkey ' + t} />{label}</dt><dd><b lang="ja">{s ? <NameEn p={s} /> : x.stop_id}</b><span className="state"><i className="st ok" />Next to this place</span><small className="warnline">{x.note}</small></dd></div>;
     const within = x.distance_m <= maxWalk;
     return (
       <div className="wrow">
@@ -820,7 +850,8 @@ function Walking({ available, index, id, byId, maxWalk }) {
   };
   return (
     <section className="walk">
-      <p className="xs limit">Pilot result ({available.pilotInfo?.name || 'pilot area'}): routes follow the road network, never a straight line.</p>
+      <p className="xs limit">{available.pilot ? `Pilot result (${available.pilotInfo?.name || 'pilot area'}): routes` : 'Routes'} follow the road network, never a straight line.</p>
+      {identity === 'unverified' && <p className="xs warnline">This record only carries a category tag in OpenStreetMap. What it is has not been checked.</p>}
       <dl className="kv">{row('bus', 'Nearest bus stop')}{row('rail', 'Nearest rail station')}</dl>
       <details className="more-d"><summary>Method and limits</summary>
         <p className="xs">Shortest path on OSM road segments joined at shared vertices. Walkability is assumed from road class (no foot/access tags). Points are not verified entrances. No verified sample journey links this record to an alighting stop.</p>
@@ -913,7 +944,7 @@ function Sources({ d, status, walk, failed, onClose }) {
         <Chip ok={!failed.length} label={failed.length ? `${failed.length} file(s) failed` : 'Map data loaded'} />
         <Chip ok={!!d.kde} label={d.kde ? 'Density: KDE computed' : 'Density: missing'} />
         {d.photos && <Chip ok label={`Photos: ${d.photos.with_photo} of ${d.photos.named_records} named`} />}
-        <Chip ok={walk.available && !walk.pilot} warn={!walk.available || walk.pilot} label={!walk.available ? 'Walking: not calculated' : walk.pilot ? `Walking: pilot only (${walk.scopeIds.size} records)` : 'Walking: results loaded'} />
+        <Chip ok={walk.available && !walk.pilot} warn={!walk.available || walk.pilot} label={!walk.available ? 'Walking: not calculated' : walk.pilot ? `Walking: pilot only (${walk.scopeIds.size} records)` : `Walking: prefecture (${walk.scopeIds.size} records)`} />
         <Clock />
       </div>
       <div className="src-grid">
@@ -941,8 +972,8 @@ function Sources({ d, status, walk, failed, onClose }) {
         </section>
         <section>
           <h3>Analysis 2 · Walking network</h3>
-          <p className="xs">walking_routes.geojson status: <b>{d.walking?.status || 'missing'}</b>{d.walking?.scope ? ` (scope: ${d.walking.scope})` : ''}, {d.walking?.features?.length ?? 0} features.</p>
-          {d.walkReport && <p className="xs">Road data: {d.walkReport.road_data_check.total.toLocaleString('en-US')} segments read from {Object.keys(d.walkReport.road_data_check.files).length} GeoJSON parts ({d.walkReport.road_data_check.unique_osm_id.toLocaleString('en-US')} unique OSM IDs). Pilot graph: {d.walkReport.graph.nodes.toLocaleString('en-US')} vertices, {d.walkReport.graph.components} connected pieces. Results: {Object.entries(d.walkReport.results).map(([k, v]) => `${k} ${v}`).join(', ')}. Computed {d.walkReport.computed_at.replace('T', ' ').replace('+00:00', ' UTC')}.</p>}
+          <p className="xs">{walk.pilot ? 'walking_routes.geojson' : 'walking_routes_prefecture.geojson'} status: <b>{d.walking?.status || 'missing'}</b>{d.walking?.scope ? ` (scope: ${d.walking.scope})` : ''}, {d.walking?.features?.length ?? 0} features.</p>
+          {d.walkReport && <p className="xs">Road data: {d.walkReport.road_data_check.total.toLocaleString('en-US')} segments read from {Object.keys(d.walkReport.road_data_check.files).length} GeoJSON parts ({d.walkReport.road_data_check.unique_osm_id.toLocaleString('en-US')} unique OSM IDs). Graph: {d.walkReport.graph.nodes.toLocaleString('en-US')} vertices, {d.walkReport.graph.components} connected pieces. Results: {Object.entries(d.walkReport.results).map(([k, v]) => `${k} ${v}`).join(', ')}. Computed {d.walkReport.computed_at.replace('T', ' ').replace('+00:00', ' UTC')}.</p>}
           {d.walkReport && <ul className="xs">{d.walkReport.limitations.map((x) => <li key={x}>{x}</li>)}</ul>}
         </section>
         {d.photos && (

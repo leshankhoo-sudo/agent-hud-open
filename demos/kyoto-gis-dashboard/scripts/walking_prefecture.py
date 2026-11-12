@@ -364,15 +364,20 @@ def main(road_dir):
             bf = bflag(dmin)
             flags += bf
             dur = round(dmin / WALK_SPEED, 1)
-            row = {**base, "near_prefecture_boundary": bool(bf), "stop_type": t, "route_status": "ok", "reason": None, "stop_id": sf["properties"]["id"], "stop_name": sf["properties"]["name"], "stop_category": sf["properties"]["category"],
-                   "distance_m": rn(dmin), "duration_min": dur, "stop_snap_gap_m": sgap, "segments": len(es),
+            # Attraction and stop attach to the same street point: the network distance really is 0.
+            # It is kept as 0 with its own reason (never a stand-in for a missing value), and no line is drawn.
+            same = dmin < 1.0
+            if same:
+                flags.insert(0, f"attraction and stop attach to the same street point; only the straight access gaps separate them ({sr['gap_m']} m + {sgap} m, not added)")
+            row = {**base, "near_prefecture_boundary": bool(bf), "stop_type": t, "route_status": "ok", "reason": "same_access_point" if same else None, "stop_id": sf["properties"]["id"], "stop_name": sf["properties"]["name"], "stop_category": sf["properties"]["category"],
+                   "distance_m": 0.0 if same else rn(dmin), "duration_min": 0.0 if same else dur, "stop_snap_gap_m": sgap, "segments": len(es),
                    "share_pedestrian": share([ewc[e] == 0 for e in es]), "share_road_assumed": share([ewc[e] == 1 for e in es]), "share_uncertain": unc,
                    "share_tunnel": tun, "share_bridge": brg, "flags": "; ".join(flags)}
             rows.append(row)
             lon, lat = Transformer.from_crs(6674, 4326, always_xy=True).transform(all_x[path], all_y[path])
             coords = [[round(a, 6), round(b, 6)] for a, b in zip(lon, lat)]
-            feats.append({"type": "Feature", "geometry": {"type": "LineString", "coordinates": coords},
-                          "properties": {"attraction_id": aid, "stop_id": row["stop_id"], "stop_type": t, "route_status": "ok", "reason": None, "distance_m": row["distance_m"], "duration_min": dur,
+            feats.append({"type": "Feature", "geometry": None if same else {"type": "LineString", "coordinates": coords},
+                          "properties": {"attraction_id": aid, "stop_id": row["stop_id"], "stop_type": t, "route_status": "ok", "reason": row["reason"], "distance_m": row["distance_m"], "duration_min": row["duration_min"],
                                          "identity": idl, "near_prefecture_boundary": bool(bf),
                                          "attraction_snap_gap_m": sr["gap_m"], "stop_snap_gap_m": sgap, "share_uncertain": unc, "share_tunnel": tun, "share_bridge": brg, "note": row["flags"]}})
     print(f"routes done in {time.time()-t0:.0f}s", flush=True)

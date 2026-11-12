@@ -1,5 +1,5 @@
 {
- "computed_at": "2026-11-12T13:45:32+00:00",
+ "computed_at": "2026-11-12T13:58:01+00:00",
  "scope": "Kyoto Prefecture, all 523 attraction records (named and unnamed). Not validated record by record.",
  "road_data_check": {
   "files": {
@@ -96,15 +96,17 @@
  ],
  "results": {
   "bus:failed:attraction_too_far_from_network": 4,
-  "bus:ok": 490,
+  "bus:ok": 489,
+  "bus:ok:same_access_point": 1,
   "bus:unreachable:isolated_network": 12,
   "bus:unreachable:no_stop_within_cutoff": 17,
   "rail:failed:attraction_too_far_from_network": 4,
-  "rail:ok": 419,
+  "rail:ok": 418,
+  "rail:ok:same_access_point": 1,
   "rail:unreachable:isolated_network": 12,
   "rail:unreachable:no_stop_within_cutoff": 88
  },
- "ok_rows_with_flags": 552,
+ "ok_rows_with_flags": 554,
  "points_attached_to_main_network_instead_of_fragment": {
   "attractions": 26,
   "stops": 52
