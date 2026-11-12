@@ -1218,19 +1218,24 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 @media (prefers-reduced-motion: reduce) { .season-drift { display: none; } }
 
 /* season badge in the top bar */
-.season-badge { position: relative; }
-.season-badge summary { list-style: none; display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 10px 4px 4px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--season) 45%, transparent); background: color-mix(in srgb, var(--season) 10%, transparent); }
+.season-badge { position: fixed; z-index: 60; top: max(9px, env(safe-area-inset-top, 0px)); left: max(14px, env(safe-area-inset-left, 0px)); }
+.season-badge summary { list-style: none; display: flex; align-items: center; gap: 0; height: 38px; cursor: pointer; padding: 0 1px; border-radius: 999px; background: var(--panel-solid); border: 1px solid var(--line); box-shadow: 0 6px 16px rgba(0, 0, 0, .3); color: var(--ink); transition: gap .45s var(--ez), padding .45s var(--ez); }
+.season-badge .s-txt { max-width: 0; overflow: hidden; opacity: 0; white-space: nowrap; transition: max-width .45s var(--ez), opacity .3s; }
+.season-badge:hover summary, .season-badge[open] summary, .season-badge summary:focus-visible { gap: 8px; padding-right: 14px; }
+.season-badge:hover .s-txt, .season-badge[open] .s-txt, .season-badge summary:focus-visible .s-txt { max-width: 220px; opacity: 1; }
+:root[data-theme='light'] .season-badge summary { box-shadow: 0 4px 14px rgba(90, 70, 50, .16); }
 .season-badge summary::-webkit-details-marker { display: none; }
 .season-badge summary:focus-visible { outline: 2px solid var(--season); outline-offset: 2px; }
 .s-ja { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--season); color: var(--bg); font: 600 15px 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif; }
 .s-txt { display: grid; line-height: 1.15; }
 .s-txt b { font-size: 12px; font-weight: 600; color: var(--ink); }
 .s-txt small { font-size: 10.5px; color: var(--season); }
-.season-pop { position: absolute; top: calc(100% + 8px); left: 0; z-index: 30; width: min(340px, 86vw); padding: 12px 14px; border-radius: 12px; background: var(--panel-solid); border: 1px solid var(--line); box-shadow: var(--shadow); display: grid; gap: 8px; }
+.season-pop { position: absolute; top: calc(100% + 8px); left: 0; z-index: 61; width: min(340px, 86vw); padding: 12px 14px; border-radius: 12px; background: var(--panel-solid); border: 1px solid var(--line); box-shadow: var(--shadow); display: grid; gap: 8px; }
 .season-pop p { margin: 0; }
 .season-pick { display: grid; gap: 4px; }
 .season-pick select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--field); color: var(--ink); }
-@media (max-width: 760px) { .s-txt { display: none; } .season-badge summary { padding: 3px; } }
+@media (max-width: 760px) { .season-badge:hover .s-txt { max-width: 0; opacity: 0; } .season-badge:hover summary { gap: 0; padding-right: 1px; } }
+
 
 /* ---------- Wa (和) details: patterns, mincho headings, noren tabs, seal, mizuhiki ----------
    Patterns are drawn for this project as plain geometry (asanoha, shippo, ichimatsu, a mizuhiki cord)
@@ -1283,3 +1288,160 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
   .top > .season-badge { order: 1; }
   .top > :not(.nav-btn):not(.season-badge):not(.wa-band) { order: 2; }
 }
+
+/* =====================================================================
+   Page 1 (landing video) and page 2 (season story). Both sit above Explore.
+   ===================================================================== */
+:root {
+  --wa-seigaiha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12' viewBox='0 0 24 12'%3E%3Cg fill='none' stroke='%23000' stroke-width='.9'%3E%3Ccircle cx='12' cy='12' r='11'/%3E%3Ccircle cx='12' cy='12' r='7.5'/%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Ccircle cx='0' cy='6' r='11'/%3E%3Ccircle cx='24' cy='6' r='11'/%3E%3C/g%3E%3C/svg%3E");
+  --wa-wave: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14' viewBox='0 0 40 14'%3E%3Cpath d='M0 7Q10 0 20 7T40 7V14H0Z' fill='%23000'/%3E%3C/svg%3E");
+}
+
+/* ---------- frosted glass button with a living liquid (canvas, see WaterButton) ---------- */
+.wbtn { --fill: 0; position: relative; overflow: hidden; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 0 28px; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .36); background: rgba(255, 255, 255, .1); -webkit-backdrop-filter: blur(16px) saturate(1.35); backdrop-filter: blur(16px) saturate(1.35);
+  color: #fff; font: 600 15px/1 var(--sans); letter-spacing: .02em; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), inset 0 -1px 0 rgba(255, 255, 255, .08), 0 14px 34px rgba(0, 0, 0, .26);
+  transition: border-color .6s, box-shadow .6s, transform .4s var(--ez); }
+.wbtn.ghost { background: rgba(255, 255, 255, .05); }
+.wbtn-scene { position: absolute; inset: -30% -10%; z-index: -3; background-size: cover; background-position: center 35%; opacity: .11; filter: saturate(1.1) blur(.5px); transition: opacity .8s; }
+.wbtn::before { content: ''; position: absolute; inset: 0; z-index: -2; background: #fff; opacity: .028; -webkit-mask: var(--wa-asanoha) 0 0 / 18px auto repeat; mask: var(--wa-asanoha) 0 0 / 18px auto repeat; }
+.wbtn-liquid { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+.wbtn-label { position: relative; color: color-mix(in srgb, #fff calc((1 - var(--fill)) * 100%), #1c1822); text-shadow: 0 1px 10px rgba(0, 0, 0, calc(.35 * (1 - var(--fill)))); transition: letter-spacing .6s var(--ez); }
+.wbtn:hover, .wbtn:focus-visible { border-color: rgba(255, 255, 255, .7); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 18px 40px rgba(0, 0, 0, .3), 0 0 0 4px rgba(255, 255, 255, .06); }
+.wbtn:hover .wbtn-label, .wbtn:focus-visible .wbtn-label { letter-spacing: .045em; }
+.wbtn:active { transform: scale(.975); }
+.wbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------- page 1: landing ---------- */
+.landing { position: relative; height: 100vh; height: 100svh; min-height: 560px; overflow: hidden; isolation: isolate; background: #0e0b10; color: #fff; }
+.ld-stage { position: absolute; inset: 0; z-index: -1; }
+.ld-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 50%; }
+.ld-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12, 9, 14, .74) 0%, rgba(12, 9, 14, .36) 40%, rgba(12, 9, 14, 0) 62%), linear-gradient(0deg, rgba(12, 9, 14, .62), rgba(12, 9, 14, 0) 42%); }
+.ld-nav { position: absolute; top: 16px; left: 16px; right: calc(150px + env(safe-area-inset-right, 0px)); z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 7px 8px 7px 16px; border-radius: 999px; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .24); -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2);
+  animation: ldIn .9s var(--ez) .1s both; }
+.ld-brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font: 600 15px/1.2 var(--serif); letter-spacing: .01em; white-space: nowrap; }
+.ld-brand svg { color: #ff8a5c; }
+.ld-nav ul { display: flex; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.ld-nav li button { border: 0; background: transparent; color: rgba(255, 255, 255, .86); font: 500 13px var(--sans); padding: 8px 12px; border-radius: 999px; cursor: pointer; transition: background .3s, color .3s; }
+.ld-nav li button:hover, .ld-nav li button:focus-visible { background: rgba(255, 255, 255, .16); color: #fff; }
+.ld-copy { position: absolute; left: clamp(20px, 6vw, 96px); bottom: clamp(76px, 13vh, 150px); width: min(540px, calc(100vw - 40px)); z-index: 2; text-shadow: 0 2px 18px rgba(0, 0, 0, .45); }
+.ld-copy > * { animation: ldIn 1s var(--ez) both; }
+.ld-copy > :nth-child(2) { animation-delay: .12s; } .ld-copy > :nth-child(3) { animation-delay: .24s; } .ld-copy > :nth-child(4) { animation-delay: .36s; } .ld-copy > :nth-child(5) { animation-delay: .48s; } .ld-copy > :nth-child(6) { animation-delay: .6s; }
+.ld-kicker { margin: 0 0 10px; font: 500 12px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: rgba(255, 255, 255, .8); }
+.ld-title { margin: 0 0 14px; font: 600 clamp(36px, 5.2vw, 68px)/1.04 var(--serif); letter-spacing: -.005em; }
+.ld-lead { margin: 0 0 20px; font-size: clamp(14px, 1.15vw, 16.5px); line-height: 1.6; color: rgba(255, 255, 255, .88); max-width: 46ch; }
+.ld-stats { display: flex; gap: clamp(16px, 2.6vw, 34px); margin: 0 0 24px; padding: 0; list-style: none; }
+.ld-stats li { display: grid; gap: 2px; }
+.ld-stats b { font: 600 clamp(22px, 2.4vw, 32px)/1 var(--serif); }
+.ld-stats span { font-size: 11.5px; color: rgba(255, 255, 255, .72); letter-spacing: .02em; }
+.ld-btns { display: flex; flex-wrap: wrap; gap: 12px; }
+.ld-team { margin: 20px 0 0; font: 500 10.5px var(--mono); letter-spacing: .16em; color: rgba(255, 255, 255, .62); }
+.ld-scroll { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 2; display: grid; justify-items: center; gap: 8px; border: 0; background: none; color: rgba(255, 255, 255, .8); font: 500 10.5px var(--mono); letter-spacing: .22em; text-transform: uppercase; cursor: pointer; }
+.ld-scroll i { width: 1px; height: 34px; background: linear-gradient(rgba(255, 255, 255, 0), #fff); animation: ldDrop 1.8s ease-in-out infinite; transform-origin: top; }
+.ld-credit { position: absolute; right: 14px; bottom: 10px; z-index: 2; margin: 0; max-width: 46ch; text-align: right; font-size: 10.5px; color: rgba(255, 255, 255, .62); }
+.ld-credit a { color: inherit; }
+@keyframes ldIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes ldDrop { 0% { transform: scaleY(0); opacity: 0; } 40% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1) translateY(14px); opacity: 0; } }
+@media (max-width: 900px) { .ld-nav ul { display: none; } }
+@media (max-width: 760px) {
+  .ld-nav { right: calc(124px + env(safe-area-inset-right, 0px)); padding: 7px 14px; }
+  .ld-brand span { font-size: 13px; white-space: normal; line-height: 1.15; }
+  .ld-copy { bottom: 64px; }
+  .ld-stats { gap: 14px; }
+  .ld-credit { left: 14px; right: 14px; max-width: none; text-align: left; bottom: 8px; }
+  .ld-scroll { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .ld-copy > *, .ld-nav { animation: none; } .ld-scroll i { animation: none; } }
+
+/* ---------- page 2: four season cards ---------- */
+.story { position: relative; height: 330vh; background: #0c0a0f; color: #fff; }
+.story-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: clamp(12px, 2.2vh, 22px);
+  padding: clamp(64px, 9vh, 92px) clamp(16px, 4vw, 56px) clamp(26px, 4vh, 40px); }
+.story-head { display: grid; gap: 6px; }
+.story-kicker { margin: 0; font: 500 11.5px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: rgba(255, 255, 255, .7); }
+.story-head h2 { margin: 0; font: 600 clamp(26px, 3.2vw, 44px)/1.05 var(--serif); letter-spacing: -.005em; }
+.story-now { margin: 0; font-size: 13px; color: rgba(255, 255, 255, .78); }
+.story-now b { color: var(--season); font-weight: 600; }
+.scards { display: flex; gap: clamp(8px, 1vw, 14px); min-height: 0; }
+.scard { --c: #f4b6ca; position: relative; flex: 1 1 0; min-width: 0; margin: 0; border-radius: 18px; overflow: hidden; background: #15121a; isolation: isolate;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 18px 40px rgba(0, 0, 0, .35); transition: flex-grow .9s var(--ez), box-shadow .6s, transform .6s var(--ez); }
+.scard:nth-child(2) { --c: #8fdcaa; } .scard:nth-child(3) { --c: #ff9a66; } .scard:nth-child(4) { --c: #d6e4f7; }
+.scard.on { flex-grow: 1.8; box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 60%, transparent), 0 0 0 5px color-mix(in srgb, var(--c) 14%, transparent), 0 30px 70px rgba(0, 0, 0, .5); }
+.scard:not(.on):hover { transform: translateY(-4px); }
+.scard canvas, .scard img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
+.scard::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 34%; z-index: 1; pointer-events: none; background: linear-gradient(0deg, rgba(8, 6, 10, .62), rgba(8, 6, 10, 0)); }
+.scard figcaption { position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 2; display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 10px; pointer-events: none; text-shadow: 0 1px 8px rgba(0, 0, 0, .5); }
+.scard figcaption b { grid-row: span 2; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--c); color: #1b1416; font: 600 17px var(--serif); text-shadow: none; }
+.scard figcaption span { font: 600 15px var(--serif); }
+.scard figcaption em { font-style: normal; font-size: 11.5px; color: rgba(255, 255, 255, .78); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.scard:not(.on) figcaption em { opacity: .0; transition: opacity .5s; }
+.scard:not(.on):hover figcaption em { opacity: 1; }
+.scard-now { position: absolute; top: 12px; left: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px 5px 9px; border-radius: 999px;
+  background: rgba(14, 11, 16, .4); border: 1px solid rgba(255, 255, 255, .3); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font: 600 11px var(--sans); letter-spacing: .04em; }
+.scard-now::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 0 var(--c); animation: nowPulse 2.2s ease-out infinite; }
+@keyframes nowPulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c) 70%, transparent); } 100% { box-shadow: 0 0 0 9px transparent; } }
+.scard-pick { position: absolute; inset: 0; z-index: 3; border: 0; padding: 0; background: none; cursor: pointer; border-radius: inherit; }
+.scard-pick:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+.story-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+.story-lines { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto minmax(0, 1.3fr) auto; gap: clamp(14px, 2.4vw, 34px); align-items: end; text-shadow: 0 1px 12px rgba(0, 0, 0, .5); }
+.sl { margin: 0; overflow: hidden; padding-bottom: 2px; font-size: 13px; line-height: 1.5; color: rgba(255, 255, 255, .86); }
+.sl > * { display: inline-block; transform: translateY(calc((1 - var(--k, 0)) * 115%)); opacity: var(--k, 0); }
+.sl.big { font: 600 clamp(17px, 1.6vw, 23px)/1.3 var(--serif); color: #fff; }
+.sl.nums { display: flex; gap: 22px; }
+.sl.nums span { display: grid; gap: 3px; font-size: 11.5px; color: rgba(255, 255, 255, .78); white-space: nowrap; }
+.sl.nums b { font: 600 clamp(24px, 2.6vw, 38px)/1 var(--serif); color: #fff; }
+.sl.cta button { display: inline-flex; align-items: center; gap: 10px; padding: 11px 20px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .42); background: rgba(255, 255, 255, .1); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); color: #fff; font: 600 13.5px var(--sans); cursor: pointer; white-space: nowrap; }
+.sl.cta button i { font-style: normal; }
+.story-credit { position: absolute; right: 14px; bottom: 6px; margin: 0; max-width: 70ch; text-align: right; font-size: 10px; line-height: 1.4; color: rgba(255, 255, 255, .5); }
+@media (max-width: 1100px) { .story-lines { grid-template-columns: minmax(0, 1.4fr) auto minmax(0, 1fr); } .story-lines .sl:nth-child(2), .story-lines .sl:nth-child(4) { display: none; } }
+@media (max-width: 760px) {
+  .story { height: auto; }
+  .story-stage { position: relative; height: auto; overflow: visible; padding: 64px 14px 40px; grid-template-rows: none; gap: 16px; }
+  .scards { flex-direction: column; gap: 12px; }
+  .scard { flex: none; height: 62vh; }
+  .scard.on { height: 76vh; order: -1; }
+  .story-lines { grid-template-columns: 1fr; gap: 12px; }
+  .story-lines .sl:nth-child(2), .story-lines .sl:nth-child(4) { display: block; }
+  .story-fx { display: none; }
+  .story-credit { position: static; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) { .scard, .scard-now::before { transition: none; animation: none; } }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- seams between sections: colour blends plus a drifting band of kasumi (霞) ----------
+   Each section fades into the page colour at its edges, so neighbours meet in one continuous
+   gradient; a band of mist drifts across each join and moves a little as it scrolls past. */
+:root { --page: #07080f; --kasumi: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='200' viewBox='0 0 1200 200'%3E%3Cdefs%3E%3Cfilter id='b' x='-10%25' y='-60%25' width='120%25' height='220%25'%3E%3CfeGaussianBlur stdDeviation='7'/%3E%3C/filter%3E%3C/defs%3E%3Cg filter='url(%23b)' fill='%23000'%3E%3Crect x='30' y='58' width='520' height='34' rx='17'/%3E%3Crect x='390' y='112' width='660' height='26' rx='13'/%3E%3Crect x='780' y='40' width='360' height='22' rx='11'/%3E%3Crect x='110' y='150' width='300' height='18' rx='9'/%3E%3Crect x='980' y='150' width='200' height='16' rx='8'/%3E%3C/g%3E%3C/svg%3E"); }
+:root[data-theme='light'] { --page: #f4efe6; }
+
+.landing::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 18vh; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(12, 10, 15, 0), #0c0a0f); }
+.story::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 30vh; z-index: 5; pointer-events: none; background: linear-gradient(180deg, rgba(12, 10, 15, 0), #0c0a0f 30%, var(--page)); }
+.explore { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 18vh, #000 calc(100% - 16vh), transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 18vh, #000 calc(100% - 16vh), transparent 100%); }
+.outro { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22vh); mask-image: linear-gradient(180deg, transparent 0, #000 22vh); }
+
+.seam { position: relative; height: 0; z-index: 4; pointer-events: none; }
+.seam i { position: absolute; left: 0; right: 0; top: -13vh; height: 26vh; overflow: hidden; }
+.seam i::before, .seam i::after { content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: calc(100% + 1400px);
+  --m: color-mix(in srgb, var(--season) 18%, #ffffff);
+  background:
+    radial-gradient(ellipse 260px 22px at 180px 38%, var(--m), transparent 72%),
+    radial-gradient(ellipse 340px 18px at 560px 58%, var(--m), transparent 72%),
+    radial-gradient(ellipse 220px 14px at 930px 30%, var(--m), transparent 72%),
+    radial-gradient(ellipse 300px 16px at 1220px 70%, var(--m), transparent 72%);
+  background-size: 1400px 100%; background-repeat: repeat-x; filter: blur(6px); opacity: .22; animation: kasumi 80s linear infinite; }
+.seam i::after { top: 14%; opacity: .14; animation-duration: 130s; animation-direction: reverse; background-position: 520px 0; }
+:root[data-theme='light'] .seam i::before { opacity: .7; }
+:root[data-theme='light'] .seam i::after { opacity: .5; }
+@keyframes kasumi { to { translate: -1400px 0; } }
+@supports (animation-timeline: view()) {
+  .seam i { animation: seamPass linear both; animation-timeline: view(); animation-range: entry 0% exit 100%; }
+  @keyframes seamPass { from { transform: translateY(5vh); opacity: 0; } 40%, 60% { opacity: 1; } to { transform: translateY(-5vh); opacity: 0; } }
+}
+@media (prefers-reduced-motion: reduce) { .seam i::before, .seam i::after { animation: none; } .seam i { animation: none; } }
+
+/* room for the season button at the top left */
+.ld-nav { left: calc(max(14px, env(safe-area-inset-left, 0px)) + 52px); }
+.top { padding-left: calc(max(14px, env(safe-area-inset-left, 0px)) + 56px); }
+@media (max-width: 760px) { .ld-nav { right: calc(124px + env(safe-area-inset-right, 0px)); } }

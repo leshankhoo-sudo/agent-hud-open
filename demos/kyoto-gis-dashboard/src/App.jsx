@@ -3,7 +3,8 @@ import { iconURL } from './lib/icons.js';
 import MapView, { BASEMAPS, KDE_BREAKS, kdeColors, OFFLINE_PREVIEW } from './MapView.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import Weather from './Weather.jsx';
-import Intro from './Intro.jsx';
+import Landing from './Landing.jsx';
+import SeasonStory from './SeasonStory.jsx';
 import Outro from './Outro.jsx';
 import Explore from './Explore.jsx';
 import Features from './Features.jsx';
@@ -340,8 +341,18 @@ export default function App() {
     if (key === 'weather') { select({ id: 'S00019' }); setTab('weather'); } // Kyoto Station
     if (key === 'map') resetViewRef.current?.();
   };
-  const toggleUi = <><MusicPlayer /><ThemeToggle theme={theme} onChange={setTheme} /></>;
-  const intro = <Intro manifest={d?.manifest} photos={d?.photos} kdeMeta={d?.kdeMeta} walkInfo={walk.available ? { n: walk.scopeIds.size, pilot: walk.pilot } : null} />;
+  const toggleUi = <><SeasonBadge auto={seasonAuto} mode={seasonMode} onMode={setSeasonMode} info={seasonInfo} /><MusicPlayer /><ThemeToggle theme={theme} onChange={setTheme} /></>;
+  // Opening: page 1 is the looping cherry video with the project introduction; page 2 is the season
+  // story (depth parallax, KYOTO, the counts). Both are on screen before the data has loaded.
+  const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  const openCounts = { attractions: A.length || null, stops: Tr.length || null, areas: d?.municipalities?.features?.length || null };
+  const onNav = (k) => { if (k === 'sources') { go('dashboard'); if (loaded) setTimeout(() => setSheet('sources'), 700); } else go(k); };
+  const intro = (
+    <>
+      <Landing counts={openCounts} onOpenMap={() => go('dashboard')} onStory={() => go('seasons')} onNav={onNav} />
+      <SeasonStory season={visualSeason} autoSeason={seasonAuto.visual} theme={theme} counts={openCounts} onExplore={() => go('explore')} onPick={(k) => setSeasonMode(k === seasonAuto.visual ? 'auto' : k)} />
+    </>
+  );
   if (!loaded) return <>{toggleUi}{intro}<div className="boot" id="dashboard"><div className="boot-mark" /><p>Loading Kyoto Prefecture data…</p></div></>;
   const failed = Object.entries(loaded.status).filter(([, v]) => !v.ok);
   const core = d.attractions && d.transport;
@@ -363,7 +374,9 @@ export default function App() {
     <>
     {toggleUi}
     {intro}
+    <div className="seam" aria-hidden="true"><i /></div>
     {d.explore?.places?.length > 0 && <Explore places={d.explore.places} attractions={A.length} stops={Tr.length} near={nearPlace} onEnter={enter} />}
+    <div className="seam" aria-hidden="true"><i /></div>
     <Features items={features} onOpen={openFeature} />
     <div id="dashboard" className={cls}>
       <header className="top">
@@ -379,7 +392,6 @@ export default function App() {
             <p>京都府 · university GIS prototype</p>
           </div>
         </div>
-        <SeasonBadge auto={seasonAuto} mode={seasonMode} onMode={setSeasonMode} info={seasonInfo} />
         <div className="counts" aria-live="polite">
           <div className="count" title="Preliminary OpenStreetMap records, not official counts">
             <span className="v"><Rolling value={fa.length} /><small> / {A.length.toLocaleString('en-US')}</small></span>
@@ -660,6 +672,7 @@ export default function App() {
         )}
       </aside>
     </div>
+    <div className="seam" aria-hidden="true"><i /></div>
     <Outro manifest={d.manifest} />
     </>
   );

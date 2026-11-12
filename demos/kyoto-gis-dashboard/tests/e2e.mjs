@@ -10,7 +10,8 @@ const url = process.argv[2] || 'http://localhost:4173/';
 const out = process.argv[3] || 'test-output';
 mkdirSync(out, { recursive: true });
 const proxy = process.env.HTTPS_PROXY ? { server: process.env.HTTPS_PROXY, bypass: 'localhost,127.0.0.1' } : undefined;
-const browser = await chromium.launch({ proxy, args: ['--use-gl=swiftshader', '--ignore-gpu-blocklist'] });
+// PW_CHANNEL=msedge runs Microsoft Edge, which can decode the H.264 opening video (Playwright's own Chromium cannot).
+const browser = await chromium.launch({ proxy, channel: process.env.PW_CHANNEL || undefined, args: ['--use-gl=swiftshader', '--ignore-gpu-blocklist'] });
 const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  — ' + detail : ''}`); };
 
@@ -33,21 +34,53 @@ await page.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.getLayer
 await page.waitForTimeout(8000); // vector basemap tiles are parsed after load; slow on software WebGL
 await page.screenshot({ path: `${out}/01-initial.png` });
 
-// 0. scroll intro: video scrubs with scroll and ends on the dashboard
-const intro0 = await page.evaluate(async () => {
-  const v = document.querySelector('.intro-v');
-  const span = document.querySelector('.intro-s').offsetHeight - innerHeight;
-  scrollTo(0, span * 0.5);
-  await new Promise((r) => setTimeout(r, 2500));
-  const mid = v.currentTime;
-  scrollTo(0, span);
-  await new Promise((r) => setTimeout(r, 2500));
-  return { mid, end: v.currentTime, duration: v.duration };
+// 0. opening. Page 1: the cherry video loops under the project introduction. Page 2: the season story.
+await page.evaluate(() => scrollTo(0, 0));
+await page.waitForTimeout(600);
+const op = await page.evaluate(async () => {
+  const v = document.querySelector('.ld-video');
+  const t0 = v.currentTime; await new Promise((r) => setTimeout(r, 1500)); const t1 = v.currentTime;
+  return { can: !!v.canPlayType('video/mp4; codecs="avc1.640034"'), loop: v.loop, muted: v.muted, w: v.videoWidth, h: v.videoHeight, adv: +(t1 - t0).toFixed(2), title: document.querySelector('.ld-title').innerText, stats: document.querySelector('.ld-stats').innerText, btns: document.querySelectorAll('.ld-btns .wbtn').length, credit: document.querySelector('.ld-credit').innerText };
 });
-check('intro video follows the scroll (middle ≈ half, end ≈ end)', Math.abs(intro0.mid - intro0.duration / 2) < 1.2 && intro0.end > intro0.duration - 0.6, JSON.stringify(intro0));
+check('page 1: the cherry video loops, muted, full screen (1920x1080 cut on wide screens) and is playing', op.can ? op.loop && op.muted && op.w === 1920 && op.h === 1080 && op.adv > 0.8 : op.loop && op.muted, JSON.stringify({ ...op, title: undefined, stats: undefined, credit: undefined }) + (op.can ? '' : ' (this browser has no H.264 decoder; run with PW_CHANNEL=msedge)'));
+check('page 1: title, counts from the data, two water buttons, video credit', op.title.includes('Tourism GIS') && op.stats.includes('523') && op.stats.includes('5,479') && op.btns === 2 && op.credit.includes('Pixabay'), op.stats.replace(/\n/g, ' '));
+await page.hover('.ld-btns .wbtn');
+await page.waitForTimeout(1500);
+const water = await page.evaluate(() => +getComputedStyle(document.querySelector('.ld-btns .wbtn')).getPropertyValue('--fill'));
+check('page 1: hovering a button fills it with liquid (about 93%)', water > 0.8 && water < 1, String(water));
+await page.mouse.move(5, 5);
+await page.waitForTimeout(1800);
+check('page 1: leaving the button drains it', +(await page.evaluate(() => getComputedStyle(document.querySelector('.ld-btns .wbtn')).getPropertyValue('--fill'))) < 0.05);
+await page.screenshot({ path: `${out}/00a-landing.png` });
+await page.mouse.move(5, 5);
+const story = await page.evaluate(async () => {
+  const s = document.getElementById('seasons');
+  const at = async (p) => { scrollTo(0, s.offsetTop + (s.offsetHeight - innerHeight) * p); await new Promise((r) => setTimeout(r, 1800)); };
+  await at(0.03);
+  const cv = [...document.querySelectorAll('.scard canvas')];
+  const ok = cv.length === 4 && cv.every((c) => c.width > 0) && !document.querySelector('.story.fallback');
+  const lines0 = +getComputedStyle(document.querySelector('.sl.big > span')).opacity;
+  await at(0.72);
+  const on = [...document.querySelectorAll('.scard.on')].map((c) => c.querySelector('figcaption span').textContent.toLowerCase());
+  const now = [...document.querySelectorAll('.scard.now')].length;
+  return { ok, lines0, lines1: +getComputedStyle(document.querySelector('.sl.big > span')).opacity, nums: [...document.querySelectorAll('.sl.nums b')].map((b) => b.textContent), season: document.documentElement.dataset.season, pill: document.querySelector('.story-now').innerText, on, now, credit: document.querySelector('.story-credit').innerText };
+});
+check('page 2: four season cards, each drawn with WebGL (no fallback)', story.ok);
+check('page 2: the card of the season it is now is the highlighted one, marked "Now in Kyoto"', story.on.length === 1 && story.on[0] === story.season && story.now === 1, JSON.stringify({ on: story.on, season: story.season }));
+check('page 2: story lines appear with the scroll, counts roll up to the data totals', story.lines0 < 0.2 && story.lines1 > 0.9 && story.nums.join('|') === '523|5,479', JSON.stringify({ l0: story.lines0, l1: story.lines1, nums: story.nums }));
+check('page 2: "Now in Kyoto" line follows the season; image source stated as unverified', story.pill.toLowerCase().includes(story.season) && story.credit.includes('Pinterest') && story.credit.includes('illustrative'), story.pill.replace(/\n/g, ' '));
+const other = story.season === 'winter' ? 'spring' : 'winter';
+await page.locator(`.scard-pick[aria-label="Use the ${other} theme"]`).click();
+await page.waitForTimeout(500);
+const picked = await page.evaluate(() => ({ s: document.documentElement.dataset.season, on: document.querySelector('.scard.on figcaption span').textContent.toLowerCase(), stored: localStorage.getItem('kyoto-gis-season') }));
+check('page 2: clicking a card switches the season theme and the highlight', picked.s === other && picked.on === other && picked.stored === other, JSON.stringify(picked));
+await page.locator(`.scard-pick[aria-label="Use the ${story.season} theme"]`).click();
+await page.waitForTimeout(400);
+check('page 2: clicking the card of the current season goes back to Auto', (await page.evaluate(() => localStorage.getItem('kyoto-gis-season'))) === 'auto');
+await page.screenshot({ path: `${out}/00b-story.png` });
 await page.evaluate(() => document.getElementById('dashboard').scrollIntoView());
 await page.waitForTimeout(800);
-check('dashboard follows the intro', await page.evaluate(() => { const r = document.getElementById('dashboard').getBoundingClientRect(); return Math.abs(r.top) < 2; }));
+check('dashboard follows the opening', await page.evaluate(() => { const r = document.getElementById('dashboard').getBoundingClientRect(); return Math.abs(r.top) < 2; }));
 
 // 0b. Explore Kyoto section: verified photos with credits, a place picker, and a button into the dashboard
 const ex = await page.evaluate(async () => {
@@ -55,11 +88,11 @@ const ex = await page.evaluate(async () => {
   const sec = document.getElementById('explore');
   sec.scrollIntoView();
   await new Promise((r) => setTimeout(r, 1500));
-  const order = [...document.querySelectorAll('.intro-s, #explore, #features, #dashboard, #credits')].map((e) => e.id || 'intro');
+  const order = [...document.querySelectorAll('#top, #seasons, #explore, #features, #dashboard, #credits')].map((e) => e.id);
   return { n: d.places.length, licences: [...new Set(d.places.map((p) => p.credit.license))], allCredited: d.places.every((p) => p.credit.artist && p.credit.page && p.credit.license_url && p.municipality.code && p.verified.method), thumbs: sec.querySelectorAll('.ex-dot').length, order, imgOk: [...sec.querySelectorAll('.ex-card.front img')].every((i) => i.complete && i.naturalWidth > 0) };
 });
 check('explore: 7 place photos, each with author, licence, source and a checked municipality', ex.n === 7 && ex.allCredited && ex.licences.every((l) => /^(CC0|Public domain|CC BY)/.test(l)), ex.licences.join(', '));
-check('explore sits between the original intro and the dashboard; front photo loaded', ex.order.join('>') === 'intro>explore>features>dashboard>credits' && ex.thumbs === 7 && ex.imgOk, ex.order.join('>'));
+check('page order: video, seasons, explore, features, dashboard, credits; front photo loaded', ex.order.join('>') === 'top>seasons>explore>features>dashboard>credits' && ex.thumbs === 7 && ex.imgOk, ex.order.join('>'));
 await page.locator('.ex-dot').nth(3).click();
 await page.waitForTimeout(2500); // the deck glides to its place
 const exText = await page.locator('#explore').innerText();
@@ -431,8 +464,8 @@ await ph.waitForTimeout(1500);
 const phs = await ph.evaluate(() => { const r = document.querySelector('aside.right').getBoundingClientRect(); const t = document.querySelector('.theme-toggle').getBoundingClientRect(); const x = document.querySelector('.detail .x:not(.hide-btn)').getBoundingClientRect(); const d = document.getElementById('dashboard').getBoundingClientRect(); return { sheetTop: r.top - d.top, sheetBottom: r.bottom - d.top, vh: d.height, leftShown: getComputedStyle(document.querySelector('aside.left')).display !== 'none', overlap: !(t.right < x.left || t.left > x.right || t.bottom < x.top || t.top > x.bottom), sw: document.documentElement.scrollWidth }; });
 check('phone: picking a result closes the drawer and opens a bottom sheet', !phs.leftShown && phs.sheetTop > phs.vh * 0.25 && Math.abs(phs.sheetBottom - phs.vh) < 2, JSON.stringify(phs));
 check('phone: theme switch does not cover the close button; still no horizontal scroll', !phs.overlap && phs.sw <= 390);
-const sbRow = await ph.evaluate(() => { const n = document.querySelector('.nav-btn').getBoundingClientRect(); const b = document.querySelector('.season-badge').getBoundingClientRect(); return Math.abs((n.top + n.bottom) / 2 - (b.top + b.bottom) / 2); });
-check('phone: season seal shares the first row with Explore (top bar no taller)', sbRow < 8, String(sbRow));
+const sbFree = await ph.evaluate(() => { const b = document.querySelector('.season-badge summary').getBoundingClientRect(); const ov = (r) => !(r.right <= b.left || r.left >= b.right || r.bottom <= b.top || r.top >= b.bottom); return { nav: ov(document.querySelector('.nav-btn').getBoundingClientRect()), toggle: ov(document.querySelector('.theme-toggle').getBoundingClientRect()), inView: b.left >= 0 && b.top >= 0 }; });
+check('phone: season button sits top left without covering Explore or the theme switch', !sbFree.nav && !sbFree.toggle && sbFree.inView, JSON.stringify(sbFree));
 await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
 
 check('no page errors', errors.length === 0, errors.join(' | '));

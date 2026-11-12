@@ -431,3 +431,12 @@ git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 1. 在 Safari、真实手机和平板上检查季节粒子、和柄遮罩（`mask-composite`）和明朝体。
 2. 人工检查步行分析的问题清单：Unverified 89 个、府界标记 62 个、台阶和不确定道路类别。
 3. 原第 11 节的巴士动画暂停和速度控制仍然没有做。
+
+## 13. 2026-11-13 更新：新开场（本节优先于上文）
+
+- 原来的 AI 樱花视频开场（`Intro.jsx`、`sakura_scroll.mp4`、`sakura_poster.jpg`）已删除，改成两页：第 1 页樱花视频（`Landing.jsx`）、第 2 页四季卡片（`SeasonStory.jsx`），说明见 README 6b。
+- 季节按钮从地图顶栏移到左上角，固定显示，和音乐按钮同样式。区块之间加了渐变和"霞"过渡。
+- 测试：逻辑 21 / 21，浏览器 86 / 86（`PW_CHANNEL=msedge`；Playwright 自带的 Chromium 不能解码 H.264 视频，所以要用 Edge 跑）。
+- **待处理**：四季图片来自 Pinterest，原作者不明，只限课业使用；公开部署前要换成有授权的图片。秋、春两张的标题字是修图去掉的。
+- 视频处理方式：因为这个环境不允许运行下载的 ffmpeg，改用 Edge 的 WebCodecs 逐帧编码，再自己写 MP4 封装。脚本没有放进仓库；需要重新生成时可以直接用 ffmpeg：`ffmpeg -i 345013.mp4 -an -vf "crop=2160:1215:0:1235,scale=1920:1080,fps=30" -c:v libx264 -crf 18 -g 30 -movflags +faststart cherry-1920x1080.mp4`（竖版去掉 crop，改成 scale=1440:2560）。
+
