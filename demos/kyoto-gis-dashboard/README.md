@@ -20,7 +20,7 @@
 cd demos/kyoto-gis-dashboard
 npm install
 npm run dev          # 开发模式，打开 http://localhost:5173
-npm test             # 15 项逻辑测试（使用真实数据文件）
+npm test             # 21 项逻辑测试（使用真实数据文件）
 npm run build        # 生成 dist/ 静态网站
 npm run preview      # 本地预览 dist/，http://localhost:4173
 ```
@@ -56,7 +56,10 @@ pip install pyproj shapely networkx openpyxl
 npm i -g mapshaper          # 或设定 MAPSHAPER=/path/to/mapshaper
 python3 scripts/prepare_data.py     # 校验原始文件 → 生成 public/data
 python3 scripts/kde_density.py      # Analysis 1：正式核密度
-python3 scripts/walking_pilot.py /path/to/Kyoto_Roads_GeoJSON   # Analysis 2：试点步行路线
+python3 scripts/walking_pilot.py /path/to/Kyoto_Roads_GeoJSON   # Analysis 2：试点步行路线（旧，保留备查）
+pip install numpy scipy
+python3 scripts/walking_prefecture.py /path/to/Kyoto_Roads_GeoJSON  # Analysis 2：全府 523 个景点（Dashboard 使用这个）
+python3 scripts/prepare_context.py              # 无名景点的身份、同一记录英文名、所在范围（离线，读缓存）
 python3 scripts/fetch_photos.py                 # 景点照片（Wikidata / Commons，需联网）
 python3 scripts/fetch_names_en.py               # 英文名称（OSM name:en / Wikidata，需联网）
 python3 scripts/fetch_explore_photos.py         # Explore Kyoto 区块的照片（Wikimedia Commons，需联网）
@@ -81,13 +84,17 @@ kyoto-gis-dashboard/
 │  ├─ prefecture_outline.geojson                 府边界轮廓，仅用于显示
 │  ├─ point_municipality.json                    每个点所属市区町村（用原始边界做的空间连接）
 │  ├─ sample_journeys_display.json               示范行程 + Excel 中多出的列（按 journey_id 精确连接）
-│  ├─ walking_routes.geojson                     试点步行路线（scope: pilot）
+│  ├─ walking_routes.geojson                     试点步行路线（scope: pilot，旧，不再加载）
+│  ├─ walking_routes_prefecture.geojson          全府步行路线（scope: prefecture，523 × 公交/铁路）
+│  ├─ attraction_context.json                    无名景点的身份、同一记录英文名、所在范围
+│  ├─ season_kyoto.json                          京都季节参考（气象厅平年值和窗口规则）
 │  ├─ manifest.json                              记录数、哈希校验结果、构建时间
 │  └─ analysis/
 │     ├─ density_kde.geojson / _meta.json        核密度结果与方法参数
-│     ├─ walking_pilot_table.csv                 试点距离表（19 景点 × 公交/铁路）
-│     └─ walking_pilot_report.json               道路检查、网络检查、假设与限制
-├─ scripts/                      prepare_data.py, kde_density.py, walking_pilot.py
+│     ├─ walking_pilot_table.csv / _report.json  试点距离表和报告（旧）
+│     ├─ walking_prefecture_table.csv            全府距离表（1,046 行，供核对）
+│     └─ walking_prefecture_report.json          道路检查、网络检查、结果统计、假设与限制
+├─ scripts/                      prepare_data.py, kde_density.py, walking_pilot.py, walking_prefecture.py, prepare_context.py 等
 ├─ src/                          App.jsx, MapView.jsx, Weather.jsx, lib/{data,weather,walking}.js, styles.css
 ├─ tests/                        logic.test.mjs（npm test）, e2e.mjs（浏览器测试）
 └─ docs/                         DATA_INTERFACES.md, TEST_REPORT.md
@@ -100,9 +107,9 @@ kyoto-gis-dashboard/
    - 搜索：可以按名称、A00001、S00019 或 OSM ID 搜索。
    - 筛选：景点四个类别、交通三种类型（公交 / 铁路 / 电车）。
    - Analysis 1：在 KDE 结果和 Visual heatmap 之间切换。
-   - Analysis 2：步行距离滑块和公交 / 铁路切换，只统计试点的 19 条记录。
-3. **地图**：拖动、缩放，点击点位即可选中。金色虚线框是步行试点范围。缩小时站点是小圆点；放大后铁路站（第 9 级起）和公交站（第 13 级起）会变成图标，图标重叠时会自动让位，下面的小圆点仍然保留。打开 Dashboard 时，地图会从京都市中心向外慢慢展开。
-4. **右侧**：选中记录的名称、ID、类别、所属市区町村；步行结果（只有试点记录才有）；天气预报（可选日期和小时，有刷新按钮）。
+   - Analysis 2：步行距离滑块、公交 / 铁路切换、记录范围（Named / OSM-tagged / Unverified），统计全府记录。
+3. **地图**：拖动、缩放，点击点位即可选中。缩小时站点是小圆点；放大后铁路站（第 9 级起）和公交站（第 13 级起）会变成图标，图标重叠时会自动让位，下面的小圆点仍然保留。打开 Dashboard 时，地图会从京都市中心向外慢慢展开。
+4. **右侧**：选中记录的名称、ID、类别、所属市区町村；步行结果（全府所有景点）；天气预报（可选日期和小时，有刷新按钮）。
 5. **顶部按钮**：
    - "Sample journeys & fares"：示范行程与参考票价面板。
    - "Data & sources"：资料来源、更新时间和数据质量说明。
@@ -161,6 +168,37 @@ kyoto-gis-dashboard/
 
 视频是 AI 生成的示意影像，页面右下角有标注，不是某个真实地点的实拍。点 **Skip to dashboard**，或在网址后面加 `#dashboard`，可以直接跳到 Dashboard。
 
+## 6f. 2026-11-12 更新：全府步行、给外国游客的英文、四季、和风
+
+**全府步行分析**（`scripts/walking_prefecture.py`，约 1.5 分钟）
+- 523 个景点全部计算，方法和试点完全一样（按道路类别判断能否步行、只在共用节点连通、EPSG:6674、3 km 上限、80 m/分）。试点的 38 条结果中有 36 条完全相同；唐子の間的 2 条原来"无法到达"，现在改连到街道上，所以有了结果。
+- 没有结果时会写明原因：3 km 内没有站点（可能是 OSM 缺站）／没有连上街道网（目前 12 条都在天橋立ビューランド山顶，OSM 里山顶步道和山下不连通）／离道路太远（4 个）。
+- 景点最近的路段如果是没连上街道的小碎片（例如寺院内部步道），会改连到 150 m 内主路网上最近的一段，接入距离单独列出、不加进步行距离，界面上有标记。
+- 府界标记：只有当府外道路比结果更近时才标记（邻县的站点不在数据里）；海岸线不算府界。
+- Sagano Romantic Train 和トロッコ嵯峨站接到同一个街道点，界面显示 "Next to this place"，不显示成 0 m。
+- 每条路线都记录台阶长度，界面显示 "Includes steps"。
+- 界面：记录范围筛选 Named 305 / OSM-tagged 52 / Unverified 166（Unverified 默认关闭）；五种状态分开统计；超过 150 条路线时不播放延伸动画，站点改用地图圆圈标记，避免卡顿。
+
+**无名景点（218 个）**（`scripts/prepare_context.py`，离线读取缓存）
+- 52 个在 OSM 同一记录上有 name:en、wikidata、官网等标签，其中 47 个显示该记录自己的英文名（不翻译、不罗马字化）。
+- 97 个位于有名称的 OSM 范围内（Overpass is_in，缓存在 `data/cache/osm_is_in_unnamed.json`），显示为 "Inside the grounds of 金閣寺 (Kinkaku-ji)"。这只是位置关系，不代表这个点就是那个地方。
+- 其余只有分类标签的点标为 Unverified。
+
+**给外国游客**
+- 顶部 "English first" 开关：Golden Pavilion (金閣) ⇄ 金閣 (Golden Pavilion)，会记住选择。
+- 详情里的 "In the name"：解释名称里的常用字（寺 Buddhist temple、神社 Shinto shrine、前 in front of……），只解释字义，不翻译整个名字，也不标读音。
+
+**四季**（`src/lib/season.js`、`public/data/season_kyoto.json`）
+- 按京都的日期（东京时间）判断季节，不用浏览者所在的位置。月份采用气象厅的定义：春 3–5 月、夏 6–8 月、秋 9–11 月、冬 12–2 月。
+- 赏樱期 3/19–4/11、赏枫期 11/10–12/12，由京都地方气象台的平年值（1991–2020）推算：樱花开花 3/26、满开 4/4、银杏黄叶 11/24、枫树红叶 12/5。推算规则写在数据文件里，属于近似值。12 月上旬仍然显示秋季主题。
+- 顶部的季节标签会说明今天的判断依据和资料来源，也可以手动切换季节，方便演示。
+- 季节只改变强调色和飘落元素：春天樱花瓣、夏天青枫叶（暗色时是萤火虫）、秋天红枫叶、冬天细雪。用在主题切换和 Explore 区块。地图、边界发光、类别颜色都不变。开启"减少动画"时关闭。
+
+**和风细节**
+- 和柄都是本项目自己画的几何图形：顶部栏的麻の葉、空状态和加载画面的七宝、弹出面板的市松、分隔用的水引。颜色跟随季节，不放在地图和数据上。
+- 选中的标签页做成暖帘的样子；类别圆点换成印章（名、景、館、城、停、駅）。
+- 标题和地名改用 Shippori Mincho 600（SIL OFL）；内文仍用 IBM Plex。日文字形分成子集按需加载，dist 因此多出约 8.4 MB 的字体文件。
+
 ## 7. 已完成 / 待完成
 
 **已完成**
@@ -174,7 +212,7 @@ kyoto-gis-dashboard/
   - 缓存 30 分钟，有刷新按钮。
   - 加载中、失败、缺值时各有对应状态，失败时不显示任何假数据。
 - Analysis 1：正式核密度（Quartic 核，半径 2 km，网格 500 m，EPSG:6674，单位 records/km²），可以跟随类别筛选。另有明确标注为 visual heatmap 的显示模式。
-- Analysis 2（**仅试点**）：
+- Analysis 2（2026-11-12 起为**全府**，见 6f 节；以下是当初试点的记录）：
   - 范围：祇園–清水一带的 19 条有名称的记录。
   - 沿道路网分别计算最近公交站和最近铁路站：18 条成功，1 条无法到达（单独标记）。
   - 输出路线 GeoJSON 和距离表，已接入 Dashboard。
@@ -189,7 +227,7 @@ kyoto-gis-dashboard/
   - 逐条来源可以在 `public/data/analysis/names_en_review.csv` 核对。
 
 **待完成 / 需要你决定**
-- 步行分析扩展到全府：需要先人工检查试点的问题（入口、步道断点、trunk 道路），确认分类假设，再分区批量计算。
+- 步行分析已扩展到全府（6f 节），但结果没有逐条人工核对；入口位置、步道断点、trunk 道路的假设仍待检查。
 - 景点入口位置：目前用的是 OSM 点，不是入口。
 - 示范行程的 `attraction_id` / `stop_id` 核实与连接：需要人工逐条确认。
 - OSM 资料快照日期：仍未确认。
@@ -200,4 +238,4 @@ kyoto-gis-dashboard/
 
 - **景点和站点**：都是 OSM 初步记录，不是官方完整名单，也没有到现场核实。
 - **天气**：Open-Meteo 的模型网格估计，不是景点现场的观测值。相邻的点可能落在同一个网格，得到相同的预报。
-- **步行**：道路资料没有 foot / access / sidewalk 标签，能否步行是按道路类别**假设**的（详见 `walking_pilot_report.json`）。另外，试点结果不能当作全府结果使用。
+- **步行**：道路资料没有 foot / access / sidewalk 标签，能否步行是按道路类别**假设**的（详见 `walking_prefecture_report.json`）。另外，试点结果不能当作全府结果使用。

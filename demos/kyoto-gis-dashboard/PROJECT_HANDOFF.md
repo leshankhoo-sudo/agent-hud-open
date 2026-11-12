@@ -16,9 +16,9 @@
 | 最后一次功能提交 | `797d108` Kyoto GIS: Kyoto City Bus routes with line reveal and stop pop animation |
 | 可恢复版本 | 提交 `faf1ebe`（加入本交接文件的提交；代码与 `797d108` 相同）。远端只允许推送到本分支，**没有推送 Git 标签** |
 | 未提交改动 | 无（交接文件本身也已提交） |
-| 逻辑测试 `npm test` | **16 / 16 通过** |
+| 逻辑测试 `npm test` | **16 / 16 通过**（2026-11-12 更新后为 21 / 21，见第 12 节） |
 | 构建 `npm run build` | 通过（主 JS 1.09 MB，gzip 309 KB） |
-| 浏览器测试 `tests/e2e.mjs` | **59 / 59 通过**（Playwright + Chromium，桌面 1440×900，含一个 390 宽手机检查） |
+| 浏览器测试 `tests/e2e.mjs` | **59 / 59 通过**（Playwright + Chromium，桌面 1440×900，含一个 390 宽手机检查）。2026-11-12 的更新改了其中的步行检查，但**没有重新运行**（本机未安装 Playwright），见第 12 节 |
 | 天气接口 | 本次测试时 Open-Meteo 返回 429 限流，页面正确显示错误状态、没有显示假数值 |
 
 另一个 demo：`demos/dashboard-interactions/`（早期的海洋主题 dashboard 演示）。用户要求**保留原样，不要修改**。
@@ -344,7 +344,7 @@ demos/kyoto-gis-dashboard/
 cd demos/kyoto-gis-dashboard
 npm install
 npm run dev                  # http://localhost:5173
-npm test                     # 逻辑测试（16 项）
+npm test                     # 逻辑测试（21 项）
 npm run build                # 生成 dist/（约 33 MB，含视频和数据）
 npm run preview              # http://localhost:4173
 npm run build:preview-artifact   # 生成 dist-artifact/（在线预览版：无底图瓦片、关闭天气）
@@ -397,3 +397,36 @@ git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 6. 让用户试听背景音乐，按反馈调整。
 7. 可选：代码分割（例如巴士和天气组件懒加载），减小首屏 JS。
 8. 可选：部署到 GitHub Pages 或学校服务器（需要用户同意）。
+
+---
+
+## 12. 2026-11-12 更新（本节优先于上文）
+
+分支 `ccr-bd068911-ydjxlc`，提交 `118697f` → `318f52d` → `e9c6054` → `6ace642` → `b8652e0` → `7057ba7`，以及本节所在的文档提交。功能说明见 README 6f 节。
+
+| 项目 | 状态 |
+|---|---|
+| 逻辑测试 `npm test` | **21 / 21 通过** |
+| 构建 | 通过；主 JS 约 1.1 MB；CSS 308 KB（gzip 92 KB，大部分是字体子集声明）；dist 约 43 MB |
+| 浏览器测试 `tests/e2e.mjs` | 步行相关的检查已改成全府版本，**未运行**：本机没有安装 Playwright。改用内置浏览器手动检查了全府路线、单点结果、English first、季节标签、四季粒子、和风元素 |
+
+**新增和修改的数据**
+- `public/data/walking_routes_prefecture.geojson`、`analysis/walking_prefecture_table.csv`、`analysis/walking_prefecture_report.json`：由 `scripts/walking_prefecture.py` 生成（需要 numpy、scipy；道路资料不在仓库）。
+- `public/data/attraction_context.json`：由 `scripts/prepare_context.py` 生成；缓存文件 `data/cache/osm_is_in_unnamed.json`（Overpass，OSM 基准时间 2026-11-12）。
+- `public/data/season_kyoto.json`：气象厅季节定义和京都平年值，写明来源、访问日期和窗口规则。
+- 试点文件 `walking_routes.geojson` 保留在仓库里备查，Dashboard 不再加载。
+
+**已知问题 / 待核实**
+- 全府步行结果没有逐条人工核对，界面上已注明。
+- "3 km 内没有站点"的结果中，有些可能只是 OSM 缺少京都市以外的民营巴士站。
+- 天橋立ビューランド山顶的 12 个点：OSM 里没有连到山下的步行道路（现实中坐缆车或单轨上山）。
+- OSM 英文名疑似拼写错误：公交站「嵯峨嵐山駅前」的 name:en 写成 "Saga Arashima Station"。按原则保留原样、没有修改，可以到 OSM 上修正后再重跑。
+- 166 个 Unverified 记录中，有 89 个不在任何有名称的 OSM 范围内，需要人工判断（卫星图或现场）。
+- 赏樱期和赏枫期是根据平年值推算的近似范围，不代表当年树木的实际状态。2026 年的枫树红叶日还没有观测到（截至 11/12）。
+- 季节粒子只用 Chromium 内核测过；Safari 的 `mask-composite` 写法已加上 `-webkit-` 前缀，但没有实际测试。
+- `npm install` 时，npm 11 跳过了 esbuild 的 postinstall 脚本（`npm install-scripts ls` 可查看）；构建正常，未做处理。
+
+**下一步建议**
+1. 安装 Playwright 和 Chromium，运行 `tests/e2e.mjs`，补上季节和英文开关的检查。
+2. 人工检查步行分析的问题清单：Unverified 89 个、府界标记 62 个、台阶和不确定道路类别。
+3. 原第 11 节的巴士动画暂停和速度控制仍然没有做。

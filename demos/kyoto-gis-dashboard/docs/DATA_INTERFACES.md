@@ -2,7 +2,9 @@
 
 The dashboard reads analysis results only from these files. Replace them with new real results in the same shape; no code change is needed.
 
-## Analysis 2 · `public/data/walking_routes.geojson`
+## Analysis 2 · `public/data/walking_routes_prefecture.geojson` (since 2026-11-12; the pilot file `walking_routes.geojson` has the same shape)
+
+Extra properties in the prefecture file: `reason` (`null` | `same_access_point` | `no_stop_within_cutoff` | `isolated_network` | `attraction_too_far_from_network`), `identity` (`named` | `osm_tags` | `unverified`), `near_prefecture_boundary`, `steps_m`, `share_*`. `same_access_point` is the only case where an ok row has `distance_m: 0` and `geometry: null` (attraction and stop attach to the same street point; a measured 0, not a stand-in).
 
 ```jsonc
 {
@@ -22,7 +24,7 @@ The dashboard reads analysis results only from these files. Replace them with ne
         "stop_id": "S00602" | null,
         "stop_type": "bus" | "rail" | "tram",      // one row per type, never mixed
         "route_status": "ok" | "unreachable" | "failed" | "unverified",
-        "distance_m": 74.7 | null,                 // > 0 for ok; null otherwise (never 0 as a stand-in)
+        "distance_m": 74.7 | null,                 // > 0 for ok (0 only with reason same_access_point); null otherwise (never 0 as a stand-in)
         "duration_min": 0.9 | null,
         "attraction_snap_gap_m": 0.3,              // straight access gap, NOT added to distance
         "stop_snap_gap_m": 0.5,
