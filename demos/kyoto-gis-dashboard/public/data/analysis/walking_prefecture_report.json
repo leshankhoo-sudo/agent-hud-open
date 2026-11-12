@@ -1,0 +1,161 @@
+{
+ "computed_at": "2026-11-12T13:45:32+00:00",
+ "scope": "Kyoto Prefecture, all 523 attraction records (named and unnamed). Not validated record by record.",
+ "road_data_check": {
+  "files": {
+   "Kyoto_Roads_part_01.geojson": 43915,
+   "Kyoto_Roads_part_02.geojson": 43035,
+   "Kyoto_Roads_part_03.geojson": 52541,
+   "Kyoto_Roads_part_04.geojson": 53662,
+   "Kyoto_Roads_part_05.geojson": 7571
+  },
+  "total": 200724,
+  "unique_osm_id": 200724,
+  "fclass": {
+   "residential": 52805,
+   "footway": 33975,
+   "service": 31257,
+   "unclassified": 29042,
+   "path": 19585,
+   "track": 9521,
+   "tertiary": 6240,
+   "steps": 5113,
+   "secondary": 2880,
+   "primary": 2812,
+   "trunk": 2331,
+   "pedestrian": 1027,
+   "motorway": 949,
+   "track_grade1": 852,
+   "cycleway": 769,
+   "motorway_link": 683,
+   "trunk_link": 243,
+   "track_grade2": 184,
+   "track_grade3": 93,
+   "track_grade5": 76,
+   "tertiary_link": 73,
+   "track_grade4": 60,
+   "busway": 55,
+   "primary_link": 38,
+   "living_street": 31,
+   "secondary_link": 26,
+   "bridleway": 2,
+   "unknown": 2
+  }
+ },
+ "segments_used_by_walk_class": {
+  "uncertain": 14133,
+  "road": 125173,
+  "pedestrian": 59731
+ },
+ "segments_excluded_by_class": {
+  "motorway_link": 683,
+  "motorway": 949,
+  "busway": 55
+ },
+ "graph": {
+  "nodes": 1283741,
+  "edges": 1394888,
+  "components": 1158,
+  "largest_component_nodes": 1267879,
+  "small_component_threshold_vertices": 1000
+ },
+ "attractions": 523,
+ "attractions_by_identity": {
+  "named": 305,
+  "unverified": 166,
+  "osm_tags": 52
+ },
+ "attractions_near_prefecture_boundary": 56,
+ "boundary_rule": "flagged when a road vertex outside Kyoto Prefecture (original N03 polygons) is closer in a straight line than the walking result (or than the 3 km cut-off when no stop was found); the coast has no roads outside, so it is never flagged",
+ "stops_considered": {
+  "rail": 248,
+  "bus": 5229
+ },
+ "stops_snapped": {
+  "bus": 5229,
+  "rail": 248
+ },
+ "stops_not_snapped": [],
+ "attractions_not_snapped": [
+  {
+   "id": "A00259",
+   "gap_m": 241.8
+  },
+  {
+   "id": "A00387",
+   "gap_m": 172.8
+  },
+  {
+   "id": "A00388",
+   "gap_m": 174.5
+  },
+  {
+   "id": "A00505",
+   "gap_m": 159.8
+  }
+ ],
+ "results": {
+  "bus:failed:attraction_too_far_from_network": 4,
+  "bus:ok": 490,
+  "bus:unreachable:isolated_network": 12,
+  "bus:unreachable:no_stop_within_cutoff": 17,
+  "rail:failed:attraction_too_far_from_network": 4,
+  "rail:ok": 419,
+  "rail:unreachable:isolated_network": 12,
+  "rail:unreachable:no_stop_within_cutoff": 88
+ },
+ "ok_rows_with_flags": 552,
+ "points_attached_to_main_network_instead_of_fragment": {
+  "attractions": 26,
+  "stops": 52
+ },
+ "assumptions": {
+  "walkable_classes": [
+   "footway",
+   "living_street",
+   "path",
+   "pedestrian",
+   "primary",
+   "primary_link",
+   "residential",
+   "secondary",
+   "secondary_link",
+   "service",
+   "steps",
+   "tertiary",
+   "tertiary_link",
+   "unclassified"
+  ],
+  "uncertain_classes_used_flagged": [
+   "trunk",
+   "track",
+   "cycleway",
+   "bridleway",
+   "unknown"
+  ],
+  "excluded_classes": [
+   "busway",
+   "motorway",
+   "motorway_link"
+  ],
+  "ignored_fields": "oneway, maxspeed (vehicle rules)",
+  "connectivity": "shared identical vertex only; crossings do not connect",
+  "snap_limits_m": {
+   "attraction": 150.0,
+   "bus": 60.0,
+   "rail": 300.0
+  },
+  "cutoff_m": 3000.0,
+  "walk_speed_m_per_min": 80.0,
+  "crs": "EPSG:6674"
+ },
+ "limitations": [
+  "No foot/access/sidewalk tags: walkability is assumed from road class and may be wrong for private service roads, roads without sidewalks, closed paths or tunnels.",
+  "Attraction and stop points are not entrances or platforms; the straight access gap is reported separately and not added.",
+  "Temple grounds, opening hours, steps without ramps and fee gates are not modelled.",
+  "Stops are OSM records; outside Kyoto City bus stops of private operators may be missing, so 'no stop within 3 km' can reflect missing data.",
+  "Stops outside Kyoto Prefecture are not in the data; records near the boundary are flagged.",
+  "A reachable stop says nothing about how often it is served.",
+  "Results are not checked record by record."
+ ]
+}
