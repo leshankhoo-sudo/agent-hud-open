@@ -18,7 +18,7 @@
 | 未提交改动 | 无（交接文件本身也已提交） |
 | 逻辑测试 `npm test` | **16 / 16 通过**（2026-11-12 更新后为 21 / 21，见第 12 节） |
 | 构建 `npm run build` | 通过（主 JS 1.09 MB，gzip 309 KB） |
-| 浏览器测试 `tests/e2e.mjs` | **59 / 59 通过**（Playwright + Chromium，桌面 1440×900，含一个 390 宽手机检查）。2026-11-12 的更新改了其中的步行检查，但**没有重新运行**（本机未安装 Playwright），见第 12 节 |
+| 浏览器测试 `tests/e2e.mjs` | **59 / 59 通过**（Playwright + Chromium，桌面 1440×900，含一个 390 宽手机检查）。2026-11-12 更新后为 77 / 77，见第 12 节 |
 | 天气接口 | 本次测试时 Open-Meteo 返回 429 限流，页面正确显示错误状态、没有显示假数值 |
 
 另一个 demo：`demos/dashboard-interactions/`（早期的海洋主题 dashboard 演示）。用户要求**保留原样，不要修改**。
@@ -408,7 +408,7 @@ git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 |---|---|
 | 逻辑测试 `npm test` | **21 / 21 通过** |
 | 构建 | 通过；主 JS 约 1.1 MB；CSS 308 KB（gzip 92 KB，大部分是字体子集声明）；dist 约 43 MB |
-| 浏览器测试 `tests/e2e.mjs` | 步行相关的检查已改成全府版本，**未运行**：本机没有安装 Playwright。改用内置浏览器手动检查了全府路线、单点结果、English first、季节标签、四季粒子、和风元素 |
+| 浏览器测试 `tests/e2e.mjs` | **77 / 77 通过**（Playwright 1.64.1 + Chromium，桌面 1440×900、手机 390、减少动画各一页；本次天气 API 正常返回）。新增全府步行、季节、English first、位置说明、名称用字、和风元素、手机顶部栏的检查 |
 
 **新增和修改的数据**
 - `public/data/walking_routes_prefecture.geojson`、`analysis/walking_prefecture_table.csv`、`analysis/walking_prefecture_report.json`：由 `scripts/walking_prefecture.py` 生成（需要 numpy、scipy；道路资料不在仓库）。
@@ -424,9 +424,10 @@ git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 - 166 个 Unverified 记录中，有 89 个不在任何有名称的 OSM 范围内，需要人工判断（卫星图或现场）。
 - 赏樱期和赏枫期是根据平年值推算的近似范围，不代表当年树木的实际状态。2026 年的枫树红叶日还没有观测到（截至 11/12）。
 - 季节粒子只用 Chromium 内核测过；Safari 的 `mask-composite` 写法已加上 `-webkit-` 前缀，但没有实际测试。
+- 运行 e2e：Playwright 不是项目依赖，可以装在任意位置，再用 `PW_PATH=<那里的 node_modules/playwright> node tests/e2e.mjs http://localhost:4173/ test-output`；先执行 `npm run preview`。
 - `npm install` 时，npm 11 跳过了 esbuild 的 postinstall 脚本（`npm install-scripts ls` 可查看）；构建正常，未做处理。
 
 **下一步建议**
-1. 安装 Playwright 和 Chromium，运行 `tests/e2e.mjs`，补上季节和英文开关的检查。
+1. 在 Safari、真实手机和平板上检查季节粒子、和柄遮罩（`mask-composite`）和明朝体。
 2. 人工检查步行分析的问题清单：Unverified 89 个、府界标记 62 个、台阶和不确定道路类别。
 3. 原第 11 节的巴士动画暂停和速度控制仍然没有做。

@@ -1277,3 +1277,9 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 /* mizuhiki cord between sections */
 hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-width: 240px; background: var(--season); opacity: .55;
   -webkit-mask: var(--wa-mizuhiki) center / 240px 14px no-repeat; mask: var(--wa-mizuhiki) center / 240px 14px no-repeat; }
+/* phone: the season seal sits on the first row next to Explore, so the top bar is no taller than before */
+@media (max-width: 760px) {
+  .top > .nav-btn { order: 0; }
+  .top > .season-badge { order: 1; }
+  .top > :not(.nav-btn):not(.season-badge):not(.wa-band) { order: 2; }
+}

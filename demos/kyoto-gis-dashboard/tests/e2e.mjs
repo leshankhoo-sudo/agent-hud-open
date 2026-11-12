@@ -1,7 +1,10 @@
 // Browser test against the built site: node tests/e2e.mjs [url] [outdir]
 // Needs Playwright with Chromium. Uses the real data files, real tiles and the real Open-Meteo API.
-import { chromium } from 'playwright';
+// Playwright is not a project dependency: install it anywhere and point PW_PATH at its folder,
+// e.g. PW_PATH=/path/to/node_modules/playwright node tests/e2e.mjs; without PW_PATH it is imported normally.
+import { createRequire } from 'node:module';
 import { mkdirSync } from 'node:fs';
+const { chromium } = process.env.PW_PATH ? createRequire(import.meta.url)(process.env.PW_PATH) : await import('playwright');
 
 const url = process.argv[2] || 'http://localhost:4173/';
 const out = process.argv[3] || 'test-output';
@@ -336,6 +339,81 @@ const st = await page.locator('.sheet').innerText();
 check('sources panel holds the status chips and visitor statistics', st.includes('Map data loaded') && st.includes('Walking: prefecture (523 records)') && st.includes('Visitor statistics'));
 check('sources panel: OSM, N03, Open-Meteo, hash check, quality notes', st.includes('ODbL') && st.includes('N03') && st.includes('Open-Meteo') && st.includes('all match') && st.includes('2771085349'));
 await page.screenshot({ path: `${out}/07-sources.png` });
+await page.keyboard.press('Escape');
+
+// 7d. season from Kyoto's date, English first, site context, name terms, wa details
+const { seasonFor } = await import('../src/lib/season.js');
+const seasonRef = await (await fetch(new URL('data/season_kyoto.json', url))).json();
+const expSeason = seasonFor(new Date(), seasonRef);
+const seasonNow = await page.evaluate(() => document.documentElement.dataset.season);
+check('season theme follows Kyoto\'s date and the JMA windows', seasonNow === expSeason.visual, `${seasonNow} vs ${JSON.stringify(expSeason)}`);
+await page.locator('.season-badge summary').click();
+const sb = await page.locator('.season-pop').innerText();
+check('season badge explains the date, the JMA calendar and links the source', sb.includes('Japan time') && sb.includes('JMA') && (await page.locator('.season-pop a[href*="jma.go.jp"]').count()) === 1, sb.replace(/\n/g, ' / ').slice(0, 200));
+await page.locator('.season-pick select').selectOption('winter');
+await page.waitForTimeout(300);
+const wint = await page.evaluate(() => ({ s: document.documentElement.dataset.season, stored: localStorage.getItem('kyoto-gis-season'), routes: window.__kyotoMap.getSource('walk')._data.features.length, outline: window.__kyotoMap.getPaintProperty('outline-glow', 'line-color') }));
+check('season can be picked by hand and is remembered; map layers untouched', wint.s === 'winter' && wint.stored === 'winter' && wint.routes === after.routes, JSON.stringify(wint));
+await page.locator('.season-pick select').selectOption('autumn');
+await page.keyboard.press('Escape');
+await page.locator('body').click({ position: { x: 5, y: 5 } }).catch(() => {});
+await tg.focus();
+await page.keyboard.press('Enter');
+await page.waitForTimeout(450);
+const leaf = await page.evaluate(() => { const i = document.querySelector('.petal-layer i'); return i ? getComputedStyle(i).clipPath : 'none-found'; });
+check('autumn: the theme switch drops maple leaves, not petals', leaf.startsWith('polygon'), leaf.slice(0, 40));
+await page.waitForTimeout(3600);
+await tg.focus();
+await page.keyboard.press('Enter');
+await page.waitForTimeout(600);
+await page.locator('.season-badge summary').click();
+await page.locator('.season-pick select').selectOption('auto');
+await page.locator('.season-badge summary').click();
+check('back to Auto restores the season of Kyoto\'s date', (await page.evaluate(() => document.documentElement.dataset.season)) === expSeason.visual);
+const drift = await page.evaluate(() => document.querySelectorAll('#explore .season-drift i').length);
+check('Explore has a light seasonal drift (12 pieces)', drift === 12, String(drift));
+
+await page.locator('#q').fill('A00265');
+await page.locator('.results button').first().click();
+await page.waitForTimeout(1500);
+const h2ja = await page.locator('.detail h2').innerText();
+await page.locator('.lang-order').click();
+await page.waitForTimeout(1200);
+const h2en = await page.locator('.detail h2').innerText();
+const enStored = await page.evaluate(() => localStorage.getItem('kyoto-gis-en-first'));
+check('English first: 金閣 (Golden Pavilion) becomes Golden Pavilion (金閣), remembered', h2ja.startsWith('金閣') && h2en.startsWith('Golden Pavilion') && h2en.includes('金閣') && enStored === '1', `${h2ja} -> ${h2en}`);
+await page.locator('.lang-order').click();
+await page.waitForTimeout(400);
+await page.getByRole('tab', { name: 'Overview' }).click();
+await page.waitForTimeout(300);
+const seal = await page.locator('.detail .kind .hanko').innerText();
+const hrW = await page.evaluate(() => document.querySelector('hr.mizuhiki')?.getBoundingClientRect().width || 0);
+const band = await page.evaluate(() => { const s = getComputedStyle(document.querySelector('.wa-band')); return (s.maskImage || s.webkitMaskImage || '').includes('svg'); });
+const serif = await page.evaluate(() => getComputedStyle(document.querySelector('.detail h2')).fontFamily);
+check('wa details: seal 名, mizuhiki divider, asanoha band, mincho heading', seal === '名' && hrW > 100 && band && serif.includes('Shippori'), `${seal} · ${hrW} · ${band} · ${serif.slice(0, 30)}`);
+await page.locator('#q').fill('A00110');
+await page.locator('.results button').first().click();
+await page.waitForTimeout(1200);
+await page.getByRole('tab', { name: 'Overview' }).click();
+const ctxText = await page.locator('#pane-overview').innerText();
+check('unnamed viewpoint: located inside 金閣寺 (Kinkaku-ji), stated as a location, marked unverified', ctxText.includes('Inside the grounds of 金閣寺 (Kinkaku-ji)') && ctxText.includes('not what it is') && ctxText.includes('Unverified'), ctxText.replace(/\n/g, ' / ').slice(0, 220));
+await page.locator('#q').fill('A00191');
+await page.locator('.results button').first().click();
+await page.waitForTimeout(1200);
+const a191 = await page.locator('aside.right').innerText();
+check('A00191 shows the English name of its own OSM record and says there is no Japanese name', a191.includes('Daiun-in') && a191.includes('No Japanese name in the source'));
+await page.locator('#q').fill('金閣寺道');
+await page.locator('.results button').first().click();
+await page.waitForTimeout(1200);
+const terms = await page.locator('#pane-overview').innerText();
+check('bus stop 金閣寺道: name words explained (寺 temple, 道 road leading to), not translated', terms.includes('Buddhist temple') && terms.includes('road leading to') && terms.includes('not a translation'), terms.replace(/\n/g, ' / ').slice(0, 160));
+await page.screenshot({ path: `${out}/07b-season-english.png` });
+
+const rm = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
+await rm.goto(url);
+await rm.waitForSelector('#explore .season-drift', { state: 'attached', timeout: 30000 });
+check('reduced motion: no seasonal drift', await rm.evaluate(() => getComputedStyle(document.querySelector('#explore .season-drift')).display === 'none'));
+await rm.close();
 
 // 9. phone layout
 const ph = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
@@ -353,6 +431,8 @@ await ph.waitForTimeout(1500);
 const phs = await ph.evaluate(() => { const r = document.querySelector('aside.right').getBoundingClientRect(); const t = document.querySelector('.theme-toggle').getBoundingClientRect(); const x = document.querySelector('.detail .x:not(.hide-btn)').getBoundingClientRect(); const d = document.getElementById('dashboard').getBoundingClientRect(); return { sheetTop: r.top - d.top, sheetBottom: r.bottom - d.top, vh: d.height, leftShown: getComputedStyle(document.querySelector('aside.left')).display !== 'none', overlap: !(t.right < x.left || t.left > x.right || t.bottom < x.top || t.top > x.bottom), sw: document.documentElement.scrollWidth }; });
 check('phone: picking a result closes the drawer and opens a bottom sheet', !phs.leftShown && phs.sheetTop > phs.vh * 0.25 && Math.abs(phs.sheetBottom - phs.vh) < 2, JSON.stringify(phs));
 check('phone: theme switch does not cover the close button; still no horizontal scroll', !phs.overlap && phs.sw <= 390);
+const sbRow = await ph.evaluate(() => { const n = document.querySelector('.nav-btn').getBoundingClientRect(); const b = document.querySelector('.season-badge').getBoundingClientRect(); return Math.abs((n.top + n.bottom) / 2 - (b.top + b.bottom) / 2); });
+check('phone: season seal shares the first row with Explore (top bar no taller)', sbRow < 8, String(sbRow));
 await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
 
 check('no page errors', errors.length === 0, errors.join(' | '));
