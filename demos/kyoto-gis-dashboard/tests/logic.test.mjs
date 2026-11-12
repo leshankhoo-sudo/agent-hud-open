@@ -344,3 +344,27 @@ test('English-first name order is a display choice only', async () => {
   assert.equal(withEnglish('祇園', ''), '祇園');
   setEnglishFirst(false);
 });
+
+test('season: Kyoto date (JST), JMA months, sakura and autumn-leaves windows from the JMA normals', async () => {
+  const { seasonFor, monthSeason, kyotoDate } = await import('../src/lib/season.js');
+  const ref = J('season_kyoto.json');
+  assert.equal(ref.normals.sakura_flowering, '03-26');
+  assert.equal(ref.normals.maple_red, '12-05');
+  // window rule written in the file: flowering - 7 d .. full bloom + 7 d; ginkgo - 14 d .. maple + 7 d
+  const shift = (md, d) => { const t = new Date(Date.UTC(2021, Number(md.slice(0, 2)) - 1, Number(md.slice(3)) + d)); return t.toISOString().slice(5, 10); };
+  assert.equal(ref.windows.sakura.from, shift(ref.normals.sakura_flowering, -7));
+  assert.equal(ref.windows.sakura.to, shift(ref.normals.sakura_full_bloom, 7));
+  assert.equal(ref.windows.koyo.from, shift(ref.normals.ginkgo_yellow, -14));
+  assert.equal(ref.windows.koyo.to, shift(ref.normals.maple_red, 7));
+  assert.deepEqual(['02-28', '03-01', '06-01', '09-01', '12-01'].map(monthSeason), ['winter', 'spring', 'summer', 'autumn', 'winter']);
+  // 2026-11-12 15:00 UTC is already 13 Nov in Kyoto
+  assert.equal(kyotoDate(new Date('2026-11-12T15:00:00Z')).md, '11-13');
+  const at = (iso) => seasonFor(new Date(iso), ref);
+  assert.deepEqual(at('2026-11-12T03:00:00Z'), { y: 2026, md: '11-12', calendar: 'autumn', highlight: 'koyo', visual: 'autumn' });
+  assert.equal(at('2026-12-08T03:00:00Z').calendar, 'winter');
+  assert.equal(at('2026-12-08T03:00:00Z').visual, 'autumn'); // leaves still in season
+  assert.equal(at('2026-12-20T03:00:00Z').visual, 'winter');
+  assert.equal(at('2026-03-20T03:00:00Z').highlight, 'sakura');
+  assert.equal(at('2026-03-10T03:00:00Z').visual, 'spring');
+  assert.equal(seasonFor(new Date('2026-12-08T03:00:00Z'), null).visual, 'winter'); // without the file: months only
+});

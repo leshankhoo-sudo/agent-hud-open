@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "title": "Season reference for Kyoto (used only for the dashboard's visual theme)",
+    "clock": "Kyoto local date, Asia/Tokyo; the viewer's own location is not used",
+    "seasons_source": {
+      "name": "JMA forecast terms: 時に関する用語 (春 3–5月, 夏 6–8月, 秋 9–11月, 冬 12–2月)",
+      "url": "https://www.jma.go.jp/jma/kishou/know/yougo_hp/toki.html",
+      "accessed": "2026-11-12"
+    },
+    "phenology_source": {
+      "name": "京都地方気象台 植物季節観測 (Kyoto Local Meteorological Office, plant phenology)",
+      "url": "https://www.data.jma.go.jp/kyoto/2_data/seibutsu/index.html",
+      "accessed": "2026-11-12",
+      "normals_period": "1991–2020 (mean of 30 years of observations)"
+    },
+    "assumptions": [
+      "The cherry-blossom window (7 days before the normal flowering date to 7 days after the normal full-bloom date) and the autumn-leaves window (14 days before the normal ginkgo yellowing date to 7 days after the normal maple reddening date) are this project's choice for the visual theme. They are approximate and say nothing about this year's trees.",
+      "Normals are for the observation trees at the Kyoto Local Meteorological Office; other places in the prefecture differ, especially in the mountains and the north."
+    ]
+  },
+  "normals": {
+    "ume_flowering": "02-22",
+    "sakura_flowering": "03-26",
+    "sakura_full_bloom": "04-04",
+    "ajisai_flowering": "06-13",
+    "ginkgo_yellow": "11-24",
+    "maple_red": "12-05"
+  },
+  "observed": {
+    "2026": { "sakura_flowering": "03-23", "sakura_full_bloom": "03-30" }
+  },
+  "windows": {
+    "sakura": { "from": "03-19", "to": "04-11", "basis": "sakura_flowering - 7 d .. sakura_full_bloom + 7 d" },
+    "koyo": { "from": "11-10", "to": "12-12", "basis": "ginkgo_yellow - 14 d .. maple_red + 7 d" }
+  }
+}

@@ -31,7 +31,7 @@ OK_LICENCE = re.compile(r'^(CC0|Public domain|CC BY(-SA)? \d\.\d)')
 PLACES = [
     dict(key='kiyomizu', file='Kiyomizu-dera, Kyoto, November 2016 -02.jpg', wikidata='Q221716', item_xy=[135.785003, 34.994831],
          ja='清水寺', en='Kiyomizu-dera', tag='Temple', view=[135.7850, 34.9948, 15.2],
-         text='A wooden stage on the hillside above the old streets of Higashiyama. It sits inside the walking pilot area, so road-network routes to the nearest stops are available here.'),
+         text='A wooden stage on the hillside above the old streets of Higashiyama. Its road-network walking routes to the nearest bus stop and rail station are in the dashboard.'),
     dict(key='sanneizaka', file='Sanneizaka-kyoto.JPG', wikidata='Q11574990', item_xy=[135.780931, 34.996472],
          ja='産寧坂', en='Sannenzaka', tag='Old street', view=[135.7809, 34.9965, 16],
          text='A stone-paved slope lined with wooden townhouses on the way up to Kiyomizu-dera.'),

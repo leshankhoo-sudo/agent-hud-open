@@ -8,6 +8,8 @@ import Outro from './Outro.jsx';
 import Explore from './Explore.jsx';
 import Features from './Features.jsx';
 import MusicPlayer from './MusicPlayer.jsx';
+import { SeasonBadge } from './Season.jsx';
+import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
 import { nameTerms } from './lib/terms.js';
 import { themeOf, pointColor, initialTheme, rememberTheme } from './lib/theme.js';
@@ -121,6 +123,15 @@ export default function App() {
   useEffect(() => { if (dashSeen) { const t = setTimeout(() => setIntroDone(true), 2400); return () => clearTimeout(t); } }, [dashSeen]);
 
   useEffect(() => { loadAll().then(setLoaded); }, []);
+  // Season of the visual theme: Kyoto's date (JST) by default, or a season picked by the viewer.
+  // Loaded on its own so the intro already shows it; without the file the JMA month season is used.
+  const [seasonInfo, setSeasonInfo] = useState(null);
+  const [seasonMode, setSeasonModeState] = useState(initialSeasonMode);
+  useEffect(() => { fetch(`${import.meta.env.BASE_URL}data/season_kyoto.json`).then((r) => (r.ok ? r.json() : null)).then(setSeasonInfo).catch(() => {}); }, []);
+  const seasonAuto = useMemo(() => seasonFor(new Date(), seasonInfo), [seasonInfo]);
+  const visualSeason = seasonMode === 'auto' ? seasonAuto.visual : seasonMode;
+  useEffect(() => { document.documentElement.dataset.season = visualSeason; }, [visualSeason]);
+  const setSeasonMode = (m) => { setSeasonModeState(m); rememberSeasonMode(m); };
   // Theme: only colours change. Filters, selection, analysis state and the planned visit are untouched.
   useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
   const setTheme = (t) => { document.documentElement.dataset.theme = t; setThemeState(t); rememberTheme(t); };
@@ -367,6 +378,7 @@ export default function App() {
             <p>京都府 · university GIS prototype</p>
           </div>
         </div>
+        <SeasonBadge auto={seasonAuto} mode={seasonMode} onMode={setSeasonMode} info={seasonInfo} />
         <div className="counts" aria-live="polite">
           <div className="count" title="Preliminary OpenStreetMap records, not official counts">
             <span className="v"><Rolling value={fa.length} /><small> / {A.length.toLocaleString('en-US')}</small></span>

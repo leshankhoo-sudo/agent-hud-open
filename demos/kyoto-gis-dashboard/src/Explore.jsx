@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { SeasonDrift } from './Season.jsx';
 
 // "Explore Kyoto": one screen between the scroll intro and the dashboard.
 // Layout after a spatial-UI reference: title on top, a cover flow of tall photo cards in the middle
@@ -103,6 +104,7 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
 
   return (
     <section className={'explore' + (seen ? ' on' : '')} ref={root} id="explore" aria-labelledby="ex-title">
+      <SeasonDrift count={12} />
       <div className="ex-bg" aria-hidden="true">
         {places.map((q, i) => <i key={q.key} className={i === sel ? 'on' : ''} style={{ backgroundColor: q.color, backgroundImage: `url(${base}${q.thumb})` }} />)}
       </div>

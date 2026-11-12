@@ -62,10 +62,16 @@ export default function ThemeToggle({ theme, onChange }) {
     const host = layer.current;
     if (!host || reduceMotion() || host.childElementCount >= MAX_LIVE) return false;
     const el = document.createElement('i');
-    const size = 7 + Math.random() * 5;
-    el.style.cssText = `left:${x - size / 2}px;top:${y}px;width:${size}px;height:${size * 1.15}px`;
+    // Shape and colour follow the season theme in CSS. Summer nights get fireflies that rise; snow barely turns.
+    const root = document.documentElement.dataset;
+    const firefly = root.season === 'summer' && root.theme !== 'light';
+    const snow = root.season === 'winter';
+    const size = firefly ? 4 + Math.random() * 2 : snow ? 4 + Math.random() * 4 : 7 + Math.random() * 5;
+    el.style.cssText = `left:${x - size / 2}px;top:${y}px;width:${size}px;height:${size * (firefly || snow ? 1 : 1.15)}px`;
     host.appendChild(el);
-    const dx = (Math.random() - 0.5) * 70, fall = 130 + Math.random() * 90, sway = 14 + Math.random() * 12, r0 = Math.random() * 360, spin = (Math.random() < 0.5 ? -1 : 1) * (140 + Math.random() * 160);
+    const dx = (Math.random() - 0.5) * 70, sway = 14 + Math.random() * 12, r0 = Math.random() * 360;
+    const fall = (firefly ? -1 : 1) * (130 + Math.random() * 90);
+    const spin = (snow || firefly ? 0.15 : 1) * (Math.random() < 0.5 ? -1 : 1) * (140 + Math.random() * 160);
     const a = el.animate([
       { transform: `translate(0,0) rotate(${r0}deg) scale(.5)`, opacity: 0 },
       { transform: `translate(${dx * 0.25 + sway}px,${fall * 0.22}px) rotate(${r0 + spin * 0.25}deg) scale(1)`, opacity: 0.95, offset: 0.18 },
