@@ -6,6 +6,8 @@ import Weather from './Weather.jsx';
 import Intro from './Intro.jsx';
 import Outro from './Outro.jsx';
 import Explore from './Explore.jsx';
+import Features from './Features.jsx';
+import MusicPlayer from './MusicPlayer.jsx';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism } from './lib/data.js';
 import { themeOf, pointColor, initialTheme, rememberTheme } from './lib/theme.js';
 import { walkingAvailability, indexWalking, walkingCoverage } from './lib/walking.js';
@@ -82,6 +84,7 @@ export default function App() {
   const [legend, setLegend] = useState(false);
   const [visit, setVisit] = useState({ day: null, hour: null }); // planned visit, shared by every place
   const mapRef = useRef(null);
+  const resetViewRef = useRef(null);
   const [introDone, setIntroDone] = useState(false);
   // The dashboard's own entrance plays when it first scrolls into view (it sits below the intro).
   const [dashSeen, setDashSeen] = useState(false);
@@ -226,7 +229,26 @@ export default function App() {
     const bb = d?.walking?.pilot?.bbox;
     return { a: A.filter(within).length, s: Tr.filter(within).length, pilot: !!bb && lon >= bb[0] && lon <= bb[2] && lat >= bb[1] && lat <= bb[3] };
   };
-  const toggleUi = <ThemeToggle theme={theme} onChange={setTheme} />;
+  // Feature strip: each panel opens its part of the dashboard.
+  const features = [
+    { key: 'map', hue: 232, title: 'Map & filters', action: 'Open the map', text: `${A.length.toLocaleString('en-US')} attraction records and ${Tr.length.toLocaleString('en-US')} transit stops across Kyoto Prefecture. Search by Japanese or English name and filter by category or transit type.`, note: 'Preliminary OpenStreetMap records, not official counts.' },
+    { key: 'density', hue: 268, title: 'Attraction Density', action: 'Show the density layer', text: 'A kernel density surface shows where attraction records cluster, and follows the category filter.', note: 'It shows concentration of records, not visitor numbers or crowding.' },
+    { key: 'walk', hue: 196, title: 'Walking Access', action: 'Show the pilot routes', text: 'Routes along the road network from each attraction to its nearest bus stop and rail station. Drag the distance slider and watch the routes grow.', note: `Pilot only: ${walk.available ? walk.scopeIds.size : 0} records in Gion–Kiyomizu. No straight-line distances.` },
+    { key: 'weather', hue: 28, title: 'Weather', action: 'See a forecast', text: 'A 7-day hourly forecast for any place you select, with a planned visit date and hour. Times are Asia/Tokyo.', note: 'Open-Meteo model estimate. If it cannot load, no values are shown.' },
+    { key: 'fares', hue: 340, title: 'Journeys & Fares', action: 'Open the fare table', text: 'Published sample journeys from Kyoto Station with reference adult and child fares, service conditions and source links.', note: 'Not yet linked to map records; shown as a separate list.' },
+    { key: 'sources', hue: 150, title: 'Data & Sources', action: 'Open the sources', text: 'Where every layer comes from, its licence and update time, the visitor statistics tables and the data-quality notes.' },
+  ];
+  const openFeature = (key) => {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('dashboard')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+    setSheet(key === 'fares' ? 'journeys' : key === 'sources' ? 'sources' : null);
+    if (key === 'density' || key === 'walk') { if (!isPhone()) setLeftOpen(true); setPanel(key); }
+    if (key === 'density' && d?.kde) setDensityMode('kde');
+    if (key === 'walk' && walk.available) { setSel(null); setWalkShow(true); }
+    if (key === 'weather') { select({ id: 'S00019' }); setTab('weather'); } // Kyoto Station
+    if (key === 'map') resetViewRef.current?.();
+  };
+  const toggleUi = <><MusicPlayer /><ThemeToggle theme={theme} onChange={setTheme} /></>;
   const intro = <Intro manifest={d?.manifest} photos={d?.photos} kdeMeta={d?.kdeMeta} walkInfo={walk.available ? walk.scopeIds.size : null} />;
   if (!loaded) return <>{toggleUi}{intro}<div className="boot" id="dashboard"><div className="boot-mark" /><p>Loading Kyoto Prefecture data…</p></div></>;
   const failed = Object.entries(loaded.status).filter(([, v]) => !v.ok);
@@ -235,6 +257,7 @@ export default function App() {
   const toggle = (arr, set, k) => set(arr.includes(k) ? arr.filter((x) => x !== k) : [...arr, k]);
   const matches = query.trim() ? [...fa.slice(0, 40), ...ft.slice(0, 40)] : [];
   const resetView = () => mapRef.current?.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900 });
+  resetViewRef.current = resetView;
   const isAttr = selHit?.layer === 'attraction';
   const tabs = selHit ? [['overview', 'Overview'], ...(isAttr ? [['walk', 'Walking Routes']] : []), ['weather', 'Weather'], ['journeys', 'Journeys & Fares']] : [];
   const curTab = tabs.some(([k]) => k === tab) ? tab : 'overview';
@@ -247,6 +270,7 @@ export default function App() {
     {toggleUi}
     {intro}
     {d.explore?.places?.length > 0 && <Explore places={d.explore.places} attractions={A.length} stops={Tr.length} near={nearPlace} onEnter={enter} />}
+    <Features items={features} onOpen={openFeature} />
     <div id="dashboard" className={cls}>
       <header className="top">
         <button type="button" className="nav-btn" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore-panel">

@@ -3,22 +3,23 @@
 export const MAP_THEME = {
   dark: {
     cat: { attraction: '#ff8a4c', viewpoint: '#3fe0c5', museum: '#b18cff', castle: '#f2c86b' },
-    transit: { bus: '#6f93d6', rail: '#e6eefc', tram: '#ff6fae' },
-    stroke: '#071027',
-    outline: { line: '#9fd0ff', glow: '#3d8bff', fill: '#2e6bff' },
-    muni: '#7fb3ff', pilot: '#f2c86b',
-    walk: { bus: '#4fc3ff', rail: '#f2c86b' },
-    kde: ['#163a7a', '#1f5bbf', '#2e8cf0', '#3fc4f0', '#9ee8d6', '#f2e28b'],
-    heat: ['#1f4fae', '#2e9bf0', '#7fe3e0', '#fff2a8'],
-    offlineBg: '#071027',
+    transit: { bus: '#7f93d8', rail: '#eeeefa', tram: '#ff6fae' },
+    stroke: '#07080f',
+    // boundary: soft white-violet light instead of the earlier bright blue; it still glows and breathes
+    outline: { line: '#ebe8ff', glow: '#9d94ff', fill: '#6f66e0' },
+    muni: '#9a97c8', pilot: '#f2c86b',
+    walk: { bus: '#6fd3ff', rail: '#f2c86b' },
+    kde: ['#27255f', '#433da6', '#6c61e6', '#9e92ff', '#d2c9ff', '#fff1c2'],
+    heat: ['#3d37a0', '#7a6ff0', '#c3b8ff', '#fff1c2'],
+    offlineBg: '#07080f',
     base: {
-      bg: '#05080f', rasterBg: '#071027',
-      // real raster tiles are inverted, desaturated and tinted blue; only colours change
-      raster: { 'raster-brightness-min': 1, 'raster-brightness-max': 0.06, 'raster-saturation': -0.85, 'raster-contrast': 0.18, 'raster-hue-rotate': 200 },
-      landuse: '#0d121c', wood: '#0c2418', grass: '#123020', coverOp: 0.75, park: '#1d4a2a', parkOp: 0.55,
-      ocean: '#0a0f16', water: '#2bb3c8', waterOp: 0.85, waterway: '#36bfd6', riverOp: 0.6, streamOp: 0.35,
-      building: '#161e2c', roadMinor: '#7d98c0', roadMinorOp: 0.14, road: '#7d98c0', roadOp: [0.28, 0.1, 0.38, 0.22],
-      rail: '#e6eefc', railOp: 0.5, label: '#e8eefc', labelOp: 0.78, halo: '#04060b',
+      bg: '#06070d', rasterBg: '#07080f',
+      // real raster tiles are inverted, desaturated and tinted; only colours change
+      raster: { 'raster-brightness-min': 1, 'raster-brightness-max': 0.05, 'raster-saturation': -0.9, 'raster-contrast': 0.16, 'raster-hue-rotate': 230 },
+      landuse: '#0c0d16', wood: '#0c1618', grass: '#101c1d', coverOp: 0.8, park: '#15292a', parkOp: 0.5,
+      ocean: '#090b14', water: '#2a3f7a', waterOp: 0.85, waterway: '#3c58a6', riverOp: 0.6, streamOp: 0.35,
+      building: '#151726', roadMinor: '#8b8fb4', roadMinorOp: 0.14, road: '#8b8fb4', roadOp: [0.28, 0.1, 0.38, 0.22],
+      rail: '#eeeefa', railOp: 0.45, label: '#e9e9f5', labelOp: 0.78, halo: '#04050a',
     },
   },
   light: {

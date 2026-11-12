@@ -1,0 +1,10 @@
+{
+ "title": "Kyoto, Slowly",
+ "src": "media/kyoto-slowly.mp3",
+ "loop_start": 1.0,
+ "loop_end": 146.37229166666665,
+ "bpm": 80,
+ "bars": 48,
+ "key": "G major",
+ "credit": "Original piece written for this dashboard; rendered with FluidSynth and the FluidR3_GM SoundFont (MIT licence)."
+}

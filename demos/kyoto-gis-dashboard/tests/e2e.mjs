@@ -16,6 +16,8 @@ const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 const tiles = { ok: 0, fail: 0 };
 const weatherCalls = [];
+let mp3Requests = 0;
+page.on('request', (r) => { if (r.url().endsWith('.mp3')) mp3Requests++; });
 page.on('response', (r) => {
   const u = r.url();
   if (u.includes('cyberjapandata.gsi.go.jp') || u.includes('tile.openstreetmap.org') || u.includes('tiles.openfreemap.org')) r.ok() ? tiles.ok++ : tiles.fail++;
@@ -50,17 +52,26 @@ const ex = await page.evaluate(async () => {
   const sec = document.getElementById('explore');
   sec.scrollIntoView();
   await new Promise((r) => setTimeout(r, 1500));
-  const order = [...document.querySelectorAll('.intro-s, #explore, #dashboard, #credits')].map((e) => e.id || 'intro');
+  const order = [...document.querySelectorAll('.intro-s, #explore, #features, #dashboard, #credits')].map((e) => e.id || 'intro');
   return { n: d.places.length, licences: [...new Set(d.places.map((p) => p.credit.license))], allCredited: d.places.every((p) => p.credit.artist && p.credit.page && p.credit.license_url && p.municipality.code && p.verified.method), thumbs: sec.querySelectorAll('.ex-dot').length, order, imgOk: [...sec.querySelectorAll('.ex-card.front img')].every((i) => i.complete && i.naturalWidth > 0) };
 });
 check('explore: 7 place photos, each with author, licence, source and a checked municipality', ex.n === 7 && ex.allCredited && ex.licences.every((l) => /^(CC0|Public domain|CC BY)/.test(l)), ex.licences.join(', '));
-check('explore sits between the original intro and the dashboard; front photo loaded', ex.order.join('>') === 'intro>explore>dashboard>credits' && ex.thumbs === 7 && ex.imgOk, ex.order.join('>'));
+check('explore sits between the original intro and the dashboard; front photo loaded', ex.order.join('>') === 'intro>explore>features>dashboard>credits' && ex.thumbs === 7 && ex.imgOk, ex.order.join('>'));
 await page.locator('.ex-dot').nth(3).click();
-await page.waitForTimeout(4500); // smooth scroll, then the ring eases to its place
+await page.waitForTimeout(2500); // the deck glides to its place
 const exText = await page.locator('#explore').innerText();
 check('picking a place shows its name, municipality and photo credit', exText.includes('平等院') && exText.includes('Uji City') && exText.includes('Martin Falbisoner') && exText.includes('CC BY-SA 4.0') && /\d+ attractions? within 1 km/.test(exText));
-const ringA = await page.evaluate(() => ({ rot: +document.querySelectorAll('.ex-card')[3].style.getPropertyValue('--o'), side: +document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--o'), front: document.querySelector('.ex-card.front .ex-cap strong').innerText, pinned: Math.round(document.querySelector('.ex-sticky').getBoundingClientRect().top) }));
-check('scrolling slides the card deck to the chosen card while the section stays pinned', Math.abs(ringA.rot) < 0.08 && Math.abs(ringA.side - 1) < 0.08 && ringA.front === '平等院' && ringA.pinned > 0 && ringA.pinned < 80, JSON.stringify(ringA));
+const ringA = await page.evaluate(() => ({ rot: +document.querySelectorAll('.ex-card')[3].style.getPropertyValue('--o'), side: +document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--o'), front: document.querySelector('.ex-card.front .ex-cap strong').innerText, bg: [...document.querySelectorAll('.ex-bg i')].findIndex((e) => e.classList.contains('on')), h: document.getElementById('explore').offsetHeight }));
+check('picking a place glides the card deck there and swaps the blurred backdrop; the section is one screen tall', Math.abs(ringA.rot) < 0.06 && Math.abs(ringA.side - 1) < 0.06 && ringA.front === '平等院' && ringA.bg === 3 && ringA.h <= 920, JSON.stringify(ringA));
+const dk = await page.locator('.ex-deck').boundingBox();
+await page.mouse.move(dk.x + dk.width / 2, dk.y + dk.height / 2);
+await page.mouse.down();
+for (let i = 1; i <= 8; i++) { await page.mouse.move(dk.x + dk.width / 2 + i * 22, dk.y + dk.height / 2); await page.waitForTimeout(30); }
+await page.mouse.up();
+await page.waitForTimeout(1500);
+check('dragging the deck sideways moves to the previous card', (await page.locator('.ex-card.front .ex-cap strong').innerText()) === '嵯峨野 竹林の小径');
+await page.locator('.ex-dot').nth(3).click();
+await page.waitForTimeout(1800);
 await page.locator('.ex-card.front .ex-flip').click();
 await page.waitForTimeout(1100);
 check('the front card flips to its photo credit', await page.evaluate(() => document.querySelector('.ex-card.front .ex-flip').classList.contains('flipped') && document.querySelector('.ex-card.front .ex-back').innerText.includes('Martin Falbisoner')));
@@ -68,6 +79,24 @@ await page.getByRole('button', { name: /Explore Kyoto/ }).click();
 await page.waitForTimeout(7000);
 const exGo = await page.evaluate(() => { const m = window.__kyotoMap; const c = m.getCenter(); return { top: Math.round(document.getElementById('dashboard').getBoundingClientRect().top), lon: c.lng, lat: c.lat, z: m.getZoom() }; });
 check('"Explore Kyoto" opens the dashboard with the map at the chosen place', Math.abs(exGo.top) < 3 && Math.abs(exGo.lon - 135.8077) < 0.01 && Math.abs(exGo.lat - 34.8893) < 0.01 && exGo.z > 14, JSON.stringify(exGo));
+await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: 0 }));
+
+// 0c. feature strip and music
+await page.evaluate(() => document.getElementById('features').scrollIntoView());
+await page.waitForTimeout(900);
+await page.locator('.ft-panel').nth(4).hover();
+await page.waitForTimeout(1100);
+const ftw = await page.evaluate(() => [...document.querySelectorAll('.ft-panel')].map((e) => Math.round(e.getBoundingClientRect().width)));
+check('feature strip: the hovered panel opens sideways, the others fold', ftw[4] > 4 * ftw[0] && (await page.locator('.ft-panel.open h3').innerText()) === 'Journeys & Fares', ftw.join(','));
+await page.locator('.ft-panel.open .ft-go').click();
+await page.waitForTimeout(1500);
+check('feature panel button opens that part of the dashboard', (await page.locator('.sheet').innerText()).includes('9 journeys'));
+await page.keyboard.press('Escape');
+const mp3Before = mp3Requests;
+await page.locator('.music-btn').click();
+await page.waitForFunction(() => /playing|error/.test(document.querySelector('.music').className), null, { timeout: 20000 });
+check('music: nothing is downloaded until play is pressed; then it plays and can be paused', mp3Before === 0 && mp3Requests === 1 && (await page.locator('.music').getAttribute('class')).includes('playing'), `${mp3Before} -> ${mp3Requests}`);
+await page.locator('.music-btn').click();
 await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: 0 }));
 
 // 1. data loading
@@ -128,7 +157,7 @@ await page.getByLabel('Viewpoint').check();
 await page.getByLabel('Bus').check();
 
 // 4. density modes (the analysis panels are closed until opened)
-await page.getByRole('button', { name: /Attraction Density/ }).click();
+await page.locator('.entry', { hasText: 'Attraction Density' }).click();
 await page.getByRole('radio', { name: 'KDE result' }).click();
 await page.waitForTimeout(1200);
 const kdeVis = await page.evaluate(() => window.__kyotoMap.getLayoutProperty('kde-fill', 'visibility'));
@@ -202,7 +231,7 @@ await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
 const ut = await page.locator('.walk').innerText();
 check('A00172 shows unreachable with no distance', ut.includes('No connectable network route') && ut.includes('unreachable') && ut.includes('distance not available') && !/\d+ m ·/.test(ut));
-await page.getByRole('button', { name: /Walking Access/ }).click();
+await page.locator('.entry', { hasText: 'Walking Access' }).click();
 const cov = await page.locator('.cov').innerText();
 check('coverage panel uses the 19 pilot records as denominator', cov.includes('of 19 pilot records'), cov.replace(/\n/g, ' / '));
 
@@ -237,13 +266,13 @@ check('switch stays in the viewport when the page is scrolled to the intro', awa
 await page.evaluate(() => document.getElementById('dashboard').scrollIntoView());
 await page.waitForTimeout(400);
 
-await page.getByRole('button', { name: 'Journeys & Fares' }).click();
+await page.locator('.status').getByRole('button', { name: 'Journeys & Fares' }).click();
 await page.waitForTimeout(900);
 const jt = await page.locator('.sheet').innerText();
 check('journeys panel: 9 journeys, 0 linked, fares and sources visible', jt.includes('9 journeys') && jt.includes('Linked to map: 0') && jt.includes('¥230') && jt.includes('¥500') && jt.includes('Weekends / holidays') && jt.includes('Fare source'));
 await page.screenshot({ path: `${out}/06-journeys.png` });
 await page.keyboard.press('Escape');
-await page.getByRole('button', { name: 'Data & Sources' }).click();
+await page.locator('.status').getByRole('button', { name: 'Data & Sources' }).click();
 await page.waitForTimeout(900);
 const st = await page.locator('.sheet').innerText();
 check('sources panel holds the status chips and visitor statistics', st.includes('Map data loaded') && st.includes('Walking: pilot only') && st.includes('Visitor statistics'));

@@ -90,9 +90,18 @@ export default function ThemeToggle({ theme, onChange }) {
   const commit = (toLight, withPetals) => {
     if (toLight !== light) {
       const next = toLight ? 'light' : 'dark';
-      // the new theme spreads over the page as a circle growing out of the knob
-      if (document.startViewTransition && !reduceMotion()) {
-        const [x, y] = knobPoint(pos ?? k);
+      // the new theme spreads over the page like a wave rolling out from the knob
+      const motion = !reduceMotion();
+      const [x, y] = knobPoint(pos ?? k);
+      if (motion) { // water rings spreading from the knob
+        const rip = document.createElement('div');
+        rip.className = 'tt-ripples';
+        rip.style.cssText = `left:${x}px;top:${y - 6}px`;
+        rip.innerHTML = '<i></i><i></i><i></i>';
+        document.body.appendChild(rip);
+        setTimeout(() => rip.remove(), 1900);
+      }
+      if (document.startViewTransition && motion) {
         document.documentElement.style.setProperty('--vt-x', `${x}px`);
         document.documentElement.style.setProperty('--vt-y', `${y - 6}px`);
         document.startViewTransition(() => flushSync(() => onChange(next)));
