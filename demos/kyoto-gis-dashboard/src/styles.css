@@ -728,19 +728,18 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 /* the new theme rolls out from the knob like a wave: a soft-edged circle plus three water rings */
 @property --vt-r { syntax: '<length>'; inherits: false; initial-value: 0px; }
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-::view-transition-new(root) { animation: themeWave 1.15s cubic-bezier(.35, 0, .2, 1) both;
-  -webkit-mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0), #000 calc(var(--vt-r) - 150px), rgba(0, 0, 0, .55) calc(var(--vt-r) - 70px), transparent var(--vt-r));
-  mask-image: radial-gradient(circle at var(--vt-x, 100%) var(--vt-y, 0), #000 calc(var(--vt-r) - 150px), rgba(0, 0, 0, .55) calc(var(--vt-r) - 70px), transparent var(--vt-r)); }
-@keyframes themeWave { from { --vt-r: 0px; } to { --vt-r: 175vmax; } }
+/* The radius is animated by ThemeToggle.jsx on this layer only (0.7 s, easing out: the wave leaves
+   the knob at once and most of the screen has turned within about 0.3 s). */
+@property --vt-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --vt-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+::view-transition-new(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x) var(--vt-y), #000 calc(var(--vt-r) - 150px), rgba(0, 0, 0, .55) calc(var(--vt-r) - 70px), transparent var(--vt-r));
+  mask-image: radial-gradient(circle at var(--vt-x) var(--vt-y), #000 calc(var(--vt-r) - 150px), rgba(0, 0, 0, .55) calc(var(--vt-r) - 70px), transparent var(--vt-r)); }
 ::view-transition-group(theme-toggle), ::view-transition-group(tt-ripples) { z-index: 2; }
 ::view-transition-old(theme-toggle), ::view-transition-old(tt-ripples) { display: none; }
 ::view-transition-new(theme-toggle), ::view-transition-new(tt-ripples) { animation: none; }
-.tt-ripples { position: fixed; z-index: 58; width: 0; height: 0; pointer-events: none; view-transition-name: tt-ripples; }
-.tt-ripples i { position: absolute; left: 0; top: 0; width: 24px; height: 24px; border-radius: 50%; translate: -50% -50%; border: 1.5px solid rgba(255, 255, 255, .55); box-shadow: 0 0 18px rgba(255, 255, 255, .18), inset 0 0 18px rgba(255, 255, 255, .12); opacity: 0; animation: ttRing 1.5s cubic-bezier(.2, .6, .3, 1) both; }
-.tt-ripples i:nth-child(2) { animation-delay: .16s; }
-.tt-ripples i:nth-child(3) { animation-delay: .32s; }
-@keyframes ttRing { 0% { width: 24px; height: 24px; opacity: .85; } 100% { width: 260vmax; height: 260vmax; opacity: 0; } }
-:root[data-theme='light'] .tt-ripples i { border-color: rgba(120, 95, 70, .4); box-shadow: 0 0 18px rgba(120, 95, 70, .12), inset 0 0 18px rgba(120, 95, 70, .08); }
+/* the water rings are drawn on a short-lived canvas by ThemeToggle.jsx (rings()) */
+.tt-ripples { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 58; pointer-events: none; view-transition-name: tt-ripples; }
 /* idle: the light arc breathes; pressing sends a soft halo out of the knob */
 .tt-arc { animation: ttBreathe 3.6s ease-in-out infinite; }
 @keyframes ttBreathe { 50% { opacity: .62; } }

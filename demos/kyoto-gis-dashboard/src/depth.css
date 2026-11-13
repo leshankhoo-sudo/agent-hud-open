@@ -168,3 +168,10 @@
 .music:has(.koto-range input:focus-visible) .koto-stage { outline: 2px solid var(--indigo-2); outline-offset: -2px; border-radius: 54px; }
 @media (max-width: 760px) { .music { right: calc(max(14px, env(safe-area-inset-right, 0px)) + 78px); top: max(14px, env(safe-area-inset-top, 0px)); width: 80px; height: 28px; } .koto-stage { transform: scale(.3); top: -2px; right: -2px; } }
 @media (prefers-reduced-motion: reduce) { .koto-stage, .koto-cap { transition: none; } }
+
+/* Sections with many elements are skipped by style, layout and paint while they are off screen
+   (they keep their place and size). This mostly matters for a theme switch, which restyles the
+   whole page at once: the panorama alone is over 700 SVG shapes. Their heights are fixed in CSS,
+   so nothing moves when they come back into view. */
+.pano { content-visibility: auto; contain-intrinsic-size: auto 940px; }
+.explore { content-visibility: auto; contain-intrinsic-size: auto 100svh; }

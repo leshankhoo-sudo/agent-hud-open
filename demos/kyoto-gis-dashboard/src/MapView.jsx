@@ -175,6 +175,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
   // Swap the basemap or the colour theme without rebuilding the data sources: the camera, filters,
   // selection, walking routes and density layer all stay as they are; only colours change.
   const firstBase = useRef(true);
+  const shownBase = useRef(basemap);
   useEffect(() => {
     const map = mapRef.current;
     if (firstBase.current) { firstBase.current = false; return; }
@@ -182,7 +183,18 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
     const apply = () => {
       if (!map.getLayer('bg')) return;
       if (OFFLINE_PREVIEW) map.setPaintProperty('bg', 'background-color', themeOf(theme).offlineBg);
-      else {
+      else if (shownBase.current === basemap && map.getLayer(baseParts(basemap, theme).layers[0].id)) {
+        // Theme only: the same layers in new colours. The tile sources stay, so nothing is
+        // downloaded, parsed or placed again (that used to cost a few hundred milliseconds).
+        const p = baseParts(basemap, theme);
+        const other = baseParts(basemap, theme === 'light' ? 'dark' : 'light');
+        p.layers.forEach((l, i) => {
+          const keys = new Set([...Object.keys(l.paint || {}), ...Object.keys(other.layers[i]?.paint || {})]);
+          for (const k of keys) if (k !== 'line-dasharray') map.setPaintProperty(l.id, k, l.paint?.[k]); // undefined = back to the default
+        });
+        map.setPaintProperty('bg', 'background-color', p.bg);
+      } else {
+        shownBase.current = basemap;
         const layers = map.getStyle().layers;
         const before = layers.find((l) => l.id !== 'bg' && !l.id.startsWith('bm-'))?.id;
         layers.filter((l) => l.id.startsWith('bm-')).forEach((l) => map.removeLayer(l.id));

@@ -72,4 +72,5 @@ export function addTransitIcons(map) {
     map.addImage(id, c.getContext('2d').getImageData(0, 0, S, S), { pixelRatio: 2 });
   }
 }
-export const iconURL = (kind) => (typeof document === 'undefined' ? '' : canvasFor(kind).toDataURL());
+const urls = {};
+export const iconURL = (kind) => (typeof document === 'undefined' ? '' : urls[kind] || (urls[kind] = canvasFor(kind).toDataURL()));

@@ -1,15 +1,63 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { flushSync } from 'react-dom';
+import { startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 // Light / dark switch that stays in the top-right corner of the viewport.
 // The knob inside can be dragged; a click or the keyboard also works. Moving it lets a few
 // cherry petals drift down from the switch (none when the user prefers reduced motion).
+//
+// Speed: a click must answer in the very next frame. So the knob is moved by writing CSS
+// variables straight onto the button (no React render per frame); inside the view transition only
+// the <html data-theme> attribute changes; React, the map and the other canvases then follow as a
+// non-urgent update while the wave is already running (the new side of a view transition is live).
 
 const reduceMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const TRAVEL = 32;          // px the knob moves between the two ends
 const MAX_PER_GESTURE = 5;  // petals per drag / click
 const MAX_LIVE = 8;         // petals on screen at once
 const GAP_MS = 260;         // minimum time between petals while dragging
+
+// Three water rings spreading from the knob, drawn on one short-lived canvas. They used to be three
+// elements whose width and height grew to 260vmax with blurred shadows, which made the browser lay
+// out and repaint the whole screen every frame. Same timing, size, colours and soft glow.
+const bez = (x1, y1, x2, y2) => (x) => {
+  let t = x;
+  for (let i = 0; i < 8; i++) {
+    const fx = 3 * x1 * t * (1 - t) ** 2 + 3 * x2 * t * t * (1 - t) + t ** 3 - x;
+    const d = 3 * x1 * (1 - t) ** 2 + 6 * (x2 - x1) * t * (1 - t) + 3 * (1 - x2) * t * t;
+    if (Math.abs(d) < 1e-6) break;
+    t = Math.min(1, Math.max(0, t - fx / d));
+  }
+  return 3 * y1 * t * (1 - t) ** 2 + 3 * y2 * t * t * (1 - t) + t ** 3;
+};
+const ringEase = bez(0.2, 0.6, 0.3, 1);
+function rings(x, y, light) {
+  document.querySelectorAll('canvas.tt-ripples').forEach((old) => old.remove());
+  const c = document.createElement('canvas');
+  const dpr = Math.min(devicePixelRatio || 1, 2), W = innerWidth, H = innerHeight;
+  c.className = 'tt-ripples';
+  c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+  document.body.appendChild(c);
+  const g = c.getContext('2d');
+  const rgb = light ? '120,95,70' : '255,255,255', line = light ? 0.4 : 0.55, glow = light ? 0.12 : 0.18;
+  const maxR = 1.3 * Math.max(W, H), t0 = performance.now();
+  const step = (now) => {
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, W, H);
+    let alive = false;
+    for (let i = 0; i < 3; i++) {
+      const t = (now - t0 - i * 160) / 1500;
+      if (t < 0) { alive = true; continue; }
+      if (t >= 1) continue;
+      alive = true;
+      const e = ringEase(t), r = 12 + (maxR - 12) * e, a = 0.85 * (1 - e);
+      g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2);
+      g.lineWidth = 16; g.strokeStyle = `rgba(${rgb},${(glow * 0.32 * a).toFixed(3)})`; g.stroke();
+      g.lineWidth = 6; g.strokeStyle = `rgba(${rgb},${(glow * 0.6 * a).toFixed(3)})`; g.stroke();
+      g.lineWidth = 1.5; g.strokeStyle = `rgba(${rgb},${(line * a).toFixed(3)})`; g.stroke();
+    }
+    if (alive && c.isConnected) requestAnimationFrame(step); else c.remove();
+  };
+  requestAnimationFrame(step);
+}
 
 // Dot-matrix icons, as in the reference switch. While the knob travels, the dots scatter into
 // loose particles and gather again as the other icon.
@@ -34,29 +82,41 @@ export default function ThemeToggle({ theme, onChange }) {
   const drag = useRef(null);       // { x0, pos0, moved, petals, last }
   const skipClick = useRef(false);
   const [pos, setPos] = useState(null); // 0..1 while dragging, else null
-  const [k, setK] = useState(theme === 'light' ? 1 : 0); // knob position shown, 0 dark .. 1 light
+  const kRef = useRef(theme === 'light' ? 1 : 0); // knob position shown, 0 dark .. 1 light
   const tween = useRef(0);
-  const light = theme === 'light';
+  const tweenTo = useRef(null);
+  const [shown, setShown] = useState(theme); // the theme the switch shows; changes at once on a click
+  useEffect(() => { setShown(theme); }, [theme]);
+  const light = shown === 'light';
+
+  // The knob's place drives its colours through --k and --s, written straight to the element.
+  const paint = (p) => {
+    kRef.current = p;
+    const el = btn.current;
+    if (!el) return;
+    el.style.setProperty('--k', p.toFixed(3));
+    el.style.setProperty('--s', Math.sin(Math.PI * p).toFixed(3));
+    el.classList.toggle('to-light', p > 0.5);
+    el.classList.toggle('to-dark', p <= 0.5);
+  };
+  useLayoutEffect(() => { paint(pos ?? kRef.current); }); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => () => { layer.current?.replaceChildren(); cancelAnimationFrame(tween.current); }, []);
   // The knob glides to its end; dots scatter on the way (instant with reduced motion).
-  useEffect(() => {
-    if (pos != null) return;
-    const to = light ? 1 : 0;
+  const glide = (to, lead = 0) => {
+    if (tweenTo.current === to) return; // already on its way there
     cancelAnimationFrame(tween.current);
-    if (reduceMotion()) { setK(to); return; }
-    let from = null, t0 = 0;
+    if (reduceMotion() || kRef.current === to) { tweenTo.current = null; paint(to); return; }
+    tweenTo.current = to;
+    const from = kRef.current, t0 = performance.now() - lead, dur = 260 + 260 * Math.abs(to - from);
     const step = (now) => {
-      setK((cur) => {
-        if (from == null) { from = cur; t0 = now; }
-        const t = Math.min(1, (now - t0) / (260 + 260 * Math.abs(to - from)));
-        const e = 1 - Math.pow(1 - t, 3);
-        if (t < 1) tween.current = requestAnimationFrame(step);
-        return from + (to - from) * e;
-      });
+      const t = Math.min(1, Math.max(0, now - t0) / dur);
+      paint(from + (to - from) * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) tween.current = requestAnimationFrame(step); else tweenTo.current = null;
     };
     tween.current = requestAnimationFrame(step);
-  }, [light, pos]);
+  };
+  useEffect(() => { if (pos == null) glide(light ? 1 : 0); }, [light, pos]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const petal = (x, y) => {
     const host = layer.current;
@@ -96,22 +156,28 @@ export default function ThemeToggle({ theme, onChange }) {
   const commit = (toLight, withPetals) => {
     if (toLight !== light) {
       const next = toLight ? 'light' : 'dark';
-      // the new theme spreads over the page like a wave rolling out from the knob
       const motion = !reduceMotion();
-      const [x, y] = knobPoint(pos ?? k);
-      if (motion) { // water rings spreading from the knob
-        const rip = document.createElement('div');
-        rip.className = 'tt-ripples';
-        rip.style.cssText = `left:${x}px;top:${y - 6}px`;
-        rip.innerHTML = '<i></i><i></i><i></i>';
-        document.body.appendChild(rip);
-        setTimeout(() => rip.remove(), 1900);
-      }
+      const [x, y] = knobPoint(pos ?? kRef.current);
+      setShown(next);
+      glide(toLight ? 1 : 0, 40); // the knob sets off in the very next frame, already a visible step along
+      if (motion) rings(x, y - 6, toLight); // water rings spreading from the knob
+      const root = document.documentElement;
+      const apply = () => { root.dataset.theme = next; startTransition(() => onChange(next)); };
+      // The new theme spreads over the page like a wave rolling out from the knob. Its centre and
+      // radius live only on the transition layer (setting them on <html> made the browser restyle
+      // every element before it could even take the snapshot).
       if (document.startViewTransition && motion) {
-        document.documentElement.style.setProperty('--vt-x', `${x}px`);
-        document.documentElement.style.setProperty('--vt-y', `${y - 6}px`);
-        document.startViewTransition(() => flushSync(() => onChange(next)));
-      } else onChange(next);
+        // Starting a view transition pauses drawing while the page is captured. Waiting one frame
+        // first lets the knob and the rings show their first step right away.
+        requestAnimationFrame(() => setTimeout(() => {
+        const vt = document.startViewTransition(apply);
+        const at = { '--vt-x': `${x}px`, '--vt-y': `${y - 6}px` };
+        vt.ready.then(() => root.animate(
+          [{ ...at, '--vt-r': '0px' }, { ...at, '--vt-r': `${Math.round(1.75 * Math.max(innerWidth, innerHeight))}px` }],
+          { duration: 700, easing: 'cubic-bezier(.22, .7, .25, 1)', fill: 'both', pseudoElement: '::view-transition-new(root)' },
+        )).catch(() => {});
+        }, 0));
+      } else apply();
     }
     if (withPetals) burst(toLight ? 1 : 0);
   };
@@ -129,6 +195,7 @@ export default function ThemeToggle({ theme, onChange }) {
     d.moved = true;
     const p = Math.max(0, Math.min(1, d.pos0 + dx / TRAVEL));
     setPos(p);
+    paint(p);
     const now = performance.now();
     if (d.petals < MAX_PER_GESTURE && now - d.last > GAP_MS) {
       const [x, y] = knobPoint(p);
@@ -143,7 +210,7 @@ export default function ThemeToggle({ theme, onChange }) {
       skipClick.current = true; // the click that follows a drag must not toggle again
       setTimeout(() => { skipClick.current = false; }, 0);
       const p = pos ?? d.pos0;
-      setK(p);
+      paint(p);
       commit(p > 0.5, false);
       setPos(null);
     }
@@ -157,15 +224,13 @@ export default function ThemeToggle({ theme, onChange }) {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); commit(false, light); }
   };
 
-  const p = pos ?? k;
   return (
     <>
       <div className="petal-layer" ref={layer} aria-hidden="true" />
       <button
         ref={btn} type="button" role="switch" aria-checked={light} aria-label="Light theme"
         title={light ? 'Light theme is on. Drag or press to switch to dark.' : 'Dark theme is on. Drag or press to switch to light.'}
-        className={'theme-toggle' + (pos != null ? ' dragging' : '') + (p > 0.5 ? ' to-light' : ' to-dark')}
-        style={{ '--k': p.toFixed(3), '--s': Math.sin(Math.PI * p).toFixed(3) }}
+        className={'theme-toggle' + (pos != null ? ' dragging' : '')}
         onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onClick={click} onKeyDown={key}
       >
         <span className="tt-track" />

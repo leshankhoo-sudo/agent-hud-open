@@ -234,7 +234,7 @@ export default function SeasonStory({ season = 'autumn', autoSeason = 'autumn', 
     const resize = () => {
       const dpr = Math.min(devicePixelRatio || 1, 2);
       for (const k of SEASON_ORDER) cards[k].resize(k === S.season ? dpr : Math.min(dpr, 1.5));
-      fx.width = Math.round(fx.clientWidth * dpr); fx.height = Math.round(fx.clientHeight * dpr); S.dpr = dpr;
+      fx.width = Math.round(fx.clientWidth * dpr); fx.height = Math.round(fx.clientHeight * dpr); S.dpr = dpr; S.sizedFor = S.season;
     };
     resize();
     const ro = new ResizeObserver(() => { resize(); kick(); });
@@ -308,7 +308,7 @@ export default function SeasonStory({ season = 'autumn', autoSeason = 'autumn', 
       if ((!reduce && visible && !document.hidden) || !settled) raf = requestAnimationFrame(frame);
     }
     function kick() { if (!raf && !dead) { last = performance.now(); raf = requestAnimationFrame(frame); } }
-    S.kick = () => { resize(); kick(); };
+    S.kick = () => { if (S.sizedFor !== S.season) resize(); kick(); };
     onScroll();
     return () => {
       dead = true; cancelAnimationFrame(raf); io.disconnect(); ro.disconnect();
