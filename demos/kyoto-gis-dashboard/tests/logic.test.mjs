@@ -368,3 +368,22 @@ test('season: Kyoto date (JST), JMA months, sakura and autumn-leaves windows fro
   assert.equal(at('2026-03-10T03:00:00Z').visual, 'spring');
   assert.equal(seasonFor(new Date('2026-12-08T03:00:00Z'), null).visual, 'winter'); // without the file: months only
 });
+
+// ---------- the tea-room story in the music control ----------
+import { traveller, cat, leaf, crane, door, steam, chapterOf } from '../src/lib/teaScene.js';
+test('tea story: the same volume always gives the same picture, whichever way it was reached', () => {
+  const snap = (p) => JSON.stringify([traveller(p), cat(p), leaf(p), crane(p), door(p), steam(p)]);
+  const ps = Array.from({ length: 101 }, (_, i) => i / 100);
+  const forward = ps.map(snap), backward = [...ps].reverse().map(snap).reverse();
+  assert.deepEqual(forward, backward);
+  assert.equal(snap(0.4372), snap(0.4372));
+});
+test('tea story: chapters and the main moments sit where the brief puts them', () => {
+  assert.equal(chapterOf(0.1), '01 Silence'); assert.equal(chapterOf(0.2), '02 Arrival'); assert.equal(chapterOf(0.4), '03 An unexpected guest');
+  assert.equal(chapterOf(0.55), '04 Playful wind'); assert.equal(chapterOf(0.7), '05 The warmth of tea'); assert.equal(chapterOf(0.9), '06 The little miracle'); assert.equal(chapterOf(1), '07 Serenity');
+  assert.equal(traveller(0.1).shown, 0); assert.ok(traveller(0.3).shown === 1 && traveller(0.3).walking);
+  assert.equal(cat(0.3).visible, false); assert.ok(cat(0.36).ears > 0 && cat(0.36).eyes === 0); assert.ok(cat(0.45).eyes === 1);
+  assert.ok(leaf(0.3).y > 50 && leaf(0.3).x < 112); assert.ok(leaf(0.7).x > 140 && leaf(0.7).y > 60);
+  assert.ok(traveller(0.75).sit === 1 && traveller(0.75).pour > 0);
+  assert.equal(crane(0.8), null); assert.ok(crane(0.9).form === 1); assert.ok(crane(1).leafK === 1 && crane(1).y > 45);
+});
