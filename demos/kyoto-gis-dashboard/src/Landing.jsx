@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { TEAM } from './Outro.jsx';
 import { loadAsBlob } from './lib/media.js';
+import { useScene } from './lib/depth.js';
 
 // Frosted glass button that fills with a soft, living liquid on hover or focus.
 // The surface is a row of spring points: entering splashes where the pointer came in, moving
@@ -64,18 +65,23 @@ export function WaterButton({ children, onClick, scene, ghost = false, ...rest }
     };
     const step = (now) => {
       S.raf = 0;
-      const dt = Math.min(0.033, (now - (S.last || now)) / 1000); S.last = now; S.t += dt;
+      const real = Math.min(0.25, (now - (S.last || now)) / 1000) || 1 / 60; S.last = now; S.t += real;
       if (reduce) { S.level = S.target; draw(); return; }
-      // the level follows a soft spring towards the target
-      const k = 5.2, damp = 3.6;
-      S.vel += ((S.target - S.level) * k - S.vel * damp) * dt;
-      S.level += S.vel * dt;
-      // surface springs: each point returns to rest and pulls its neighbours
-      for (let pass = 0; pass < 2; pass++) {
-        for (const p of pts) { p.v += -p.y * 0.035; p.v *= 0.965; p.y += p.v; }
-        for (let i = 0; i < N; i++) {
-          const l = i ? pts[i - 1].y - pts[i].y : 0, r = i < N - 1 ? pts[i + 1].y - pts[i].y : 0;
-          pts[i].v += (l + r) * 0.11;
+      // Fixed steps of 1/60 s for however much time really passed, so the liquid takes the same
+      // time to rise on a slow machine as on a fast one (it used to run in slow motion there).
+      for (let left = real; left > 0.0005; left -= 1 / 60) {
+        const dt = Math.min(1 / 60, left);
+        // the level follows a soft spring towards the target
+        const k = 5.2, damp = 3.6;
+        S.vel += ((S.target - S.level) * k - S.vel * damp) * dt;
+        S.level += S.vel * dt;
+        // surface springs: each point returns to rest and pulls its neighbours
+        for (let pass = 0; pass < 2; pass++) {
+          for (const p of pts) { p.v += -p.y * 0.035; p.v *= 0.965; p.y += p.v; }
+          for (let i = 0; i < N; i++) {
+            const l = i ? pts[i - 1].y - pts[i].y : 0, r = i < N - 1 ? pts[i + 1].y - pts[i].y : 0;
+            pts[i].v += (l + r) * 0.11;
+          }
         }
       }
       draw();
@@ -113,10 +119,20 @@ export function WaterButton({ children, onClick, scene, ghost = false, ...rest }
 // Wide screens get a 16:9 cut (1920x1080, cropped from the 4K original, so no upscaling); tall
 // screens get the full portrait frame (1440x2560).
 // Video: Kanenori, Pixabay (Pixabay Content License); the source does not state where it was filmed.
+// A few out-of-focus petals close to the lens: the nearest layer, so it moves most with the pointer.
+const FORE = [
+  { '--x': '80%', '--y': '9%', '--s': '74px', '--k': 62, '--b': '5px', '--o': 0.46, '--r': '24deg', '--t': '11s' },
+  { '--x': '94%', '--y': '38%', '--s': '54px', '--k': 46, '--b': '3.2px', '--o': 0.56, '--r': '-38deg', '--t': '9s', '--d': '-3s' },
+  { '--x': '63%', '--y': '88%', '--s': '66px', '--k': 70, '--b': '5.5px', '--o': 0.4, '--r': '70deg', '--t': '13s', '--d': '-6s' },
+  { '--x': '55%', '--y': '12%', '--s': '26px', '--k': 26, '--b': '1.2px', '--o': 0.74, '--r': '-14deg', '--t': '8s', '--d': '-2s' },
+  { '--x': '86%', '--y': '72%', '--s': '22px', '--k': 20, '--b': '.8px', '--o': 0.78, '--r': '110deg', '--t': '7s', '--d': '-5s' },
+  { '--x': '71%', '--y': '46%', '--s': '15px', '--k': 13, '--b': '.3px', '--o': 0.8, '--r': '40deg', '--t': '10s', '--d': '-1s' },
+];
 const pickVideo = () => (typeof matchMedia === 'function' && matchMedia('(min-aspect-ratio: 1/1)').matches ? 'wide' : 'tall');
 export default function Landing({ counts, onOpenMap, onStory, onNav }) {
   const base = import.meta.env.BASE_URL;
-  const video = useRef(null);
+  const video = useRef(null), root = useRef(null);
+  useScene(root);
   const [kind, setKind] = useState(pickVideo);
   const src = kind === 'wide' ? { mp4: `${base}media/cherry-1920x1080.mp4`, poster: `${base}media/cherry-poster-wide.webp` } : { mp4: `${base}media/cherry-1440.mp4`, poster: `${base}media/cherry-poster.webp` };
   useEffect(() => {
@@ -141,11 +157,12 @@ export default function Landing({ counts, onOpenMap, onStory, onNav }) {
   }, [kind]); // eslint-disable-line react-hooks/exhaustive-deps
   const n = (x) => (x == null ? '—' : x.toLocaleString('en-US'));
   return (
-    <section className={'landing ' + kind} id="top" aria-labelledby="ld-title">
+    <section className={'landing ' + kind} id="top" ref={root} aria-labelledby="ld-title">
       <div className="ld-stage" aria-hidden="true">
         <video key={kind} ref={video} className="ld-video" poster={src.poster} muted loop playsInline autoPlay preload="auto" />
         <div className="ld-shade" />
       </div>
+      <div className="ld-fore" aria-hidden="true">{FORE.map((s, i) => <i key={i} style={s} />)}</div>
 
       <nav className="ld-nav" aria-label="Sections">
         <a className="ld-brand" href="#top" onClick={(e) => { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }}>

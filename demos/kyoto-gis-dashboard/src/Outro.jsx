@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { loadAsBlob } from './lib/media.js';
+import { useScene } from './lib/depth.js';
 
 // Closing section: one 10 s video holds four vertical shots side by side (16:9 overall).
 // Each shot is drawn into its own panel; as the section scrolls into view the panels
@@ -14,6 +15,7 @@ const PANELS = [
 
 export default function Outro({ manifest }) {
   const root = useRef(null);
+  useScene(root);
   const video = useRef(null);
   const canvases = useRef([]);
   const [on, setOn] = useState(false);

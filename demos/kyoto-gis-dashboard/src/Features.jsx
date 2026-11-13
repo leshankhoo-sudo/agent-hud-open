@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useScene } from './lib/depth.js';
 
 // "What the dashboard does": a row of tall glass panels with vertical titles. The panel under the
 // pointer (or with keyboard focus) opens sideways and shows a short description and a button that
@@ -16,6 +17,7 @@ const ICONS = {
 
 export default function Features({ items, onOpen }) {
   const root = useRef(null);
+  useScene(root);
   const [open, setOpen] = useState(0);
   const [seen, setSeen] = useState(false);
   useEffect(() => {

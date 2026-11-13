@@ -78,6 +78,34 @@ await page.locator(`.scard-pick[aria-label="Use the ${story.season} theme"]`).cl
 await page.waitForTimeout(400);
 check('page 2: clicking the card of the current season goes back to Auto', (await page.evaluate(() => localStorage.getItem('kyoto-gis-season'))) === 'auto');
 await page.screenshot({ path: `${out}/00b-story.png` });
+
+// 0a. depth: the panorama answers the pointer, near layers more than far ones; joins between sections are sharp
+const shift = async (x) => {
+  await page.mouse.move(x, 450, { steps: 6 });
+  await page.waitForTimeout(1600);
+  return page.evaluate(() => Object.fromEntries(['far', 'city', 'fore'].map((k) => [k, document.querySelector('.pano-' + k).getBoundingClientRect().left])));
+};
+await page.evaluate(() => { const e = document.getElementById('panorama'); const r = e.getBoundingClientRect(); scrollTo(0, r.top + scrollY + r.height / 2 - innerHeight / 2); });
+await page.waitForTimeout(900);
+const pL = await shift(140), pR = await shift(1300);
+const moved = { far: pL.far - pR.far, city: pL.city - pR.city, fore: pL.fore - pR.fore };
+check('panorama: layers slide with the pointer, the near ones further than the far ones', moved.far > 4 && moved.city > moved.far * 2 && moved.fore > moved.city * 2, JSON.stringify(moved));
+const pano = await page.evaluate(() => ({ note: document.querySelector('.pano-note').textContent, layers: document.querySelectorAll('.pano-l').length, title: document.getElementById('pano-title').textContent }));
+check('panorama: stated to be an illustration, not map data', /Illustration/.test(pano.note) && /not map data/.test(pano.note) && pano.layers >= 8, JSON.stringify(pano));
+await page.screenshot({ path: `${out}/00c-panorama.png` });
+await page.locator('.pano-next').click();
+await page.waitForTimeout(1500);
+check('panorama: its button leads on to Explore', await page.evaluate(() => Math.abs(document.getElementById('explore').getBoundingClientRect().top) < 4));
+const joins = await page.evaluate(() => {
+  const cs = (sel) => getComputedStyle(document.querySelector(sel));
+  const seams = [...document.querySelectorAll('.seam')];
+  const blurred = seams.some((el) => [el, ...el.querySelectorAll('*')].some((n) => /blur/.test(getComputedStyle(n).filter) || /blur/.test(getComputedStyle(n, '::before').filter) || /blur/.test(getComputedStyle(n, '::after').filter)));
+  const mask = (sel) => { const c = cs(sel); return c.maskImage && c.maskImage !== 'none' ? c.maskImage : (c.webkitMaskImage && c.webkitMaskImage !== 'none' ? c.webkitMaskImage : 'none'); };
+  // a join must not sit on top of the sections on either side of it
+  const clear = seams.every((el) => { const r = el.getBoundingClientRect(), a = el.previousElementSibling.getBoundingClientRect(), b = el.nextElementSibling.getBoundingClientRect(); return r.height >= 100 && a.bottom <= r.top + 1 && b.top >= r.bottom - 1; });
+  return { n: seams.length, blurred, clear, explore: mask('.explore'), outro: mask('.outro'), marks: seams.map((el) => el.querySelector('.seam-mark').textContent).join('') };
+});
+check('joins between sections: three, each with its own space, no blur, and no fade laid over a section', joins.n === 3 && !joins.blurred && joins.clear && joins.explore === 'none' && joins.outro === 'none', JSON.stringify(joins));
 await page.evaluate(() => document.getElementById('dashboard').scrollIntoView());
 await page.waitForTimeout(800);
 check('dashboard follows the opening', await page.evaluate(() => { const r = document.getElementById('dashboard').getBoundingClientRect(); return Math.abs(r.top) < 2; }));
@@ -133,6 +161,32 @@ await page.locator('.music-btn').click();
 await page.waitForFunction(() => /playing|error/.test(document.querySelector('.music').className), null, { timeout: 20000 });
 check('music: nothing is downloaded until play is pressed; then it plays and can be paused', mp3Before === 0 && mp3Requests === 1 && (await page.locator('.music').getAttribute('class')).includes('playing'), `${mp3Before} -> ${mp3Requests}`);
 await page.locator('.music-btn').click();
+// the same control is the volume: dragging the glass dome along the window changes it, and sliding it up starts the music
+await page.waitForTimeout(500);
+const dome = async () => page.evaluate(() => { const r = document.querySelector('.music-btn').getBoundingClientRect(), s = document.querySelector('.koto-stage').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, left: s.left, w: s.width, vol: Number(document.querySelector('.koto-range input').value), cls: document.querySelector('.music').className }; });
+await page.locator('.music').hover();
+await page.waitForTimeout(900);
+const d0 = await dome();
+await page.mouse.move(d0.x, d0.y); await page.mouse.down(); await page.mouse.move(d0.left + d0.w * 0.82, d0.y, { steps: 8 }); await page.mouse.up();
+await page.waitForFunction(() => /playing/.test(document.querySelector('.music').className), null, { timeout: 10000 });
+await page.waitForTimeout(900);
+const d1 = await dome();
+check('music: the room opens under the pointer; dragging the glass dome raises the volume and starts the music', d0.w > 250 && !/playing/.test(d0.cls) && d1.vol > d0.vol + 0.2 && d1.vol > 0.85 && d1.x > d0.x + 40 && mp3Requests === 1, JSON.stringify({ w: d0.w, v0: d0.vol, v1: d1.vol }));
+const lit = await page.evaluate(() => { const c = document.querySelector('.koto-cv'), g = c.getContext('2d'); const k = c.width / 280; const px = g.getImageData(Math.round(123 * k), Math.round(54 * k), 1, 1).data; return { w: c.width, rgb: [px[0], px[1], px[2]], cap: document.querySelector('.koto-cap').textContent }; });
+check('music: at a high volume the shoji across the garden are lit', lit.rgb[0] > 180 && lit.rgb[0] > lit.rgb[2] + 40 && /Kyoto, Slowly · \d+%/.test(lit.cap), JSON.stringify(lit));
+await page.locator('.koto-range input').focus();
+await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowLeft');
+const d2 = await dome();
+check('music: the volume can be set from the keyboard', Math.abs(d1.vol - d2.vol - 0.04) < 0.001, `${d1.vol} -> ${d2.vol}`);
+await page.locator('.music-btn').focus();
+await page.keyboard.press('Enter');
+await page.waitForFunction(() => !/playing/.test(document.querySelector('.music').className), null, { timeout: 5000 });
+await page.waitForTimeout(2600);
+const dark = await page.evaluate(() => { const c = document.querySelector('.koto-cv'), g = c.getContext('2d'); const k = c.width / 280; const px = g.getImageData(Math.round(123 * k), Math.round(54 * k), 1, 1).data; return [px[0], px[1], px[2]]; });
+check('music: pausing (keyboard) lets the room go back to night', dark[0] < 110, dark.join(','));
+await page.screenshot({ path: `${out}/00d-music.png` });
+await page.evaluate(() => document.activeElement?.blur());
+await page.mouse.move(400, 500);
 await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: 0 }));
 
 // 1. data loading
@@ -466,6 +520,8 @@ check('phone: picking a result closes the drawer and opens a bottom sheet', !phs
 check('phone: theme switch does not cover the close button; still no horizontal scroll', !phs.overlap && phs.sw <= 390);
 const sbFree = await ph.evaluate(() => { const b = document.querySelector('.season-badge summary').getBoundingClientRect(); const ov = (r) => !(r.right <= b.left || r.left >= b.right || r.bottom <= b.top || r.top >= b.bottom); return { nav: ov(document.querySelector('.nav-btn').getBoundingClientRect()), toggle: ov(document.querySelector('.theme-toggle').getBoundingClientRect()), inView: b.left >= 0 && b.top >= 0 }; });
 check('phone: season button sits top left without covering Explore or the theme switch', !sbFree.nav && !sbFree.toggle && sbFree.inView, JSON.stringify(sbFree));
+const muFree = await ph.evaluate(() => { const m = document.querySelector('.koto-stage').getBoundingClientRect(); const ov = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return !(r.right <= m.left || r.left >= m.right || r.bottom <= m.top || r.top >= m.bottom); }; return { toggle: ov('.theme-toggle'), badge: ov('.season-badge summary'), nav: ov('.nav-btn'), w: Math.round(m.width), right: Math.round(m.right) }; });
+check('phone: the music control sits beside the theme switch without covering it, the season button or Explore', !muFree.toggle && !muFree.badge && !muFree.nav && muFree.w < 100, JSON.stringify(muFree));
 await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
 
 check('no page errors', errors.length === 0, errors.join(' | '));

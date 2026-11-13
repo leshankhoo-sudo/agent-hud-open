@@ -9,6 +9,8 @@ import Outro from './Outro.jsx';
 import Explore from './Explore.jsx';
 import Features from './Features.jsx';
 import MusicPlayer from './MusicPlayer.jsx';
+import Panorama from './Panorama.jsx';
+import Seam from './Seam.jsx';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
@@ -351,6 +353,7 @@ export default function App() {
     <>
       <Landing counts={openCounts} onOpenMap={() => go('dashboard')} onStory={() => go('seasons')} onNav={onNav} />
       <SeasonStory season={visualSeason} autoSeason={seasonAuto.visual} theme={theme} counts={openCounts} onExplore={() => go('explore')} onPick={(k) => setSeasonMode(k === seasonAuto.visual ? 'auto' : k)} />
+      <Panorama onNext={() => go(loaded && d?.explore?.places?.length ? 'explore' : 'dashboard')} />
     </>
   );
   if (!loaded) return <>{toggleUi}{intro}<div className="boot" id="dashboard"><div className="boot-mark" /><p>Loading Kyoto Prefecture data…</p></div></>;
@@ -374,10 +377,10 @@ export default function App() {
     <>
     {toggleUi}
     {intro}
-    <div className="seam" aria-hidden="true"><i /></div>
     {d.explore?.places?.length > 0 && <Explore places={d.explore.places} attractions={A.length} stops={Tr.length} near={nearPlace} onEnter={enter} />}
-    <div className="seam" aria-hidden="true"><i /></div>
+    <Seam mark="読" ja="地図を読む" en="Reading the map" />
     <Features items={features} onOpen={openFeature} />
+    <Seam mark="図" ja="地図" en="The dashboard" />
     <div id="dashboard" className={cls}>
       <header className="top">
         <span className="wa-band" aria-hidden="true" />
@@ -672,7 +675,7 @@ export default function App() {
         )}
       </aside>
     </div>
-    <div className="seam" aria-hidden="true"><i /></div>
+    <Seam mark="結" ja="結び" en="Closing" />
     <Outro manifest={d.manifest} />
     </>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { SeasonDrift } from './Season.jsx';
+import { useScene } from './lib/depth.js';
 
 // "Explore Kyoto": one screen between the scroll intro and the dashboard.
 // Layout after a spatial-UI reference: title on top, a cover flow of tall photo cards in the middle
@@ -13,6 +14,7 @@ const reduceMotion = () => typeof matchMedia === 'function' && matchMedia('(pref
 
 export default function Explore({ places, attractions, stops, near, onEnter }) {
   const root = useRef(null);
+  useScene(root);
   const deck = useRef(null);
   const cards = useRef([]);
   const anim = useRef({ shown: 0, target: 0, raf: 0, drag: null, skipClick: false });

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useScene } from './lib/depth.js';
 
 // Page 2: the four seasons side by side (stacked on phones). The season it is in Kyoto now is
 // the highlighted card: wider, full colour, its own lettering treatment. The other three move
@@ -126,7 +127,9 @@ function makeCard(canvas, key, base) {
     gl.uniform1f(U.uTime, time);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
-  card.destroy = () => gl.getExtension('WEBGL_lose_context')?.loseContext();
+  // the context is left for the browser to collect: a canvas whose context was thrown away cannot
+  // be given a new one, and React's development mode mounts every effect twice
+  card.destroy = () => { card.ready = false; };
   return card;
 }
 
@@ -211,6 +214,7 @@ export default function SeasonStory({ season = 'autumn', autoSeason = 'autumn', 
   const base = import.meta.env.BASE_URL;
   const root = useRef(null), fxc = useRef(null), lines = useRef(null);
   const canv = useRef({});
+  useScene(root);
   const [fallback, setFallback] = useState(false);
   const st = useRef({ season, theme, hover: null, prog: 0, target: 0, enter: 0, seen: false, mouse: [0, 0], mouseT: [0, 0], particles: [] });
   st.current.season = season; st.current.theme = theme;
@@ -263,7 +267,8 @@ export default function SeasonStory({ season = 'autumn', autoSeason = 'autumn', 
         c.cine += (target - c.cine) * (reduce ? 1 : Math.min(1, dt * 4));
         let cp = p;
         if (phone.matches) { const r = canv.current[k].getBoundingClientRect(); cp = clamp((innerHeight - r.top) / (innerHeight + r.height)); }
-        const par = [S.mouse[0] * 0.01 + (reduce ? 0 : Math.sin(time * 0.21 + k.length) * 0.003), S.mouse[1] * 0.006];
+        const amp = hl ? 0.022 : 0.015;
+        const par = [S.mouse[0] * amp + (reduce ? 0 : Math.sin(time * 0.21 + k.length) * 0.003), S.mouse[1] * amp * 0.6];
         c.render({ p: cp, enter: S.enter, time: reduce ? 0 : time, par, highlight: hl, fade });
       }
       // story lines under the cards
