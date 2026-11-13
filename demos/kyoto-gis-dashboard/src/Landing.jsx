@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { TEAM } from './Outro.jsx';
+import { loadAsBlob } from './lib/media.js';
 
 // Frosted glass button that fills with a soft, living liquid on hover or focus.
 // The surface is a row of spring points: entering splashes where the pointer came in, moving
@@ -127,18 +128,22 @@ export default function Landing({ counts, onOpenMap, onStory, onNav }) {
   useEffect(() => {
     const v = video.current;
     if (!v) return;
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { v.pause(); return; }
-    v.play()?.catch?.(() => {});
+    // The video is read in one go into a blob: the simple Windows launcher server answers one
+    // request at a time, and a half-read video stream would hold every other file back.
+    const release = loadAsBlob(v, src.mp4);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { v.pause(); return release; }
+    const play = () => v.play()?.catch?.(() => {});
+    v.addEventListener('loadeddata', play);
     // pause when scrolled away, so it costs nothing in the background
     const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); }, { threshold: 0.05 });
     io.observe(v);
-    return () => io.disconnect();
-  }, [kind]);
+    return () => { io.disconnect(); v.removeEventListener('loadeddata', play); release(); };
+  }, [kind]); // eslint-disable-line react-hooks/exhaustive-deps
   const n = (x) => (x == null ? '—' : x.toLocaleString('en-US'));
   return (
     <section className={'landing ' + kind} id="top" aria-labelledby="ld-title">
       <div className="ld-stage" aria-hidden="true">
-        <video key={kind} ref={video} className="ld-video" src={src.mp4} poster={src.poster} muted loop playsInline autoPlay preload="auto" />
+        <video key={kind} ref={video} className="ld-video" poster={src.poster} muted loop playsInline autoPlay preload="auto" />
         <div className="ld-shade" />
       </div>
 

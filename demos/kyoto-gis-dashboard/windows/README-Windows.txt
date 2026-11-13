@@ -36,32 +36,27 @@
 然后在浏览器打开 http://localhost:8000/
 
 
-方法三：修改代码后重新运行（需要安装 Node.js）
+方法三：修改代码（需要安装 Node.js 和 Git）
 ------------------------------------------------
-1. 从 https://nodejs.org 下载 LTS 版本并安装。
-2. 打开 source 文件夹，在空白处按住 Shift 再按右键 →"在此处打开 PowerShell 窗口"，依次输入：
-       npm install
-       npm run dev
-3. 在浏览器打开 http://localhost:5173/
-4. 改完代码后，用 npm run build 生成新的网站，结果在 source\dist。
-   把它复制过来替换 site 文件夹，方法一就会使用新版本。
+这个 ZIP 只包含构建好的网站。源代码在 GitHub 仓库 leshankhoo-sudo/agent-hud-open 的
+ccr-bd068911-ydjxlc 分支，demos/kyoto-gis-dashboard 文件夹里：
+    npm install
+    npm run dev          然后打开 http://localhost:5173/
+    npm run build        生成新的网站（dist 文件夹），复制过来替换 site 文件夹即可
 
 
 文件夹说明
 ----------
 Start-Dashboard.bat   双击启动（会调用 serve.ps1）
 serve.ps1             本机小网页服务器，只有你自己的电脑能访问，不会开放给网络
-site\                 已经构建好的完整网站，包括 data\ 里全部运行用的数据
-source\               完整源代码：
-                        package.json、src\、scripts\（数据处理程序）、
-                        data\raw\（原始资料，未改动）、public\data\（网站使用的数据）、
-                        docs\（数据接口说明、测试报告）、README.md（详细说明）
+site\                 已经构建好的完整网站，包括 data\ 里全部运行用的数据、开场视频和四季图片
 
 需要知道的事
 ------------
 - 底图和天气都不需要账号或 API key。但它们都有免费使用额度，并且要求注明出处。
 - 天气是 Open-Meteo 的模型预报，不是景点现场的实测。
   如果显示"Weather unavailable"，等一会儿再点 Refresh。
-- 步行路线目前只有祇園–清水一带的 19 个试点景点，还没有覆盖整个京都府。
+- 步行路线覆盖京都府全部 523 个景点记录（按道路类别假设能否步行，没有逐条人工核对）。
+- 开场第 2 页的四季图片来自 Pinterest，原作者不明，只限课业使用，不要公开发布。
 - 道路原始资料（大约 80 MB）没有放进这个 ZIP。
-  需要重新计算步行路线时，参照 source\README.md 第 4 节。
+  需要重新计算步行路线时，参照仓库里 README.md 第 4 节。
