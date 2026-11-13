@@ -41,7 +41,7 @@ void main(){
   d = D(p);
   vec3 col = texture(uImg, clamp(p, 0.002, 0.998)).rgb;
   vec4 t = texture(uText, s);
-  float vis = 1.0 - smoothstep(uTextDepth - 0.05, uTextDepth + 0.05, d);
+  float vis = mix(0.5, 1.0, 1.0 - smoothstep(uTextDepth - 0.05, uTextDepth + 0.05, d));
   col = mix(col, t.rgb, t.a * vis);
   // cinematic grade for the seasons that are not now
   float l = dot(col, vec3(0.299, 0.587, 0.114));
@@ -111,7 +111,9 @@ function makeCard(canvas, key, base) {
     const fyC = by + sc.focus[1] * bh;
     const tyS = (fyC + (sc.cardY - fyC) * kT) * H;
     const word = sc.en.toUpperCase();
-    const size = Math.min(W * 0.84 / (word.length * 0.78), H * 0.12) * (highlight ? 1 : 0.92);
+    tg.font = `600 100px ${FONT}`;
+    const at100 = [...word].reduce((a, ch) => a + tg.measureText(ch).width, 0) + 10 * (word.length - 1);
+    const size = Math.min((W * 0.8) / (at100 / 100), H * 0.12) * (highlight ? 1 : 0.92);
     drawTitle(tg, { season: key, word, kanji: sc.ja, x: W / 2, y: tyS, size, enter, prog: p, time, full: highlight });
     gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, tTex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, txt);
@@ -144,9 +146,14 @@ function drawTitle(g, o) {
   const base = y + size * 0.36;
   const kSize = size * 1.05;
   if (season === 'spring') {
-    const hz = g.createRadialGradient(x, y - size * 0.4, size * 0.2, x, y - size * 0.4, total * 0.62);
-    hz.addColorStop(0, `rgba(255,240,244,${0.72 * enter})`); hz.addColorStop(0.55, `rgba(255,232,238,${0.45 * enter})`); hz.addColorStop(1, 'rgba(255,232,238,0)');
-    g.save(); g.fillStyle = hz; g.beginPath(); g.ellipse(x, y - size * 0.4, total * 0.68, size * 1.6, 0, 0, 6.283); g.fill(); g.restore();
+    const rx = total * 0.66, ry = size * 1.5, cy = y - size * 0.4;
+    g.save();
+    g.translate(x, cy); g.scale(1, ry / rx); // a circle squashed into the ellipse, so the fade follows its edge
+    const hz = g.createRadialGradient(0, 0, 0, 0, 0, rx);
+    hz.addColorStop(0, `rgba(255,240,244,${0.62 * enter})`); hz.addColorStop(0.45, `rgba(255,234,240,${0.34 * enter})`);
+    hz.addColorStop(0.8, `rgba(255,232,238,${0.08 * enter})`); hz.addColorStop(1, 'rgba(255,232,238,0)');
+    g.fillStyle = hz; g.beginPath(); g.arc(0, 0, rx, 0, 6.283); g.fill();
+    g.restore();
   }
   const fillFor = (ly, s) => {
     let f;
