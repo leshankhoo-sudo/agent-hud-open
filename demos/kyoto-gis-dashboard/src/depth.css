@@ -151,7 +151,7 @@
 /* ---------- background music: a room in a window, with a glass dome for the volume ----------
    The stage is drawn at full size (280 x 108) and shown small beside the theme switch; it grows
    when the pointer is over it, when it has keyboard focus and while the dome is being dragged. */
-.music { position: fixed; z-index: 60; top: max(9px, env(safe-area-inset-top, 0px)); right: calc(max(14px, env(safe-area-inset-right, 0px)) + 80px); width: 116px; height: 40px; view-transition-name: music-ctl; }
+.music { position: fixed; z-index: 60; top: max(9px, env(safe-area-inset-top, 0px)); right: calc(max(14px, env(safe-area-inset-right, 0px)) + 88px); width: 116px; height: 40px; view-transition-name: music-ctl; }
 .koto-stage { position: absolute; top: -3px; right: -3px; width: 280px; height: 108px; transform-origin: 100% 0; transform: scale(.43); transition: transform .55s cubic-bezier(.3, 1.25, .4, 1);
   touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 .music:hover .koto-stage, .music:focus-within .koto-stage, .music.drag .koto-stage { transform: scale(1); }

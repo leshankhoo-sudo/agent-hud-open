@@ -704,27 +704,13 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
    Follows the reference clip: frosted glass pill, a large glass knob with a dot-matrix icon whose
    dots scatter while it travels, and a light arc that swings round the knob (violet below in the
    dark, amber above in the light). --k is the knob position 0..1, --s the scatter amount. */
-.theme-toggle { position: fixed; z-index: 60; top: max(9px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); width: 70px; height: 38px; padding: 0; border: 0; border-radius: 999px; background: none; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; view-transition-name: theme-toggle; --mix: calc(var(--k, 0) * 100%); }
-.theme-toggle.dragging { cursor: grabbing; }
-.theme-toggle::before { content: ''; position: absolute; inset: -5px; border-radius: 999px; }
-.tt-track { position: absolute; inset: 0; border-radius: 999px;
-  background: color-mix(in srgb, #ecebe7 var(--mix), #06070c);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, rgba(255, 255, 255, .9) var(--mix), rgba(255, 255, 255, .08)), inset 0 -2px 6px color-mix(in srgb, rgba(120, 110, 100, .18) var(--mix), rgba(0, 0, 0, .8)),
-    0 0 0 1px color-mix(in srgb, rgba(150, 140, 128, .45) var(--mix), rgba(140, 150, 200, .28)), 0 8px 18px color-mix(in srgb, rgba(90, 80, 70, .28) var(--mix), rgba(0, 0, 0, .55));
-  opacity: calc(1 - var(--s, 0) * .22); }
-.tt-knob { position: absolute; left: 3px; top: 3px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; transform: translateX(calc(var(--k, 0) * 32px));
-  color: color-mix(in srgb, #2e2620 var(--mix), #f4f6ff);
-  background: radial-gradient(circle at 34% 26%, color-mix(in srgb, #ffffff var(--mix), #59648c), color-mix(in srgb, #f3ecdc var(--mix), #1b2036) 62%, color-mix(in srgb, #efe3c8 var(--mix), #0d1020));
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, .55), inset 0 -3px 6px color-mix(in srgb, rgba(190, 160, 110, .28) var(--mix), rgba(0, 0, 0, .55)), 0 2px 6px color-mix(in srgb, rgba(90, 70, 50, .3) var(--mix), rgba(0, 0, 0, .6)); }
-/* the light arc: a thin ring segment that rotates from the bottom (dark) past the left to the top right (light) */
-.tt-arc { position: absolute; inset: -3px; border-radius: 50%; pointer-events: none; transform: rotate(calc(180deg + var(--k, 0) * 205deg));
-  border: 2.5px solid transparent; border-top-color: color-mix(in srgb, #f6b638 var(--mix), #aab4ff);
-  filter: drop-shadow(0 -3px 5px color-mix(in srgb, rgba(246, 170, 40, .95) var(--mix), rgba(130, 145, 255, .95))) drop-shadow(0 -6px 12px color-mix(in srgb, rgba(246, 170, 40, .55) var(--mix), rgba(110, 125, 255, .7))); }
-.tt-ico { position: absolute; display: grid; }
-.tt-ico.moon { opacity: clamp(0, calc((0.5 - var(--k, 0)) * 6 + 0.5), 1); }
-.tt-ico.sun { opacity: clamp(0, calc((var(--k, 0) - 0.5) * 6 + 0.5), 1); }
-.tt-state { display: none; }
-.theme-toggle:focus-visible { outline: 2px solid var(--indigo-2); outline-offset: 4px; }
+.theme-toggle { position: fixed; z-index: 60; top: max(8px, env(safe-area-inset-top, 0px)); right: max(14px, env(safe-area-inset-right, 0px)); width: 78px; height: 40px; padding: 0; border: 0; border-radius: 14px; background: none; overflow: visible;
+  cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; view-transition-name: theme-toggle; }
+.theme-toggle:active { cursor: grabbing; }
+/* the glass switch is drawn on this canvas (lib/glassSwitch.js); it is larger than the button so its shadows and light can spill out, and it takes no events */
+.tt-canvas { position: absolute; pointer-events: none; display: block; }
+.theme-toggle:focus-visible { outline: 2px solid var(--indigo-2); outline-offset: 3px; }
+@media (max-width: 760px) { .theme-toggle { width: 66px; height: 34px; border-radius: 12px; } }
 /* the new theme rolls out from the knob like a wave: a soft-edged circle plus three water rings */
 @property --vt-r { syntax: '<length>'; inherits: false; initial-value: 0px; }
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
@@ -741,9 +727,6 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 /* the water rings are drawn on a short-lived canvas by ThemeToggle.jsx (rings()) */
 .tt-ripples { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 58; pointer-events: none; view-transition-name: tt-ripples; }
 /* idle: the light arc breathes; pressing sends a soft halo out of the knob */
-.tt-arc { animation: ttBreathe 3.6s ease-in-out infinite; }
-@keyframes ttBreathe { 50% { opacity: .62; } }
-.theme-toggle:active .tt-knob { box-shadow: inset 0 1px 1px rgba(255, 255, 255, .55), 0 0 0 6px rgba(255, 255, 255, .1), 0 2px 6px rgba(0, 0, 0, .5); }
 .petal-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 59; }
 .petal-layer i { position: absolute; display: block; border-radius: 100% 0 100% 0; background: linear-gradient(135deg, var(--petal), color-mix(in srgb, var(--petal) 78%, #fff)); box-shadow: inset -1px -1px 0 var(--petal-edge); opacity: 0; will-change: transform, opacity; }
 
