@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { drawGarden } from './lib/gardenScene.js';
+import { drawGarden, hitGarden } from './lib/gardenScene.js';
 
 // Background music as a small lived-in window: a pill-shaped view into a tatami room and its
 // garden, with a glass dome that slides along it. The dome is the volume; pressing it plays or
@@ -13,6 +13,8 @@ import { drawGarden } from './lib/gardenScene.js';
 // decoded buffer between two sample-exact points (the file carries a second of periodic lead-in
 // and lead-out), so there is no gap at the loop even though it is an MP3.
 // Keyboard and screen readers: a real button (play / pause) and a real range input (volume).
+// Tapping things in the room (cat, trees, chime, kettle, candle, lantern, moon, fox) makes them
+// react; only the wind chime makes a sound, a short synthesised glass bell, quieter than the music.
 
 const VOL_KEY = 'kyoto-gis-music-volume';
 const savedVolume = () => { try { const v = parseFloat(localStorage.getItem(VOL_KEY)); return v >= 0 && v <= 1 ? v : 0.5; } catch { return 0.5; } };
@@ -104,7 +106,29 @@ export default function MusicPlayer() {
     const g = c.getContext('2d');
     const sc = document.createElement('canvas'), sg = sc.getContext('2d');
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const store = { parts: [], kind: null };
+    const store = { parts: [], kind: null, fx: {}, burst: null };
+    let bell = null; // its own small audio context, made on the first ring
+    const ringChime = () => {
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!bell) bell = new Ctx();
+        if (bell.state === 'suspended') bell.resume();
+        const now = bell.currentTime, v = 0.05 + 0.09 * live.current.vol;
+        const f0 = [1568, 1760, 2093][Math.floor(Math.random() * 3)];
+        [[1, 1, 2.4], [2.76, 0.45, 1.3], [5.4, 0.2, 0.7]].forEach(([m, a, d]) => {
+          const o = bell.createOscillator(), gn = bell.createGain();
+          o.type = 'sine'; o.frequency.value = f0 * m;
+          gn.gain.setValueAtTime(0, now); gn.gain.linearRampToValueAtTime(v * a, now + 0.004); gn.gain.exponentialRampToValueAtTime(0.0001, now + d);
+          o.connect(gn); gn.connect(bell.destination); o.start(now); o.stop(now + d + 0.05);
+        });
+      } catch { /* no audio */ }
+    };
+    const poke = (what) => {
+      store.fx[what] = S.t; S.poked = S.t;
+      if (what === 'treeL' || what === 'treeR') store.burst = what;
+      if (what === 'chime') ringChime();
+    };
+    const sceneAt = (x, y) => (x >= WX && x <= WX + WW && y >= WY && y <= WY + WH ? hitGarden(x - WX, y - WY, S.px, S.L) : null);
     const S = { kx: K0 + (K1 - K0) * live.current.vol, kv: 0, stretch: 0, L: 0, beat: 0, px: 0, hover: false, overKnob: false, drag: null, raf: 0, last: 0, t: 0, dpr: 1, skip: false, mouseX: null };
     const size = () => {
       S.dpr = Math.min(devicePixelRatio || 1, 2.5);
@@ -206,7 +230,7 @@ export default function MusicPlayer() {
       S.px += (pxT - S.px) * Math.min(1, dt * 5);
       draw();
       const moving = Math.abs(target - S.kx) > 0.05 || Math.abs(S.kv) > 0.5 || Math.abs(Lt - S.L) > 0.002 || Math.abs(pxT - S.px) > 0.003;
-      if (!document.hidden && (moving || S.drag || s === 'loading' || (!reduce && (s === 'playing' || S.hover)))) S.raf = requestAnimationFrame(frame);
+      if (!document.hidden && (moving || S.drag || s === 'loading' || S.t - (S.poked ?? -99) < 4 || (!reduce && (s === 'playing' || S.hover)))) S.raf = requestAnimationFrame(frame);
       else S.last = 0;
     };
     kick.current = () => { if (!S.raf) S.raf = requestAnimationFrame(frame); };
@@ -216,8 +240,10 @@ export default function MusicPlayer() {
     const toVol = (x) => Math.round(clamp((x - K0) / (K1 - K0)) * 50) / 50;
     const down = (e) => {
       if (e.button != null && e.button !== 0) return;
-      const [x] = local(e);
+      const [x, y] = local(e);
       const onKnob = Math.abs(x - S.kx) <= KW / 2 + 3;
+      const hit = onKnob ? null : sceneAt(x, y);
+      if (hit) { poke(hit); kick.current(); return; } // a tap on something in the room, not the volume
       S.drag = { id: e.pointerId, grab: onKnob ? x - S.kx : 0, x0: e.clientX, moved: !onKnob, onKnob };
       try { st.setPointerCapture(e.pointerId); } catch { /* not capturable */ }
       root.classList.add('drag');
@@ -228,6 +254,7 @@ export default function MusicPlayer() {
       const [x, y] = local(e);
       S.mouseX = clamp((x - CW / 2) / (CW / 2), -1, 1);
       S.overKnob = Math.abs(x - S.kx) <= KW / 2 && y > 0 && y < CH;
+      if (!S.drag) st.style.cursor = !S.overKnob && sceneAt(x, y) ? 'pointer' : '';
       const d = S.drag;
       if (d) {
         if (!d.moved && Math.abs(e.clientX - d.x0) > 3) d.moved = true;
@@ -244,7 +271,7 @@ export default function MusicPlayer() {
       kick.current();
     };
     const enter = () => { S.hover = true; kick.current(); };
-    const leave = () => { S.hover = false; S.overKnob = false; S.mouseX = null; kick.current(); };
+    const leave = () => { S.hover = false; S.overKnob = false; S.mouseX = null; st.style.cursor = ''; kick.current(); };
     st.addEventListener('pointerdown', down); st.addEventListener('pointermove', move); st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
     root.addEventListener('pointerenter', enter); root.addEventListener('pointerleave', leave);
     const mo = new MutationObserver(() => kick.current());
@@ -258,13 +285,14 @@ export default function MusicPlayer() {
       st.removeEventListener('pointerdown', down); st.removeEventListener('pointermove', move); st.removeEventListener('pointerup', up); st.removeEventListener('pointercancel', up);
       root.removeEventListener('pointerenter', enter); root.removeEventListener('pointerleave', leave);
       kick.current = () => {};
+      bell?.close();
     };
   }, []);
 
   const playing = state === 'playing';
   const label = state === 'error' ? 'Music could not be loaded. Press to try again.' : playing ? 'Pause background music' : state === 'loading' ? 'Loading music…' : 'Play background music';
   const pct = Math.round(vol * 100);
-  const cap = state === 'error' ? 'Music unavailable · press to retry' : state === 'loading' ? 'Loading · Kyoto, Slowly' : playing ? `Kyoto, Slowly · ${pct}%` : 'Slide the glass to play · Kyoto, Slowly';
+  const cap = state === 'error' ? 'Music unavailable · press to retry' : state === 'loading' ? 'Loading · Kyoto, Slowly' : playing ? `Kyoto, Slowly · ${pct}%` : 'Slide the glass to play · tap the cat, trees or chime';
   const onRange = (e) => { setVol(Number(e.target.value)); if (Number(e.target.value) > 0.02) play(); };
   return (
     <div ref={box} className={'music koto' + (playing ? ' playing' : '') + (state === 'loading' ? ' loading' : '') + (state === 'error' ? ' error' : '')} role="group" aria-label="Background music: Kyoto, Slowly (original piano piece)">

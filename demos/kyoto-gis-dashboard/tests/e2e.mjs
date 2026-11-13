@@ -107,12 +107,12 @@ const joins = await page.evaluate(() => {
 });
 check('joins between sections: three, each with its own space, no blur, and no fade laid over a section', joins.n === 3 && !joins.blurred && joins.clear && joins.explore === 'none' && joins.outro === 'none', JSON.stringify(joins));
 // page counter on the right: follows the scroll, its faint numbers step to the next part, hidden over the map
-const pg = async () => page.evaluate(() => { const n = document.querySelector('.pager'); return { now: n.querySelector('.pg-now b').textContent, label: n.querySelector('.pg-now span').textContent, off: n.classList.contains('off') }; });
+const pg = async () => page.evaluate(() => { const n = document.querySelector('.pager'), on = n.querySelector('[aria-current]'); return { now: on.textContent, label: on.getAttribute('aria-label'), off: n.classList.contains('off'), n: n.querySelectorAll('button').length }; });
 await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(600);
 const pg1 = await pg();
-await page.locator('.pg-step').nth(1).click(); await page.waitForTimeout(1500);
+await page.locator('.pager button').nth(1).click(); await page.waitForTimeout(1500);
 const pg2 = await pg();
-check('page counter: 01 on the cover; its next number scrolls to part 02 (Seasons)', pg1.now === '01' && pg1.label === 'Cover' && pg2.now === '02' && pg2.label === 'Seasons' && Math.abs(await page.evaluate(() => document.getElementById('seasons').getBoundingClientRect().top)) < 4, JSON.stringify([pg1, pg2]));
+check('page counter: seven numbers, 01 large on the cover; clicking 02 scrolls to the seasons', pg1.n === 7 && pg1.now === '01' && pg2.now === '02' && pg2.label === '02 Seasons' && Math.abs(await page.evaluate(() => document.getElementById('seasons').getBoundingClientRect().top)) < 4, JSON.stringify([pg1, pg2]));
 await page.evaluate(() => document.getElementById('dashboard').scrollIntoView());
 await page.waitForTimeout(800);
 check('dashboard follows the opening', await page.evaluate(() => { const r = document.getElementById('dashboard').getBoundingClientRect(); return Math.abs(r.top) < 2; }));
@@ -183,6 +183,14 @@ const d1 = await dome();
 check('music: the room opens under the pointer; dragging the glass dome raises the volume and starts the music', d0.w > 250 && !/playing/.test(d0.cls) && d1.vol > d0.vol + 0.2 && d1.vol > 0.85 && d1.x > d0.x + 40 && mp3Requests === 1, JSON.stringify({ w: d0.w, v0: d0.vol, v1: d1.vol }));
 const lit = await page.evaluate(() => { const c = document.querySelector('.koto-cv'), g = c.getContext('2d'); const k = c.width / 280; const px = g.getImageData(Math.round(123 * k), Math.round(54 * k), 1, 1).data; return { w: c.width, rgb: [px[0], px[1], px[2]], cap: document.querySelector('.koto-cap').textContent }; });
 check('music: at a high volume the shoji across the garden are lit', lit.rgb[0] > 180 && lit.rgb[0] > lit.rgb[2] + 40 && /Kyoto, Slowly · \d+%/.test(lit.cap), JSON.stringify(lit));
+// tapping something in the room (here the moon) makes it react and does not touch the volume or the music
+const tapB = await dome();
+await page.locator('.music').hover(); await page.waitForTimeout(700);
+const stg = await page.locator('.koto-stage').boundingBox();
+await page.mouse.click(stg.x + ((13 + 33) / 280) * stg.width, stg.y + ((13 + 32) / 108) * stg.height);
+await page.waitForTimeout(300);
+const tapA = await dome();
+check('music: a tap on the moon in the room leaves the volume and the music as they were', tapA.vol === tapB.vol && /playing/.test(tapA.cls), `${tapB.vol} -> ${tapA.vol}`);
 await page.locator('.koto-range input').focus();
 await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowLeft');
 const d2 = await dome();
