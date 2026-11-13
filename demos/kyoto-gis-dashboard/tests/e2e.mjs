@@ -40,7 +40,7 @@ await page.waitForTimeout(600);
 const op = await page.evaluate(async () => {
   const v = document.querySelector('.ld-video');
   const t0 = v.currentTime; await new Promise((r) => setTimeout(r, 1500)); const t1 = v.currentTime;
-  return { can: !!v.canPlayType('video/mp4; codecs="avc1.640034"'), loop: v.loop, muted: v.muted, w: v.videoWidth, h: v.videoHeight, adv: +(t1 - t0).toFixed(2), title: document.querySelector('.ld-title').innerText, stats: document.querySelector('.ld-stats').innerText, btns: document.querySelectorAll('.ld-btns .wbtn').length, credit: document.querySelector('.ld-credit').innerText };
+  return { can: !!v.canPlayType('video/mp4; codecs="avc1.640034"'), loop: v.loop, muted: v.muted, w: v.videoWidth, h: v.videoHeight, adv: +((t1 - t0 + (t1 < t0 ? v.duration : 0)).toFixed(2)), title: document.querySelector('.ld-title').innerText, stats: document.querySelector('.ld-stats').innerText, btns: document.querySelectorAll('.ld-btns .wbtn').length, credit: document.querySelector('.ld-credit').innerText };
 });
 check('page 1: the cherry video loops, muted, full screen (1920x1080 cut on wide screens) and is playing', op.can ? op.loop && op.muted && op.w === 1920 && op.h === 1080 && op.adv > 0.8 : op.loop && op.muted, JSON.stringify({ ...op, title: undefined, stats: undefined, credit: undefined }) + (op.can ? '' : ' (this browser has no H.264 decoder; run with PW_CHANNEL=msedge)'));
 check('page 1: title, counts from the data, two water buttons, video credit', op.title.includes('Tourism GIS') && op.stats.includes('523') && op.stats.includes('5,479') && op.btns === 2 && op.credit.includes('Pixabay'), op.stats.replace(/\n/g, ' '));

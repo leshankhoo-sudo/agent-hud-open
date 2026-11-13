@@ -45,7 +45,7 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
     cancelAnimationFrame(a.raf);
     let last = performance.now();
     const step = (now) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
+      const dt = Math.min(0.25, (now - last) / 1000); // real elapsed time, so the glide is not slower on a slow machine
       last = now;
       const diff = a.target - a.shown;
       if (reduceMotion() || Math.abs(diff) < 0.0015) { a.shown = a.target; place(a.shown); return; }
