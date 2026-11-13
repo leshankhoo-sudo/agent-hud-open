@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { TEAM } from './Outro.jsx';
 import { loadAsBlob } from './lib/media.js';
 import { useScene } from './lib/depth.js';
 
@@ -155,7 +154,6 @@ export default function Landing({ counts, onOpenMap, onStory, onNav }) {
     io.observe(v);
     return () => { io.disconnect(); v.removeEventListener('loadeddata', play); release(); };
   }, [kind]); // eslint-disable-line react-hooks/exhaustive-deps
-  const n = (x) => (x == null ? '—' : x.toLocaleString('en-US'));
   return (
     <section className={'landing ' + kind} id="top" ref={root} aria-labelledby="ld-title">
       <div className="ld-stage" aria-hidden="true">
@@ -167,7 +165,7 @@ export default function Landing({ counts, onOpenMap, onStory, onNav }) {
       <nav className="ld-nav" aria-label="Sections">
         <a className="ld-brand" href="#top" onClick={(e) => { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }}>
           <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><rect x="3" y="7" width="26" height="3.4" rx="1.4" fill="currentColor" /><rect x="6" y="12.5" width="20" height="2.4" rx="1" fill="currentColor" /><rect x="8.4" y="10" width="2.6" height="18" rx="1" fill="currentColor" /><rect x="21" y="10" width="2.6" height="18" rx="1" fill="currentColor" /></svg>
-          <span>Kyoto Prefecture Tourism GIS</span>
+          <span><b>Kyoto</b><small>Tourism GIS</small></span>
         </a>
         <ul>
           {[['seasons', 'Seasons'], ['explore', 'Places'], ['dashboard', 'Map'], ['sources', 'Data'], ['credits', 'Team']].map(([k, l]) => (
@@ -180,16 +178,10 @@ export default function Landing({ counts, onOpenMap, onStory, onNav }) {
         <p className="ld-kicker"><span lang="ja">京都府</span> · Kyoto Prefecture</p>
         <h1 id="ld-title" className="ld-title">Kyoto Prefecture<br />Tourism GIS</h1>
         <p className="ld-lead">A university GIS project mapping attractions, public transport and walking access across Kyoto Prefecture, for visitors from Japan and abroad.</p>
-        <ul className="ld-stats" aria-label="Records in this project">
-          <li><b>{n(counts?.attractions)}</b><span>attraction records</span></li>
-          <li><b>{n(counts?.stops)}</b><span>transit stops</span></li>
-          <li><b>{n(counts?.areas)}</b><span>cities, towns and wards</span></li>
-        </ul>
         <div className="ld-btns">
           <WaterButton onClick={onOpenMap} scene={`${base}season/autumn.webp`}>Open the map</WaterButton>
           <WaterButton onClick={onStory} scene={`${base}season/summer.webp`} ghost>Walk through the seasons</WaterButton>
         </div>
-        <p className="ld-team">{TEAM.join(' · ')}</p>
       </div>
 
       <button type="button" className="ld-scroll" onClick={onStory}><span>Scroll</span><i aria-hidden="true" /></button>

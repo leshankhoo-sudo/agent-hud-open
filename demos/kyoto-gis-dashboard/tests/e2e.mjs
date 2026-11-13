@@ -40,10 +40,10 @@ await page.waitForTimeout(600);
 const op = await page.evaluate(async () => {
   const v = document.querySelector('.ld-video');
   const t0 = v.currentTime; await new Promise((r) => setTimeout(r, 1500)); const t1 = v.currentTime;
-  return { can: !!v.canPlayType('video/mp4; codecs="avc1.640034"'), loop: v.loop, muted: v.muted, w: v.videoWidth, h: v.videoHeight, adv: +((t1 - t0 + (t1 < t0 ? v.duration : 0)).toFixed(2)), title: document.querySelector('.ld-title').innerText, stats: document.querySelector('.ld-stats').innerText, btns: document.querySelectorAll('.ld-btns .wbtn').length, credit: document.querySelector('.ld-credit').innerText };
+  return { can: !!v.canPlayType('video/mp4; codecs="avc1.640034"'), loop: v.loop, muted: v.muted, w: v.videoWidth, h: v.videoHeight, adv: +((t1 - t0 + (t1 < t0 ? v.duration : 0)).toFixed(2)), title: document.querySelector('.ld-title').innerText, stats: document.querySelector('.ld-stats')?.innerText ?? '', team: !!document.querySelector('.ld-team'), menu: [...document.querySelectorAll('.ld-nav li button')].map((b) => b.textContent).join(','), btns: document.querySelectorAll('.ld-btns .wbtn').length, credit: document.querySelector('.ld-credit').innerText };
 });
 check('page 1: the cherry video loops, muted, full screen (1920x1080 cut on wide screens) and is playing', op.can ? op.loop && op.muted && op.w === 1920 && op.h === 1080 && op.adv > 0.8 : op.loop && op.muted, JSON.stringify({ ...op, title: undefined, stats: undefined, credit: undefined }) + (op.can ? '' : ' (this browser has no H.264 decoder; run with PW_CHANNEL=msedge)'));
-check('page 1: title, counts from the data, two water buttons, video credit', op.title.includes('Tourism GIS') && op.stats.includes('523') && op.stats.includes('5,479') && op.btns === 2 && op.credit.includes('Pixabay'), op.stats.replace(/\n/g, ' '));
+check('page 1: title, menu, two water buttons, video credit; the counts and team line are no longer repeated here', op.title.includes('Tourism GIS') && op.menu === 'Seasons,Places,Map,Data,Team' && op.stats === '' && !op.team && op.btns === 2 && op.credit.includes('Pixabay'), op.menu);
 await page.hover('.ld-btns .wbtn');
 await page.waitForTimeout(1500);
 const water = await page.evaluate(() => +getComputedStyle(document.querySelector('.ld-btns .wbtn')).getPropertyValue('--fill'));
@@ -106,9 +106,18 @@ const joins = await page.evaluate(() => {
   return { n: seams.length, blurred, clear, explore: mask('.explore'), outro: mask('.outro'), marks: seams.map((el) => el.querySelector('.seam-mark').textContent).join('') };
 });
 check('joins between sections: three, each with its own space, no blur, and no fade laid over a section', joins.n === 3 && !joins.blurred && joins.clear && joins.explore === 'none' && joins.outro === 'none', JSON.stringify(joins));
+// page counter on the right: follows the scroll, its faint numbers step to the next part, hidden over the map
+const pg = async () => page.evaluate(() => { const n = document.querySelector('.pager'); return { now: n.querySelector('.pg-now b').textContent, label: n.querySelector('.pg-now span').textContent, off: n.classList.contains('off') }; });
+await page.evaluate(() => scrollTo(0, 0)); await page.waitForTimeout(600);
+const pg1 = await pg();
+await page.locator('.pg-step').nth(1).click(); await page.waitForTimeout(1500);
+const pg2 = await pg();
+check('page counter: 01 on the cover; its next number scrolls to part 02 (Seasons)', pg1.now === '01' && pg1.label === 'Cover' && pg2.now === '02' && pg2.label === 'Seasons' && Math.abs(await page.evaluate(() => document.getElementById('seasons').getBoundingClientRect().top)) < 4, JSON.stringify([pg1, pg2]));
 await page.evaluate(() => document.getElementById('dashboard').scrollIntoView());
 await page.waitForTimeout(800);
 check('dashboard follows the opening', await page.evaluate(() => { const r = document.getElementById('dashboard').getBoundingClientRect(); return Math.abs(r.top) < 2; }));
+await page.waitForTimeout(400);
+check('page counter hides over the map', (await pg()).off);
 
 // 0b. Explore Kyoto section: verified photos with credits, a place picker, and a button into the dashboard
 const ex = await page.evaluate(async () => {
