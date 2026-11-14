@@ -168,6 +168,10 @@
 .koto-range { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .music:has(.koto-range input:focus-visible) .koto-stage { outline: 2px solid var(--indigo-2); outline-offset: -2px; border-radius: 54px; }
 @media (max-width: 760px) { .music { right: calc(max(14px, env(safe-area-inset-right, 0px)) + 78px); top: max(14px, env(safe-area-inset-top, 0px)); width: 80px; height: 28px; } .koto-stage { transform: scale(.3); top: -2px; right: -2px; } }
+/* phones: the caption wraps onto two lines instead of running off the left edge, and on the narrowest
+   screens the opened control is a little smaller so all of it stays on screen */
+@media (max-width: 760px) { .koto-cap { white-space: normal; width: max-content; max-width: 236px; text-align: right; line-height: 1.35; } }
+@media (max-width: 380px) { .music:hover .koto-stage, .music:focus-within .koto-stage, .music.drag .koto-stage { transform: scale(.88); } }
 @media (prefers-reduced-motion: reduce) { .koto-stage, .koto-cap { transition: none; } }
 
 /* Sections with many elements are skipped by style, layout and paint while they are off screen

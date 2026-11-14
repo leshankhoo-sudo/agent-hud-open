@@ -29,7 +29,8 @@ const WX = 13, WY = 13, WW = 254, WH = 78;         // the window in it
 const KW = 56, KH = 98, KY = PY + PH / 2;          // the glass lens
 const K0 = WX + 26, K1 = WX + WW - 26;             // travel of the lens's centre
 const MAG = 1.3;                                   // how much the lens magnifies
-const OPEN = 1.3;                                  // how much larger the control is when opened
+const OPEN = 1.3;                                  // how much larger the control is when opened (1 on phones: see depth.css)
+const NARROW = '(max-width: 760px)';
 
 function rr(g, x, y, w, h, r) {
   r = Math.min(r, w / 2, h / 2);
@@ -125,12 +126,38 @@ export default function MusicPlayer() {
     root.__world = world.canvas; // for tests: the pixel picture itself
     const size = () => {
       S.dpr = Math.min(devicePixelRatio || 1, 2.5);
-      c.width = Math.round(CW * S.dpr * OPEN); c.height = Math.round(CH * S.dpr * OPEN);
+      // the canvas has as many pixels as the control shows when it is open, no more
+      S.k = S.dpr * (matchMedia(NARROW).matches ? 1 : OPEN);
+      c.width = Math.round(CW * S.k); c.height = Math.round(CH * S.k);
       // each world pixel becomes n x n device pixels (n whole), then the sheet is fitted to the window
-      const n = Math.max(2, Math.ceil((WW * S.dpr * MAG * OPEN) / GW));
+      const n = Math.max(2, Math.ceil((WW * S.k * MAG) / GW));
       sc.width = GW * n; sc.height = GH * n; sg.imageSmoothingEnabled = false;
+      S.worldAt = null; // resized sheets start empty: paint the room again in the next frame
     };
     size();
+    // the parts drawn with a blurred shadow are painted once into their own canvases (a canvas shadow
+    // blur in every frame is slow): the capsule with its rims, per theme and size, and the lens's shadow
+    const fc = document.createElement('canvas'), ls = document.createElement('canvas');
+    const LM = 22; // room around the lens shadow for its blur, in CSS pixels
+    const sprites = (dark) => {
+      const k = S.k, key = `${dark}|${c.width}`;
+      if (S.spriteKey === key) return;
+      S.spriteKey = key;
+      fc.width = c.width; fc.height = c.height;
+      const f = fc.getContext('2d'); f.setTransform(k, 0, 0, k, 0, 0);
+      f.save();
+      f.shadowColor = dark ? 'rgba(0,0,0,.55)' : 'rgba(80,60,40,.28)'; f.shadowBlur = 9 * k; f.shadowOffsetY = 3 * k;
+      const fr = f.createLinearGradient(0, PY, 0, PY + PH);
+      if (dark) { fr.addColorStop(0, '#262733'); fr.addColorStop(0.5, '#14151e'); fr.addColorStop(1, '#0b0c13'); } else { fr.addColorStop(0, '#ffffff'); fr.addColorStop(0.55, '#f3f0ea'); fr.addColorStop(1, '#dfdad1'); }
+      rr(f, PX, PY, PW, PH, PH / 2); f.fillStyle = fr; f.fill();
+      f.restore();
+      rr(f, PX + 0.5, PY + 0.5, PW - 1, PH - 1, PH / 2); f.lineWidth = 1; f.strokeStyle = dark ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.9)'; f.stroke();
+      rr(f, WX - 1.6, WY - 1.6, WW + 3.2, WH + 3.2, WH / 2 + 1.6); f.lineWidth = 0.8; f.strokeStyle = dark ? 'rgba(214,176,112,.55)' : 'rgba(120,96,70,.3)'; f.stroke();
+      ls.width = Math.ceil((KW - 10 + 2 * LM) * k); ls.height = Math.ceil((KH - 12 + 2 * LM) * k);
+      const l = ls.getContext('2d'); l.setTransform(k, 0, 0, k, 0, 0);
+      l.shadowColor = 'rgba(0,0,0,.5)'; l.shadowBlur = 10 * k; l.shadowOffsetY = 4 * k; l.fillStyle = 'rgba(0,0,0,.4)';
+      rr(l, LM, LM, KW - 10, KH - 12, KW / 2 - 1); l.fill();
+    };
     // smoothed features of the music, read about 30 times a second while it plays
     const features = (now, dt) => {
       const a = au.current, B = S.band;
@@ -156,15 +183,20 @@ export default function MusicPlayer() {
     };
     const draw = () => {
       const dark = document.documentElement.dataset.theme !== 'light';
-      const k = S.dpr * OPEN;
+      const k = S.k;
       const B = S.band, now = S.t;
       const age = (n) => (S.pokes[n] != null ? now - S.pokes[n] : 99);
       const idle = (performance.now() - live.current.volAt) / 1000;
       // the beat the music is on, from its own clock (less the time the sound takes to leave the speakers)
       const a = au.current, playing = !!a && live.current.state === 'playing';
       S.beat = playing ? beatAt(a.beats, a.ctx.currentTime - a.t0 - (a.ctx.outputLatency || 0)) : null;
+      // the pixel room moves in whole pixels, so it is painted at most about 40 times a second (60 while
+      // the story is being dragged); the glass lens over it still moves at the screen's own rate
+      const since = S.t - (S.worldAt ?? -1), moved = Math.abs(S.p - (S.worldP ?? -1)) > 0.0005;
+      if (since >= 1 / 42 || (moved && since >= 1 / 62)) {
+      S.worldAt = S.t; S.worldP = S.p;
       const events = world.render({
-        p: S.p, t: S.t, dt: S.dt, still: reduce, playing, vol: live.current.vol, beat: S.beat,
+        p: S.p, t: S.t, dt: Math.min(0.1, since), still: reduce, playing, vol: live.current.vol, beat: S.beat,
         low: B.low, mid: B.mid, high: B.high, trans: B.trans,
         idle: S.drag ? 0 : idle, speed: S.speed, catBlink: age('cat') < 0.35 ? 1 : 0,
         catUp: Math.max(S.catUp, age('cat') < 0.9 ? Math.sin(Math.PI * age('cat') / 0.9) : 0),
@@ -176,18 +208,15 @@ export default function MusicPlayer() {
         if (e === 'reach') S.ping = 1; // the ring arrives at the glass: its rim answers
       }
       sg.drawImage(world.canvas, 0, 0, sc.width, sc.height);
+      }
       g.setTransform(k, 0, 0, k, 0, 0);
       g.imageSmoothingQuality = 'high';
-      g.clearRect(0, 0, CW, CH);
-      // the capsule: lacquer in the dark theme, glazed white in the light theme
-      g.save();
-      g.shadowColor = dark ? 'rgba(0,0,0,.55)' : 'rgba(80,60,40,.28)'; g.shadowBlur = 9 * k; g.shadowOffsetY = 3 * k;
-      const fr = g.createLinearGradient(0, PY, 0, PY + PH);
-      if (dark) { fr.addColorStop(0, '#262733'); fr.addColorStop(0.5, '#14151e'); fr.addColorStop(1, '#0b0c13'); } else { fr.addColorStop(0, '#ffffff'); fr.addColorStop(0.55, '#f3f0ea'); fr.addColorStop(1, '#dfdad1'); }
-      rr(g, PX, PY, PW, PH, PH / 2); g.fillStyle = fr; g.fill();
-      g.restore();
-      rr(g, PX + 0.5, PY + 0.5, PW - 1, PH - 1, PH / 2); g.lineWidth = 1; g.strokeStyle = dark ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.9)'; g.stroke();
-      rr(g, WX - 1.6, WY - 1.6, WW + 3.2, WH + 3.2, WH / 2 + 1.6); g.lineWidth = 0.8; g.strokeStyle = dark ? 'rgba(214,176,112,.55)' : 'rgba(120,96,70,.3)'; g.stroke();
+      // the capsule (lacquer in the dark theme, glazed white in the light theme), painted once
+      sprites(dark);
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.clearRect(0, 0, c.width, c.height);
+      g.drawImage(fc, 0, 0);
+      g.setTransform(k, 0, 0, k, 0, 0);
       // the window
       g.save();
       rr(g, WX, WY, WW, WH, WH / 2); g.clip();
@@ -201,7 +230,7 @@ export default function MusicPlayer() {
       const kw = KW * (1 + S.stretch * 0.42 + 0.06 * S.press - 0.08 * S.over + 0.03 * S.ping), kh = KH * (1 - S.stretch * 0.14 - 0.03 * S.press + 0.05 * S.over);
       const kx = S.kx + S.overSide * S.over * 4;
       const x0 = kx - kw / 2, y0 = KY - kh / 2, r = kw / 2 - 1;
-      g.save(); g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 10 * k; g.shadowOffsetY = 4 * k; g.fillStyle = 'rgba(0,0,0,.4)'; rr(g, x0 + 5, y0 + 7, kw - 10, kh - 12, r); g.fill(); g.restore();
+      { const sx = (kw - 10) / (KW - 10), sy = (kh - 12) / (KH - 12); g.drawImage(ls, x0 + 5 - LM * sx, y0 + 7 - LM * sy, (KW - 10 + 2 * LM) * sx, (KH - 12 + 2 * LM) * sy); }
       g.save();
       rr(g, x0, y0, kw, kh, r); g.clip();
       g.fillStyle = dark ? '#191a24' : '#ece8e1'; g.fillRect(x0, y0, kw, kh);
@@ -211,7 +240,7 @@ export default function MusicPlayer() {
       const mag = MAG * (1 + 0.04 * S.press), inv = 1 / mag, half = kw / 2;
       const floorY = WY + WH * 0.94, dy0 = floorY + (WY - floorY) * mag, dh = WH * mag;
       const bend = (u) => u * inv + (1 - inv) * u * u * u;
-      const step = k >= 2 ? 0.5 : 1;
+      const step = 1; // one CSS pixel per strip: finer than a pixel of the room even under the glass
       for (let x = x0; x < x0 + kw; x += step) {
         const s0 = ((kx + half * bend((x - kx) / half) - WX) / WW) * sc.width, s1 = ((kx + half * bend((x + step - kx) / half) - WX) / WW) * sc.width;
         const c0 = Math.max(0, s0), c1 = Math.min(sc.width, s1);
@@ -244,12 +273,14 @@ export default function MusicPlayer() {
         else { g.beginPath(); g.moveTo(kx - 3.1, KY - 5.2); g.lineTo(kx + 5.4, KY); g.lineTo(kx - 3.1, KY + 5.2); g.closePath(); g.fill(); }
       }
       g.restore();
+      // the real button follows the lens (its focus ring); written only when it moves by half a pixel or more
+      const kxs = `${(Math.round(S.kx * 2) / 2).toFixed(1)}px`;
+      if (kxs !== S.kxs) { S.kxs = kxs; st.style.setProperty('--kx', kxs); }
       // the thick glass edge: a bright outer rim, a darker band, a fine inner line
       if (S.ping > 0.02) { rr(g, x0 - 0.6, y0 - 0.6, kw + 1.2, kh + 1.2, r + 0.6); g.lineWidth = 2.6; g.strokeStyle = `rgba(255,206,128,${(0.6 * S.ping).toFixed(3)})`; g.stroke(); }
       rr(g, x0 + 0.7, y0 + 0.7, kw - 1.4, kh - 1.4, r); g.lineWidth = 1.4; g.strokeStyle = 'rgba(255,255,255,.85)'; g.stroke();
       rr(g, x0 + 2.2, y0 + 2.2, kw - 4.4, kh - 4.4, r - 1.5); g.lineWidth = 2.2; g.strokeStyle = 'rgba(20,24,44,.22)'; g.stroke();
       rr(g, x0 + 3.6, y0 + 3.6, kw - 7.2, kh - 7.2, r - 3); g.lineWidth = 0.7; g.strokeStyle = 'rgba(255,255,255,.28)'; g.stroke();
-      st.style.setProperty('--kx', `${S.kx.toFixed(1)}px`);
     };
     const frame = (now) => {
       S.raf = 0;
@@ -346,10 +377,10 @@ export default function MusicPlayer() {
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     const onVis = () => kick.current();
     document.addEventListener('visibilitychange', onVis);
-    const mq = matchMedia(`(resolution: ${devicePixelRatio || 1}dppx)`); const onDpr = () => { size(); kick.current(); };
-    mq.addEventListener?.('change', onDpr);
+    const mq = matchMedia(`(resolution: ${devicePixelRatio || 1}dppx)`), mn = matchMedia(NARROW); const onDpr = () => { size(); kick.current(); };
+    mq.addEventListener?.('change', onDpr); mn.addEventListener?.('change', onDpr);
     return () => {
-      cancelAnimationFrame(S.raf); mo.disconnect(); document.removeEventListener('visibilitychange', onVis); mq.removeEventListener?.('change', onDpr);
+      cancelAnimationFrame(S.raf); mo.disconnect(); document.removeEventListener('visibilitychange', onVis); mq.removeEventListener?.('change', onDpr); mn.removeEventListener?.('change', onDpr);
       st.removeEventListener('pointerdown', down); st.removeEventListener('pointermove', move); st.removeEventListener('pointerup', up); st.removeEventListener('pointercancel', up);
       root.removeEventListener('pointerenter', enter); root.removeEventListener('pointerleave', leave);
       kick.current = () => {};

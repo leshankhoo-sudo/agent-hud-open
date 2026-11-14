@@ -16,12 +16,16 @@ let io = null, ro = null, raf = 0, started = false, stale = true;
 // work first (for example the whole page restyling during a theme switch), every frame.
 function measure() {
   stale = false;
-  const y = scrollY;
+  const y = (sy = scrollY); vh = innerHeight || 1;
   for (const [el, s] of scenes) { const r = el.getBoundingClientRect(); s.top = r.top + y; s.h = r.height; }
 }
 // write a variable only when its text changes: each write restyles the section
 const put = (el, s, k, v) => { if (s.out[k] !== v) { s.out[k] = v; el.style.setProperty(k, v); } };
 let mx = 0, my = 0, tx = 0, ty = 0, last = 0, dirty = false;
+// the scroll position, read when the page scrolls, not in the frame: reading it there would make the
+// browser lay the page out early whenever anything else had just changed (a drag of the volume, say)
+let sy = 0, vh = 1;
+const onScroll = () => { sy = scrollY; kick(); };
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
 const reduce = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -31,8 +35,11 @@ function frame(now) {
   const km = 1 - Math.exp(-dt * 4.2), kp = 1 - Math.exp(-dt * 12);
   mx += (tx - mx) * km; my += (ty - my) * km;
   let moving = Math.abs(tx - mx) > 0.0008 || Math.abs(ty - my) > 0.0008;
-  const vh = innerHeight || 1, y = scrollY;
+  // nothing on screen to move (the map page, for example): only the pointer is eased
+  let any = false; for (const s of scenes.values()) if (s.seen) { any = true; break; }
+  if (!any) { if (moving) raf = requestAnimationFrame(frame); else last = 0; dirty = false; return; }
   if (stale) measure();
+  const y = sy;
   for (const [el, s] of scenes) {
     if (!s.seen) continue;
     const top = s.top - y;
@@ -40,6 +47,8 @@ function frame(now) {
     if (s.p == null) s.p = target;
     s.p += (target - s.p) * kp;
     if (Math.abs(target - s.p) > 0.0005) moving = true; else s.p = target;
+    // the observer wakes sections a little before they scroll in; write only to those really on screen
+    if (top >= vh || top + s.h <= 0) continue;
     put(el, s, '--p', s.p.toFixed(4));
     put(el, s, '--mx', mx.toFixed(4));
     put(el, s, '--my', my.toFixed(4));
@@ -63,7 +72,8 @@ function start() {
     kick();
   }, { rootMargin: '10% 0px' });
   addEventListener('pointermove', onMove, { passive: true });
-  addEventListener('scroll', kick, { passive: true });
+  sy = scrollY; vh = innerHeight || 1;
+  addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', () => { stale = true; kick(); }, { passive: true });
   // any section changing height moves the ones below it
   ro = new ResizeObserver(() => { stale = true; kick(); });

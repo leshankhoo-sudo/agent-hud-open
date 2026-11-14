@@ -333,7 +333,16 @@ export function createPixelTea() {
   const stars = Array.from({ length: 16 }, () => [41 + Math.floor(rnd() * 136), 16 + Math.floor(rnd() * 6), rnd() * 6.28]);
 
   // how strongly a wave front is passing column x right now (0..1)
-  const waveAt = (x) => { let best = 0; const d = Math.abs(x - P.bell[0]); for (const w of S.waves) { const near = 1 - Math.abs(w.r - d) / 6; if (near > 0 && w.p * near > best) best = w.p * near; } return best; };
+  // how strongly a wave front is passing each column right now (0..1), worked out once a frame
+  const waveCol = new Float32Array(W);
+  const fillWaves = () => {
+    waveCol.fill(0);
+    for (const w of S.waves) for (let x = Math.max(0, Math.floor(P.bell[0] - w.r - 6)); x <= Math.min(W - 1, Math.ceil(P.bell[0] + w.r + 6)); x++) {
+      const near = 1 - Math.abs(w.r - Math.abs(x - P.bell[0])) / 6;
+      if (near > 0 && w.p * near > waveCol[x]) waveCol[x] = w.p * near;
+    }
+  };
+  const waveAt = (x) => waveCol[cl(Math.round(x), 0, W - 1)];
 
   function drawTraveller(T, o) {
     if (T.shown <= 0.01) return null;
@@ -455,6 +464,7 @@ export function createPixelTea() {
       return false;
     });
 
+    fillWaves();
     mat.set(base);
     buf = mat;
 
@@ -474,10 +484,14 @@ export function createPixelTea() {
     // maples: every bough sways a pixel with the mid range, with the gust of chapter 4, and as a wave passes
     const gust = p > 0.5 && p < 0.64 ? Math.sin(Math.PI * seg(p, 0.5, 0.64)) : 0;
     const shake = o.poke.maple < 1.5 ? (1 - o.poke.maple / 1.5) : 0;
-    for (const c of canopies) for (const [x, y, m, bough] of c.list) {
-      const wv = waveAt(x);
-      const s = still ? 0 : Math.sin(t * (0.9 + bough * 0.17) + bough * 1.7 + c.cx) * (0.35 + o.mid * 0.9) + gust * 1.6 + wv * 1.3 + shake * Math.sin(t * 18 + bough) * 1.5;
-      put(x + Math.round(s), y + (wv > 0.6 && (x + y) % 3 === 0 ? 1 : 0), m);
+    const sway = [0, 0, 0, 0];
+    for (const c of canopies) {
+      // each bough's own sway, once per bough; the wave adds per column
+      for (let k = 0; k < 4; k++) sway[k] = still ? 0 : Math.sin(t * (0.9 + k * 0.17) + k * 1.7 + c.cx) * (0.35 + o.mid * 0.9) + gust * 1.6 + shake * Math.sin(t * 18 + k) * 1.5;
+      for (const [x, y, m, bough] of c.list) {
+        const wv = still ? 0 : waveCol[x < 0 ? 0 : x >= W ? W - 1 : x];
+        put(x + Math.round(sway[bough < 0 ? 0 : bough > 3 ? 3 : bough] + wv * 1.3), y + (wv > 0.6 && (x + y) % 3 === 0 ? 1 : 0), m);
+      }
     }
 
     // leaves drifting down in the garden: a few always, more with the volume and on the beat

@@ -557,6 +557,13 @@ const sbFree = await ph.evaluate(() => { const b = document.querySelector('.seas
 check('phone: season button sits top left without covering Explore or the theme switch', !sbFree.nav && !sbFree.toggle && sbFree.inView, JSON.stringify(sbFree));
 const muFree = await ph.evaluate(() => { const m = document.querySelector('.koto-stage').getBoundingClientRect(); const ov = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return !(r.right <= m.left || r.left >= m.right || r.bottom <= m.top || r.top >= m.bottom); }; return { toggle: ov('.theme-toggle'), badge: ov('.season-badge summary'), nav: ov('.nav-btn'), w: Math.round(m.width), right: Math.round(m.right) }; });
 check('phone: the music control sits beside the theme switch without covering it, the season button or Explore', !muFree.toggle && !muFree.badge && !muFree.nav && muFree.w < 100, JSON.stringify(muFree));
+// opened on the phone (keyboard focus keeps it open; the longest chapter name), the control and its caption stay on screen
+await ph.evaluate(() => { const i = document.querySelector('.koto-range input'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '0.46'); i.dispatchEvent(new Event('input', { bubbles: true })); });
+await ph.locator('.koto-range input').focus(); await ph.waitForTimeout(900);
+const muOpen = await ph.evaluate(() => { const r = (s) => document.querySelector(s).getBoundingClientRect(); const s = r('.koto-stage'), c = r('.koto-cap'); return { stage: [Math.round(s.left), Math.round(s.right)], cap: [Math.round(c.left), Math.round(c.right)], vw: innerWidth, text: document.querySelector('.koto-cap').textContent }; });
+check('phone: opened, the music control and its caption fit on the screen', muOpen.stage[0] >= 0 && muOpen.stage[1] <= muOpen.vw && muOpen.cap[0] >= 0 && muOpen.cap[1] <= muOpen.vw, JSON.stringify(muOpen));
+await ph.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
+await ph.waitForTimeout(700);
 await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
 
 check('no page errors', errors.length === 0, errors.join(' | '));
