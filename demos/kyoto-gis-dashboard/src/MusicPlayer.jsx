@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { buildTeaCache, drawTeaRoom, hitTea, chapterOf } from './lib/teaScene.js';
+import { createPixelTea, chapterOf, W as GW, H as GH } from './lib/pixelTea.js';
 import { createFoley } from './lib/foley.js';
+import { beatMap, beatAt } from './lib/beatClock.js';
 
-// Background music as a small glass window onto a tea room: 紅葉の小さな奇跡, a little story that
-// the volume plays (lib/teaScene.js). The glass lens is the volume; pressing it plays or pauses.
-// Moving it moves the story forwards and backwards (story = volume), while the music keeps its own
-// place. The music itself colours the room through a few smoothed bands (low, mid, high and
-// transients), and every action of the story has a small synthesised sound (lib/foley.js) on its
-// own channel, which follows the volume and is silent at 0.
+// Background music as a small glass window onto a tea room in pixel art: 紅葉の小さな奇跡, a little
+// story that the volume plays (lib/pixelTea.js). The glass lens is the volume; pressing it plays or
+// pauses. Moving it moves the story forwards and backwards (story = volume), while the music keeps
+// its own place. Everything in the room hangs on the same few things: the volume (story, and how
+// many lights are on), the music's beat (lib/beatClock.js: the wind bell rings a wave on each beat,
+// which travels as far as the lens and sways what it passes), and a few smoothed bands of the music
+// (low, mid, high and transients). Every action of the story has a small synthesised sound
+// (lib/foley.js) on its own channel, which follows the volume and is silent at 0.
 //
 // Audio: off until the visitor plays it; the file is only downloaded then. It loops inside the
 // decoded buffer between two sample-exact points, so there is no gap at the loop.
@@ -74,11 +77,13 @@ export default function MusicPlayer() {
       src.connect(gain);
       // a tap for the scene: the music before the volume is applied, so the room answers the music, not the slider
       const an = ctx.createAnalyser(); an.fftSize = 1024; an.smoothingTimeConstant = 0.6; src.connect(an);
-      src.start(0, meta.loop_start);
+      const t0 = ctx.currentTime;
+      src.start(t0, meta.loop_start);
       const v = live.current.vol;
       gain.gain.setTargetAtTime(v * v, ctx.currentTime, 0.6); // fade in
       sfx.gain.setTargetAtTime(v > 0.005 ? 0.35 + 0.45 * v : 0, ctx.currentTime, 0.3);
-      au.current = { ctx, gain, sfx, src, an, td: new Uint8Array(an.fftSize), fd: new Uint8Array(an.frequencyBinCount), foley: createFoley(ctx, sfx) };
+      // t0 and the tempo map give the beat the music is on (the context's clock stops while paused)
+      au.current = { ctx, gain, sfx, src, an, td: new Uint8Array(an.fftSize), fd: new Uint8Array(an.frequencyBinCount), foley: createFoley(ctx, sfx), t0, beats: beatMap(meta.bpm, meta.bars) };
       box.current.__foley = au.current.foley; // for tests: the sounds it has played
       if (ctx.state === 'suspended') await ctx.resume();
       setState('playing');
@@ -107,19 +112,23 @@ export default function MusicPlayer() {
   useEffect(() => {
     const st = stage.current, c = cv.current, root = box.current;
     const g = c.getContext('2d');
-    const sc = document.createElement('canvas'), sg = sc.getContext('2d');
+    const world = createPixelTea(); // the room, GW x GH pixels
+    const sc = document.createElement('canvas'), sg = sc.getContext('2d'); // the room at a whole-number size, pixels kept square and sharp
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const S = {
       kx: K0 + (K1 - K0) * live.current.vol, kv: 0, stretch: 0, press: 0, over: 0, overSide: 0,
-      p: live.current.vol, pv: 0, speed: 0, catUp: 0, px: 0, hover: false, overKnob: false, drag: null, raf: 0, last: 0, t: 0, dpr: 1, skip: false, mouseX: null,
-      band: { low: 0, mid: 0, high: 0, rms: 0, base: 0, trans: 0 }, nextFeat: 0, pokes: {}, cache: null,
+      p: live.current.vol, pv: 0, speed: 0, catUp: 0, hover: false, overKnob: false, drag: null, raf: 0, last: 0, t: 0, dpr: 1, skip: false,
+      band: { low: 0, mid: 0, high: 0, rms: 0, base: 0, trans: 0 }, nextFeat: 0, pokes: {}, beat: null, ping: 0,
     };
     root.__band = S.band; // for tests: the smoothed music features
+    root.__scene = S;     // for tests: the story position and the beat
+    root.__world = world.canvas; // for tests: the pixel picture itself
     const size = () => {
       S.dpr = Math.min(devicePixelRatio || 1, 2.5);
       c.width = Math.round(CW * S.dpr * OPEN); c.height = Math.round(CH * S.dpr * OPEN);
-      S.res = S.dpr * MAG * OPEN; sc.width = Math.round(WW * S.res); sc.height = Math.round(WH * S.res);
-      S.cache = buildTeaCache(S.res); // the still parts of the room, painted once per size
+      // each world pixel becomes n x n device pixels (n whole), then the sheet is fitted to the window
+      const n = Math.max(2, Math.ceil((WW * S.dpr * MAG * OPEN) / GW));
+      sc.width = GW * n; sc.height = GH * n; sg.imageSmoothingEnabled = false;
     };
     size();
     // smoothed features of the music, read about 30 times a second while it plays
@@ -151,14 +160,24 @@ export default function MusicPlayer() {
       const B = S.band, now = S.t;
       const age = (n) => (S.pokes[n] != null ? now - S.pokes[n] : 99);
       const idle = (performance.now() - live.current.volAt) / 1000;
-      sg.setTransform(S.res, 0, 0, S.res, 0, 0);
-      drawTeaRoom(sg, S.cache, {
-        p: S.p, t: S.t, dt: S.dt, still: reduce, px: S.px,
-        low: B.low, mid: B.mid + (age('maple') < 1.5 ? (1 - age('maple') / 1.5) * 1.2 : 0), high: Math.min(1, B.high + (age('candle') < 1 ? 1 - age('candle') : 0)), trans: B.trans,
-        idle: S.drag ? 0 : idle, catBlink: age('cat') < 0.35 ? 1 : 0,
-        react: { speed: S.speed, catUp: Math.max(S.catUp, age('cat') < 0.9 ? Math.sin(Math.PI * age('cat') / 0.9) : 0) },
+      // the beat the music is on, from its own clock (less the time the sound takes to leave the speakers)
+      const a = au.current, playing = !!a && live.current.state === 'playing';
+      S.beat = playing ? beatAt(a.beats, a.ctx.currentTime - a.t0 - (a.ctx.outputLatency || 0)) : null;
+      const events = world.render({
+        p: S.p, t: S.t, dt: S.dt, still: reduce, playing, vol: live.current.vol, beat: S.beat,
+        low: B.low, mid: B.mid, high: B.high, trans: B.trans,
+        idle: S.drag ? 0 : idle, speed: S.speed, catBlink: age('cat') < 0.35 ? 1 : 0,
+        catUp: Math.max(S.catUp, age('cat') < 0.9 ? Math.sin(Math.PI * age('cat') / 0.9) : 0),
+        lensX: ((S.kx - WX) / WW) * GW, poke: { maple: age('maple'), candle: age('candle') },
       });
+      // the deer-scarer's knock is heard only while the control is open
+      for (const e of events) {
+        if (e === 'kon' && playing && S.hover) a.foley.play('kon');
+        if (e === 'reach') S.ping = 1; // the ring arrives at the glass: its rim answers
+      }
+      sg.drawImage(world.canvas, 0, 0, sc.width, sc.height);
       g.setTransform(k, 0, 0, k, 0, 0);
+      g.imageSmoothingQuality = 'high';
       g.clearRect(0, 0, CW, CH);
       // the capsule: lacquer in the dark theme, glazed white in the light theme
       g.save();
@@ -179,7 +198,7 @@ export default function MusicPlayer() {
       rr(g, WX, WY, WW, WH, WH / 2); g.lineWidth = 3; g.strokeStyle = 'rgba(0,0,0,.3)'; g.stroke();
       g.restore();
       // the glass lens: wider when pressed, stretched by speed, squeezed past an end; thick-edged optical glass
-      const kw = KW * (1 + S.stretch * 0.42 + 0.06 * S.press - 0.08 * S.over), kh = KH * (1 - S.stretch * 0.14 - 0.03 * S.press + 0.05 * S.over);
+      const kw = KW * (1 + S.stretch * 0.42 + 0.06 * S.press - 0.08 * S.over + 0.03 * S.ping), kh = KH * (1 - S.stretch * 0.14 - 0.03 * S.press + 0.05 * S.over);
       const kx = S.kx + S.overSide * S.over * 4;
       const x0 = kx - kw / 2, y0 = KY - kh / 2, r = kw / 2 - 1;
       g.save(); g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 10 * k; g.shadowOffsetY = 4 * k; g.fillStyle = 'rgba(0,0,0,.4)'; rr(g, x0 + 5, y0 + 7, kw - 10, kh - 12, r); g.fill(); g.restore();
@@ -187,8 +206,18 @@ export default function MusicPlayer() {
       rr(g, x0, y0, kw, kh, r); g.clip();
       g.fillStyle = dark ? '#191a24' : '#ece8e1'; g.fillRect(x0, y0, kw, kh);
       // the part of the room under the lens, magnified, with a slight barrel bend at the rim
-      const mag = MAG * (1 + 0.04 * S.press);
-      g.drawImage(sc, kx + (WX - kx) * mag, KY + (WY - KY) * mag, WW * mag, WH * mag);
+      // drawn in thin upright strips: 1.3x in the middle, easing to the true position at the rim, so the
+      // picture runs on unbroken into the room beside it; upwards from the floor line, so feet stay on it
+      const mag = MAG * (1 + 0.04 * S.press), inv = 1 / mag, half = kw / 2;
+      const floorY = WY + WH * 0.94, dy0 = floorY + (WY - floorY) * mag, dh = WH * mag;
+      const bend = (u) => u * inv + (1 - inv) * u * u * u;
+      const step = k >= 2 ? 0.5 : 1;
+      for (let x = x0; x < x0 + kw; x += step) {
+        const s0 = ((kx + half * bend((x - kx) / half) - WX) / WW) * sc.width, s1 = ((kx + half * bend((x + step - kx) / half) - WX) / WW) * sc.width;
+        const c0 = Math.max(0, s0), c1 = Math.min(sc.width, s1);
+        if (c1 <= c0) continue;
+        g.drawImage(sc, c0, 0, c1 - c0, sc.height, x + ((c0 - s0) / (s1 - s0)) * step, dy0, ((c1 - c0) / (s1 - s0)) * step + 0.5 / k, dh);
+      }
       const rim = g.createRadialGradient(kx, KY, kw * 0.32, kx, KY, kw * 0.62);
       rim.addColorStop(0, 'rgba(0,0,0,0)'); rim.addColorStop(1, 'rgba(10,12,30,.42)');
       g.fillStyle = rim; g.fillRect(x0, y0, kw, kh);
@@ -216,6 +245,7 @@ export default function MusicPlayer() {
       }
       g.restore();
       // the thick glass edge: a bright outer rim, a darker band, a fine inner line
+      if (S.ping > 0.02) { rr(g, x0 - 0.6, y0 - 0.6, kw + 1.2, kh + 1.2, r + 0.6); g.lineWidth = 2.6; g.strokeStyle = `rgba(255,206,128,${(0.6 * S.ping).toFixed(3)})`; g.stroke(); }
       rr(g, x0 + 0.7, y0 + 0.7, kw - 1.4, kh - 1.4, r); g.lineWidth = 1.4; g.strokeStyle = 'rgba(255,255,255,.85)'; g.stroke();
       rr(g, x0 + 2.2, y0 + 2.2, kw - 4.4, kh - 4.4, r - 1.5); g.lineWidth = 2.2; g.strokeStyle = 'rgba(20,24,44,.22)'; g.stroke();
       rr(g, x0 + 3.6, y0 + 3.6, kw - 7.2, kh - 7.2, r - 3); g.lineWidth = 0.7; g.strokeStyle = 'rgba(255,255,255,.28)'; g.stroke();
@@ -251,10 +281,9 @@ export default function MusicPlayer() {
       const a = au.current;
       if (a && s === 'playing') { a.foley.update(p0, S.p, sp); a.foley.tick(S.p); }
       features(now, dt);
-      const pxT = reduce ? 0 : (S.mouseX == null ? 0 : S.mouseX * 0.7);
-      S.px += (pxT - S.px) * Math.min(1, dt * 5);
+      S.ping *= Math.exp(-dt * 7);
       draw();
-      const moving = Math.abs(target - S.kx) > 0.05 || Math.abs(S.kv) > 0.5 || Math.abs(v - S.p) > 0.0005 || Math.abs(pxT - S.px) > 0.003 || S.press > 0.01 || S.over > 0.01 || S.band.rms > 0.01;
+      const moving = Math.abs(target - S.kx) > 0.05 || Math.abs(S.kv) > 0.5 || Math.abs(v - S.p) > 0.0005 || S.press > 0.01 || S.over > 0.01 || S.band.rms > 0.01 || S.ping > 0.02 || world.busy();
       const living = !reduce && (s === 'playing' || S.hover); // flame, steam, breathing
       if (!document.hidden && (moving || S.drag || s === 'loading' || S.t - (S.poked ?? -99) < 3 || living)) S.raf = requestAnimationFrame(frame);
       else S.last = 0;
@@ -264,11 +293,12 @@ export default function MusicPlayer() {
 
     const poke = (what) => {
       S.pokes[what] = S.t; S.poked = S.t;
+      if (what === 'bell' && !reduce) world.ring(); // a wave of its own, whether or not the music plays
       const f = au.current?.foley;
-      if (f && live.current.state === 'playing') f.play(what === 'cat' ? 'meow' : what === 'maple' ? 'leaf' : what === 'traveller' ? 'fabric' : 'paw');
+      if (f && live.current.state === 'playing') f.play(what === 'cat' ? 'meow' : what === 'maple' ? 'leaf' : what === 'traveller' ? 'fabric' : what === 'bell' ? 'chime' : 'paw');
     };
     const local = (e) => { const r = c.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * CW, ((e.clientY - r.top) / r.height) * CH]; };
-    const sceneAt = (x, y) => (x >= WX && x <= WX + WW && y >= WY && y <= WY + WH ? hitTea(x - WX, y - WY, S.p, S.px) : null);
+    const sceneAt = (x, y) => (x >= WX && x <= WX + WW && y >= WY && y <= WY + WH ? world.hit(((x - WX) / WW) * GW, ((y - WY) / WH) * GH, S.p) : null);
     const toVol = (x) => Math.round(clamp((x - K0) / (K1 - K0)) * 100) / 100;
     const down = (e) => {
       if (e.button != null && e.button !== 0) return;
@@ -284,7 +314,7 @@ export default function MusicPlayer() {
     };
     const move = (e) => {
       const [x, y] = local(e);
-      S.mouseX = clamp((x - CW / 2) / (CW / 2), -1, 1);
+
       S.overKnob = Math.abs(x - S.kx) <= KW / 2 && y > 0 && y < CH;
       if (!S.drag) st.style.cursor = !S.overKnob && sceneAt(x, y) ? 'pointer' : '';
       const d = S.drag;
@@ -309,7 +339,7 @@ export default function MusicPlayer() {
       kick.current();
     };
     const enter = () => { S.hover = true; kick.current(); };
-    const leave = () => { S.hover = false; S.overKnob = false; S.mouseX = null; st.style.cursor = ''; kick.current(); };
+    const leave = () => { S.hover = false; S.overKnob = false; st.style.cursor = ''; kick.current(); };
     st.addEventListener('pointerdown', down); st.addEventListener('pointermove', move); st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
     root.addEventListener('pointerenter', enter); root.addEventListener('pointerleave', leave);
     const mo = new MutationObserver(() => kick.current());

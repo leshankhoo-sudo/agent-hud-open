@@ -478,7 +478,7 @@ git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 
 ## 16. 2026-11-14 更新（二）：玻璃明暗开关、音量小剧场（本节优先于上文）
 
-- 新文件：`src/lib/oklab.js`、`src/lib/glassSwitch.js`（明暗开关的绘制和物理）、`src/lib/teaScene.js`（茶室故事）、`src/lib/foley.js`（合成音效）。`src/ThemeToggle.jsx` 和 `src/MusicPlayer.jsx` 重写，`src/lib/gardenScene.js` 已删除。说明见 README 6i。
+- 新文件：`src/lib/oklab.js`、`src/lib/glassSwitch.js`（明暗开关的绘制和物理）、`src/lib/teaScene.js`（茶室故事，第 17 节起由 `src/lib/pixelTea.js` 取代）、`src/lib/foley.js`（合成音效）。`src/ThemeToggle.jsx` 和 `src/MusicPlayer.jsx` 重写，`src/lib/gardenScene.js` 已删除。说明见 README 6i。
 - 明暗开关和主题系统的连接：开关只在结果确定时调用原来的 `onChange`（App 里的 `setTheme`，会写 localStorage），前面仍是原来的 view transition 波纹、水圈和花瓣。拖动时只更新开关自己的 canvas 和它自己的 `--tt-page` 变量，不写 `<html>` 上的变量（写在 `<html>` 上会让整页约 1500 个元素重算样式）。
 - 实测：开关一帧绘制 1.6–1.9 ms（DPR 1–3）；静止时停止，夜间只有星星约每秒 8 次重画；整个主题切换 44–53 fps，点击到下一帧 40–56 ms。在 DPR 2–3 下拖动时整页约 20–37 fps，限制来自页面本身（隐藏开关 canvas 后帧率几乎一样）。
 - 音量小剧场实测（地图页）：控件收起且暂停时 0 次重画；收起但播放时约每秒 18 次；打开播放时页面 82–87 fps；拖动经过整个故事 43–65 fps。
@@ -487,3 +487,14 @@ git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 - 测试：逻辑 23 / 23（新增：同一音量画面相同、各章节时间点），浏览器 100 / 100（新增：拖动中主题不变、开关 canvas 高清且不接收事件；音乐的几项检查改为故事章节和点猫）。另有一次性检查（不在仓库）：慢慢向前拖时每个音效一次、倒着拖只有脚步和门、快速甩动每种声音最多一次、mp3 只下载一次、暂停后频段归零。
 - 没有测试的：真实手机和平板上的触摸手感、Safari（`ctx.filter` 不支持时会改用阴影绘制）；音效只在耳机/喇叭层面没有人工试听。
 - Windows ZIP（`Kyoto-GIS-Dashboard-Windows-2026-11-14b.zip`）和在线预览链接（第 20 版）已更新到这一版；ZIP 解压后用它自带的启动服务器跑浏览器测试，100 / 100 通过。
+
+## 17. 2026-11-14 更新（三）：音量小剧场改成像素风（本节优先于上文）
+
+- 新文件：`src/lib/pixelTea.js`（像素茶室：材质缓冲、调色板、灯光、抖动、角色、声波）、`src/lib/beatClock.js`（按作曲脚本的速度曲线算节拍）。`src/lib/teaScene.js` 已删除。`src/MusicPlayer.jsx` 改为调用像素世界，并把透镜改成分条绘制的玻璃。`src/lib/foley.js` 新增「kon」。说明见 README 6j。
+- 参考文件 `motdes-resident-slider.zip` 是 MIT 许可（slider-resident，@Lattice_Node；JK 改版）。只借用做法，没有复制代码或画面；参考文件没有放进仓库。
+- 故事函数（`traveller / cat / leaf / crane / door / steam / lights / pourPose`）仍然是音量的纯函数，坐标改成 192×59 的像素格。改位置时改 `PLACES`，测试会检查角色不出画面。
+- 灯光：每盏灯一张预先算好的强度图（月光、蜡烛、对面的窗、门、房间、吊灯笼、石灯笼），每帧只乘上各自的开关和节拍系数再相加；纸鹤和透镜的光每帧现算。全部加起来切成 8 级，用 4×4 Bayer 抖动。
+- 节拍：`beat = beatAt(beatMap(bpm, bars), ctx.currentTime - t0 - outputLatency)`。AudioContext 暂停时它的时钟也停，所以暂停后恢复不会错位。换曲子或改 `compose_music.py` 里的速度曲线时，`beatClock.js` 里的公式要一起改（有测试核对总长度）。
+- 测试用的钩子：`.music` 元素上的 `__scene`（故事位置、节拍、ping）、`__world`（192×59 的画布）、`__foley`、`__band`。
+- 测试：逻辑 25 / 25，浏览器 102 / 102。
+- Windows ZIP 和在线预览链接**还是上一版**（玻璃开关 + 矢量茶室），本次没有更新。

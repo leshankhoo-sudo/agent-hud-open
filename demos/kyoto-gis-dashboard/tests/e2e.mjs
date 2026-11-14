@@ -183,14 +183,28 @@ const d1 = await dome();
 check('music: the room opens under the pointer; dragging the glass dome raises the volume and starts the music', d0.w > 250 && !/playing/.test(d0.cls) && d1.vol > d0.vol + 0.2 && d1.vol > 0.85 && d1.x > d0.x + 40 && mp3Requests === 1, JSON.stringify({ w: d0.w, v0: d0.vol, v1: d1.vol }));
 const lit = await page.evaluate(() => { const c = document.querySelector('.koto-cv'), g = c.getContext('2d'); const k = c.width / 280; const px = g.getImageData(Math.round(123 * k), Math.round(54 * k), 1, 1).data; return { w: c.width, rgb: [px[0], px[1], px[2]], cap: document.querySelector('.koto-cap').textContent }; });
 check('music: the volume moves the story; near the top it is at the miracle or the serenity chapter, and the caption names it', /Kyoto, Slowly · \d+% · 0[67] /.test(lit.cap) && lit.w > 280, lit.cap);
-// tapping something in the room (here the cat, clear of the lens at this volume) makes it react and does not touch the volume or the music
+// tapping something in the room (here the wind bell, clear of the lens at this volume) makes it react and does not touch the volume or the music
 const tapB = await dome();
 await page.locator('.music').hover(); await page.waitForTimeout(700);
 const stg = await page.locator('.koto-stage').boundingBox();
-await page.mouse.click(stg.x + ((13 + 177) / 280) * stg.width, stg.y + ((13 + 68.4) / 108) * stg.height);
+await page.mouse.click(stg.x + ((13 + (50 / 192) * 254) / 280) * stg.width, stg.y + ((13 + (21 / 59) * 78) / 108) * stg.height); // the bell is at (50, 21) of the 192 x 59 world
 await page.waitForTimeout(300);
 const tapA = await dome();
-check('music: a tap on the cat in the room leaves the volume and the music as they were', tapA.vol === tapB.vol && /playing/.test(tapA.cls), `${tapB.vol} -> ${tapA.vol}`);
+const rung = await page.evaluate(() => document.querySelector('.music').__foley.log.includes('chime'));
+check('music: a tap on the wind bell in the room rings it and leaves the volume and the music as they were', tapA.vol === tapB.vol && /playing/.test(tapA.cls) && rung, `${tapB.vol} -> ${tapA.vol}, rung ${rung}`);
+// the room keeps time with the music: the beat it reads follows the piece's own tempo (80 BPM, a touch slower in the rubato)
+const beatA = await page.evaluate(() => ({ b: document.querySelector('.music').__scene.beat, t: performance.now() }));
+await page.waitForTimeout(3000);
+const beatB = await page.evaluate(() => ({ b: document.querySelector('.music').__scene.beat, t: performance.now() }));
+const bps = ((beatB.b - beatA.b + 192) % 192) / ((beatB.t - beatA.t) / 1000);
+check('music: the pixel room follows the beat of the piece (about 80 beats a minute)', bps > 1.25 && bps < 1.36, `${(bps * 60).toFixed(1)} BPM`);
+// the picture is pixel art: a small sheet (192 x 59) painted from a fixed palette of 13 hues x 8 tones, no in-between colours
+const pix = await page.evaluate(() => {
+  const c = document.querySelector(".music").__world, d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;
+  const seen = new Set(); for (let i = 0; i < d.length; i += 4) seen.add((d[i] << 16) | (d[i + 1] << 8) | d[i + 2]);
+  return { w: c.width, h: c.height, colours: seen.size };
+});
+check("music: the room is drawn as pixel art from a small fixed palette", pix.w === 192 && pix.h === 59 && pix.colours >= 12 && pix.colours <= 104, JSON.stringify(pix));
 await page.locator('.koto-range input').focus();
 await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowLeft');
 const d2 = await dome();

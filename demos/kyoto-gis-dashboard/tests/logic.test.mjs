@@ -370,9 +370,10 @@ test('season: Kyoto date (JST), JMA months, sakura and autumn-leaves windows fro
 });
 
 // ---------- the tea-room story in the music control ----------
-import { traveller, cat, leaf, crane, door, steam, chapterOf } from '../src/lib/teaScene.js';
+import { traveller, cat, leaf, crane, door, steam, chapterOf, lights, pourPose, PLACES, W as TEA_W, H as TEA_H } from '../src/lib/pixelTea.js';
+import { beatMap, beatAt } from '../src/lib/beatClock.js';
 test('tea story: the same volume always gives the same picture, whichever way it was reached', () => {
-  const snap = (p) => JSON.stringify([traveller(p), cat(p), leaf(p), crane(p), door(p), steam(p)]);
+  const snap = (p) => JSON.stringify([traveller(p), cat(p), leaf(p), crane(p), door(p), steam(p), lights(p), pourPose(p)]);
   const ps = Array.from({ length: 101 }, (_, i) => i / 100);
   const forward = ps.map(snap), backward = [...ps].reverse().map(snap).reverse();
   assert.deepEqual(forward, backward);
@@ -383,7 +384,37 @@ test('tea story: chapters and the main moments sit where the brief puts them', (
   assert.equal(chapterOf(0.55), '04 Playful wind'); assert.equal(chapterOf(0.7), '05 The warmth of tea'); assert.equal(chapterOf(0.9), '06 The little miracle'); assert.equal(chapterOf(1), '07 Serenity');
   assert.equal(traveller(0.1).shown, 0); assert.ok(traveller(0.3).shown === 1 && traveller(0.3).walking);
   assert.equal(cat(0.3).visible, false); assert.ok(cat(0.36).ears > 0 && cat(0.36).eyes === 0); assert.ok(cat(0.45).eyes === 1);
-  assert.ok(leaf(0.3).y > 50 && leaf(0.3).x < 112); assert.ok(leaf(0.7).x > 140 && leaf(0.7).y > 60);
+  // the leaf rests in the garden, then on the table in the room (world pixels)
+  assert.deepEqual([leaf(0.3).x, leaf(0.3).y], PLACES.leafRest); assert.deepEqual([leaf(0.7).x, leaf(0.7).y], PLACES.leafRoom);
+  assert.ok(PLACES.leafRest[1] < 43 && PLACES.leafRoom[0] > PLACES.table[0] && PLACES.leafRoom[0] < PLACES.table[1]);
   assert.ok(traveller(0.75).sit === 1 && traveller(0.75).pour > 0);
-  assert.equal(crane(0.8), null); assert.ok(crane(0.9).form === 1); assert.ok(crane(1).leafK === 1 && crane(1).y > 45);
+  assert.equal(crane(0.8), null); assert.ok(crane(0.9).form === 1); assert.ok(crane(1).leafK === 1 && crane(1).y > 35);
+  assert.ok(pourPose(0.6).hold === 0 && pourPose(0.75).hold === 1 && pourPose(0.75).flow === 1 && pourPose(0.9).hold === 0);
+  assert.ok(traveller(0.75).grip === 1 && traveller(0.9).grip === 0 && traveller(1).cup === 1);
+});
+test('tea story: everything stays inside the pixel world, and the lights come on in order as the volume rises', () => {
+  for (let i = 0; i <= 200; i++) {
+    const p = i / 200, T = traveller(p), C = cat(p), L = leaf(p), K = crane(p);
+    for (const [x, y] of [[T.x, PLACES.floor], [C.x, C.y], [L.x, L.y], ...(K ? [[K.x, K.y]] : [])]) assert.ok(x >= 0 && x < TEA_W && y >= 0 && y < TEA_H, `p=${p}: ${x},${y}`);
+  }
+  let last = lights(0);
+  assert.deepEqual([last.candle, last.windows, last.door, last.hang, last.lantern], [0, 0, 0, 0, 0]); // volume 0: moonlight only
+  for (let i = 1; i <= 200; i++) {
+    const g = lights(i / 200);
+    for (const k of ['candle', 'windows', 'paper', 'door', 'hang', 'lantern']) assert.ok(g[k] >= last[k], `${k} goes down at ${i / 200}`);
+    last = g;
+  }
+  assert.deepEqual([last.candle, last.windows, last.door, last.hang, last.lantern], [1, 7, 1, 1, 1]);
+  // order: candle, the house's windows, the door, the hanging lantern, the stone lantern
+  const first = (k, v) => { for (let i = 0; i <= 1000; i++) if (lights(i / 1000)[k] >= v) return i / 1000; };
+  assert.ok(first('candle', 1) < first('windows', 1) && first('windows', 7) < first('hang', 1) && first('door', 1) < first('hang', 1) && first('hang', 1) < first('lantern', 1));
+});
+test('beat clock: the tempo map adds up to the loop in music.json and gives whole numbers on the beats', () => {
+  const m = JSON.parse(readFileSync(new URL('../public/data/music.json', import.meta.url)));
+  const T = beatMap(m.bpm, m.bars);
+  assert.equal(T.length, m.bars * 4 + 1);
+  assert.ok(Math.abs(T[m.bars * 4] - (m.loop_end - m.loop_start)) < 0.002, `${T[m.bars * 4]} vs ${m.loop_end - m.loop_start}`);
+  for (let i = 1; i < T.length; i++) assert.ok(T[i] - T[i - 1] >= 60 / m.bpm - 1e-9 && T[i] - T[i - 1] < (60 / m.bpm) * 1.04); // only ever a touch slower than 80 BPM
+  assert.ok(Math.abs(beatAt(T, T[57]) - 57) < 1e-9 && Math.abs(beatAt(T, (T[10] + T[11]) / 2) - 10.5) < 1e-9);
+  assert.ok(Math.abs(beatAt(T, T[m.bars * 4] + T[3]) - 3) < 1e-6 && beatAt(T, -0.01) > m.bars * 4 - 1); // wraps with the loop
 });

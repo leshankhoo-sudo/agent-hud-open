@@ -52,8 +52,10 @@ export function createFoley(ctx, out) {
     paw: () => { noiseHit({ type: 'lowpass', f: 900, peak: 0.08, decay: 0.04 }); return 0.1; },
     clink: () => { const t = ctx.currentTime; for (const [f, a] of [[2630, 0.08], [3910, 0.05], [5840, 0.025]]) tone({ at: t, f, peak: a, decay: 0.35 }); return 0.4; },
     chime: () => { const t = ctx.currentTime, f0 = [1568, 1760, 2093][Math.floor(Math.random() * 3)]; for (const [m, a, d] of [[1, 0.09, 2.2], [2.76, 0.04, 1.2], [5.4, 0.018, 0.6]]) tone({ at: t, f: f0 * m, peak: a, decay: d }); return 2.3; },
+    // the deer-scarer: hollow bamboo knocking on stone
+    kon: () => { const t = ctx.currentTime; tone({ at: t, f: 620, peak: 0.1, attack: 0.002, decay: 0.09, glide: (fq, at) => fq.exponentialRampToValueAtTime(410, at + 0.08) }); tone({ at: t, f: 1240, type: 'triangle', peak: 0.03, attack: 0.002, decay: 0.05 }); noiseHit({ at: t, f: 900, q: 3, peak: 0.07, attack: 0.002, decay: 0.04 }); return 0.2; },
   };
-  const COOL = { step: 0.11, shoji: 0.7, fabric: 0.4, bell: 0.7, meow: 0.9, wind: 1.6, leaf: 0.3, paw: 0.25, clink: 0.6, chime: 1.4 };
+  const COOL = { step: 0.11, shoji: 0.7, fabric: 0.4, bell: 0.7, meow: 0.9, wind: 1.6, leaf: 0.3, paw: 0.25, clink: 0.6, chime: 1.4, kon: 2 };
   const MAIN = new Set(['shoji', 'meow', 'chime', 'clink']);
   const play = (name, { fast = false } = {}) => {
     const now = ctx.currentTime;
