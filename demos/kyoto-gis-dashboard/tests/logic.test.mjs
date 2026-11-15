@@ -229,21 +229,28 @@ test('Tokyo hour key', () => {
   assert.equal(tokyoHourKey(new Date('2026-11-09T19:30:00Z')), '2026-11-10T04:00');
 });
 
-test('photos: real files, free licences, credits, and only named records within 300 m', async () => {
+test('photos: real files, free licences, credits; name matches only for named records, own OSM links for any', async () => {
   const { existsSync } = await import('node:fs');
   const ph = J('photos.json');
   const A = J('attractions.geojson').features;
   const named = new Set(A.filter((f) => (f.properties.name || '').trim()).map((f) => f.properties.id));
   assert.equal(ph.named_records, named.size);
   assert.equal(Object.keys(ph.photos).length, ph.with_photo);
+  const osm = J('../../data/cache/osm_attraction_nodes.json').nodes;
+  const byId = Object.fromEntries(A.map((f) => [f.properties.id, f.properties]));
   for (const [id, p] of Object.entries(ph.photos)) {
-    assert.ok(named.has(id), `${id} has no name`);
+    // a photo found by name needs a name; one linked from the record's own OSM node needs that link
+    if (p.match.startsWith('osm-')) {
+      const t = osm[byId[id].osm_id].tags;
+      for (const [k, v] of Object.entries(p.osm_tags)) assert.equal(t[k], v, `${id} ${k}`);
+      if (p.match === 'osm-wikidata') assert.equal((t.wikidata || '').split(';')[0] || p.wikidata, p.wikidata);
+    } else assert.ok(named.has(id), `${id} has no name`);
     assert.ok(existsSync(new URL('../public/' + p.src, import.meta.url)), p.src);
     assert.match(p.license, /^(CC0|Public domain|CC BY(-SA)? [\d.]+)$/);
     assert.ok(!/\b(NC|ND)\b/.test(p.license));
     assert.ok(p.artist && p.page.startsWith('https://commons.wikimedia.org/'));
-    assert.ok(p.distance_m <= 300);
-    assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo'].includes(p.match));
+    assert.ok(p.distance_m == null ? p.match.startsWith('osm-') : p.distance_m <= (p.match === 'osm-wikidata' ? 1000 : p.match === 'commons-near' ? 150 : 300));
+    assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo', 'osm-wikidata', 'osm-image', 'osm-commons', 'commons-near'].includes(p.match));
   }
 });
 

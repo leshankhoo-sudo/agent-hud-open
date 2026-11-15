@@ -1,19 +1,26 @@
 {
- "source": "Wikidata (P18) and Wikimedia Commons",
+ "source": "Wikidata (P18), Wikimedia Commons and the records' own OpenStreetMap links",
  "retrieved_at": "2026-11-09T20:55:35Z",
  "rules": {
   "max_distance_m": 300.0,
   "licences": "CC0, public domain, CC BY, CC BY-SA only",
-  "named_records_only": true
+  "named_records_only": false,
+  "unnamed_records": "only through a link on the record's own OSM node",
+  "osm_link_max_distance_m": 1000.0,
+  "commons_near_m": 150.0
  },
  "wikidata_source": "live query",
  "named_records": 305,
- "with_photo": 54,
+ "with_photo": 68,
  "commons_search": "skipped (--no-commons-search)",
  "by_match": {
   "wikidata-exact": 32,
-  "wikidata-related": 22,
-  "commons-geo": 0
+  "wikidata-related": 18,
+  "commons-geo": 0,
+  "osm-wikidata": 12,
+  "osm-image": 0,
+  "osm-commons": 1,
+  "commons-near": 5
  },
  "skipped": [],
  "photos": {
@@ -205,38 +212,47 @@
    "description": "Kyoto City Archaeological Museum (Kyotoshi Kouko Shiryokan) , Kyoto, Japan"
   },
   "A00036": {
-   "match": "wikidata-related",
+   "match": "osm-wikidata",
    "file": "File:Insho-Domoto Museum of Fine Arts01s5.jpg",
    "wikidata": "Q11375242",
    "matched_label": "京都府立堂本印象美術館",
    "distance_m": 3,
+   "osm_tags": {
+    "wikidata": "Q11375242",
+    "wikipedia": "ja:京都府立堂本印象美術館"
+   },
    "src": "photos/A00036.jpg",
-   "width": 720,
-   "height": 480,
    "title": "Insho-Domoto Museum of Fine Arts01s5.jpg",
    "artist": "663highland",
    "license": "CC BY 2.5",
    "license_url": "https://creativecommons.org/licenses/by/2.5",
    "page": "https://commons.wikimedia.org/wiki/File:Insho-Domoto_Museum_of_Fine_Arts01s5.jpg",
    "date": "2010-01-02",
-   "description": "Kyoto Prefectural Insho-Domoto Museum of Fine Arts in Kyoto, Kyoto prefecture, Japan."
+   "description": "Kyoto Prefectural Insho-Domoto Museum of Fine Arts in Kyoto, Kyoto prefecture, Japan.",
+   "width": 720,
+   "height": 480
   },
   "A00037": {
-   "match": "wikidata-related",
+   "match": "osm-wikidata",
    "file": "File:Kyoto Prefectural Yamashiro Regional Museum exterior view.jpg",
    "wikidata": "Q56062380",
    "matched_label": "京都府立山城郷土資料館",
    "distance_m": 10,
+   "osm_tags": {
+    "wikidata": "Q56062380",
+    "wikipedia": "ja:京都府立山城郷土資料館",
+    "wikimedia_commons": "Category:Kyoto Prefectural Yamashiro Regional Museum"
+   },
    "src": "photos/A00037.jpg",
-   "width": 720,
-   "height": 538,
    "title": "Kyoto Prefectural Yamashiro Regional Museum exterior view.jpg",
    "artist": "Yasunorihayashi",
    "license": "CC BY-SA 4.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "page": "https://commons.wikimedia.org/wiki/File:Kyoto_Prefectural_Yamashiro_Regional_Museum_exterior_view.jpg",
    "date": "2018-08-12",
-   "description": "Kyoto Prefectural Yamashiro Regional Museum Exterior view"
+   "description": "Kyoto Prefectural Yamashiro Regional Museum Exterior view",
+   "width": 720,
+   "height": 538
   },
   "A00038": {
    "match": "wikidata-related",
@@ -375,21 +391,24 @@
    "description": "Genji Museum in Uji, Kyoto prefecture, Japan."
   },
   "A00054": {
-   "match": "wikidata-related",
+   "match": "osm-wikidata",
    "file": "File:Ryozen Museum of History.JPG",
    "wikidata": "Q3329667",
    "matched_label": "霊山歴史館",
    "distance_m": 15,
+   "osm_tags": {
+    "wikidata": "Q3329667"
+   },
    "src": "photos/A00054.jpg",
-   "width": 720,
-   "height": 540,
    "title": "Ryozen Museum of History.JPG",
    "artist": "Uploadalt",
    "license": "CC BY-SA 3.0",
    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
    "page": "https://commons.wikimedia.org/wiki/File:Ryozen_Museum_of_History.JPG",
    "date": "2009",
-   "description": "Ryozen Museum of History"
+   "description": "Ryozen Museum of History",
+   "width": 720,
+   "height": 540
   },
   "A00059": {
    "match": "wikidata-related",
@@ -562,21 +581,25 @@
    "description": "京都府京都市下京区にある京都タワー。"
   },
   "A00077": {
-   "match": "wikidata-related",
-   "file": "File:170923 Kodaiji Kyoto Japan09n.jpg",
-   "wikidata": "Q2702064",
-   "matched_label": "高台寺",
-   "distance_m": 120,
+   "match": "osm-commons",
+   "file": "File:高台寺掌美術館 - panoramio.jpg",
+   "wikidata": "Q3959661",
+   "matched_label": "Shō Museum",
+   "distance_m": 20,
+   "osm_tags": {
+    "wikidata": "Q3959661",
+    "wikimedia_commons": "Category:Shō Museum"
+   },
    "src": "photos/A00077.jpg",
+   "title": "高台寺掌美術館 - panoramio.jpg",
+   "artist": "kajikawa",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E9%AB%98%E5%8F%B0%E5%AF%BA%E6%8E%8C%E7%BE%8E%E8%A1%93%E9%A4%A8_-_panoramio.jpg",
+   "date": "Taken on 7",
+   "description": "高台寺掌美術館",
    "width": 720,
-   "height": 480,
-   "title": "170923 Kodaiji Kyoto Japan09n.jpg",
-   "artist": "663highland",
-   "license": "CC BY-SA 4.0",
-   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-   "page": "https://commons.wikimedia.org/wiki/File:170923_Kodaiji_Kyoto_Japan09n.jpg",
-   "date": "2017-09-23",
-   "description": "Kōdai-ji in Higashiyama-ku, Kyoto, Kyoto prefecture, Japan"
+   "height": 540
   },
   "A00122": {
    "match": "wikidata-related",
@@ -934,6 +957,363 @@
    "page": "https://commons.wikimedia.org/wiki/File:130609_Kyoto_Station_Kyoto_Japan03s3.jpg",
    "date": "2013-06-09",
    "description": "Kyōto Station in Kyoto, Kyoto prefecture, Japan"
+  },
+  "A00057": {
+   "match": "osm-wikidata",
+   "file": "File:Kyoto Raku Museum 2013-08A.JPG",
+   "wikidata": "Q125002905",
+   "matched_label": "楽美術館",
+   "distance_m": 25,
+   "osm_tags": {
+    "wikidata": "Q125002905"
+   },
+   "src": "photos/A00057.jpg",
+   "title": "Kyoto Raku Museum 2013-08A.JPG",
+   "artist": "At by At",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kyoto_Raku_Museum_2013-08A.JPG",
+   "date": "2013-08-20",
+   "description": "京都市上京区にある樂美術館",
+   "width": 720,
+   "height": 478
+  },
+  "A00132": {
+   "match": "osm-wikidata",
+   "file": "File:Bank of Yanagihara Memorial Museum.jpg",
+   "wikidata": "Q11534162",
+   "matched_label": "柳原銀行",
+   "distance_m": 21,
+   "osm_tags": {
+    "wikidata": "Q11534162",
+    "wikipedia": "ja:柳原銀行"
+   },
+   "src": "photos/A00132.jpg",
+   "title": "Bank of Yanagihara Memorial Museum.jpg",
+   "artist": "名古屋太郎",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Bank_of_Yanagihara_Memorial_Museum.jpg",
+   "date": "16 June 20",
+   "description": "柳原銀行記念資料館。京都市下京区。",
+   "width": 720,
+   "height": 998
+  },
+  "A00159": {
+   "match": "commons-near",
+   "file": "File:万灯呂山展望台 - panoramio.jpg",
+   "wikidata": null,
+   "matched_label": null,
+   "distance_m": 24,
+   "src": "photos/A00159.jpg",
+   "title": "万灯呂山展望台 - panoramio.jpg",
+   "artist": "Pumpkin Metal",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E4%B8%87%E7%81%AF%E5%91%82%E5%B1%B1%E5%B1%95%E6%9C%9B%E5%8F%B0_-_panoramio.jpg",
+   "date": "2015-08-14",
+   "description": "万灯呂山展望台",
+   "width": 720,
+   "height": 202
+  },
+  "A00163": {
+   "match": "osm-wikidata",
+   "file": "File:Arashiyama (8741759830).jpg",
+   "wikidata": "Q2859566",
+   "matched_label": "嵐山",
+   "distance_m": 742,
+   "osm_tags": {
+    "wikidata": "Q2859566"
+   },
+   "src": "photos/A00163.jpg",
+   "title": "Arashiyama (8741759830).jpg",
+   "artist": "Takeshi Kuboki from Amagasaki, Japan",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Arashiyama_(8741759830).jpg",
+   "date": "2013-05-05",
+   "description": "Arashiyama, Kyoto, Japan. 5 May. 2013",
+   "width": 720,
+   "height": 477
+  },
+  "A00164": {
+   "match": "commons-near",
+   "file": "File:かやぶきの里2021-01-36.jpg",
+   "wikidata": null,
+   "matched_label": null,
+   "distance_m": 40,
+   "src": "photos/A00164.jpg",
+   "title": "かやぶきの里2021-01-36.jpg",
+   "artist": "経済特区",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E3%81%8B%E3%82%84%E3%81%B6%E3%81%8D%E3%81%AE%E9%87%8C2021-01-36.jpg",
+   "date": "2021-01-02",
+   "description": "かやぶきの里2021-01-02の画像",
+   "width": 720,
+   "height": 405
+  },
+  "A00166": {
+   "match": "commons-near",
+   "file": "File:Fushimi Inari shrine Senbon(Thousand) torii , 伏見稲荷大社 千本鳥居 - panoramio.jpg",
+   "wikidata": null,
+   "matched_label": null,
+   "distance_m": 19,
+   "src": "photos/A00166.jpg",
+   "title": "Fushimi Inari shrine Senbon(Thousand) torii , 伏見稲荷大社 千本鳥居 - panoramio.jpg",
+   "artist": "z tanuki",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Fushimi_Inari_shrine_Senbon(Thousand)_torii_,_%E4%BC%8F%E8%A6%8B%E7%A8%B2%E8%8D%B7%E5%A4%A7%E7%A4%BE_%E5%8D%83%E6%9C%AC%E9%B3%A5%E5%B1%85_-_panoramio.jpg",
+   "date": "Taken on 2",
+   "description": "Fushimi Inari shrine Senbon(Thousand) torii , 伏見稲荷大社 千本鳥居",
+   "width": 720,
+   "height": 540
+  },
+  "A00168": {
+   "match": "osm-wikidata",
+   "file": "File:Netsuke art museum (Kyoto) Minka outdoor hdsr S5 a2.jpg",
+   "wikidata": "Q118145425",
+   "matched_label": "京都清宗根付館",
+   "distance_m": 3,
+   "osm_tags": {
+    "wikidata": "Q118145425",
+    "wikipedia": "ja:京都清宗根付館 (旧神先家住宅)"
+   },
+   "src": "photos/A00168.jpg",
+   "title": "Netsuke art museum (Kyoto) Minka outdoor hdsr S5 a2.jpg",
+   "artist": "Hyppolyte de Saint-Rambert",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Netsuke_art_museum_(Kyoto)_Minka_outdoor_hdsr_S5_a2.jpg",
+   "date": "2023-12-23",
+   "description": "image montrant une photographie prise au KYOTO SEISHU NETSUKE ART MUSEUM 京都 清宗根付館 qui est une ancienne maison de samouraï : vue extérieure",
+   "width": 720,
+   "height": 541
+  },
+  "A00191": {
+   "match": "osm-wikidata",
+   "file": "File:Daiun-in Gion-kaku 20260922.jpg",
+   "wikidata": "Q10938466",
+   "matched_label": "大雲院",
+   "distance_m": 2,
+   "osm_tags": {
+    "wikidata": "Q10938466",
+    "wikipedia": "ja:大雲院 (京都市)"
+   },
+   "src": "photos/A00191.jpg",
+   "title": "Daiun-in Gion-kaku 20260922.jpg",
+   "artist": "掬茶",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Daiun-in_Gion-kaku_20260922.jpg",
+   "date": "2026-09-22",
+   "description": "Daiun-in Gionkaku in Gion, Kyoto is commonly known as the 'Bronze Pavilion'.",
+   "width": 720,
+   "height": 1280
+  },
+  "A00192": {
+   "match": "osm-wikidata",
+   "file": "File:Ootani sobyo05n3200.jpg",
+   "wikidata": "Q11439141",
+   "matched_label": "大谷祖廟",
+   "distance_m": 71,
+   "osm_tags": {
+    "wikidata": "Q11439141",
+    "wikipedia": "ja:大谷祖廟"
+   },
+   "src": "photos/A00192.jpg",
+   "title": "Ootani sobyo05n3200.jpg",
+   "artist": "663highland",
+   "license": "CC BY 2.5",
+   "license_url": "https://creativecommons.org/licenses/by/2.5",
+   "page": "https://commons.wikimedia.org/wiki/File:Ootani_sobyo05n3200.jpg",
+   "date": "2009-02-21",
+   "description": "Ootani Sobyo in Higashiyama-ku, Kyoto, Kyoto Prefecture, Japan",
+   "width": 720,
+   "height": 480
+  },
+  "A00196": {
+   "match": "osm-wikidata",
+   "file": "File:Kameyama-jo Tambanokuni ishigaki.jpg",
+   "wikidata": "Q1037429",
+   "matched_label": "亀山城 (丹波国)",
+   "distance_m": 8,
+   "osm_tags": {
+    "wikipedia": "ja:亀山城 (丹波国)"
+   },
+   "src": "photos/A00196.jpg",
+   "title": "Kameyama-jo Tambanokuni ishigaki.jpg",
+   "artist": "kamoseiro",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kameyama-jo_Tambanokuni_ishigaki.jpg",
+   "date": "2008-03-04",
+   "description": "亀山城石垣",
+   "width": 720,
+   "height": 482
+  },
+  "A00250": {
+   "match": "osm-wikidata",
+   "file": "File:Shizushi-shonyudo entrance.JPG",
+   "wikidata": "Q11635118",
+   "matched_label": "質志鍾乳洞",
+   "distance_m": 153,
+   "osm_tags": {
+    "wikidata": "Q11635118",
+    "wikipedia": "ja:質志鍾乳洞"
+   },
+   "src": "photos/A00250.jpg",
+   "title": "Shizushi-shonyudo entrance.JPG",
+   "artist": "Saigen Jiro",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "page": "https://commons.wikimedia.org/wiki/File:Shizushi-shonyudo_entrance.JPG",
+   "date": "2011-08-13",
+   "description": "質志鍾乳洞 入口",
+   "width": 720,
+   "height": 540
+  },
+  "A00265": {
+   "match": "osm-wikidata",
+   "file": "File:Kinkaku-ji the Golden Temple in Kyoto overlooking the lake - high rez.JPG",
+   "wikidata": "Q126391445",
+   "matched_label": "鹿苑寺金閣",
+   "distance_m": 1,
+   "osm_tags": {
+    "wikidata": "Q126391445",
+    "image": "https://photos.app.goo.gl/eE4SAepMdCafhVkGA",
+    "wikimedia_commons": "Category:Golden Pavilion"
+   },
+   "src": "photos/A00265.jpg",
+   "title": "Kinkaku-ji the Golden Temple in Kyoto overlooking the lake - high rez.JPG",
+   "artist": "Jaycangel",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kinkaku-ji_the_Golden_Temple_in_Kyoto_overlooking_the_lake_-_high_rez.JPG",
+   "date": "2013-11-28",
+   "description": "Kinkaku-ji / Golden Temple in Kyoto",
+   "width": 720,
+   "height": 540
+  },
+  "A00305": {
+   "match": "commons-near",
+   "file": "File:かめおか霧のテラス.jpg",
+   "wikidata": null,
+   "matched_label": null,
+   "distance_m": 3,
+   "src": "photos/A00305.jpg",
+   "title": "かめおか霧のテラス.jpg",
+   "artist": "Takawata",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E3%81%8B%E3%82%81%E3%81%8A%E3%81%8B%E9%9C%A7%E3%81%AE%E3%83%86%E3%83%A9%E3%82%B9.jpg",
+   "date": "2019-09-29",
+   "description": "竜ケ尾山 山頂近くにあるかめおか霧のテラスからの展望。手すりの向こうはパラグライダー発進場。",
+   "width": 720,
+   "height": 960
+  },
+  "A00368": {
+   "match": "commons-near",
+   "file": "File:鳥羽の大石 - panoramio (1).jpg",
+   "wikidata": null,
+   "matched_label": null,
+   "distance_m": 29,
+   "src": "photos/A00368.jpg",
+   "title": "鳥羽の大石 - panoramio (1).jpg",
+   "artist": "kajikawa",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E9%B3%A5%E7%BE%BD%E3%81%AE%E5%A4%A7%E7%9F%B3_-_panoramio_(1).jpg",
+   "date": "Taken on 1",
+   "description": "鳥羽の大石",
+   "width": 720,
+   "height": 538
   }
- }
+ },
+ "linked_retrieved_at": "2026-11-15T13:20:46Z",
+ "with_photo_named": 65,
+ "records": 523,
+ "linked_notes": [
+  {
+   "id": "A00026",
+   "note": "OSM links (wikidata) lead to no usable photo"
+  },
+  {
+   "id": "A00031",
+   "note": "OSM links (wikidata) lead to no usable photo"
+  },
+  {
+   "id": "A00040",
+   "note": "OSM links (wikidata) lead to no usable photo"
+  },
+  {
+   "id": "A00041",
+   "note": "OSM links (wikidata) lead to no usable photo"
+  },
+  {
+   "id": "A00084",
+   "note": "OSM links (wikidata, wikipedia) lead to no usable photo"
+  },
+  {
+   "id": "A00085",
+   "note": "OSM links (image) lead to no usable photo"
+  },
+  {
+   "id": "A00166",
+   "note": "OSM links (image) lead to no usable photo"
+  },
+  {
+   "id": "A00313",
+   "note": "OSM links (wikidata, wikipedia) lead to no usable photo"
+  },
+  {
+   "id": "A00330",
+   "note": "OSM links (wikidata, wikipedia) lead to no usable photo"
+  },
+  {
+   "id": "A00394",
+   "note": "OSM wikidata=Q11458635 (将軍山城) has no coordinates, so it is not a place; not used"
+  },
+  {
+   "id": "A00394",
+   "note": "OSM links (wikidata, wikipedia) lead to no usable photo"
+  },
+  {
+   "id": "A00401",
+   "note": "OSM links (wikidata, wikipedia) lead to no usable photo"
+  },
+  {
+   "id": "A00453",
+   "note": "OSM wikidata=Q50187147 (嵯峨野観光鉄道) has no coordinates, so it is not a place; not used"
+  },
+  {
+   "id": "A00453",
+   "note": "OSM links (wikidata) lead to no usable photo"
+  },
+  {
+   "id": "A00491",
+   "note": "OSM wikidata=Q2687330 (国鉄C58形蒸気機関車) has no coordinates, so it is not a place; not used"
+  },
+  {
+   "id": "A00491",
+   "note": "OSM links (wikidata, wikipedia) lead to no usable photo"
+  },
+  {
+   "id": "A00041",
+   "note": "nearby Commons photo File:何必館・京都現代美術館 (55090798989).jpg turned down: shows a lift button panel inside the building"
+  },
+  {
+   "id": "A00123",
+   "note": "nearby Commons photo File:二条城本丸御殿の工事の様子 04.jpg turned down: shows a construction site and scaffolding"
+  },
+  {
+   "id": "A00138",
+   "note": "nearby Commons photo File:JP 日本 Japan 京都 Kyoto tourism 先斗町 Pontocho 美食巷 food street 1157am June 2026 N13P 112.jpg turned down: shows the entrance of one restaurant, not the street"
+  },
+  {
+   "id": "A00227",
+   "note": "nearby Commons photo File:宮川町歌舞練場 - 内部.jpg turned down: shows the inside of one building, not the district"
+  }
+ ]
 }

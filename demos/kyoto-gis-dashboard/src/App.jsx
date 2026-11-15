@@ -758,7 +758,13 @@ const MATCH_TEXT = {
   'wikidata-exact': (p) => `Wikidata item with the same name, ${p.distance_m} m from this point`,
   'wikidata-related': (p) => `Photo of a related place: ${p.matched_label} (Wikidata, ${p.distance_m} m away). It may not show this exact record.`,
   'commons-geo': (p) => `Commons photo whose file name matches and which was taken ${p.distance_m} m from this point`,
+  // the record's own OpenStreetMap node links to the photo (its wikidata, image or wikimedia_commons tag)
+  'osm-wikidata': (p) => `This place's own OpenStreetMap record links to Wikidata ${p.wikidata}${p.matched_label ? ` (${p.matched_label})` : ''}; this is that item's photo`,
+  'osm-image': () => "Photo named in this place's own OpenStreetMap record",
+  'osm-commons': (p) => `Commons photo linked from this place's own OpenStreetMap record${p.distance_m != null ? `, taken ${p.distance_m} m from this point` : ''}`,
+  'commons-near': (p) => `Commons photo taken ${p.distance_m} m from this point whose ${p.matched_label ? `category (${p.matched_label.slice(9)})` : 'file name'} names this place`,
 };
+const BADGE = { 'wikidata-related': 'Related place', 'commons-geo': 'Nearby photo', 'commons-near': 'Nearby photo', 'osm-wikidata': 'Linked in OSM', 'osm-image': 'Linked in OSM', 'osm-commons': 'Linked in OSM' };
 
 // Top of the details panel: reliable photo (if any), name, category and where it is.
 function Summary({ hit, pm, photos, color, onClose, onHide }) {
@@ -774,7 +780,7 @@ function Summary({ hit, pm, photos, color, onClose, onHide }) {
         <figure className={'hero photo' + (imgOk ? ' loaded' : '')}>
           <div className="ph-frame">
             <img src={`${import.meta.env.BASE_URL}${ph.src}`} alt={ph.description || ph.title} width={ph.width} height={ph.height} onLoad={() => setImgOk(true)} />
-            <span className={'ph-badge ' + ph.match}>{ph.match === 'wikidata-related' ? 'Related place' : ph.match === 'commons-geo' ? 'Nearby photo' : 'Verified match'}</span>
+            <span className={'ph-badge ' + ph.match}>{BADGE[ph.match] || 'Verified match'}</span>
           </div>
         </figure>
       )}
@@ -1046,7 +1052,7 @@ function Sources({ d, status, walk, failed, onClose }) {
         {d.photos && (
           <section>
             <h3>Attraction photos</h3>
-            <p className="xs">Wikidata (P18) and Wikimedia Commons, retrieved {d.photos.retrieved_at.replace('T', ' ').replace('Z', ' UTC')}. {d.photos.with_photo} of {d.photos.named_records} named records have a photo: {d.photos.by_match['wikidata-exact']} same-name Wikidata items, {d.photos.by_match['wikidata-related']} related places, {d.photos.by_match['commons-geo']} Commons photos taken within 300 m. Only CC0, public-domain, CC BY and CC BY-SA files are used; each photo shows its author and licence.</p>
+            <p className="xs">Wikidata (P18) and Wikimedia Commons, retrieved {d.photos.retrieved_at.replace('T', ' ').replace('Z', ' UTC')}. {d.photos.with_photo} of {d.photos.records ?? d.photos.named_records} records have a photo: {d.photos.by_match['wikidata-exact']} same-name Wikidata items, {d.photos.by_match['wikidata-related']} related places, {(d.photos.by_match['osm-wikidata'] || 0) + (d.photos.by_match['osm-image'] || 0) + (d.photos.by_match['osm-commons'] || 0)} linked from the record's own OpenStreetMap entry, {(d.photos.by_match['commons-geo'] || 0) + (d.photos.by_match['commons-near'] || 0)} Commons photos taken nearby that name the place. Records without a name get a photo only through their own OpenStreetMap link. Only CC0, public-domain, CC BY and CC BY-SA files are used; each photo shows its author and licence.</p>
           </section>
         )}
         {d.namesEn?.meta && (

@@ -303,6 +303,9 @@ const ovText = await page.locator('#pane-overview').innerText();
 check('overview shows the municipal tourism count with year, unit and source', ovText.includes('62,787,000') && ovText.includes('2025') && ovText.includes('not this ward and not this place') && ovText.includes('Tourism Report'), ovText.replace(/\n/g, ' / ').slice(0, 200));
 const detail = await page.locator('aside.right').innerText();
 check('detail shows name, ID, category, municipality', detail.includes('金閣') && detail.includes('A00265') && detail.includes('Attraction') && detail.includes('京都市 北区'), detail.replace(/\n/g, ' / ').slice(0, 160));
+// its photo comes from the wikidata tag on the record's own OSM node, and says so, with author and licence
+const kin = await page.evaluate(() => { const img = document.querySelector('aside.right .hero.photo img'); return { src: img?.getAttribute('src') || '', ok: !!img && img.complete && img.naturalWidth > 0, badge: document.querySelector('aside.right .ph-badge')?.textContent, text: document.querySelector('aside.right').innerText }; });
+check('Kinkaku shows the photo linked from its own OSM record, with author and licence', /photos\/A00265\.jpg$/.test(kin.src) && kin.ok && kin.badge === 'Linked in OSM' && /OpenStreetMap record links to Wikidata Q126391445/.test(kin.text) && /CC BY-SA 3\.0/.test(kin.text), JSON.stringify({ src: kin.src, ok: kin.ok, badge: kin.badge }));
 
 // 6. weather
 await page.getByRole('tab', { name: 'Weather' }).click();

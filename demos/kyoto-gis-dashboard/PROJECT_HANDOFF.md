@@ -500,3 +500,12 @@ git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 - 流畅度第二轮（说明和前后数字见 README 6j）：`depth.js` 不再在动画帧里读 `scrollY`（改在 scroll 事件里读），只给真正在屏幕内的区块写变量；音量键的阴影模糊改成缓存图；像素房间限速约 40 次/秒（拖动 60 次/秒）；手机上画布按 1 倍画。改 `depth.js` 时注意：在 rAF 里读任何布局值（scrollY、getBoundingClientRect）都会在别的东西刚改过 DOM 时强制提前排版。
 - 手机上音量键说明文字换行、≤380 px 时打开缩到 0.88 倍（`src/depth.css`）。浏览器测试 103 / 103。
 - Windows ZIP（`Kyoto-GIS-Dashboard-Windows-2026-11-14c.zip`，582 个文件，65.6 MB）和在线预览链接（第 21 版）已更新到这一版（像素茶室 + 流畅度第二轮）。ZIP 解压后用它自带的启动服务器跑浏览器测试，103 / 103 通过；在线预览在本地先跑过一次（无报错，手机条件下拖动约 39 fps），发布后打开确认能正常显示。
+
+## 18. 2026-11-15 更新：景点照片 54 → 68（本节优先于上文）
+
+- 新脚本 `scripts/fetch_photos_linked.py`（在 `scripts/fetch_photos.py` 之后运行），向 `public/data/photos.json` 追加照片，不覆盖已有的完全匹配：
+  - A. 记录自己的 OSM 节点上的链接（`osm-wikidata` / `osm-image` / `osm-commons`）：按 `osm_id` 从 OSM API 读当前节点（缓存 `data/cache/osm_attraction_nodes.json`，523 个节点位置和名称与快照完全一致）。45 个节点带链接，新增或升级 13 张（4 张原来是"相关地点"，升级为自己的链接）。没有名称的记录只能通过这种方式得到照片。
+  - B. `commons-near`：只针对有名称的记录，Commons 照片自带坐标在 150 m 内，且文件名或分类包含完整名称；通用名称（展望台、駐車場…）和重名的不用。找到 9 张，人工退回 4 张（见脚本 `REJECTED`），保留 5 张。
+- 界面：详情卡片新增 "Linked in OSM" 标记和对应说明；Data & Sources 里的照片统计改成按 523 条记录计算。
+- 测试：逻辑 25 / 25（照片测试改为：名称匹配只限有名称的记录，OSM 链接必须和节点上的标签一致），浏览器 104 / 104（新增：金阁显示自己 OSM 记录链接的照片和作者许可证）。
+- Windows ZIP 和在线预览链接还是上一版。

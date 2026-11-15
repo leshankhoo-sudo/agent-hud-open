@@ -365,7 +365,7 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
 @keyframes kenburns { to { transform: scale(1.07) translate(-1.5%, -1%); } }
 .ph-frame::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,11,24,0) 55%, rgba(5,11,24,.55)); pointer-events: none; }
 .ph-badge { position: absolute; left: 10px; top: 10px; z-index: 1; font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; color: #071027; background: var(--ok); box-shadow: 0 0 10px rgba(61,220,151,.5); }
-.ph-badge.wikidata-related, .ph-badge.commons-geo { background: var(--warn); box-shadow: 0 0 10px rgba(242,181,75,.5); }
+.ph-badge.wikidata-related, .ph-badge.commons-geo, .ph-badge.commons-near { background: var(--warn); box-shadow: 0 0 10px rgba(242,181,75,.5); }
 .photo figcaption { display: grid; gap: 4px; padding: 10px 14px 12px; }
 .photo figcaption .muted a { color: var(--ink-2); }
 .photo-none { display: flex; gap: 10px; align-items: center; }

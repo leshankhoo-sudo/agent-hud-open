@@ -1,0 +1,6517 @@
+{
+"retrieved_at": "2026-11-15T12:49:35Z",
+"source": "https://api.openstreetmap.org/api/0.6/nodes",
+"nodes": {
+"335672848": {
+"lon": 135.7648858,
+"lat": 35.0956526,
+"version": 7,
+"timestamp": "2026-03-18T16:08:14Z",
+"visible": true,
+"tags": {
+"alt_name:en": "Maple Tree Tunnel",
+"name": "もみじのトンネル",
+"name:en": "Momiji Tunnel",
+"operator": "叡山電鉄",
+"tourism": "attraction"
+}
+},
+"562648011": {
+"lon": 135.2229091,
+"lat": 35.7751976,
+"version": 1,
+"timestamp": "2009-11-13T09:26:40Z",
+"visible": true,
+"tags": {
+"name": "経ヶ岬山頂展望台",
+"tourism": "viewpoint"
+}
+},
+"562648015": {
+"lon": 135.2227975,
+"lat": 35.7762978,
+"version": 1,
+"timestamp": "2009-11-13T09:26:41Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"715390591": {
+"lon": 135.0571412,
+"lat": 35.6975246,
+"version": 4,
+"timestamp": "2019-11-30T09:48:00Z",
+"visible": true,
+"tags": {
+"name": "琴引浜鳴き砂文化館",
+"tourism": "museum",
+"wikidata": "Q64026339",
+"wikipedia": "ja:琴引浜鳴き砂文化館"
+}
+},
+"720256665": {
+"lon": 135.1957584,
+"lat": 35.5864958,
+"version": 6,
+"timestamp": "2020-02-27T18:23:02Z",
+"visible": true,
+"tags": {
+"name": "笠松展望台",
+"tourism": "viewpoint"
+}
+},
+"720256669": {
+"lon": 135.1946076,
+"lat": 35.5868098,
+"version": 5,
+"timestamp": "2020-03-03T17:10:26Z",
+"visible": true,
+"tags": {
+"note": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"749326853": {
+"lon": 135.7787682,
+"lat": 34.970147,
+"version": 8,
+"timestamp": "2019-12-01T03:02:41Z",
+"visible": true,
+"tags": {
+"name": "三つ辻 (Mittsu tsuji)",
+"name:en": "T-Way Junction",
+"name:ja": "三つ辻",
+"source": "Precinct Map",
+"tourism": "attraction"
+}
+},
+"749327219": {
+"lon": 135.7814186,
+"lat": 34.9690927,
+"version": 7,
+"timestamp": "2022-04-18T01:00:12Z",
+"visible": true,
+"tags": {
+"name": "四ツ辻 (Yottsu tsuji)",
+"name:en": "4-Way Junction",
+"name:ja": "四ツ辻",
+"source": "Precinct Map",
+"tourism": "attraction"
+}
+},
+"749327432": {
+"lon": 135.7813624,
+"lat": 34.9699684,
+"version": 4,
+"timestamp": "2019-12-01T03:02:41Z",
+"visible": true,
+"tags": {
+"direction": "180-270",
+"tourism": "viewpoint"
+}
+},
+"823929624": {
+"lon": 135.1364806,
+"lat": 35.564408,
+"version": 4,
+"timestamp": "2020-02-16T14:17:22Z",
+"visible": true,
+"tags": {
+"name": "大内峠 一字観公園 展望台",
+"tourism": "viewpoint"
+}
+},
+"832671775": {
+"lon": 135.1819174,
+"lat": 35.5531496,
+"version": 6,
+"timestamp": "2019-05-02T11:12:18Z",
+"visible": true,
+"tags": {
+"name": "天橋立ビューランド",
+"name:en": "Amanohashidate View Land",
+"tourism": "viewpoint",
+"wikidata": "Q11442700",
+"wikipedia": "ja:天橋立ビューランド"
+}
+},
+"847889883": {
+"lon": 135.2453668,
+"lat": 35.7576155,
+"version": 1,
+"timestamp": "2010-08-06T16:48:05Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"847889885": {
+"lon": 135.2513445,
+"lat": 35.756039,
+"version": 1,
+"timestamp": "2010-08-06T16:48:05Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"847895509": {
+"lon": 135.1295995,
+"lat": 35.2968244,
+"version": 5,
+"timestamp": "2019-11-30T09:47:13Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "福知山城",
+"name:en": "Fukuchiyama Castle",
+"name:nl": "Kasteel Fukuchiyama",
+"wikidata": "Q2969288",
+"wikipedia": "ja:福知山城"
+}
+},
+"850377050": {
+"lon": 135.3435973,
+"lat": 35.4648867,
+"version": 3,
+"timestamp": "2018-01-25T16:17:32Z",
+"visible": true,
+"tags": {
+"name": "五老山展望台",
+"tourism": "viewpoint"
+}
+},
+"910536177": {
+"lon": 135.3713208,
+"lat": 35.5484062,
+"version": 1,
+"timestamp": "2010-09-13T11:55:44Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"1058638426": {
+"lon": 135.7453938,
+"lat": 35.032868,
+"version": 1,
+"timestamp": "2010-12-23T07:55:20Z",
+"visible": true,
+"tags": {
+"name": "織成館(Orinasu-kan)",
+"source": "http://orinasukan.skr.jp/",
+"tourism": "museum"
+}
+},
+"1180840647": {
+"lon": 135.7496545,
+"lat": 35.0299042,
+"version": 3,
+"timestamp": "2024-09-05T06:17:16Z",
+"visible": true,
+"tags": {
+"fee": "no",
+"name": "京都市立考古資料館",
+"source": "Bing, 2007-12",
+"tourism": "museum",
+"website": "https://www.kyoto-arc.or.jp/siryoukan01.html"
+}
+},
+"1212123735": {
+"lon": 135.6748983,
+"lat": 35.0091132,
+"version": 1,
+"timestamp": "2011-03-21T16:58:32Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"1311314959": {
+"lon": 135.6710324,
+"lat": 35.0422378,
+"version": 2,
+"timestamp": "2021-01-05T02:24:13Z",
+"visible": true,
+"tags": {
+"name": "菖蒲ヶ丘展望台",
+"name:en": "Ayamegaoka Observatory",
+"name:ja": "菖蒲ヶ丘展望台",
+"tourism": "viewpoint"
+}
+},
+"1311315469": {
+"lon": 135.6542033,
+"lat": 35.032023,
+"version": 1,
+"timestamp": "2011-06-03T23:45:16Z",
+"visible": true,
+"tags": {
+"name": "保津峡展望台",
+"tourism": "viewpoint"
+}
+},
+"1422959043": {
+"lon": 135.1040128,
+"lat": 35.4811397,
+"version": 2,
+"timestamp": "2022-12-31T12:47:45Z",
+"visible": true,
+"tags": {
+"name": "与謝野町立江山文庫",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422959592": {
+"lon": 135.585232,
+"lat": 35.0135,
+"version": 2,
+"timestamp": "2025-04-20T15:04:14Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府亀岡市",
+"KSJ2:ADS": "古世町中内坪1",
+"KSJ2:PubFacAdmin": "市区町村",
+"name": "亀岡市文化資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q104721135"
+}
+},
+"1422959988": {
+"lon": 135.836354,
+"lat": 34.984791,
+"version": 2,
+"timestamp": "2026-06-26T11:09:56Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市山科区",
+"KSJ2:ADS": "小山小川町2",
+"name": "京の田舎民具資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422960064": {
+"lon": 135.75896,
+"lat": 35.032418,
+"version": 2,
+"timestamp": "2016-10-02T12:32:54Z",
+"visible": true,
+"tags": {
+"name": "京菓子資料館",
+"name:de": "Süsswaren-Museum",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422960069": {
+"lon": 135.7715007,
+"lat": 35.0487963,
+"version": 5,
+"timestamp": "2021-07-27T06:31:16Z",
+"visible": true,
+"tags": {
+"name": "京都ギリシアローマ美術館",
+"name:en": "Kyoto Greek & Roman Museum",
+"name:fr": "Musée Grec et Romain de Kyoto",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q18336820"
+}
+},
+"1422960567": {
+"lon": 135.3678837,
+"lat": 35.4890359,
+"version": 2,
+"timestamp": "2023-01-26T08:56:56Z",
+"visible": true,
+"tags": {
+"name": "京都大学フィールド科学教育研究センター舞鶴水産実験所水産生物標本館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422960588": {
+"lon": 135.7792615,
+"lat": 35.0273566,
+"version": 4,
+"timestamp": "2026-07-22T00:14:26Z",
+"visible": true,
+"tags": {
+"fee": "yes",
+"name": "京都大学総合博物館",
+"name:de": "Musuem der Universität Kyōto",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2 ; knowledge",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422960940": {
+"lon": 135.6760276,
+"lat": 35.0185672,
+"version": 4,
+"timestamp": "2018-03-28T11:58:30Z",
+"visible": true,
+"tags": {
+"name": "京都嵐山オルゴール博物館",
+"name:en": "The Kyoto Arashiyama Orgel Museum",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422960943": {
+"lon": 135.688667,
+"lat": 35.01243,
+"version": 2,
+"timestamp": "2025-06-04T09:55:56Z",
+"visible": true,
+"tags": {
+"name": "嵯峨美術大学・嵯峨美術短期大学附属博物館",
+"tourism": "museum"
+}
+},
+"1422960948": {
+"lon": 135.781151,
+"lat": 35.0494546,
+"version": 4,
+"timestamp": "2025-04-20T15:04:15Z",
+"visible": true,
+"tags": {
+"addr:city": "京都市",
+"addr:neighbourhood": "橋上町",
+"addr:province": "京都府",
+"addr:quarter": "松ヶ崎",
+"addr:suburb": "左京区",
+"museum": "art",
+"name": "京都工芸繊維大学美術工芸資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"website": "https://www.museum.kit.ac.jp/index.html",
+"wikidata": "Q127503199"
+}
+},
+"1422961100": {
+"lon": 135.7657254,
+"lat": 35.0007007,
+"version": 4,
+"timestamp": "2023-04-18T08:04:56Z",
+"visible": true,
+"tags": {
+"name": "京都市学校歴史博物館",
+"name:en": "Kyoto Municipal Museum of School History",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q11375001",
+"wikipedia": "ja:京都市学校歴史博物館"
+}
+},
+"1422961228": {
+"lon": 135.7676014,
+"lat": 35.0191504,
+"version": 5,
+"timestamp": "2021-07-02T03:45:03Z",
+"visible": true,
+"tags": {
+"name": "京都市歴史資料館",
+"name:de": "Museum für Stadtgeschichte",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q6452125"
+}
+},
+"1422961307": {
+"lon": 135.7639168,
+"lat": 34.9867719,
+"version": 6,
+"timestamp": "2026-05-08T20:24:05Z",
+"visible": true,
+"tags": {
+"museum": "art",
+"name": "京都芸大附属芸術資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator": "公立大学法人京都市立芸術大学",
+"operator:type": "university",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"website": "https://libmuse.kcua.ac.jp/muse/"
+}
+},
+"1422961323": {
+"lon": 135.749673,
+"lat": 35.030006,
+"version": 4,
+"timestamp": "2017-09-24T17:26:48Z",
+"visible": true,
+"tags": {
+"name": "京都市考古資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q11375124",
+"wikipedia": "ja:京都市考古資料館"
+}
+},
+"1422961473": {
+"lon": 135.726055,
+"lat": 35.035166,
+"version": 4,
+"timestamp": "2026-01-01T02:55:41Z",
+"visible": true,
+"tags": {
+"name": "堂本印象美術館",
+"name:en": "Insho-Domoto museum of fine arts",
+"name:fr": "Musée Insho Domoto",
+"name:ja": "堂本印象美術館",
+"name:ja-Hira": "どうもといんしょうびじゅつかん",
+"name:ja_rm": "Dōmoto inshō myūziamu",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年 国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"url": "http://www2.ocn.ne.jp/~domoto/",
+"wikidata": "Q11375242",
+"wikipedia": "ja:京都府立堂本印象美術館"
+}
+},
+"1422961487": {
+"lon": 135.833867,
+"lat": 34.752137,
+"version": 3,
+"timestamp": "2023-10-16T17:41:40Z",
+"visible": true,
+"tags": {
+"name": "京都府立山城郷土資料館（ふるさとミュージアム山城）",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q56062380",
+"wikimedia_commons": "Category:Kyoto Prefectural Yamashiro Regional Museum",
+"wikipedia": "ja:京都府立山城郷土資料館"
+}
+},
+"1422961692": {
+"lon": 135.7704418,
+"lat": 35.0727365,
+"version": 3,
+"timestamp": "2018-09-03T07:02:46Z",
+"visible": true,
+"tags": {
+"name": "京都精華大学ギャラリーフロール",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422961787": {
+"lon": 135.7582688,
+"lat": 35.005437,
+"version": 8,
+"timestamp": "2026-08-20T06:29:31Z",
+"visible": true,
+"tags": {
+"fee": "no",
+"name": "京都芸術センター",
+"name:en": "Kyoto art center",
+"name:fr": "Centre artistique de Kyoto",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"opening_hours": "Tu-Sa 10:00-18:00",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wheelchair": "yes",
+"wikidata": "Q6452114"
+}
+},
+"1422961845": {
+"lon": 135.7927481,
+"lat": 35.0374601,
+"version": 5,
+"timestamp": "2026-05-17T12:33:55Z",
+"visible": true,
+"tags": {
+"addr:block_number": "116",
+"addr:city": "京都市",
+"addr:neighbourhood": "2丁目",
+"addr:province": "京都府",
+"addr:quarter": "北白川瓜生山",
+"addr:suburb": "左京区",
+"name": "京都芸術大学芸術館",
+"tourism": "museum",
+"website": "https://kyoto-geijutsu-kan.com/",
+"wikidata": "Q127597163"
+}
+},
+"1422962103": {
+"lon": 135.7754288,
+"lat": 35.0040072,
+"version": 3,
+"timestamp": "2026-05-17T12:34:05Z",
+"visible": true,
+"tags": {
+"name": "何必館・京都現代美術館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q136472115"
+}
+},
+"1422962158": {
+"lon": 135.7048389,
+"lat": 34.8630104,
+"version": 2,
+"timestamp": "2023-02-04T12:52:51Z",
+"visible": true,
+"tags": {
+"name": "八幡市立松花堂庭園・美術館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422962267": {
+"lon": 135.864157,
+"lat": 34.765695,
+"version": 2,
+"timestamp": "2023-09-12T08:20:00Z",
+"visible": true,
+"tags": {
+"addr:block_number": "28番地",
+"addr:city": "木津川市",
+"addr:postcode": "619-1103",
+"addr:province": "京都府",
+"addr:quarter": "加茂町岡崎考",
+"museum": "history",
+"name": "くにのみや学習館",
+"note": "木津川市文化財整理保管センター分室",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator": "木津川市",
+"operator:type": "government",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422962447": {
+"lon": 135.6687428,
+"lat": 35.0241671,
+"version": 4,
+"timestamp": "2026-05-29T07:38:51Z",
+"visible": true,
+"tags": {
+"check_date": "2026-05-29",
+"name": "博物館さがの人形の家",
+"name:en": "Sagano Doll Museum",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422962530": {
+"lon": 135.773275,
+"lat": 34.802968,
+"version": 2,
+"timestamp": "2023-03-25T12:22:37Z",
+"visible": true,
+"tags": {
+"addr:block_number": "3",
+"addr:city": "京田辺市",
+"addr:neighbourhood": "1",
+"addr:province": "京都府",
+"addr:quarter": "多々羅都谷",
+"museum": "history",
+"name": "同志社大学歴史資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"website": "https://hmuseum.doshisha.ac.jp/"
+}
+},
+"1422962775": {
+"lon": 135.772517,
+"lat": 34.849064,
+"version": 1,
+"timestamp": "2011-09-04T12:39:49Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府城陽市",
+"KSJ2:ADS": "寺田今堀1",
+"KSJ2:PubFacAdmin": "市区町村",
+"name": "城陽市歴史民俗資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422962839": {
+"lon": 135.682873,
+"lat": 34.892701,
+"version": 1,
+"timestamp": "2011-09-04T12:40:03Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府乙訓郡大山崎町",
+"KSJ2:ADS": "字大山崎小字竜光3",
+"KSJ2:PubFacAdmin": "市区町村",
+"name": "大山崎町歴史資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422962861": {
+"lon": 135.7557561,
+"lat": 35.0084203,
+"version": 4,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"check_date": "2025-04-12",
+"KSJ2:AdminArea": "京都府京都市中京区",
+"KSJ2:ADS": "三条新町西入ル釜座町18",
+"name": "大西清右衛門美術館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q127602236"
+}
+},
+"1422962863": {
+"lon": 135.758486,
+"lat": 35.041835,
+"version": 3,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市北区",
+"KSJ2:ADS": "小山上総町",
+"name": "大谷大学博物館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q21190901",
+"wikipedia": "en:Ōtani University Museum"
+}
+},
+"1422963056": {
+"lon": 135.804104,
+"lat": 34.87935,
+"version": 1,
+"timestamp": "2011-09-04T12:40:21Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府宇治市",
+"KSJ2:ADS": "折居台1-1",
+"KSJ2:PubFacAdmin": "市区町村",
+"name": "宇治市歴史資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422963059": {
+"lon": 135.810169,
+"lat": 34.894103,
+"version": 5,
+"timestamp": "2026-05-26T03:07:08Z",
+"visible": true,
+"tags": {
+"check_date": "2026-05-26",
+"name": "宇治市源氏物語ミュージアム",
+"name:en": "The Tale of Genji Museum",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"opening_hours": "Tu-Su 09:00-17:00",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q5677900"
+}
+},
+"1422963164": {
+"lon": 135.816306,
+"lat": 35.110188,
+"version": 2,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市左京区",
+"KSJ2:ADS": "大原井出町369",
+"name": "小松均美術館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422963538": {
+"lon": 135.7583686,
+"lat": 35.0859391,
+"version": 4,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市左京区",
+"KSJ2:ADS": "静市市原町265",
+"name": "川島織物文化館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422964771": {
+"lon": 135.782717,
+"lat": 34.999059,
+"version": 3,
+"timestamp": "2018-03-02T19:03:41Z",
+"visible": true,
+"tags": {
+"name": "幕末維新ミュージアム霊山歴史館",
+"name:en": "Ryozen Museum of History",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q3329667"
+}
+},
+"1422965148": {
+"lon": 135.7810163,
+"lat": 35.0127156,
+"version": 6,
+"timestamp": "2019-03-31T03:50:10Z",
+"visible": true,
+"tags": {
+"addr:street": "Okasai Seishojicho9",
+"name": "FUREAIKAN ART & CRAFTS 日図デザイン博物館",
+"name:de": "Museum für Bildhauerei",
+"name:en": "Kyoto Museum of Traditional Crafts",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"phone": "+81757622670",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"website": "https://kmtc.jp/"
+}
+},
+"1422965547": {
+"lon": 135.8105887,
+"lat": 34.8900184,
+"version": 2,
+"timestamp": "2017-06-06T16:13:00Z",
+"visible": true,
+"tags": {
+"name": "朝日焼窯芸資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422966440": {
+"lon": 135.75327,
+"lat": 35.025676,
+"version": 3,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市上京区",
+"KSJ2:ADS": "油小路中立売上ル",
+"name": "樂美術館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q125002905"
+}
+},
+"1422966559": {
+"lon": 135.685503,
+"lat": 34.992115,
+"version": 2,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市西京区",
+"KSJ2:ADS": "松尾万石町57",
+"name": "池大雅美術館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422967954": {
+"lon": 135.7930398,
+"lat": 35.0270223,
+"version": 3,
+"timestamp": "2022-07-04T13:18:45Z",
+"visible": true,
+"tags": {
+"name": "白沙村荘橋本関雪記念館",
+"name:en": "Hakusa-sonso Museum",
+"name:fr": "Musee de Hakusa-sonso",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422969298": {
+"lon": 135.1302325,
+"lat": 35.2974715,
+"version": 4,
+"timestamp": "2023-06-23T03:23:36Z",
+"visible": true,
+"tags": {
+"check_date": "2023-05-05",
+"KSJ2:AdminArea": "京都府福知山市",
+"KSJ2:ADS": "字岡132-64",
+"KSJ2:PubFacAdmin": "市区町村",
+"name": "福知山市佐藤太清記念美術館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q11594325",
+"wikipedia": "ja:福知山市佐藤太清記念美術館"
+}
+},
+"1422970994": {
+"lon": 135.7796211,
+"lat": 35.0137793,
+"version": 3,
+"timestamp": "2017-10-22T20:06:59Z",
+"visible": true,
+"tags": {
+"name": "細見美術館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q11606115"
+}
+},
+"1422971804": {
+"lon": 135.726567,
+"lat": 35.017325,
+"version": 2,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市中京区",
+"KSJ2:ADS": "西ノ京壺ノ内町8-1",
+"name": "花園大学歴史博物館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422971835": {
+"lon": 135.7518151,
+"lat": 35.0347064,
+"version": 2,
+"timestamp": "2015-06-06T03:43:52Z",
+"visible": true,
+"tags": {
+"name": "茶道資料館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422971893": {
+"lon": 135.7812083,
+"lat": 35.0116305,
+"version": 5,
+"timestamp": "2017-09-24T17:26:49Z",
+"visible": true,
+"tags": {
+"name": "藤井斉成会有鄰館",
+"name:en": "Yurinkan museum",
+"name:fr": "Musée Yurinkan",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q11622794",
+"wikipedia": "ja:藤井斉成会有鄰館"
+}
+},
+"1422972202": {
+"lon": 135.772511,
+"lat": 34.990973,
+"version": 2,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市東山区",
+"KSJ2:ADS": "大和大路正面茶屋町530",
+"name": "豊国神社宝物館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422972380": {
+"lon": 135.750857,
+"lat": 34.999693,
+"version": 2,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市下京区",
+"KSJ2:ADS": "猪熊通高辻下ル",
+"name": "遠藤剛キ美術館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422972578": {
+"lon": 135.80434,
+"lat": 34.915243,
+"version": 2,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府宇治市",
+"KSJ2:ADS": "五ケ庄三番割34-4",
+"name": "鉄眼一切経版木収蔵庫",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422972907": {
+"lon": 135.753275,
+"lat": 34.993226,
+"version": 3,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市下京区",
+"KSJ2:ADS": "西中筋六条下ル住吉町42",
+"name": "風俗博物館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q11665410",
+"wikipedia": "ja:風俗博物館"
+}
+},
+"1422972931": {
+"lon": 135.734509,
+"lat": 35.026615,
+"version": 2,
+"timestamp": "2026-06-26T11:18:04Z",
+"visible": true,
+"tags": {
+"KSJ2:AdminArea": "京都府京都市上京区",
+"KSJ2:ADS": "今出川天神筋下ル大上之町61",
+"name": "高津古文化会館",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"operator:type": "private",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum"
+}
+},
+"1422972974": {
+"lon": 135.7508317,
+"lat": 35.0543369,
+"version": 4,
+"timestamp": "2024-09-29T11:59:43Z",
+"visible": true,
+"tags": {
+"alt_name:en": "Goryeo Museum of Art",
+"description": "Korean art museum in Kyoto Prefecture, Japan",
+"name": "高麗美術館",
+"name:en": "Koryo Museum of Art",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"wikidata": "Q21019672"
+}
+},
+"1422973103": {
+"lon": 135.732952,
+"lat": 34.982735,
+"version": 3,
+"timestamp": "2023-03-25T12:33:37Z",
+"visible": true,
+"tags": {
+"addr:city": "京都市",
+"addr:neighbourhood": "103",
+"addr:province": "京都府",
+"addr:quarter": "七条御所ノ内南町",
+"addr:suburb": "下京区",
+"museum": "art",
+"name": "ＫＣＩギャラリー",
+"name:en": "KCI Gallery",
+"note": "National-Land Numerical Information (Public Facility) 2006, MLIT Japan",
+"note:ja": "国土数値情報（公共施設データ）平成19年　国土交通省",
+"source": "KSJ2",
+"source_ref": "http://nlftp.mlit.go.jp/ksj/jpgis/datalist/KsjTmplt-P02-v2_0.html",
+"tourism": "museum",
+"website": "https://www.kci.or.jp/"
+}
+},
+"1434345385": {
+"lon": 135.3720502,
+"lat": 35.475204,
+"version": 5,
+"timestamp": "2023-01-26T08:56:56Z",
+"visible": true,
+"tags": {
+"name": "海軍記念館",
+"name:ja": "海軍記念館",
+"tourism": "museum",
+"wikidata": "Q11559290",
+"wikipedia": "ja:海軍記念館"
+}
+},
+"1435052713": {
+"lon": 135.39435,
+"lat": 35.5106319,
+"version": 1,
+"timestamp": "2011-09-17T00:43:57Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"1494857741": {
+"lon": 135.7593295,
+"lat": 34.9875524,
+"version": 8,
+"timestamp": "2025-07-16T09:53:48Z",
+"visible": true,
+"tags": {
+"contact:phone": "+81 75-361-3215",
+"fee": "yes",
+"height": "100",
+"name": "京都タワー",
+"name:en": "Kyoto Tower",
+"name:fr": "Tour de Kyoto",
+"name:ja": "京都タワー",
+"name:ja-Hira": "きょうとタワー",
+"name:ja-Latn": "Kyōto-tawā",
+"name:zh": "京都观光塔",
+"opening_hours": "Mo-Su 10:00-21:00",
+"source": "Bing",
+"tourism": "viewpoint",
+"wikidata": "Q1201304",
+"wikipedia": "ja:京都タワー"
+}
+},
+"1621848983": {
+"lon": 135.7611343,
+"lat": 34.9291289,
+"version": 1,
+"timestamp": "2012-02-07T16:48:07Z",
+"visible": true,
+"tags": {
+"source": "survey, bing",
+"tourism": "viewpoint"
+}
+},
+"1621849490": {
+"lon": 135.7603195,
+"lat": 34.9307451,
+"version": 2,
+"timestamp": "2022-02-12T13:48:47Z",
+"visible": true,
+"tags": {
+"brewery": "yes",
+"name": "黄桜記念館",
+"operator": "カッパカントリー",
+"source": "survey, bing",
+"tourism": "museum"
+}
+},
+"1977407608": {
+"lon": 135.7798039,
+"lat": 35.000624,
+"version": 5,
+"timestamp": "2025-11-09T20:01:42Z",
+"visible": true,
+"tags": {
+"contact:tripadvisor": "7279559",
+"contact:website": "https://www.kodaiji.com/museum/",
+"museum": "art",
+"name": "高台寺掌美術館",
+"name:en": "Kōdai-ji Shō Art Museum",
+"name:fr": "Musée d'art Shō",
+"name:ja": "高台寺掌美術館",
+"name:ja-Hira": "こうたいじ しょう びじゅつかん",
+"name:ja-Latn": "Kōdai-ji Shō bijutsukan",
+"source": "Survey",
+"start_date": "1998",
+"tourism": "museum",
+"wikidata": "Q3959661",
+"wikimedia_commons": "Category:Shō Museum"
+}
+},
+"1978980326": {
+"lon": 135.7469344,
+"lat": 35.0134787,
+"version": 4,
+"timestamp": "2025-07-17T10:51:42Z",
+"visible": true,
+"tags": {
+"direction": "0-360",
+"name": "西から見た二条城東南隅櫓の眺め",
+"name:en": "Viewpoint of Nijo-jo Castle from the ruins of Tenshu (Donjon)",
+"name:ja": "西から見た二条城東南隅櫓の眺め",
+"source": "Listed on the castle guide map https://nijo-jocastle.city.kyoto.lg.jp/wp-content/themes/nijojo/assets/pdf/castle_guide/map/guide_map2503_en.pdf",
+"tourism": "viewpoint",
+"wheelchair": "no"
+}
+},
+"2309497933": {
+"lon": 135.8820083,
+"lat": 34.7847879,
+"version": 2,
+"timestamp": "2018-09-01T06:41:32Z",
+"visible": true,
+"tags": {
+"name": "石寺の茶畑",
+"tourism": "viewpoint"
+}
+},
+"2310870660": {
+"lon": 135.2640741,
+"lat": 35.3113306,
+"version": 3,
+"timestamp": "2019-01-23T14:22:38Z",
+"visible": true,
+"tags": {
+"name": "綾部市天文館パオ",
+"tourism": "museum"
+}
+},
+"2483594171": {
+"lon": 135.4679511,
+"lat": 35.107373,
+"version": 2,
+"timestamp": "2019-10-12T00:32:22Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "園部城",
+"name:en": "園部城 Sonobe Castle Ruins"
+}
+},
+"2657629427": {
+"lon": 135.7758317,
+"lat": 34.964651,
+"version": 1,
+"timestamp": "2014-02-06T15:03:06Z",
+"visible": true,
+"tags": {
+"name": "五百羅漢",
+"source": "survey",
+"tourism": "attraction"
+}
+},
+"2657629431": {
+"lon": 135.7752119,
+"lat": 34.9645025,
+"version": 1,
+"timestamp": "2014-02-06T15:03:06Z",
+"visible": true,
+"tags": {
+"name": "伊藤若冲の墓",
+"source": "survey",
+"tourism": "attraction"
+}
+},
+"2661423323": {
+"lon": 135.8356644,
+"lat": 34.7138345,
+"version": 2,
+"timestamp": "2017-09-24T17:24:00Z",
+"visible": true,
+"tags": {
+"name": "きっづ光科学館ふぉとん (The Kids Science Museum of Photons)",
+"name:en": "The Kids Science Museum of Photons",
+"name:ja": "きっづ光科学館ふぉとん",
+"opening_hours": "10:00 - 16:30",
+"operator": "日本原子力研究開発機構 関西光科学研究所",
+"source": "bing",
+"tourism": "museum",
+"wikidata": "Q17211497",
+"wikipedia": "ja:きっづ光科学館ふぉとん"
+}
+},
+"2697500339": {
+"lon": 135.7756967,
+"lat": 34.9665075,
+"version": 9,
+"timestamp": "2025-11-29T18:18:50Z",
+"visible": true,
+"tags": {
+"historic": "stone",
+"image": "https://photos.app.goo.gl/NFKvTEvpXJtAhzeGA",
+"name": "おもかる石",
+"name:en": "Omokaru Stone",
+"name:ja_rm": "Omo karu ishi",
+"source": "Bing;survey",
+"tourism": "attraction"
+}
+},
+"2722622181": {
+"lon": 135.1857822,
+"lat": 35.5580029,
+"version": 1,
+"timestamp": "2014-03-17T02:04:08Z",
+"visible": true,
+"tags": {
+"name": "日本三景の松",
+"tourism": "viewpoint"
+}
+},
+"2722622183": {
+"lon": 135.1874183,
+"lat": 35.5559409,
+"version": 1,
+"timestamp": "2014-03-17T02:04:08Z",
+"visible": true,
+"tags": {
+"name": "はまなす群生地",
+"tourism": "viewpoint"
+}
+},
+"2722650624": {
+"lon": 135.2879084,
+"lat": 35.6748319,
+"version": 1,
+"timestamp": "2014-03-17T02:23:42Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"2784781505": {
+"lon": 135.7000706,
+"lat": 34.8811972,
+"version": 1,
+"timestamp": "2014-04-12T06:42:00Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"2810298522": {
+"lon": 135.0509838,
+"lat": 35.7028057,
+"version": 3,
+"timestamp": "2019-05-30T17:53:35Z",
+"visible": true,
+"tags": {
+"name": "琴引浜",
+"tourism": "viewpoint"
+}
+},
+"2810298525": {
+"lon": 135.1054059,
+"lat": 35.743517,
+"version": 3,
+"timestamp": "2020-05-09T03:06:54Z",
+"visible": true,
+"tags": {
+"name": "立岩",
+"name:en": "Tateiwa",
+"name:ja": "立岩",
+"tourism": "viewpoint"
+}
+},
+"2810298529": {
+"lon": 135.1262151,
+"lat": 35.7452478,
+"version": 3,
+"timestamp": "2023-11-18T21:34:48Z",
+"visible": true,
+"tags": {
+"name": "屏風岩",
+"name:ja-Latn": "Byobuiwa",
+"tourism": "viewpoint"
+}
+},
+"2814753854": {
+"lon": 135.2055326,
+"lat": 35.5558688,
+"version": 3,
+"timestamp": "2019-04-15T16:44:56Z",
+"visible": true,
+"tags": {
+"direction": "NW",
+"name": "雪舟観",
+"tourism": "viewpoint"
+}
+},
+"2814753861": {
+"lon": 135.1754724,
+"lat": 35.5533555,
+"version": 1,
+"timestamp": "2014-04-25T04:43:31Z",
+"visible": true,
+"tags": {
+"name": "sakurayama",
+"tourism": "viewpoint"
+}
+},
+"2815277818": {
+"lon": 135.1881216,
+"lat": 35.6010542,
+"version": 2,
+"timestamp": "2019-04-13T11:52:02Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"2815304855": {
+"lon": 135.1860469,
+"lat": 35.6044912,
+"version": 1,
+"timestamp": "2014-04-25T10:14:50Z",
+"visible": true,
+"tags": {
+"name": "成相山展望台",
+"tourism": "viewpoint"
+}
+},
+"2854305106": {
+"lon": 135.6781775,
+"lat": 35.0135761,
+"version": 1,
+"timestamp": "2014-05-13T02:05:29Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"2854305122": {
+"lon": 135.6884691,
+"lat": 35.0268309,
+"version": 2,
+"timestamp": "2017-03-25T09:51:50Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"2925674896": {
+"lon": 135.7806273,
+"lat": 35.0126264,
+"version": 2,
+"timestamp": "2016-10-02T14:36:13Z",
+"visible": true,
+"tags": {
+"name": "京都伝統産業ふれあい館",
+"name:de": "Museum für das traditionelle Handwerk",
+"source": "survey",
+"tourism": "museum"
+}
+},
+"3004516172": {
+"lon": 135.669874,
+"lat": 35.01534,
+"version": 4,
+"timestamp": "2019-03-16T09:23:33Z",
+"visible": true,
+"tags": {
+"name": "頂上展望台",
+"name:en": "Summit Observation Deck",
+"name:th": "ป่าไผ่ arashiyama",
+"tourism": "viewpoint"
+}
+},
+"3004516173": {
+"lon": 135.6690225,
+"lat": 35.0163312,
+"version": 1,
+"timestamp": "2014-08-08T10:34:31Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3233974299": {
+"lon": 135.7909225,
+"lat": 35.0083537,
+"version": 1,
+"timestamp": "2014-12-14T09:24:49Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3259188761": {
+"lon": 135.676318,
+"lat": 35.01791,
+"version": 3,
+"timestamp": "2021-04-07T12:01:56Z",
+"visible": true,
+"tags": {
+"museum": "art",
+"name": "UN MOMENT POOR SOI 矢田作十路記念館",
+"name:en": "Arashiyama Gyokurin The Yata sakujuro Memorial Museum",
+"tourism": "museum"
+}
+},
+"3259294861": {
+"lon": 135.672637,
+"lat": 35.016438,
+"version": 2,
+"timestamp": "2025-03-12T22:13:09Z",
+"visible": true,
+"tags": {
+"name": "愛の泉",
+"name:en": "Fountain of Youth",
+"tourism": "attraction"
+}
+},
+"3406566118": {
+"lon": 135.8099897,
+"lat": 34.8905339,
+"version": 6,
+"timestamp": "2017-06-18T07:30:31Z",
+"visible": true,
+"tags": {
+"leaf_type": "broadleaved",
+"name": "兎楽の樹",
+"natural": "tree",
+"species": "Cinnamomum camphora",
+"tourism": "attraction"
+}
+},
+"3467694619": {
+"lon": 135.7835388,
+"lat": 34.995055,
+"version": 4,
+"timestamp": "2017-08-29T07:59:52Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3475118096": {
+"lon": 135.7855007,
+"lat": 34.9945875,
+"version": 2,
+"timestamp": "2021-06-09T12:48:34Z",
+"visible": true,
+"tags": {
+"direction": "SW-NW",
+"tourism": "viewpoint"
+}
+},
+"3494101787": {
+"lon": 135.7809265,
+"lat": 34.9694633,
+"version": 3,
+"timestamp": "2022-10-24T13:33:38Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3494102024": {
+"lon": 135.7813832,
+"lat": 34.9691106,
+"version": 4,
+"timestamp": "2022-04-18T01:00:12Z",
+"visible": true,
+"tags": {
+"direction": "W",
+"tourism": "viewpoint"
+}
+},
+"3537286851": {
+"lon": 135.7287879,
+"lat": 35.0389864,
+"version": 1,
+"timestamp": "2015-05-23T01:54:19Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3537375396": {
+"lon": 135.7286743,
+"lat": 35.0395325,
+"version": 1,
+"timestamp": "2015-05-23T04:34:44Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3540488353": {
+"lon": 135.7290707,
+"lat": 35.0400239,
+"version": 1,
+"timestamp": "2015-05-24T03:42:42Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3591555729": {
+"lon": 135.7990438,
+"lat": 35.0267302,
+"version": 4,
+"timestamp": "2015-06-14T05:53:51Z",
+"visible": true,
+"tags": {
+"name": "展望所",
+"name:en": "Overlook spot",
+"source": "Survey",
+"tourism": "viewpoint"
+}
+},
+"3591682919": {
+"lon": 135.7984017,
+"lat": 35.0263954,
+"version": 2,
+"timestamp": "2015-06-28T15:37:20Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3624434595": {
+"lon": 135.8287127,
+"lat": 35.0645392,
+"version": 1,
+"timestamp": "2015-06-29T06:17:19Z",
+"visible": true,
+"tags": {
+"access": "customers",
+"fee": "yes",
+"name": "Floréal",
+"name:en": "Floréal",
+"name:ja": "フロレアル",
+"tourism": "attraction"
+}
+},
+"3624475076": {
+"lon": 135.8299822,
+"lat": 35.0646531,
+"version": 1,
+"timestamp": "2015-06-29T06:44:08Z",
+"visible": true,
+"tags": {
+"name": "見晴らしの 丘",
+"name:ja": "見晴らしの 丘",
+"tourism": "viewpoint"
+}
+},
+"3666640431": {
+"lon": 135.6785629,
+"lat": 35.0600661,
+"version": 1,
+"timestamp": "2015-07-26T03:07:19Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3689747276": {
+"lon": 135.1819143,
+"lat": 35.552977,
+"version": 2,
+"timestamp": "2019-05-02T11:12:19Z",
+"visible": true,
+"tags": {
+"description": "飛龍観回廊",
+"description:en": "hiryukan corridor view place",
+"source": "survey",
+"tourism": "viewpoint"
+}
+},
+"3689747278": {
+"lon": 135.1824367,
+"lat": 35.5527215,
+"version": 3,
+"timestamp": "2019-05-02T11:12:19Z",
+"visible": true,
+"tags": {
+"name": "天橋立(飛龍観)展望所",
+"name:en": "Amanohashidate (Hiryukan) Observatory",
+"name:nl": "Amanohashidate (Hayutoni) Uitzichtpunt",
+"source": "survey",
+"tourism": "viewpoint"
+}
+},
+"3693807452": {
+"lon": 135.2910172,
+"lat": 35.6744372,
+"version": 2,
+"timestamp": "2015-08-13T02:24:36Z",
+"visible": true,
+"tags": {
+"name": "舟屋群展望所",
+"source": "survey",
+"tourism": "viewpoint"
+}
+},
+"3710127914": {
+"lon": 135.7543199,
+"lat": 35.0596804,
+"version": 1,
+"timestamp": "2015-08-23T05:41:19Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3740796912": {
+"lon": 135.7497214,
+"lat": 35.0135345,
+"version": 7,
+"timestamp": "2025-11-28T10:33:24Z",
+"visible": true,
+"tags": {
+"castle_type": "palace",
+"heritage": "2",
+"heritage:operator": "文部科学省",
+"heritage:type": "国宝",
+"historic": "castle",
+"name": "二の丸御殿",
+"name:en": "Ninomaru-goten Palace",
+"name:ja": "二条城二ﾉ丸御殿",
+"name:zh": "二之丸御殿",
+"url": "https://youtu.be/374dyMUIjmI?si=FSe_5DgYZtZvzEWr"
+}
+},
+"3740796913": {
+"lon": 135.747817,
+"lat": 35.0141367,
+"version": 4,
+"timestamp": "2025-07-23T03:24:43Z",
+"visible": true,
+"tags": {
+"castle_type": "palace",
+"historic": "castle",
+"name": "本丸御殿",
+"name:de": "Honmaru-Palast",
+"name:en": "Honmaru palace",
+"name:zh": "本丸御殿"
+}
+},
+"3752787070": {
+"lon": 135.7791887,
+"lat": 34.9985543,
+"version": 1,
+"timestamp": "2015-09-21T12:14:28Z",
+"visible": true,
+"tags": {
+"level": "2",
+"tourism": "viewpoint"
+}
+},
+"3752885628": {
+"lon": 135.779392,
+"lat": 35.0005422,
+"version": 1,
+"timestamp": "2015-09-21T13:42:57Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3794334578": {
+"lon": 135.7131519,
+"lat": 35.0287852,
+"version": 1,
+"timestamp": "2015-10-20T13:52:20Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3797579042": {
+"lon": 135.7132379,
+"lat": 35.0290589,
+"version": 1,
+"timestamp": "2015-10-22T00:14:43Z",
+"visible": true,
+"tags": {
+"source": "survey",
+"tourism": "viewpoint"
+}
+},
+"3931904262": {
+"lon": 135.8782166,
+"lat": 34.9380871,
+"version": 2,
+"timestamp": "2017-09-10T07:35:54Z",
+"visible": true,
+"tags": {
+"ele": "391",
+"tourism": "viewpoint"
+}
+},
+"3962948759": {
+"lon": 135.8346629,
+"lat": 34.9449818,
+"version": 1,
+"timestamp": "2016-01-24T04:54:32Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"3979075898": {
+"lon": 135.8405667,
+"lat": 34.9445702,
+"version": 1,
+"timestamp": "2016-01-31T05:45:26Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4000585592": {
+"lon": 135.784926,
+"lat": 34.9929824,
+"version": 2,
+"timestamp": "2021-06-09T12:48:34Z",
+"visible": true,
+"tags": {
+"direction": "W-NE",
+"tourism": "viewpoint"
+}
+},
+"4045618965": {
+"lon": 135.7647494,
+"lat": 34.9861652,
+"version": 6,
+"timestamp": "2024-01-26T22:12:19Z",
+"visible": true,
+"tags": {
+"addr:block_number": "6",
+"addr:housenumber": "3",
+"addr:postcode": "600-8206",
+"addr:quarter": "下之町",
+"addr:suburb": "下京区",
+"museum": "local",
+"name": "柳原銀行記念資料館",
+"name:en": "Yanagihara Bank Memorial Museum",
+"name:fr": "Musée en mémoire de la banque de Yanagihara",
+"tourism": "museum",
+"wikidata": "Q11534162",
+"wikipedia": "ja:柳原銀行"
+}
+},
+"4102670115": {
+"lon": 135.6677576,
+"lat": 35.0569523,
+"version": 1,
+"timestamp": "2016-04-06T15:08:17Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4119071997": {
+"lon": 135.6688122,
+"lat": 35.0534316,
+"version": 2,
+"timestamp": "2025-10-25T09:25:22Z",
+"visible": true,
+"tags": {
+"name": "かわらけ投げ",
+"name:ja-Hira": "かわらけなげ",
+"name:ja-Latn": "Kawarake-nage",
+"tourism": "viewpoint"
+}
+},
+"4198049508": {
+"lon": 135.7747856,
+"lat": 35.002524,
+"version": 8,
+"timestamp": "2021-03-07T09:43:16Z",
+"visible": true,
+"tags": {
+"name": "gion 衹园",
+"name:de": "Gion Viertel",
+"name:en": "Gion Quarter",
+"name:fr": "Quartier de Gion",
+"name:ja": "祇園",
+"name:ko": "기온",
+"name:th": "ย่านกิออน เกอิชา",
+"name:zh": "衹园",
+"tourism": "attraction"
+}
+},
+"4209380113": {
+"lon": 135.7803282,
+"lat": 35.0127946,
+"version": 1,
+"timestamp": "2016-05-26T16:57:03Z",
+"visible": true,
+"tags": {
+"name": "京都動物園",
+"tourism": "attraction"
+}
+},
+"4230208589": {
+"lon": 135.759365,
+"lat": 35.0031498,
+"version": 2,
+"timestamp": "2019-03-31T03:44:26Z",
+"visible": true,
+"tags": {
+"addr:street": "烏丸通",
+"name": "Kira Karacho",
+"phone": "075-353-5885",
+"tourism": "attraction",
+"website": "https://kirakaracho.jp/"
+}
+},
+"4233370290": {
+"lon": 135.7712126,
+"lat": 35.0042456,
+"version": 4,
+"timestamp": "2019-03-31T03:46:00Z",
+"visible": true,
+"tags": {
+"name": "先斗町",
+"name:en": "Pontochō",
+"name:zh": "先斗町",
+"tourism": "attraction",
+"website": "https://www.japan-guide.com/e/e3921.html"
+}
+},
+"4237203174": {
+"lon": 135.7876107,
+"lat": 35.0000696,
+"version": 1,
+"timestamp": "2016-06-11T10:15:12Z",
+"visible": true,
+"tags": {
+"name": "Kyoto Lookout",
+"opening_hours": "24/7",
+"tourism": "attraction"
+}
+},
+"4241187492": {
+"lon": 135.7736017,
+"lat": 35.0509528,
+"version": 1,
+"timestamp": "2016-06-13T12:22:05Z",
+"visible": true,
+"tags": {
+"name": "Green Peace Hotel",
+"tourism": "attraction"
+}
+},
+"4242307490": {
+"lon": 135.7786745,
+"lat": 35.007111,
+"version": 1,
+"timestamp": "2016-06-14T03:35:27Z",
+"visible": true,
+"tags": {
+"name": "行者橋",
+"tourism": "attraction"
+}
+},
+"4259712692": {
+"lon": 135.7786703,
+"lat": 35.0009533,
+"version": 2,
+"timestamp": "2017-10-22T07:01:41Z",
+"visible": true,
+"tags": {
+"name": "石塀小路",
+"tourism": "attraction"
+}
+},
+"4259721789": {
+"lon": 135.7798699,
+"lat": 35.0000375,
+"version": 1,
+"timestamp": "2016-06-23T02:05:51Z",
+"visible": true,
+"tags": {
+"name": "寧寧之道",
+"tourism": "attraction"
+}
+},
+"4273144996": {
+"lon": 135.6977808,
+"lat": 34.9142187,
+"version": 2,
+"timestamp": "2026-04-06T03:35:35Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4273214089": {
+"lon": 135.6925637,
+"lat": 34.9138853,
+"version": 1,
+"timestamp": "2016-06-30T11:29:33Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4278396510": {
+"lon": 135.6765815,
+"lat": 35.0119957,
+"version": 1,
+"timestamp": "2016-07-02T14:55:35Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4297224259": {
+"lon": 135.6724155,
+"lat": 35.0162056,
+"version": 2,
+"timestamp": "2016-07-24T14:25:07Z",
+"visible": true,
+"tags": {
+"name": "望京の丘",
+"tourism": "viewpoint"
+}
+},
+"4314501406": {
+"lon": 135.7342138,
+"lat": 35.0306932,
+"version": 1,
+"timestamp": "2016-07-21T15:04:47Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4314501446": {
+"lon": 135.7342511,
+"lat": 35.0307929,
+"version": 1,
+"timestamp": "2016-07-21T15:04:47Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4317581591": {
+"lon": 135.6871642,
+"lat": 34.9906345,
+"version": 2,
+"timestamp": "2016-12-31T14:33:48Z",
+"visible": true,
+"tags": {
+"name": "地蔵院",
+"name:en": "Jizo-in",
+"tourism": "attraction"
+}
+},
+"4349281889": {
+"lon": 135.6765627,
+"lat": 34.901212,
+"version": 1,
+"timestamp": "2016-08-14T02:25:01Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "山崎城址"
+}
+},
+"4377406691": {
+"lon": 135.7157782,
+"lat": 35.04485,
+"version": 2,
+"timestamp": "2022-09-30T12:12:02Z",
+"visible": true,
+"tags": {
+"name": "やまびこくらぶ",
+"tourism": "attraction"
+}
+},
+"4411125600": {
+"lon": 135.804312,
+"lat": 35.0230738,
+"version": 11,
+"timestamp": "2023-12-23T06:12:23Z",
+"visible": true,
+"tags": {
+"direction": "-65",
+"name": "Daimonji Hitoko",
+"name:ja": "大文字火床",
+"source": "survey;local knowledge;gps",
+"tourism": "viewpoint"
+}
+},
+"4411208590": {
+"lon": 135.8031694,
+"lat": 35.0252351,
+"version": 4,
+"timestamp": "2023-12-23T06:12:23Z",
+"visible": true,
+"tags": {
+"direction": "-80",
+"tourism": "viewpoint"
+}
+},
+"4459193690": {
+"lon": 135.7805489,
+"lat": 34.998533,
+"version": 3,
+"timestamp": "2026-11-15T02:18:26Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "349-12",
+"addr:street": "川瀬小路",
+"check_date": "2026-11-15",
+"name:en": "Camellia Tea Ceremony FLOWER",
+"tourism": "attraction",
+"website": "https://www.tea-kyoto.com/"
+}
+},
+"4459993292": {
+"lon": 135.4153653,
+"lat": 35.1669914,
+"version": 1,
+"timestamp": "2016-10-23T06:14:48Z",
+"visible": true,
+"tags": {
+"name": "中央広場",
+"tourism": "viewpoint"
+}
+},
+"4463130361": {
+"lon": 135.6502669,
+"lat": 34.9249951,
+"version": 1,
+"timestamp": "2016-10-25T10:15:50Z",
+"visible": true,
+"tags": {
+"amenity": "bench",
+"name": "展望良し",
+"tourism": "viewpoint"
+}
+},
+"4558124689": {
+"lon": 135.7541642,
+"lat": 34.9828295,
+"version": 1,
+"timestamp": "2016-12-17T07:56:44Z",
+"visible": true,
+"tags": {
+"name:en": "Namco Wonder Tower",
+"tourism": "attraction"
+}
+},
+"4566707526": {
+"lon": 135.8230543,
+"lat": 34.8134514,
+"version": 1,
+"timestamp": "2016-12-22T11:06:27Z",
+"visible": true,
+"tags": {
+"name": "万灯呂山展望台",
+"name:en": "Mantoroyama Scenic View Park",
+"tourism": "viewpoint"
+}
+},
+"4605178896": {
+"lon": 135.6607488,
+"lat": 35.0124782,
+"version": 1,
+"timestamp": "2017-01-13T05:30:09Z",
+"visible": true,
+"tags": {
+"tourism": "attraction"
+}
+},
+"4605180389": {
+"lon": 135.6720276,
+"lat": 35.0060055,
+"version": 2,
+"timestamp": "2026-05-10T09:01:20Z",
+"visible": true,
+"tags": {
+"tourism": "attraction"
+}
+},
+"4608980494": {
+"lon": 135.7974866,
+"lat": 35.0096509,
+"version": 6,
+"timestamp": "2026-03-07T17:17:14Z",
+"visible": true,
+"tags": {
+"name": "最勝院奥の院",
+"name:en": "Saishō-in Oku-no-in Shrine",
+"name:ja": "最勝院奥の院",
+"tourism": "attraction"
+}
+},
+"4648090890": {
+"lon": 135.6744961,
+"lat": 35.0090473,
+"version": 2,
+"timestamp": "2018-03-02T19:03:40Z",
+"visible": true,
+"tags": {
+"name:en": "Arashiyama",
+"tourism": "attraction",
+"wikidata": "Q2859566"
+}
+},
+"4663300572": {
+"lon": 135.6228654,
+"lat": 35.313039,
+"version": 1,
+"timestamp": "2017-02-04T14:01:55Z",
+"visible": true,
+"tags": {
+"name": "かやぶきの里",
+"tourism": "attraction"
+}
+},
+"4723794995": {
+"lon": 135.8129169,
+"lat": 34.9927379,
+"version": 2,
+"timestamp": "2022-11-27T15:37:01Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4742101443": {
+"lon": 135.7748299,
+"lat": 34.9669136,
+"version": 7,
+"timestamp": "2026-11-15T09:25:24Z",
+"visible": true,
+"tags": {
+"check_date": "2026-11-15",
+"image": "https://photos.app.goo.gl/VMV68r1wA5gXRb8H8",
+"name": "千本鳥居",
+"name:en": "1,000 Torii Gates",
+"name:ja": "千本鳥居",
+"name:zh": "千本鸟居",
+"tourism": "attraction",
+"url": "https://youtu.be/djD_1v2NAW0"
+}
+},
+"4770497121": {
+"lon": 135.6798209,
+"lat": 34.8977101,
+"version": 1,
+"timestamp": "2017-04-02T04:12:36Z",
+"visible": true,
+"tags": {
+"description": "大阪平野一望",
+"description:en": "Best view of Osaka Plain",
+"tourism": "viewpoint"
+}
+},
+"4782783521": {
+"lon": 135.7446225,
+"lat": 35.0014634,
+"version": 6,
+"timestamp": "2026-11-05T12:58:23Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "46-1",
+"addr:street": "Mibukayougosho-cho",
+"check_date": "2026-11-05",
+"check_date:opening_hours": "2026-11-05",
+"name": "Kyoto Seishu Netsuke Art Museum",
+"name:fr": "Musée artistique de Kyoto Seishu Netsuke",
+"name:ja": "京都清宗根付館",
+"name:ja_kana": "きょうとせいしゅうねつけかん",
+"name:zh": "京都清宗根付馆",
+"opening_hours": "Mo-Su 10:00-17:00",
+"tourism": "museum",
+"wikidata": "Q118145425",
+"wikipedia": "ja:京都清宗根付館 (旧神先家住宅)"
+}
+},
+"4785634456": {
+"lon": 135.680416,
+"lat": 34.8995327,
+"version": 3,
+"timestamp": "2023-09-25T00:52:33Z",
+"visible": true,
+"tags": {
+"name": "旗立松展望台",
+"tourism": "viewpoint"
+}
+},
+"4786435478": {
+"lon": 135.6862311,
+"lat": 34.8920749,
+"version": 1,
+"timestamp": "2017-04-10T14:48:37Z",
+"visible": true,
+"tags": {
+"name": "桂川の早瀬",
+"tourism": "attraction"
+}
+},
+"4796562721": {
+"lon": 135.7910609,
+"lat": 35.010411,
+"version": 1,
+"timestamp": "2017-04-16T13:35:53Z",
+"visible": true,
+"tags": {
+"name:en": "Crane, turtle and Mt. Peng Lai garden",
+"tourism": "attraction"
+}
+},
+"4798098775": {
+"lon": 135.7738834,
+"lat": 35.0012125,
+"version": 3,
+"timestamp": "2020-05-04T21:50:12Z",
+"visible": true,
+"tags": {
+"access": "customers",
+"name": "唐子の間",
+"name:en": "Room of the Chinese Boys",
+"name:ja": "唐子の間",
+"name:ja_rm": "Karako no ma",
+"tourism": "attraction"
+}
+},
+"4799846802": {
+"lon": 135.68006,
+"lat": 35.0186388,
+"version": 2,
+"timestamp": "2021-05-12T13:44:10Z",
+"visible": true,
+"tags": {
+"name": "ジオラマ京都JAPAN",
+"tourism": "attraction",
+"wikidata": "Q11309480",
+"wikipedia": "ja:ジオラマ・京都・JAPAN"
+}
+},
+"4806643498": {
+"lon": 135.7204499,
+"lat": 35.2038622,
+"version": 2,
+"timestamp": "2023-07-31T01:34:31Z",
+"visible": true,
+"tags": {
+"name": "黒田の百年桜",
+"name:en": "Century Cherry",
+"natural": "tree",
+"tourism": "attraction"
+}
+},
+"4828484323": {
+"lon": 135.7480717,
+"lat": 35.0112545,
+"version": 1,
+"timestamp": "2017-05-01T11:26:31Z",
+"visible": true,
+"tags": {
+"name": "神泉苑",
+"name:en": "Shinsen-en Garden",
+"name:ja": "神泉苑",
+"tourism": "attraction"
+}
+},
+"4828484324": {
+"lon": 135.7486973,
+"lat": 35.0103111,
+"version": 4,
+"timestamp": "2024-07-10T07:20:55Z",
+"visible": true,
+"tags": {
+"email": "info_isckyoto@yh-kyoto.or.jp",
+"name": "二条陣屋",
+"name:en": "Nijō Jinya",
+"name:ja": "条城陣屋",
+"phone": "+81 75 381-6487",
+"tourism": "attraction",
+"website": "https://nijyojinya.net/english/"
+}
+},
+"4833673592": {
+"lon": 135.1961198,
+"lat": 35.5863203,
+"version": 5,
+"timestamp": "2020-02-28T14:48:25Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"4866111228": {
+"lon": 135.755073,
+"lat": 35.0108461,
+"version": 1,
+"timestamp": "2017-05-20T12:16:45Z",
+"visible": true,
+"tags": {
+"name:en": "koyamaen",
+"tourism": "attraction"
+}
+},
+"4900800422": {
+"lon": 135.7679279,
+"lat": 35.0243707,
+"version": 1,
+"timestamp": "2017-06-07T03:29:38Z",
+"visible": true,
+"tags": {
+"name:en": "Genji / Murasaki Shikibu",
+"tourism": "attraction"
+}
+},
+"4902517026": {
+"lon": 135.7431278,
+"lat": 35.0085565,
+"version": 2,
+"timestamp": "2019-03-29T11:51:51Z",
+"visible": true,
+"tags": {
+"name": "京都三条会商店街",
+"name:en": "Sanjo-kai Shotengai",
+"tourism": "attraction"
+}
+},
+"4907314281": {
+"lon": 135.8129342,
+"lat": 34.8929378,
+"version": 2,
+"timestamp": "2026-01-10T14:13:20Z",
+"visible": true,
+"tags": {
+"name": "大吉山展望台",
+"tourism": "viewpoint"
+}
+},
+"4921611222": {
+"lon": 135.8129363,
+"lat": 34.8928749,
+"version": 2,
+"timestamp": "2026-01-10T14:13:20Z",
+"visible": true,
+"tags": {
+"name": "平等院",
+"tourism": "viewpoint"
+}
+},
+"4921620821": {
+"lon": 135.8128827,
+"lat": 34.8929255,
+"version": 9,
+"timestamp": "2026-01-10T14:13:20Z",
+"visible": true,
+"tags": {
+"name": "宇治橋",
+"tourism": "viewpoint"
+}
+},
+"4921633023": {
+"lon": 135.8127011,
+"lat": 34.8926454,
+"version": 2,
+"timestamp": "2026-01-10T14:13:20Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4921633024": {
+"lon": 135.8127199,
+"lat": 34.8926234,
+"version": 2,
+"timestamp": "2026-01-10T14:13:20Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"4921644322": {
+"lon": 135.8069587,
+"lat": 34.8932507,
+"version": 1,
+"timestamp": "2017-06-18T06:39:41Z",
+"visible": true,
+"tags": {
+"name": "旧宇治橋三の間",
+"tourism": "attraction"
+}
+},
+"4936942221": {
+"lon": 135.7732216,
+"lat": 34.9989417,
+"version": 1,
+"timestamp": "2017-06-26T13:17:29Z",
+"visible": true,
+"tags": {
+"name:en": "Ukiyoe Small Museum",
+"tourism": "museum"
+}
+},
+"4946001221": {
+"lon": 135.7606563,
+"lat": 34.9888369,
+"version": 1,
+"timestamp": "2017-07-01T17:56:29Z",
+"visible": true,
+"tags": {
+"name:en": "Tea Ceremony Ju-An",
+"tourism": "attraction"
+}
+},
+"4966399522": {
+"lon": 135.7543472,
+"lat": 35.0105136,
+"version": 2,
+"timestamp": "2018-04-14T12:35:42Z",
+"visible": true,
+"tags": {
+"name:zh": "京友禪體驗工坊",
+"tourism": "attraction"
+}
+},
+"4968138821": {
+"lon": 135.7784528,
+"lat": 34.9888074,
+"version": 1,
+"timestamp": "2017-07-13T10:38:58Z",
+"visible": true,
+"tags": {
+"name:en": "Imahie Jingu",
+"tourism": "attraction"
+}
+},
+"4968235322": {
+"lon": 135.7800589,
+"lat": 35.0021092,
+"version": 2,
+"timestamp": "2021-03-29T00:07:00Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "594-1",
+"addr:street": "Gion-machi Minachi-gawa",
+"amenity": "place_of_worship",
+"name:en": "Daiun-in;Daiun-In Temple",
+"opening_hours": "Mo-Su 10:00-16:00",
+"phone": "0752131717",
+"religion": "buddhist",
+"tourism": "attraction",
+"wikidata": "Q10938466",
+"wikipedia": "ja:大雲院 (京都市)"
+}
+},
+"4968235323": {
+"lon": 135.7821847,
+"lat": 35.0026854,
+"version": 2,
+"timestamp": "2020-08-01T02:37:24Z",
+"visible": true,
+"tags": {
+"name:en": "Otani Sobyo",
+"tourism": "attraction",
+"wikidata": "Q11439141",
+"wikipedia": "ja:大谷祖廟"
+}
+},
+"4968235421": {
+"lon": 135.7786846,
+"lat": 34.9934086,
+"version": 1,
+"timestamp": "2017-07-13T11:19:47Z",
+"visible": true,
+"tags": {
+"name:en": "Otani Honbyo",
+"tourism": "attraction"
+}
+},
+"4968235521": {
+"lon": 135.782676,
+"lat": 35.0029471,
+"version": 1,
+"timestamp": "2017-07-13T11:19:51Z",
+"visible": true,
+"tags": {
+"name:en": "Choraku-ji",
+"tourism": "attraction"
+}
+},
+"4976664421": {
+"lon": 135.7724655,
+"lat": 34.9768484,
+"version": 1,
+"timestamp": "2017-07-18T06:27:25Z",
+"visible": true,
+"tags": {
+"name:en": "Tentoku-in",
+"tourism": "attraction"
+}
+},
+"5091913485": {
+"lon": 135.5812813,
+"lat": 35.013573,
+"version": 2,
+"timestamp": "2025-03-09T23:28:53Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "亀山城跡（亀岡城）",
+"wikipedia": "ja:亀山城 (丹波国)"
+}
+},
+"5092046874": {
+"lon": 135.1860996,
+"lat": 35.5935613,
+"version": 6,
+"timestamp": "2025-12-20T16:10:26Z",
+"visible": true,
+"tags": {
+"access": "yes",
+"name": "弁天山展望台",
+"name:en": "Mount Benten Observation Deck",
+"name:ja": "弁天山展望台",
+"name:ja-Hira": "ベンテンヤマテンボウダイ",
+"name:ja_rm": "Benten-yama Tenboudai",
+"name:nl": "Mount Benten Observatiedeck",
+"opening_hours": "24/7",
+"tourism": "viewpoint"
+}
+},
+"5110367297": {
+"lon": 135.7458331,
+"lat": 35.0447122,
+"version": 2,
+"timestamp": "2017-09-18T01:20:49Z",
+"visible": true,
+"tags": {
+"name": "Daisen-in Zen Garden",
+"name:en": "Daisen-in Zen Garden",
+"tourism": "attraction"
+}
+},
+"5118914756": {
+"lon": 135.7728767,
+"lat": 34.9774967,
+"version": 1,
+"timestamp": "2017-09-21T05:53:30Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"5190414123": {
+"lon": 135.7804379,
+"lat": 35.0002323,
+"version": 2,
+"timestamp": "2019-01-26T01:40:14Z",
+"visible": true,
+"tags": {
+"name:en": "View from Kodaiji parking lot",
+"tourism": "viewpoint"
+}
+},
+"5207499323": {
+"lon": 135.8093954,
+"lat": 35.0644415,
+"version": 2,
+"timestamp": "2018-01-22T15:36:16Z",
+"visible": true,
+"tags": {
+"name": "ルイ・イカール美術館",
+"tourism": "museum"
+}
+},
+"5227965122": {
+"lon": 135.7813886,
+"lat": 34.9971337,
+"version": 2,
+"timestamp": "2018-11-23T00:28:20Z",
+"visible": true,
+"tags": {
+"name": "青龙苑",
+"name:en": "Seiryu",
+"name:ja": "青龍苑",
+"tourism": "attraction"
+}
+},
+"5237337828": {
+"lon": 135.1959819,
+"lat": 35.5862923,
+"version": 3,
+"timestamp": "2020-02-28T15:18:20Z",
+"visible": true,
+"tags": {
+"name": "コロッセオ",
+"tourism": "viewpoint"
+}
+},
+"5257681372": {
+"lon": 135.142367,
+"lat": 35.573538,
+"version": 1,
+"timestamp": "2017-12-01T13:33:22Z",
+"visible": true,
+"tags": {
+"name": "板列展望台",
+"tourism": "viewpoint"
+}
+},
+"5260350491": {
+"lon": 135.8088349,
+"lat": 34.8883379,
+"version": 1,
+"timestamp": "2017-12-02T16:58:29Z",
+"visible": true,
+"tags": {
+"building": "yes",
+"name": "平等院多宝塔跡",
+"tourism": "attraction"
+}
+},
+"5267854829": {
+"lon": 135.447722,
+"lat": 35.2611517,
+"version": 2,
+"timestamp": "2017-12-07T12:54:30Z",
+"visible": true,
+"tags": {
+"name": "龍王の滝",
+"tourism": "attraction"
+}
+},
+"5302145693": {
+"lon": 135.1971679,
+"lat": 35.5388819,
+"version": 2,
+"timestamp": "2018-09-10T13:28:29Z",
+"visible": true,
+"tags": {
+"name": "宮津市みやづ歴史の館",
+"tourism": "museum"
+}
+},
+"5309600324": {
+"lon": 135.7744005,
+"lat": 35.0071011,
+"version": 1,
+"timestamp": "2017-12-29T03:32:03Z",
+"visible": true,
+"tags": {
+"name": "中山美術館",
+"tourism": "museum"
+}
+},
+"5320394467": {
+"lon": 135.6720508,
+"lat": 34.907368,
+"version": 1,
+"timestamp": "2018-01-04T15:25:45Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"5358493432": {
+"lon": 135.3285783,
+"lat": 35.4521985,
+"version": 2,
+"timestamp": "2020-05-22T06:07:06Z",
+"visible": true,
+"tags": {
+"name": "若狭ダイビングサービス",
+"name:en": "Wakasa Diving Service",
+"phone": "+81 773 77 2755",
+"tourism": "attraction",
+"website": "http://wakasa-ds.net"
+}
+},
+"5364405984": {
+"lon": 135.7095837,
+"lat": 35.037569,
+"version": 1,
+"timestamp": "2018-01-26T20:20:54Z",
+"visible": true,
+"tags": {
+"name": "御室八十八カ所霊場",
+"tourism": "attraction"
+}
+},
+"5364406531": {
+"lon": 135.7110912,
+"lat": 35.0322234,
+"version": 1,
+"timestamp": "2018-01-26T20:20:56Z",
+"visible": true,
+"tags": {
+"name": "御室八十八カ所霊場",
+"tourism": "attraction"
+}
+},
+"5369869254": {
+"lon": 135.3677956,
+"lat": 35.4781827,
+"version": 2,
+"timestamp": "2023-01-26T08:56:56Z",
+"visible": true,
+"tags": {
+"historic": "building",
+"name": "東郷邸",
+"name:en": "Togo Tei",
+"tourism": "attraction"
+}
+},
+"5389330053": {
+"lon": 135.2575659,
+"lat": 35.3022792,
+"version": 1,
+"timestamp": "2018-02-05T09:31:14Z",
+"visible": true,
+"tags": {
+"name": "らんらんらん綾部店",
+"tourism": "attraction"
+}
+},
+"5389351729": {
+"lon": 135.2530699,
+"lat": 35.2996415,
+"version": 1,
+"timestamp": "2018-02-05T09:29:02Z",
+"visible": true,
+"tags": {
+"name": "メトロ",
+"tourism": "attraction"
+}
+},
+"5395846924": {
+"lon": 135.7787643,
+"lat": 34.9985665,
+"version": 20,
+"timestamp": "2023-08-21T22:33:42Z",
+"visible": true,
+"tags": {
+"name:en": "Hokanji Temple and the Yasaka-no-to Pagoda",
+"name:ru": "смотровая с пагодой",
+"tourism": "viewpoint"
+}
+},
+"5439772627": {
+"lon": 135.6797512,
+"lat": 34.9317265,
+"version": 1,
+"timestamp": "2018-02-27T11:30:00Z",
+"visible": true,
+"tags": {
+"name": "田村家住宅（旧鈴木医院）",
+"tourism": "viewpoint"
+}
+},
+"5439783035": {
+"lon": 135.6790782,
+"lat": 34.9363378,
+"version": 1,
+"timestamp": "2018-02-27T11:30:02Z",
+"visible": true,
+"tags": {
+"name": "河合家住宅（河合辰直旧居）",
+"tourism": "viewpoint"
+}
+},
+"5464510921": {
+"lon": 135.7767745,
+"lat": 35.0056034,
+"version": 1,
+"timestamp": "2018-03-08T12:42:18Z",
+"visible": true,
+"tags": {
+"name:ko": "기온거리",
+"tourism": "attraction"
+}
+},
+"5474437421": {
+"lon": 135.7807414,
+"lat": 34.9961506,
+"version": 5,
+"timestamp": "2024-06-08T05:04:42Z",
+"visible": true,
+"tags": {
+"fee": "no",
+"name": "Studios Ghibli shop",
+"name:ja": "Studios Ghibli s hop",
+"name:zh": "宮崎駿",
+"opening_hours": "Mo-Su 10:00-17:00",
+"phone": "0755257170",
+"tourism": "museum"
+}
+},
+"5490442621": {
+"lon": 135.7851754,
+"lat": 35.0169388,
+"version": 1,
+"timestamp": "2018-03-20T08:42:18Z",
+"visible": true,
+"tags": {
+"name": "ALC Gallery",
+"tourism": "museum"
+}
+},
+"5502313424": {
+"lon": 135.7674775,
+"lat": 34.9847116,
+"version": 1,
+"timestamp": "2018-03-25T01:44:54Z",
+"visible": true,
+"tags": {
+"name": "Best Breakfast Point",
+"tourism": "viewpoint"
+}
+},
+"5502313425": {
+"lon": 135.7674501,
+"lat": 34.9846779,
+"version": 1,
+"timestamp": "2018-03-25T01:44:55Z",
+"visible": true,
+"tags": {
+"name": "Best Breakfast Point",
+"name:en": "Beat Breakfast Point",
+"tourism": "viewpoint"
+}
+},
+"5502354121": {
+"lon": 135.7675101,
+"lat": 34.9847129,
+"version": 1,
+"timestamp": "2018-03-25T01:44:53Z",
+"visible": true,
+"tags": {
+"name": "Breakfast Point",
+"name:en": "Best Breakfast Point",
+"tourism": "viewpoint"
+}
+},
+"5502354221": {
+"lon": 135.7674865,
+"lat": 34.9846678,
+"version": 1,
+"timestamp": "2018-03-25T01:44:54Z",
+"visible": true,
+"tags": {
+"name": "Best Breakfast Point",
+"tourism": "viewpoint"
+}
+},
+"5502354222": {
+"lon": 135.7674572,
+"lat": 34.9847296,
+"version": 1,
+"timestamp": "2018-03-25T01:44:55Z",
+"visible": true,
+"tags": {
+"name:en": "Best Breakfast Point",
+"tourism": "viewpoint"
+}
+},
+"5555705821": {
+"lon": 135.7709518,
+"lat": 34.99952,
+"version": 1,
+"timestamp": "2018-04-16T06:13:05Z",
+"visible": true,
+"tags": {
+"name": "Miyagawa",
+"tourism": "attraction"
+}
+},
+"5556969810": {
+"lon": 135.7612306,
+"lat": 35.0176202,
+"version": 2,
+"timestamp": "2019-06-23T07:16:05Z",
+"visible": true,
+"tags": {
+"name": "間ノ町口",
+"name:ja": "間ノ町口",
+"tourism": "attraction"
+}
+},
+"5586453224": {
+"lon": 135.775438,
+"lat": 35.0093706,
+"version": 1,
+"timestamp": "2018-04-29T16:21:24Z",
+"visible": true,
+"tags": {
+"name": "花見小路 開始點",
+"tourism": "attraction"
+}
+},
+"5589968421": {
+"lon": 135.7763256,
+"lat": 34.9944348,
+"version": 1,
+"timestamp": "2018-05-01T09:14:50Z",
+"visible": true,
+"tags": {
+"name": "五条坂",
+"tourism": "attraction"
+}
+},
+"5590010221": {
+"lon": 135.7795165,
+"lat": 34.9999654,
+"version": 1,
+"timestamp": "2018-05-01T09:45:26Z",
+"visible": true,
+"tags": {
+"name": "石塀小路",
+"tourism": "attraction"
+}
+},
+"5646294788": {
+"lon": 135.7875516,
+"lat": 35.0001227,
+"version": 3,
+"timestamp": "2022-05-01T06:46:01Z",
+"visible": true,
+"tags": {
+"direction": "W",
+"name": "東山山頂公園 展望台",
+"name:en": "Higashiyama Mount Peak Park Observation Deck",
+"tourism": "viewpoint"
+}
+},
+"5660324924": {
+"lon": 135.063611,
+"lat": 35.611702,
+"version": 2,
+"timestamp": "2020-12-31T09:11:02Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "376",
+"addr:postcode": "627-0041",
+"name": "プラザアピア峰山",
+"name:en": "Plaza Apia Mineyama",
+"opening_hours": "Fr-Sa 10:00-02:00; Su-Th 10:00-00:00",
+"phone": "0772-62-1033",
+"tourism": "attraction"
+}
+},
+"5660660032": {
+"lon": 135.1335473,
+"lat": 35.2906841,
+"version": 1,
+"timestamp": "2018-06-03T10:10:31Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "2346",
+"addr:postcode": "620-0882",
+"addr:street": "国道9号",
+"name": "Durham 800",
+"opening_hours": "Mo-Su 10:00-22:45",
+"phone": "0773-22-4337",
+"tourism": "attraction"
+}
+},
+"5660695421": {
+"lon": 135.1328508,
+"lat": 35.2907435,
+"version": 1,
+"timestamp": "2018-06-03T10:07:47Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "2346",
+"addr:postcode": "620-0882",
+"addr:street": "国道9号",
+"name": "サンケイボウル",
+"name:en": "Sankei Bowling",
+"opening_hours": "Mo-Su 10:00-00:00",
+"phone": "0773-23-0300",
+"tourism": "attraction"
+}
+},
+"5660714079": {
+"lon": 135.6777683,
+"lat": 34.9242855,
+"version": 1,
+"timestamp": "2018-06-03T10:16:33Z",
+"visible": true,
+"tags": {
+"name": "長岡京市埋蔵文化財調査センター",
+"opening_hours": "Mo-Sa 08:30-17:00; Su[2,4] 09:00-17:00; PH closed",
+"tourism": "museum"
+}
+},
+"5665665228": {
+"lon": 135.6668057,
+"lat": 35.0264196,
+"version": 1,
+"timestamp": "2018-06-05T07:07:46Z",
+"visible": true,
+"tags": {
+"name": "嵯峨鳥居本",
+"name:en": "Saga Toriimoto Preserved Street",
+"tourism": "attraction"
+}
+},
+"5679163221": {
+"lon": 135.7609261,
+"lat": 35.0258134,
+"version": 2,
+"timestamp": "2025-07-16T11:58:35Z",
+"visible": true,
+"tags": {
+"name": "京都御所入口",
+"name:en": "Kyoto Imperial Palace Entrance",
+"name:zh": "京都御所入口",
+"opening_hours": "Tu-Sa 09:00-17:00",
+"tourism": "attraction"
+}
+},
+"5714525322": {
+"lon": 135.7112336,
+"lat": 34.8584985,
+"version": 7,
+"timestamp": "2021-01-20T08:31:22Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "八幡御幸谷34番地",
+"addr:postcode": "6148044",
+"branch": "京都八幡店",
+"name": "スタジアム2001",
+"name:en": "Pachinko Slot Stadium 2001",
+"opening_hours": "Mo-Su 10:00-22:30",
+"phone": "0759715571",
+"tourism": "attraction",
+"website": "https://www.p-world.co.jp/sp/hall.cgi?dir=kyoto&file=stadium2001kyoto"
+}
+},
+"5744244375": {
+"lon": 135.808385,
+"lat": 35.0418539,
+"version": 2,
+"timestamp": "2022-06-17T16:39:23Z",
+"visible": true,
+"tags": {
+"direction": "WNW",
+"tourism": "viewpoint"
+}
+},
+"5744244964": {
+"lon": 135.8172733,
+"lat": 35.0608546,
+"version": 2,
+"timestamp": "2022-06-30T14:07:12Z",
+"visible": true,
+"tags": {
+"description": "view on Kyoto",
+"direction": "W",
+"tourism": "viewpoint"
+}
+},
+"5744245160": {
+"lon": 135.8299556,
+"lat": 35.0673934,
+"version": 2,
+"timestamp": "2022-05-07T09:28:01Z",
+"visible": true,
+"tags": {
+"name": "つつじヶ丘",
+"name:en": "Tsutsujigaoka",
+"tourism": "viewpoint"
+}
+},
+"5755521721": {
+"lon": 135.7667948,
+"lat": 35.0048435,
+"version": 6,
+"timestamp": "2021-12-06T08:56:57Z",
+"visible": true,
+"tags": {
+"addr:city": "京都市",
+"addr:province": "京都府",
+"addr:suburb": "中京区",
+"email": "samurai@mai-ko.com",
+"fee": "yes",
+"museum": "history",
+"name": "京都サムライ忍者体験ミュージアム",
+"name:en": "Samurai and Ninja Museum",
+"opening_hours": "Mo-Su 10:00-19:00",
+"phone": "+81-075-585-5410",
+"tourism": "museum",
+"website": "https://mai-ko.com/samurai/"
+}
+},
+"5770731353": {
+"lon": 135.7674247,
+"lat": 35.0044973,
+"version": 1,
+"timestamp": "2018-07-19T14:23:03Z",
+"visible": true,
+"tags": {
+"addr:street": "中之町",
+"name:en": "Owls Forest Kyoto",
+"name:zh": "貓頭鷹森林",
+"tourism": "museum"
+}
+},
+"5843263146": {
+"lon": 135.809775,
+"lat": 34.8905408,
+"version": 2,
+"timestamp": "2024-07-15T05:55:12Z",
+"visible": true,
+"tags": {
+"historic": "memorial",
+"memorial": "statue",
+"name": "宇治十帖",
+"tourism": "attraction"
+}
+},
+"5893974087": {
+"lon": 135.8691503,
+"lat": 34.752395,
+"version": 2,
+"timestamp": "2020-05-02T01:54:44Z",
+"visible": true,
+"tags": {
+"name": "大仏鉄道遺構 ランプ小屋",
+"tourism": "attraction"
+}
+},
+"5913657386": {
+"lon": 135.7797559,
+"lat": 35.0021308,
+"version": 1,
+"timestamp": "2018-09-18T12:29:48Z",
+"visible": true,
+"tags": {
+"name:en": "Daiun-In Temple",
+"tourism": "viewpoint"
+}
+},
+"5919987092": {
+"lon": 135.8580315,
+"lat": 34.8525981,
+"version": 1,
+"timestamp": "2018-09-21T08:06:58Z",
+"visible": true,
+"tags": {
+"name": "やすらぎの道",
+"tourism": "viewpoint"
+}
+},
+"5936885886": {
+"lon": 135.7546664,
+"lat": 34.9837651,
+"version": 1,
+"timestamp": "2018-09-28T14:06:07Z",
+"visible": true,
+"tags": {
+"name": "松下資料館",
+"tourism": "museum"
+}
+},
+"5974332759": {
+"lon": 135.3200583,
+"lat": 35.2373776,
+"version": 3,
+"timestamp": "2022-03-19T15:57:24Z",
+"visible": true,
+"tags": {
+"addr:city": "京丹波町",
+"addr:county": "船井郡",
+"addr:housenumber": "１２－１",
+"addr:neighbourhood": "大崩",
+"addr:postcode": "622-0315",
+"addr:province": "京都府",
+"addr:quarter": "質志",
+"fee": "yes",
+"name": "Shizushi Cave",
+"name:ja": "質志鍾乳洞",
+"natural": "cave_entrance",
+"phone": "+81771-86-1725",
+"tourism": "attraction",
+"wikidata": "Q11635118",
+"wikipedia": "ja:質志鍾乳洞"
+}
+},
+"5982571407": {
+"lon": 135.8610413,
+"lat": 34.7769051,
+"version": 2,
+"timestamp": "2018-12-27T14:19:02Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"5999636330": {
+"lon": 135.1398687,
+"lat": 35.7505225,
+"version": 2,
+"timestamp": "2022-06-10T15:22:22Z",
+"visible": true,
+"tags": {
+"name": "丹後松島展望所",
+"tourism": "viewpoint"
+}
+},
+"6007513785": {
+"lon": 135.1306763,
+"lat": 35.5394896,
+"version": 1,
+"timestamp": "2018-10-23T13:45:11Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "1323-1",
+"addr:postcode": "629-2303",
+"addr:street": "国道176号",
+"name": "カラオケSKY",
+"name:en": "Karaoke SKY",
+"opening_hours": "Su-Th 10:00-01:00; Fr-Sa 10:00-02:00",
+"phone": "0772-42-3100",
+"tourism": "attraction",
+"website": "https://karaokesky.jp/shop/nodagawa/"
+}
+},
+"6050969728": {
+"lon": 135.829686,
+"lat": 34.732187,
+"version": 1,
+"timestamp": "2018-11-10T13:18:36Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6050969738": {
+"lon": 135.829837,
+"lat": 34.7324143,
+"version": 1,
+"timestamp": "2018-11-10T13:18:36Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6050969778": {
+"lon": 135.8300524,
+"lat": 34.7316687,
+"version": 1,
+"timestamp": "2018-11-10T13:18:37Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6050971313": {
+"lon": 135.8306793,
+"lat": 34.732428,
+"version": 1,
+"timestamp": "2018-11-10T13:18:38Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6126022593": {
+"lon": 135.7614492,
+"lat": 35.0231604,
+"version": 2,
+"timestamp": "2025-07-16T11:58:35Z",
+"visible": true,
+"tags": {
+"name": "京都御所",
+"name:zh": "京都御所",
+"tourism": "viewpoint"
+}
+},
+"6128145343": {
+"lon": 135.8509604,
+"lat": 34.9362486,
+"version": 1,
+"timestamp": "2018-12-10T11:41:29Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6153077969": {
+"lon": 134.8974919,
+"lat": 35.6060321,
+"version": 1,
+"timestamp": "2018-12-22T09:30:10Z",
+"visible": true,
+"tags": {
+"name": "豪商 稲葉本家",
+"tourism": "attraction"
+}
+},
+"6163744231": {
+"lon": 135.7744924,
+"lat": 35.0053718,
+"version": 1,
+"timestamp": "2018-12-26T13:19:31Z",
+"visible": true,
+"tags": {
+"name:en": "Old shop path",
+"tourism": "attraction"
+}
+},
+"6189906186": {
+"lon": 135.7885287,
+"lat": 34.989728,
+"version": 1,
+"timestamp": "2019-01-07T13:39:40Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6189914485": {
+"lon": 135.7818013,
+"lat": 34.9847942,
+"version": 1,
+"timestamp": "2019-01-07T13:39:53Z",
+"visible": true,
+"tags": {
+"name:en": "trail entrance",
+"tourism": "attraction"
+}
+},
+"6199656002": {
+"lon": 135.771058,
+"lat": 35.0071404,
+"version": 1,
+"timestamp": "2019-01-10T22:17:34Z",
+"visible": true,
+"tags": {
+"name:en": "Ponto-Cho Dori",
+"tourism": "attraction"
+}
+},
+"6199656003": {
+"lon": 135.7284537,
+"lat": 35.0395179,
+"version": 8,
+"timestamp": "2026-01-01T02:55:41Z",
+"visible": true,
+"tags": {
+"contact:instagram": "rokuonji_kinkakuji.official",
+"image": "https://photos.app.goo.gl/eE4SAepMdCafhVkGA",
+"name": "金閣",
+"name:en": "Golden Pavilion",
+"name:fr": "Pavillon d'Or",
+"name:ja-Hira": "きんかく",
+"name:ja-Latn": "Kinkaku",
+"opening_hours": "Mo-Su 09:00-17:00",
+"tourism": "attraction",
+"url": "https://youtu.be/hWW7aHgMlwk",
+"website": "https://www.shokoku-ji.jp/kinkakuji/",
+"wikidata": "Q126391445",
+"wikimedia_commons": "Category:Golden Pavilion"
+}
+},
+"6222358041": {
+"lon": 135.7807495,
+"lat": 35.0011441,
+"version": 1,
+"timestamp": "2019-01-20T07:31:01Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6340452493": {
+"lon": 135.3983887,
+"lat": 35.5413735,
+"version": 1,
+"timestamp": "2019-03-15T19:23:22Z",
+"visible": true,
+"tags": {
+"name": "おおしあま展望の里",
+"tourism": "viewpoint"
+}
+},
+"6341311886": {
+"lon": 135.6696065,
+"lat": 35.0157526,
+"version": 1,
+"timestamp": "2019-03-16T12:43:04Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6341311887": {
+"lon": 135.674259,
+"lat": 35.0178641,
+"version": 2,
+"timestamp": "2023-10-18T04:28:22Z",
+"visible": true,
+"tags": {
+"name": "じゅうたん苔",
+"name:en": "Nonomiya moss garden",
+"tourism": "attraction"
+}
+},
+"6341312586": {
+"lon": 135.6722866,
+"lat": 35.0168184,
+"version": 1,
+"timestamp": "2019-03-16T12:43:10Z",
+"visible": true,
+"tags": {
+"name:en": "Bamboo grove view",
+"tourism": "viewpoint"
+}
+},
+"6342496039": {
+"lon": 135.6440021,
+"lat": 34.9393681,
+"version": 1,
+"timestamp": "2019-03-17T06:50:56Z",
+"visible": true,
+"tags": {
+"direction": "E",
+"tourism": "viewpoint"
+}
+},
+"6342536413": {
+"lon": 135.6449288,
+"lat": 34.9385096,
+"version": 2,
+"timestamp": "2019-04-26T12:49:53Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6342820494": {
+"lon": 135.7365433,
+"lat": 34.8826245,
+"version": 3,
+"timestamp": "2023-05-14T02:26:40Z",
+"visible": true,
+"tags": {
+"artist_name": "京都淀ライオンズクラブ",
+"historic": "memorial",
+"material": "stone",
+"memorial": "stone",
+"name": "竹久夢二旧跡",
+"note": "夢二は大正５年から昭和３年まで、度々逗留し絵筆をふるった",
+"start_date": "2021-06",
+"tourism": "viewpoint"
+}
+},
+"6355813537": {
+"lon": 135.6437717,
+"lat": 34.9393461,
+"version": 1,
+"timestamp": "2019-03-23T02:57:51Z",
+"visible": true,
+"tags": {
+"direction": "E",
+"tourism": "viewpoint"
+}
+},
+"6402085697": {
+"lon": 135.187927,
+"lat": 35.6007283,
+"version": 1,
+"timestamp": "2019-04-13T11:52:02Z",
+"visible": true,
+"tags": {
+"name": "成合山パノラマ展望所",
+"tourism": "viewpoint"
+}
+},
+"6412911585": {
+"lon": 135.7754286,
+"lat": 35.004046,
+"version": 1,
+"timestamp": "2019-04-18T00:51:20Z",
+"visible": true,
+"tags": {
+"addr:postcode": "605-0073",
+"email": "kahitsukan@kahitsukan.or.jp",
+"name:en": "Kahitsukan, Kyoto Modern Art Museum",
+"opening_hours": "Tu-Su 10:00-18:00",
+"phone": "+81-75-525-1311",
+"tourism": "museum",
+"website": "http://www.kahitsukan.or.jp/frame_e.html"
+}
+},
+"6431886180": {
+"lon": 135.1363568,
+"lat": 35.5654365,
+"version": 1,
+"timestamp": "2019-04-26T23:23:49Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6433376185": {
+"lon": 135.7571194,
+"lat": 34.9870399,
+"version": 1,
+"timestamp": "2019-04-28T01:12:40Z",
+"visible": true,
+"tags": {
+"name:fr": "Location de voiture",
+"tourism": "attraction"
+}
+},
+"6435093729": {
+"lon": 135.1362436,
+"lat": 35.5648288,
+"version": 1,
+"timestamp": "2019-04-29T04:24:08Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6442050144": {
+"lon": 135.1961701,
+"lat": 35.5863141,
+"version": 2,
+"timestamp": "2020-02-28T14:48:25Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"6442050149": {
+"lon": 135.1954,
+"lat": 35.5865129,
+"version": 3,
+"timestamp": "2026-08-25T23:52:55Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"6442050150": {
+"lon": 135.1956457,
+"lat": 35.5863718,
+"version": 1,
+"timestamp": "2019-05-02T06:02:22Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6442608536": {
+"lon": 135.1823577,
+"lat": 35.552784,
+"version": 1,
+"timestamp": "2019-05-02T11:12:17Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"6442608537": {
+"lon": 135.1823325,
+"lat": 35.5527936,
+"version": 1,
+"timestamp": "2019-05-02T11:12:17Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"6442608538": {
+"lon": 135.1823047,
+"lat": 35.5527982,
+"version": 1,
+"timestamp": "2019-05-02T11:12:17Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"6442715615": {
+"lon": 135.1825163,
+"lat": 35.5525925,
+"version": 1,
+"timestamp": "2019-05-02T11:51:32Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6442715617": {
+"lon": 135.1825416,
+"lat": 35.5525537,
+"version": 1,
+"timestamp": "2019-05-02T11:51:32Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"6442715618": {
+"lon": 135.1824776,
+"lat": 35.552632,
+"version": 1,
+"timestamp": "2019-05-02T11:51:32Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"6442803223": {
+"lon": 135.1820592,
+"lat": 35.5527603,
+"version": 1,
+"timestamp": "2019-05-02T12:23:13Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"6442803224": {
+"lon": 135.1820332,
+"lat": 35.5527744,
+"version": 1,
+"timestamp": "2019-05-02T12:23:13Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"6442803237": {
+"lon": 135.1818088,
+"lat": 35.552946,
+"version": 1,
+"timestamp": "2019-05-02T12:23:13Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"6466159686": {
+"lon": 135.7883552,
+"lat": 35.1095981,
+"version": 1,
+"timestamp": "2019-05-11T07:32:04Z",
+"visible": true,
+"tags": {
+"name": "OHARA citta da visitare",
+"tourism": "viewpoint"
+}
+},
+"6501778140": {
+"lon": 135.0459945,
+"lat": 35.7021955,
+"version": 2,
+"timestamp": "2019-05-28T13:34:25Z",
+"visible": true,
+"tags": {
+"name": "太鼓浜",
+"tourism": "viewpoint"
+}
+},
+"6540969790": {
+"lon": 135.6817689,
+"lat": 35.0098276,
+"version": 1,
+"timestamp": "2019-06-11T22:10:02Z",
+"visible": true,
+"tags": {
+"name": "嵐山ハイブリッド美術館",
+"tourism": "museum"
+}
+},
+"6544614886": {
+"lon": 135.7748314,
+"lat": 35.0024305,
+"version": 1,
+"timestamp": "2019-06-13T10:42:26Z",
+"visible": true,
+"tags": {
+"name:en": "Geisha Watching Spot (between 5-6pm)",
+"tourism": "attraction"
+}
+},
+"6578053381": {
+"lon": 135.7942309,
+"lat": 35.0679725,
+"version": 1,
+"timestamp": "2019-06-29T07:34:03Z",
+"visible": true,
+"tags": {
+"name": "絵馬展示資料館",
+"tourism": "museum"
+}
+},
+"6578080296": {
+"lon": 135.7942661,
+"lat": 35.0679807,
+"version": 1,
+"timestamp": "2019-06-29T07:21:06Z",
+"visible": true,
+"tags": {
+"name": "絵馬展示資料館",
+"operator": "三宅八幡神社",
+"tourism": "museum"
+}
+},
+"6612942886": {
+"lon": 135.7353975,
+"lat": 35.0261813,
+"version": 1,
+"timestamp": "2019-07-14T12:43:35Z",
+"visible": true,
+"tags": {
+"name": "大将軍商店街 一条妖怪ストリート",
+"tourism": "attraction"
+}
+},
+"6613016085": {
+"lon": 135.6603441,
+"lat": 35.0346422,
+"version": 1,
+"timestamp": "2019-07-14T13:41:25Z",
+"visible": true,
+"tags": {
+"name": "清滝トンネル",
+"tourism": "attraction"
+}
+},
+"6615844952": {
+"lon": 135.0924815,
+"lat": 35.5054558,
+"version": 3,
+"timestamp": "2020-07-25T09:57:09Z",
+"visible": true,
+"tags": {
+"name": "ちりめん織機展示・実演場",
+"operator": "ちりめん街道を守り育てる会",
+"tourism": "museum"
+}
+},
+"6643079185": {
+"lon": 135.7493039,
+"lat": 35.0235324,
+"version": 1,
+"timestamp": "2019-07-24T09:19:18Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "582",
+"addr:street": "Tōgōrōchō",
+"name": "Cours de calligraphie japonaise",
+"opening_hours": "24/7",
+"tourism": "attraction"
+}
+},
+"6680911405": {
+"lon": 135.7604012,
+"lat": 34.9865798,
+"version": 1,
+"timestamp": "2019-08-04T06:35:39Z",
+"visible": true,
+"tags": {
+"name": "羅城門",
+"tourism": "attraction"
+}
+},
+"6796435487": {
+"lon": 135.7456853,
+"lat": 35.0325304,
+"version": 1,
+"timestamp": "2019-09-15T08:05:14Z",
+"visible": true,
+"tags": {
+"name": "天",
+"name:ja": "天鷲絨美術館",
+"tourism": "museum"
+}
+},
+"6802213585": {
+"lon": 135.8050955,
+"lat": 34.891753,
+"version": 1,
+"timestamp": "2019-09-17T13:07:07Z",
+"visible": true,
+"tags": {
+"name:en": "Kanbayashi Tea Museum",
+"tourism": "museum"
+}
+},
+"6855829264": {
+"lon": 135.5615125,
+"lat": 34.9926914,
+"version": 2,
+"timestamp": "2023-10-02T14:17:11Z",
+"visible": true,
+"tags": {
+"name": "かめおか霧のテラス",
+"tourism": "viewpoint"
+}
+},
+"6865347485": {
+"lon": 135.7747604,
+"lat": 34.966983,
+"version": 5,
+"timestamp": "2026-05-05T20:17:42Z",
+"visible": true,
+"tags": {
+"alt_name:en": "1000 torii gates;10000 torii gates",
+"direction": "120;300",
+"name": "伏見稲荷大社",
+"name:de": "Torii Gabelung „1000 Torii“",
+"name:en": "Senbon Torii (Thousand Torii Gates)",
+"name:it": "Santuario di Fushimi Inari-taisha",
+"tourism": "viewpoint"
+}
+},
+"6869136585": {
+"lon": 135.6746914,
+"lat": 35.008936,
+"version": 1,
+"timestamp": "2019-10-11T07:06:13Z",
+"visible": true,
+"tags": {
+"name:de": "Fütterungsmöglichkeit für Affen",
+"name:en": "Monkey feeding station",
+"tourism": "attraction"
+}
+},
+"6883971486": {
+"lon": 135.7624566,
+"lat": 34.9374826,
+"version": 1,
+"timestamp": "2019-10-16T01:46:10Z",
+"visible": true,
+"tags": {
+"name": "宝ホールディングス 歴史記念館",
+"tourism": "museum"
+}
+},
+"6959761785": {
+"lon": 135.7375483,
+"lat": 35.1460885,
+"version": 1,
+"timestamp": "2019-11-09T11:34:05Z",
+"visible": true,
+"tags": {
+"name": "魚谷峠",
+"name:en": "path",
+"tourism": "attraction"
+}
+},
+"6981927985": {
+"lon": 135.6784525,
+"lat": 35.0152928,
+"version": 2,
+"timestamp": "2024-03-07T14:05:53Z",
+"visible": true,
+"tags": {
+"artist_name": "森田恭通",
+"artist:wikidata": "Q11540089",
+"artist:wikipedia": "ja:森田恭通",
+"fee": "no",
+"name": "キモノフォレスト",
+"name:en": "Kimono Forest",
+"name:fr": "Fôret de Kimano",
+"opening_hours": "24/7",
+"start_date": "2013-07",
+"tourism": "attraction"
+}
+},
+"6984187196": {
+"lon": 135.0996056,
+"lat": 35.3187898,
+"version": 1,
+"timestamp": "2019-11-17T07:07:20Z",
+"visible": true,
+"tags": {
+"name": "コキーナタウン 福知山店",
+"tourism": "attraction"
+}
+},
+"6986458597": {
+"lon": 135.1262518,
+"lat": 35.3030345,
+"version": 1,
+"timestamp": "2019-11-18T07:12:39Z",
+"visible": true,
+"tags": {
+"name": "芦田家住宅",
+"tourism": "viewpoint"
+}
+},
+"6986458603": {
+"lon": 135.1255262,
+"lat": 35.3035579,
+"version": 2,
+"timestamp": "2019-11-30T09:47:46Z",
+"visible": true,
+"tags": {
+"name": "福知山市 治水記念館",
+"tourism": "museum",
+"wikidata": "Q11594329",
+"wikipedia": "ja:福知山市治水記念館"
+}
+},
+"6986471591": {
+"lon": 135.1184195,
+"lat": 35.2987411,
+"version": 1,
+"timestamp": "2019-11-18T07:15:34Z",
+"visible": true,
+"tags": {
+"name": "ニューラッキー",
+"tourism": "attraction"
+}
+},
+"6986471697": {
+"lon": 135.1182627,
+"lat": 35.2987646,
+"version": 1,
+"timestamp": "2019-11-18T07:15:31Z",
+"visible": true,
+"tags": {
+"name": "ビリヤードセブン",
+"tourism": "attraction"
+}
+},
+"6986471990": {
+"lon": 135.1251436,
+"lat": 35.3012683,
+"version": 2,
+"timestamp": "2023-05-08T16:31:28Z",
+"visible": true,
+"tags": {
+"name": "出口なお生家",
+"tourism": "viewpoint"
+}
+},
+"7005686716": {
+"lon": 135.6790797,
+"lat": 35.0281091,
+"version": 1,
+"timestamp": "2019-11-24T09:04:55Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"7085048285": {
+"lon": 135.6500998,
+"lat": 35.1419755,
+"version": 1,
+"timestamp": "2019-12-26T00:39:37Z",
+"visible": true,
+"tags": {
+"name:en": "Hiking Trails",
+"tourism": "attraction"
+}
+},
+"7093098577": {
+"lon": 135.6245059,
+"lat": 35.3141636,
+"version": 1,
+"timestamp": "2019-12-29T12:36:29Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"7106043494": {
+"lon": 135.7932378,
+"lat": 34.9998363,
+"version": 1,
+"timestamp": "2020-01-04T03:51:03Z",
+"visible": true,
+"tags": {
+"name": "車石広場",
+"tourism": "attraction"
+}
+},
+"7178359741": {
+"lon": 135.644845,
+"lat": 34.9386752,
+"version": 1,
+"timestamp": "2020-02-02T02:52:09Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"7178359755": {
+"lon": 135.6450605,
+"lat": 34.9385964,
+"version": 1,
+"timestamp": "2020-02-02T02:52:09Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"7178359776": {
+"lon": 135.6451487,
+"lat": 34.9382561,
+"version": 1,
+"timestamp": "2020-02-02T02:52:09Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"7201389132": {
+"lon": 135.1580197,
+"lat": 35.6512549,
+"version": 1,
+"timestamp": "2020-02-10T19:32:56Z",
+"visible": true,
+"tags": {
+"name": "ガラシャ大滝展望所",
+"tourism": "viewpoint"
+}
+},
+"7215836712": {
+"lon": 135.1379118,
+"lat": 35.5641898,
+"version": 1,
+"timestamp": "2020-02-16T09:11:32Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"7217899709": {
+"lon": 135.0256017,
+"lat": 35.6816794,
+"version": 1,
+"timestamp": "2020-02-17T06:29:33Z",
+"visible": true,
+"tags": {
+"name": "野村克也ベースボールギャラリー",
+"tourism": "museum"
+}
+},
+"7226642698": {
+"lon": 135.676659,
+"lat": 35.017494,
+"version": 1,
+"timestamp": "2020-02-19T07:28:15Z",
+"visible": true,
+"tags": {
+"name:en": "Arashiyama tourist area",
+"tourism": "attraction"
+}
+},
+"7229288786": {
+"lon": 135.7809483,
+"lat": 34.9992834,
+"version": 1,
+"timestamp": "2020-02-20T03:15:38Z",
+"visible": true,
+"tags": {
+"name:en": "Higashiyama Street",
+"tourism": "attraction"
+}
+},
+"7229373585": {
+"lon": 135.7771017,
+"lat": 34.9987036,
+"version": 1,
+"timestamp": "2020-02-20T03:58:47Z",
+"visible": true,
+"tags": {
+"name:en": "Hhhh",
+"tourism": "attraction"
+}
+},
+"7233551628": {
+"lon": 135.1363067,
+"lat": 35.3121759,
+"version": 2,
+"timestamp": "2025-04-20T15:04:18Z",
+"visible": true,
+"tags": {
+"name": "福知山市児童科学館",
+"tourism": "museum",
+"wikidata": "Q131431514",
+"wikipedia": "ja:福知山市児童科学館"
+}
+},
+"7234629692": {
+"lon": 135.7739447,
+"lat": 34.9772147,
+"version": 2,
+"timestamp": "2020-04-28T21:49:50Z",
+"visible": true,
+"tags": {
+"name": "通天台",
+"name:ja_rm": "Tsū tendai",
+"tourism": "viewpoint"
+}
+},
+"7248317765": {
+"lon": 135.1962244,
+"lat": 35.5863031,
+"version": 2,
+"timestamp": "2020-02-28T14:48:25Z",
+"visible": true,
+"tags": {
+"name": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"7261474993": {
+"lon": 135.1946492,
+"lat": 35.5868021,
+"version": 1,
+"timestamp": "2020-03-03T17:10:26Z",
+"visible": true,
+"tags": {
+"note": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"7261474994": {
+"lon": 135.194556,
+"lat": 35.5868212,
+"version": 1,
+"timestamp": "2020-03-03T17:10:26Z",
+"visible": true,
+"tags": {
+"note": "股のぞき台",
+"tourism": "viewpoint"
+}
+},
+"7265482383": {
+"lon": 134.9938234,
+"lat": 35.6898857,
+"version": 1,
+"timestamp": "2020-03-05T05:39:14Z",
+"visible": true,
+"tags": {
+"name": "静御前生誕の地",
+"source": "survey",
+"tourism": "attraction"
+}
+},
+"7273694149": {
+"lon": 135.6766248,
+"lat": 35.0115874,
+"version": 1,
+"timestamp": "2020-03-07T07:54:33Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"7312232914": {
+"lon": 135.787501,
+"lat": 35.0026551,
+"version": 1,
+"timestamp": "2020-03-20T11:45:32Z",
+"visible": true,
+"tags": {
+"description": "Emperor Kanmu surveyed the area to see where he would build the city from this historic viewpoint.",
+"name": "Historic Kyoto view",
+"tourism": "viewpoint"
+}
+},
+"7312525539": {
+"lon": 135.7641153,
+"lat": 35.0487503,
+"version": 2,
+"timestamp": "2022-02-19T08:04:10Z",
+"visible": true,
+"tags": {
+"name": "ヌマスギ呼吸根",
+"tourism": "viewpoint"
+}
+},
+"7318123859": {
+"lon": 135.7495864,
+"lat": 35.0137059,
+"version": 2,
+"timestamp": "2020-03-25T03:20:31Z",
+"visible": true,
+"tags": {
+"name:en": "Uguisubari corridors (Nightingale Floor)",
+"tourism": "attraction"
+}
+},
+"7319933585": {
+"lon": 135.7675663,
+"lat": 35.0102889,
+"version": 1,
+"timestamp": "2020-03-22T17:32:52Z",
+"visible": true,
+"tags": {
+"name": "本能寺大寶殿宝物館",
+"name:en": "Honnoji Temple Treasure Hall",
+"tourism": "museum"
+}
+},
+"7327194615": {
+"lon": 135.748342,
+"lat": 35.0139501,
+"version": 1,
+"timestamp": "2020-03-25T03:20:31Z",
+"visible": true,
+"tags": {
+"name:en": "Tiger throat gateway",
+"tourism": "attraction"
+}
+},
+"7327194622": {
+"lon": 135.7459791,
+"lat": 35.0147198,
+"version": 1,
+"timestamp": "2020-03-25T03:20:31Z",
+"visible": true,
+"tags": {
+"name:en": "Masugata gateway",
+"tourism": "attraction"
+}
+},
+"7401079796": {
+"lon": 135.6689651,
+"lat": 35.0147947,
+"version": 1,
+"timestamp": "2020-04-14T08:46:10Z",
+"visible": true,
+"tags": {
+"name": "beach",
+"tourism": "attraction"
+}
+},
+"7550970769": {
+"lon": 135.6656666,
+"lat": 34.9473281,
+"version": 1,
+"timestamp": "2020-05-23T09:23:18Z",
+"visible": true,
+"tags": {
+"amenity": "restaurant",
+"level": "0",
+"name": "花サト",
+"name:en": "Hana Sato",
+"outdoor_seating": "yes",
+"smoking": "no",
+"tourism": "viewpoint",
+"wheelchair": "yes"
+}
+},
+"7813581896": {
+"lon": 135.792511,
+"lat": 35.0112996,
+"version": 1,
+"timestamp": "2020-08-14T17:32:31Z",
+"visible": true,
+"tags": {
+"level": "2",
+"tourism": "viewpoint"
+}
+},
+"7944302775": {
+"lon": 134.9643534,
+"lat": 35.6611797,
+"version": 1,
+"timestamp": "2020-09-26T07:59:02Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"7944360308": {
+"lon": 134.9665797,
+"lat": 35.664564,
+"version": 1,
+"timestamp": "2020-09-26T08:44:20Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"8078224617": {
+"lon": 135.553726,
+"lat": 35.01475,
+"version": 2,
+"timestamp": "2023-11-04T14:54:30Z",
+"visible": true,
+"tags": {
+"name:en": "Yume Cosmos Garden",
+"opening_hours": "Mo-Su 09:00-16:00",
+"phone": "0771559111",
+"tourism": "attraction",
+"website": "https://yume-cosmos.com/"
+}
+},
+"8220721011": {
+"lon": 134.8919272,
+"lat": 35.6044803,
+"version": 1,
+"timestamp": "2020-12-11T20:25:25Z",
+"visible": true,
+"tags": {
+"name": "神谷磐座",
+"name:en": "Kamitani Iwakura",
+"name:ja": "神谷磐座",
+"tourism": "attraction"
+}
+},
+"8308469073": {
+"lon": 135.7736361,
+"lat": 34.9772868,
+"version": 1,
+"timestamp": "2021-01-10T12:40:34Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"8378650512": {
+"lon": 135.773242,
+"lat": 34.9773567,
+"version": 1,
+"timestamp": "2021-01-30T16:29:58Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"8591800011": {
+"lon": 135.6689409,
+"lat": 35.0194269,
+"version": 1,
+"timestamp": "2021-04-04T06:37:57Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"8700019833": {
+"lon": 135.6677144,
+"lat": 35.0194261,
+"version": 2,
+"timestamp": "2021-07-11T06:14:36Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"8817872743": {
+"lon": 135.7850397,
+"lat": 34.9946377,
+"version": 1,
+"timestamp": "2021-06-09T12:48:34Z",
+"visible": true,
+"tags": {
+"direction": "SE-W",
+"tourism": "viewpoint"
+}
+},
+"8867485285": {
+"lon": 135.341894,
+"lat": 35.5361849,
+"version": 1,
+"timestamp": "2021-06-26T08:29:20Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"8910996340": {
+"lon": 135.667974,
+"lat": 35.0195137,
+"version": 1,
+"timestamp": "2021-07-11T06:14:36Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"8993716101": {
+"lon": 135.6675958,
+"lat": 35.0207743,
+"version": 1,
+"timestamp": "2021-08-09T17:14:01Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"9308844634": {
+"lon": 135.792979,
+"lat": 34.9504167,
+"version": 1,
+"timestamp": "2021-12-03T15:58:50Z",
+"visible": true,
+"tags": {
+"direction": "W",
+"name": "大岩山展望所",
+"name:en": "Mt. Oiwa View place",
+"tourism": "viewpoint"
+}
+},
+"9342783969": {
+"lon": 135.7613759,
+"lat": 35.0096386,
+"version": 4,
+"timestamp": "2023-10-04T06:12:01Z",
+"visible": true,
+"tags": {
+"check_date": "2023-10-04",
+"fee": "yes",
+"museum": "art",
+"name": "京都万華鏡ミュージアム",
+"operator": "NPO法人京都万華鏡こう房",
+"tourism": "museum",
+"wheelchair": "yes"
+}
+},
+"9664306045": {
+"lon": 135.775698,
+"lat": 34.9664964,
+"version": 2,
+"timestamp": "2025-03-13T18:31:27Z",
+"visible": true,
+"tags": {
+"historic": "stone",
+"name": "おもかる石",
+"name:en": "Omokaru Stone",
+"name:ja_rm": "Omo karu ishi",
+"source": "Bing;survey",
+"tourism": "attraction"
+}
+},
+"9669730629": {
+"lon": 135.8009541,
+"lat": 35.0229618,
+"version": 4,
+"timestamp": "2023-09-17T00:55:28Z",
+"visible": true,
+"tags": {
+"direction": "-60",
+"name": "アカマツ尾根",
+"name:en": "Akamatsu Viewpoint",
+"source": "survey;local knowledge;gps",
+"tourism": "viewpoint"
+}
+},
+"9673171297": {
+"lon": 135.7812029,
+"lat": 34.9690749,
+"version": 2,
+"timestamp": "2022-10-24T13:33:38Z",
+"visible": true,
+"tags": {
+"direction": "SW",
+"tourism": "viewpoint"
+}
+},
+"9673171303": {
+"lon": 135.780671,
+"lat": 34.9695697,
+"version": 1,
+"timestamp": "2022-04-18T01:00:12Z",
+"visible": true,
+"tags": {
+"direction": "SW",
+"tourism": "viewpoint"
+}
+},
+"9696458556": {
+"lon": 135.779855,
+"lat": 34.9808089,
+"version": 1,
+"timestamp": "2022-04-27T00:56:30Z",
+"visible": true,
+"tags": {
+"direction": "NW",
+"tourism": "viewpoint"
+}
+},
+"9706484859": {
+"lon": 135.7890978,
+"lat": 34.9999428,
+"version": 1,
+"timestamp": "2022-05-01T06:46:01Z",
+"visible": true,
+"tags": {
+"direction": "E",
+"tourism": "viewpoint"
+}
+},
+"9717801301": {
+"lon": 135.8117057,
+"lat": 35.0195545,
+"version": 2,
+"timestamp": "2023-09-17T01:12:02Z",
+"visible": true,
+"tags": {
+"direction": "-165",
+"source": "survey;local knowledge;gps",
+"tourism": "viewpoint"
+}
+},
+"9751338532": {
+"lon": 135.1098316,
+"lat": 35.7447277,
+"version": 3,
+"timestamp": "2023-11-18T21:34:48Z",
+"visible": true,
+"tags": {
+"name:ja": "大成古墳群展望台",
+"tourism": "viewpoint"
+}
+},
+"9763493719": {
+"lon": 135.7414082,
+"lat": 34.9385999,
+"version": 1,
+"timestamp": "2022-05-23T06:51:42Z",
+"visible": true,
+"tags": {
+"name": "鳥羽の大石",
+"natural": "rock",
+"tourism": "attraction"
+}
+},
+"9772852729": {
+"lon": 135.1525721,
+"lat": 35.4305264,
+"version": 1,
+"timestamp": "2022-05-26T14:47:15Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"9775078149": {
+"lon": 135.6506642,
+"lat": 35.0310231,
+"version": 1,
+"timestamp": "2022-05-27T13:30:27Z",
+"visible": true,
+"tags": {
+"name": "保津峡展望台",
+"tourism": "viewpoint"
+}
+},
+"9788618675": {
+"lon": 135.8036424,
+"lat": 35.010942,
+"version": 2,
+"timestamp": "2023-09-24T12:42:25Z",
+"visible": true,
+"tags": {
+"source": "survey;local knowledge;gps",
+"tourism": "viewpoint"
+}
+},
+"9822826635": {
+"lon": 135.7991005,
+"lat": 35.0385243,
+"version": 1,
+"timestamp": "2022-06-16T14:11:45Z",
+"visible": true,
+"tags": {
+"direction": "WNW",
+"tourism": "viewpoint"
+}
+},
+"9836581200": {
+"lon": 135.8140451,
+"lat": 35.0558796,
+"version": 1,
+"timestamp": "2022-06-21T16:37:34Z",
+"visible": true,
+"tags": {
+"direction": "WNW",
+"tourism": "viewpoint"
+}
+},
+"9858450793": {
+"lon": 135.8224048,
+"lat": 35.0626874,
+"version": 1,
+"timestamp": "2022-06-30T15:43:43Z",
+"visible": true,
+"tags": {
+"direction": "SW",
+"tourism": "viewpoint"
+}
+},
+"9858654732": {
+"lon": 135.8224276,
+"lat": 35.0639081,
+"version": 1,
+"timestamp": "2022-06-30T17:13:11Z",
+"visible": true,
+"tags": {
+"direction": "SW",
+"tourism": "viewpoint"
+}
+},
+"9881169080": {
+"lon": 135.775662,
+"lat": 34.9889727,
+"version": 1,
+"timestamp": "2022-07-11T14:56:13Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"10099337517": {
+"lon": 135.7826315,
+"lat": 35.0099553,
+"version": 2,
+"timestamp": "2025-09-07T01:26:47Z",
+"visible": true,
+"tags": {
+"addr:housenumber": "374-2",
+"addr:postcode": "605-0038",
+"addr:street": "堀池町",
+"fee": "no",
+"name": "京都写真美術館 ギャラリー・ジャパネスク",
+"name:en": "KYOTO MUSEUM OF PHOTOGRAPHY Gallery Japanesque",
+"tourism": "museum",
+"website": "https://kyoto-muse.jp/japanesque/"
+}
+},
+"10105413434": {
+"lon": 135.822382,
+"lat": 35.0646389,
+"version": 1,
+"timestamp": "2022-10-16T05:28:16Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"10220777419": {
+"lon": 135.6453108,
+"lat": 35.0474214,
+"version": 1,
+"timestamp": "2022-11-27T03:16:31Z",
+"visible": true,
+"tags": {
+"direction": "85",
+"survey:date": "2022-11-27",
+"tourism": "viewpoint"
+}
+},
+"10278240762": {
+"lon": 135.7493033,
+"lat": 35.0902771,
+"version": 1,
+"timestamp": "2022-12-21T15:11:14Z",
+"visible": true,
+"tags": {
+"direction": "SE",
+"tourism": "viewpoint"
+}
+},
+"10281473155": {
+"lon": 135.7404198,
+"lat": 35.0844516,
+"version": 1,
+"timestamp": "2022-12-23T01:36:13Z",
+"visible": true,
+"tags": {
+"direction": "SW",
+"tourism": "viewpoint"
+}
+},
+"10292382798": {
+"lon": 135.7184283,
+"lat": 35.0711499,
+"version": 1,
+"timestamp": "2022-12-29T00:45:58Z",
+"visible": true,
+"tags": {
+"direction": "ESE",
+"tourism": "viewpoint"
+}
+},
+"10292583964": {
+"lon": 135.7190157,
+"lat": 35.0675,
+"version": 1,
+"timestamp": "2022-12-29T06:31:48Z",
+"visible": true,
+"tags": {
+"direction": "E",
+"tourism": "viewpoint"
+}
+},
+"10300134954": {
+"lon": 135.7014513,
+"lat": 34.8905798,
+"version": 1,
+"timestamp": "2023-01-02T09:31:55Z",
+"visible": true,
+"tags": {
+"direction": "0-360",
+"name": "さくらであい館展望塔",
+"tourism": "viewpoint"
+}
+},
+"10593372645": {
+"lon": 135.1923373,
+"lat": 35.3803351,
+"version": 1,
+"timestamp": "2023-01-30T05:29:44Z",
+"visible": true,
+"tags": {
+"direction": "180",
+"tourism": "viewpoint"
+}
+},
+"10684917511": {
+"lon": 135.8038143,
+"lat": 35.0761848,
+"version": 1,
+"timestamp": "2023-02-22T04:32:04Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "岩倉花園城"
+}
+},
+"10684930069": {
+"lon": 135.7953249,
+"lat": 35.0820994,
+"version": 1,
+"timestamp": "2023-02-22T04:53:09Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "岩倉長谷城"
+}
+},
+"10684930070": {
+"lon": 135.7972416,
+"lat": 35.0698254,
+"version": 1,
+"timestamp": "2023-02-22T04:53:09Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "三宅八幡城"
+}
+},
+"10684930071": {
+"lon": 135.8033863,
+"lat": 35.0660355,
+"version": 1,
+"timestamp": "2023-02-22T04:53:09Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "八瀬城"
+}
+},
+"10684930091": {
+"lon": 135.8066792,
+"lat": 35.0623324,
+"version": 1,
+"timestamp": "2023-02-22T04:53:09Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "御蔭山城"
+}
+},
+"10684930092": {
+"lon": 135.7888239,
+"lat": 35.0552402,
+"version": 1,
+"timestamp": "2023-02-22T04:53:09Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "松ヶ崎城"
+}
+},
+"10684930093": {
+"lon": 135.7872161,
+"lat": 35.0797183,
+"version": 1,
+"timestamp": "2023-02-22T04:53:09Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "小倉山城"
+}
+},
+"10684930103": {
+"lon": 135.7802393,
+"lat": 35.0803837,
+"version": 1,
+"timestamp": "2023-02-22T04:53:09Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "岩倉上蔵城"
+}
+},
+"10684941824": {
+"lon": 135.8028658,
+"lat": 35.0396417,
+"version": 1,
+"timestamp": "2023-02-22T05:08:33Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "将軍山城",
+"wikidata": "Q11458635",
+"wikipedia": "ja:将軍山城"
+}
+},
+"10700828049": {
+"lon": 135.7662717,
+"lat": 34.9918066,
+"version": 1,
+"timestamp": "2023-03-01T01:58:05Z",
+"visible": true,
+"tags": {
+"name": "任天堂株式会社旧本社",
+"name:en": "Former Headquarters of Nintendo Co.",
+"tourism": "attraction"
+}
+},
+"10705489903": {
+"lon": 135.602225,
+"lat": 35.0398062,
+"version": 1,
+"timestamp": "2023-03-02T23:36:20Z",
+"visible": true,
+"tags": {
+"direction": "W",
+"tourism": "viewpoint"
+}
+},
+"10705494617": {
+"lon": 135.6028469,
+"lat": 35.0394266,
+"version": 1,
+"timestamp": "2023-03-02T23:36:20Z",
+"visible": true,
+"tags": {
+"direction": "E",
+"tourism": "viewpoint"
+}
+},
+"10705494676": {
+"lon": 135.6008323,
+"lat": 35.0343208,
+"version": 1,
+"timestamp": "2023-03-02T23:36:20Z",
+"visible": true,
+"tags": {
+"direction": "W",
+"tourism": "viewpoint"
+}
+},
+"10741137005": {
+"lon": 135.6690076,
+"lat": 35.0163957,
+"version": 1,
+"timestamp": "2023-03-17T09:42:41Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"10757429761": {
+"lon": 135.4234081,
+"lat": 35.5514986,
+"version": 1,
+"timestamp": "2023-03-23T20:17:19Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"10760299631": {
+"lon": 135.7995642,
+"lat": 35.2238189,
+"version": 1,
+"timestamp": "2023-03-25T00:42:31Z",
+"visible": true,
+"tags": {
+"name": "花脊の三本杉",
+"tourism": "attraction",
+"wikidata": "Q58863572",
+"wikipedia": "ja:花脊の三本杉"
+}
+},
+"10799220435": {
+"lon": 135.7875365,
+"lat": 35.0124348,
+"version": 1,
+"timestamp": "2023-04-10T12:14:35Z",
+"visible": true,
+"tags": {
+"name": "蹴上インクライン ドラム室",
+"source": "survey",
+"tourism": "attraction"
+}
+},
+"10813957705": {
+"lon": 135.7814428,
+"lat": 35.0791311,
+"version": 1,
+"timestamp": "2023-04-15T06:36:56Z",
+"visible": true,
+"tags": {
+"name": "床紅葉",
+"tourism": "attraction",
+"wheelchair": "no"
+}
+},
+"10829064906": {
+"lon": 135.6702072,
+"lat": 35.0134364,
+"version": 1,
+"timestamp": "2023-04-21T08:39:22Z",
+"visible": true,
+"tags": {
+"name:en": "Path",
+"tourism": "attraction"
+}
+},
+"10829067605": {
+"lon": 135.6752017,
+"lat": 35.0132192,
+"version": 2,
+"timestamp": "2023-04-21T08:39:22Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"10858526713": {
+"lon": 135.7805808,
+"lat": 34.9990493,
+"version": 1,
+"timestamp": "2023-04-30T18:56:08Z",
+"visible": true,
+"tags": {
+"name": "一念坂",
+"name:en": "Ichinenzaka",
+"tourism": "attraction"
+}
+},
+"10869930856": {
+"lon": 135.129107,
+"lat": 35.2973868,
+"version": 2,
+"timestamp": "2023-05-07T15:37:41Z",
+"visible": true,
+"tags": {
+"check_date": "2023-05-05",
+"name": "福知山市丹波生活衣館",
+"tourism": "museum"
+}
+},
+"10892565151": {
+"lon": 135.0657698,
+"lat": 35.7113126,
+"version": 1,
+"timestamp": "2023-05-13T05:51:49Z",
+"visible": true,
+"tags": {
+"direction": "NE",
+"tourism": "viewpoint"
+}
+},
+"10948388903": {
+"lon": 135.7484765,
+"lat": 34.8725334,
+"version": 1,
+"timestamp": "2023-06-03T04:56:34Z",
+"visible": true,
+"tags": {
+"direction": "90-270",
+"tourism": "viewpoint"
+}
+},
+"10948388904": {
+"lon": 135.7503574,
+"lat": 34.870022,
+"version": 1,
+"timestamp": "2023-06-03T04:56:34Z",
+"visible": true,
+"tags": {
+"direction": "0-360",
+"tourism": "viewpoint"
+}
+},
+"11077836761": {
+"lon": 135.7405896,
+"lat": 35.2071643,
+"version": 1,
+"timestamp": "2023-07-31T01:16:32Z",
+"visible": true,
+"tags": {
+"name": "地蔵院の桜",
+"tourism": "attraction"
+}
+},
+"11079292506": {
+"lon": 135.7604572,
+"lat": 34.9309028,
+"version": 1,
+"timestamp": "2023-07-31T18:58:02Z",
+"visible": true,
+"tags": {
+"name:en": "Kizakura Kapp Country",
+"tourism": "attraction"
+}
+},
+"11082181476": {
+"lon": 135.7735869,
+"lat": 34.9878833,
+"version": 1,
+"timestamp": "2023-08-02T01:44:38Z",
+"visible": true,
+"tags": {
+"tourism": "museum"
+}
+},
+"11135357281": {
+"lon": 135.7359231,
+"lat": 34.917865,
+"version": 1,
+"timestamp": "2023-08-22T03:03:28Z",
+"visible": true,
+"tags": {
+"direction": "0-360",
+"name": "さすてな展望台",
+"tourism": "viewpoint"
+}
+},
+"11147753008": {
+"lon": 135.6613154,
+"lat": 35.031089,
+"version": 1,
+"timestamp": "2023-08-27T07:43:44Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"11250678085": {
+"lon": 135.7638163,
+"lat": 34.9913532,
+"version": 1,
+"timestamp": "2023-10-09T09:34:01Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"11279029634": {
+"lon": 135.8123051,
+"lat": 35.0108927,
+"version": 1,
+"timestamp": "2023-10-21T08:31:29Z",
+"visible": true,
+"tags": {
+"direction": "180",
+"source": "survey;local knowledge;gps",
+"tourism": "viewpoint"
+}
+},
+"11289610453": {
+"lon": 135.7727003,
+"lat": 35.0331011,
+"version": 1,
+"timestamp": "2023-10-25T20:27:22Z",
+"visible": true,
+"tags": {
+"name": "鴨社資料館",
+"tourism": "museum"
+}
+},
+"11340994922": {
+"lon": 135.8847173,
+"lat": 34.7192416,
+"version": 1,
+"timestamp": "2023-11-11T09:42:14Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"11361092269": {
+"lon": 135.1741975,
+"lat": 35.7602598,
+"version": 1,
+"timestamp": "2023-11-19T02:01:45Z",
+"visible": true,
+"tags": {
+"name": "ゴジラ岩",
+"natural": "rock",
+"tourism": "attraction"
+}
+},
+"11381014163": {
+"lon": 135.664902,
+"lat": 35.0204362,
+"version": 1,
+"timestamp": "2023-11-28T09:12:21Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"11432734331": {
+"lon": 135.764679,
+"lat": 34.7719804,
+"version": 1,
+"timestamp": "2023-12-19T18:17:53Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"11508598143": {
+"lon": 135.7162463,
+"lat": 34.9015403,
+"version": 1,
+"timestamp": "2024-01-11T13:55:17Z",
+"visible": true,
+"tags": {
+"name": "淀水路の河津桜",
+"tourism": "attraction"
+}
+},
+"11659227840": {
+"lon": 135.7954527,
+"lat": 35.0047875,
+"version": 1,
+"timestamp": "2024-02-24T08:42:22Z",
+"visible": true,
+"tags": {
+"direction": "310",
+"tourism": "viewpoint"
+}
+},
+"11757332320": {
+"lon": 135.9428426,
+"lat": 34.7555663,
+"version": 1,
+"timestamp": "2024-03-24T07:54:07Z",
+"visible": true,
+"tags": {
+"direction": "NE",
+"tourism": "viewpoint"
+}
+},
+"11757332321": {
+"lon": 135.9430486,
+"lat": 34.7556665,
+"version": 1,
+"timestamp": "2024-03-24T07:54:07Z",
+"visible": true,
+"tags": {
+"direction": "NE",
+"tourism": "viewpoint"
+}
+},
+"11757453893": {
+"lon": 135.9425081,
+"lat": 34.7550087,
+"version": 1,
+"timestamp": "2024-03-24T08:42:11Z",
+"visible": true,
+"tags": {
+"direction": "NE",
+"tourism": "viewpoint"
+}
+},
+"11764492501": {
+"lon": 135.1873542,
+"lat": 35.5931754,
+"version": 1,
+"timestamp": "2024-03-26T18:44:47Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"11821166169": {
+"lon": 135.6648431,
+"lat": 35.0206441,
+"version": 1,
+"timestamp": "2024-04-16T06:04:20Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"11824611069": {
+"lon": 135.7853375,
+"lat": 34.9687993,
+"version": 1,
+"timestamp": "2024-04-17T12:01:43Z",
+"visible": true,
+"tags": {
+"name:en": "santuario yakurikisha",
+"tourism": "attraction"
+}
+},
+"11824611169": {
+"lon": 135.7858455,
+"lat": 34.9686039,
+"version": 1,
+"timestamp": "2024-04-17T12:01:44Z",
+"visible": true,
+"tags": {
+"name:es": "santuario mitsurugisha",
+"tourism": "attraction"
+}
+},
+"11824611170": {
+"lon": 135.7835266,
+"lat": 34.9695266,
+"version": 1,
+"timestamp": "2024-04-17T12:01:44Z",
+"visible": true,
+"tags": {
+"name:es": "gozandani hohaisho",
+"tourism": "attraction"
+}
+},
+"11824611171": {
+"lon": 135.7760821,
+"lat": 34.9691862,
+"version": 1,
+"timestamp": "2024-04-17T12:01:44Z",
+"visible": true,
+"tags": {
+"name:es": "santuario suehiro",
+"tourism": "attraction"
+}
+},
+"11824620669": {
+"lon": 135.7854781,
+"lat": 34.9669199,
+"version": 1,
+"timestamp": "2024-04-17T12:06:21Z",
+"visible": true,
+"tags": {
+"name:es": "ichi no mine",
+"tourism": "attraction"
+}
+},
+"11861165328": {
+"lon": 135.776242,
+"lat": 34.9745554,
+"version": 1,
+"timestamp": "2024-04-28T02:43:06Z",
+"visible": true,
+"tags": {
+"direction": "247-337",
+"tourism": "viewpoint"
+}
+},
+"11885679749": {
+"lon": 135.7890522,
+"lat": 35.006958,
+"version": 1,
+"timestamp": "2024-05-07T04:21:54Z",
+"visible": true,
+"tags": {
+"name": "つつじのトンネル",
+"reservation": "no",
+"tourism": "attraction",
+"wheelchair": "no"
+}
+},
+"11888155846": {
+"lon": 135.7889369,
+"lat": 35.0057541,
+"version": 1,
+"timestamp": "2024-05-08T04:08:21Z",
+"visible": true,
+"tags": {
+"direction": "0-135",
+"tourism": "viewpoint"
+}
+},
+"11888155847": {
+"lon": 135.7889852,
+"lat": 35.005887,
+"version": 1,
+"timestamp": "2024-05-08T04:08:21Z",
+"visible": true,
+"tags": {
+"direction": "0-135",
+"tourism": "viewpoint"
+}
+},
+"11888580569": {
+"lon": 135.7871587,
+"lat": 35.1695002,
+"version": 1,
+"timestamp": "2024-05-08T09:21:15Z",
+"visible": true,
+"tags": {
+"name:en": "Hanaseyama house (bird place)",
+"tourism": "attraction"
+}
+},
+"11899014950": {
+"lon": 135.5192012,
+"lat": 35.1486424,
+"version": 1,
+"timestamp": "2024-05-12T17:35:46Z",
+"visible": true,
+"tags": {
+"direction": "WSW",
+"tourism": "viewpoint"
+}
+},
+"11919654070": {
+"lon": 135.6933513,
+"lat": 35.0143842,
+"version": 1,
+"timestamp": "2024-05-20T12:00:56Z",
+"visible": true,
+"tags": {
+"tourism": "attraction"
+}
+},
+"11974721769": {
+"lon": 135.609244,
+"lat": 35.0148023,
+"version": 1,
+"timestamp": "2024-06-12T06:51:33Z",
+"visible": true,
+"tags": {
+"tourism": "attraction"
+}
+},
+"12105551661": {
+"lon": 135.7557053,
+"lat": 35.0172492,
+"version": 1,
+"timestamp": "2024-08-12T06:08:56Z",
+"visible": true,
+"tags": {
+"check_date": "2024-08-12",
+"name:ja": "つえ屋",
+"tourism": "museum"
+}
+},
+"12123947852": {
+"lon": 135.8282535,
+"lat": 35.0642284,
+"version": 1,
+"timestamp": "2024-08-21T09:43:35Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"12124012458": {
+"lon": 135.829036,
+"lat": 35.0647433,
+"version": 1,
+"timestamp": "2024-08-21T09:43:18Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"12135100167": {
+"lon": 135.7537533,
+"lat": 35.0295928,
+"version": 3,
+"timestamp": "2024-08-26T13:23:38Z",
+"visible": true,
+"tags": {
+"air_conditioning": "yes",
+"contact:facebook": "https://www.facebook.com/tatekunmuseum",
+"contact:instagram": "https://www.instagram.com/tatekunmuseum/",
+"contact:twitter": "https://twitter.com/tatekunmuseum",
+"description": "Museum dedicated to anime, manga, tokusatsu and kaiju-themed figure collection",
+"fee": "yes",
+"museum": "children",
+"name": "たてくんミュージアム",
+"name:en": "Tate-kun Museum",
+"opening_hours": "Mo-Su 10:00-19:00",
+"operator:type": "private",
+"payment:cash": "yes",
+"start_date": "2016",
+"tourism": "museum",
+"website": "https://tatekunmuseum.com/"
+}
+},
+"12162376001": {
+"lon": 135.810747,
+"lat": 35.1160632,
+"version": 1,
+"timestamp": "2024-09-07T19:27:36Z",
+"visible": true,
+"tags": {
+"name": "ロッククライミング・ゲレンデ",
+"name:en": "Rock Climbing Wall",
+"tourism": "viewpoint"
+}
+},
+"12189675719": {
+"lon": 135.7594822,
+"lat": 34.9890921,
+"version": 1,
+"timestamp": "2024-09-21T09:39:07Z",
+"visible": true,
+"tags": {
+"name": "シナリー金沢翔子美術館",
+"tourism": "museum"
+}
+},
+"12199097354": {
+"lon": 135.7531292,
+"lat": 35.0035349,
+"version": 1,
+"timestamp": "2024-09-25T14:01:09Z",
+"visible": true,
+"tags": {
+"alt_name": "京都観光今昔展 TinToy&Doll Museum",
+"level": "2",
+"name": "TinToy&Doll Museum",
+"phone": "+81 75 223 2146",
+"tourism": "museum"
+}
+},
+"12222822764": {
+"lon": 135.7539835,
+"lat": 35.0035166,
+"version": 1,
+"timestamp": "2024-10-04T18:45:07Z",
+"visible": true,
+"tags": {
+"level": "1",
+"name": "アートギャラリー メイジ",
+"tourism": "museum"
+}
+},
+"12293284933": {
+"lon": 135.7876421,
+"lat": 35.0069855,
+"version": 1,
+"timestamp": "2024-10-28T06:27:55Z",
+"visible": true,
+"tags": {
+"direction": "NNW-WNW",
+"tourism": "viewpoint"
+}
+},
+"12324840064": {
+"lon": 135.6822746,
+"lat": 35.0203131,
+"version": 1,
+"timestamp": "2024-11-09T01:42:51Z",
+"visible": true,
+"tags": {
+"membership": "yes",
+"name": "天使の里霞中庵",
+"tourism": "museum"
+}
+},
+"12365440401": {
+"lon": 135.6807544,
+"lat": 35.0185493,
+"version": 2,
+"timestamp": "2026-05-17T12:33:41Z",
+"visible": true,
+"tags": {
+"name": "Sagano Romantic Train",
+"tourism": "attraction",
+"wikidata": "Q50187147"
+}
+},
+"12365440501": {
+"lon": 135.6067614,
+"lat": 35.013131,
+"version": 1,
+"timestamp": "2024-11-22T16:56:45Z",
+"visible": true,
+"tags": {
+"name": "Toronto Kameoka Station",
+"tourism": "attraction"
+}
+},
+"12403607701": {
+"lon": 135.8063355,
+"lat": 34.8930374,
+"version": 1,
+"timestamp": "2024-12-08T01:25:23Z",
+"visible": true,
+"tags": {
+"addr:street": "京都宇治線",
+"name": "宇治橋",
+"tourism": "attraction"
+}
+},
+"12403607801": {
+"lon": 135.8210319,
+"lat": 34.8816928,
+"version": 1,
+"timestamp": "2024-12-08T01:25:24Z",
+"visible": true,
+"tags": {
+"name": "天ヶ瀬吊り橋",
+"tourism": "attraction"
+}
+},
+"12428178458": {
+"lon": 135.7636404,
+"lat": 35.105839,
+"version": 1,
+"timestamp": "2024-12-18T01:24:36Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"12458495143": {
+"lon": 135.7602702,
+"lat": 34.9309756,
+"version": 1,
+"timestamp": "2024-12-28T07:34:41Z",
+"visible": true,
+"tags": {
+"check_date": "2024-12-28",
+"name": "河童資料館",
+"tourism": "museum"
+}
+},
+"12458508640": {
+"lon": 135.7602675,
+"lat": 34.9308611,
+"version": 1,
+"timestamp": "2024-12-28T07:36:42Z",
+"visible": true,
+"tags": {
+"check_date": "2024-12-28",
+"name": "黄桜記念館",
+"tourism": "museum"
+}
+},
+"12473100284": {
+"lon": 135.8784962,
+"lat": 34.8007957,
+"version": 1,
+"timestamp": "2025-01-04T07:31:43Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"12473113035": {
+"lon": 135.8841166,
+"lat": 34.798235,
+"version": 1,
+"timestamp": "2025-01-04T07:31:42Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"12528695145": {
+"lon": 135.7382633,
+"lat": 35.0189821,
+"version": 1,
+"timestamp": "2025-01-24T06:30:44Z",
+"visible": true,
+"tags": {
+"name": "京都市平安京創生館",
+"reservation": "no",
+"tourism": "attraction"
+}
+},
+"12638666552": {
+"lon": 135.7346141,
+"lat": 35.029545,
+"version": 1,
+"timestamp": "2025-03-05T14:02:35Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"12679372793": {
+"lon": 135.7129503,
+"lat": 35.0245334,
+"version": 1,
+"timestamp": "2025-03-19T06:52:35Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"12747848894": {
+"lon": 135.741327,
+"lat": 35.0390865,
+"version": 1,
+"timestamp": "2025-04-11T13:41:49Z",
+"visible": true,
+"tags": {
+"direction": "SE-W",
+"tourism": "viewpoint"
+}
+},
+"12749348037": {
+"lon": 135.7582358,
+"lat": 35.0092756,
+"version": 1,
+"timestamp": "2025-04-12T05:48:43Z",
+"visible": true,
+"tags": {
+"check_date": "2025-04-12",
+"name": "細辻伊兵衛美術館",
+"opening_hours": "Mo-Fr 10:00-19:00",
+"tourism": "museum"
+}
+},
+"12779876903": {
+"lon": 135.7651844,
+"lat": 35.0228073,
+"version": 1,
+"timestamp": "2025-04-23T21:34:51Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name:en": "Omiya Palace"
+}
+},
+"12779877702": {
+"lon": 135.760259,
+"lat": 35.0179478,
+"version": 1,
+"timestamp": "2025-04-23T21:34:51Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name:en": "Kaninnomiya Residence"
+}
+},
+"12782917901": {
+"lon": 135.7661553,
+"lat": 35.0220499,
+"version": 1,
+"timestamp": "2025-04-24T13:05:24Z",
+"visible": true,
+"tags": {
+"name:en": "North Pond",
+"tourism": "attraction"
+}
+},
+"12782918001": {
+"lon": 135.7663992,
+"lat": 35.021335,
+"version": 1,
+"timestamp": "2025-04-24T13:05:25Z",
+"visible": true,
+"tags": {
+"name:en": "South Pond",
+"tourism": "attraction"
+}
+},
+"12782918002": {
+"lon": 135.7727415,
+"lat": 35.0237496,
+"version": 1,
+"timestamp": "2025-04-24T13:05:26Z",
+"visible": true,
+"tags": {
+"name:en": "Church",
+"tourism": "attraction"
+}
+},
+"12782918003": {
+"lon": 135.7680852,
+"lat": 35.013122,
+"version": 1,
+"timestamp": "2025-04-24T13:05:27Z",
+"visible": true,
+"tags": {
+"name:en": "Wright Antiques",
+"tourism": "attraction"
+}
+},
+"12786661703": {
+"lon": 135.7594417,
+"lat": 35.0060084,
+"version": 1,
+"timestamp": "2025-04-25T18:03:52Z",
+"visible": true,
+"tags": {
+"name:en": "old building",
+"tourism": "attraction"
+}
+},
+"12810571511": {
+"lon": 135.6617032,
+"lat": 35.180755,
+"version": 1,
+"timestamp": "2025-05-04T21:22:01Z",
+"visible": true,
+"tags": {
+"museum": "history",
+"name": "京都市京北文化遺産センター",
+"tourism": "museum"
+}
+},
+"12813476822": {
+"lon": 135.8238003,
+"lat": 34.9335624,
+"version": 1,
+"timestamp": "2025-05-06T06:39:13Z",
+"visible": true,
+"tags": {
+"name": "方丈石",
+"natural": "rock",
+"tourism": "attraction"
+}
+},
+"12841034947": {
+"lon": 135.7642552,
+"lat": 34.9954572,
+"version": 1,
+"timestamp": "2025-05-16T02:51:32Z",
+"visible": true,
+"tags": {
+"name": "Tea Ceremony Ju-an at Jotokuji",
+"source": "survey",
+"tourism": "attraction",
+"website": "https://www.teaceremonyjuan.com"
+}
+},
+"12850263611": {
+"lon": 135.7740148,
+"lat": 34.997695,
+"version": 1,
+"timestamp": "2025-05-20T06:21:46Z",
+"visible": true,
+"tags": {
+"addr:block_number": "100",
+"addr:city": "Kyoto",
+"addr:county": "Gion",
+"addr:neighbourhood": "1 Chome",
+"addr:postcode": "605-0813",
+"addr:province": "Kyoto",
+"addr:quarter": "Rokurochō",
+"addr:suburb": "Higashiyama-ku",
+"name": "KIMONO TEA CEREMONY MAIKOYA at GION KIYOMIZU",
+"tourism": "attraction"
+}
+},
+"12850316688": {
+"lon": 135.7635723,
+"lat": 35.0072811,
+"version": 3,
+"timestamp": "2025-05-20T07:18:25Z",
+"visible": true,
+"tags": {
+"addr:block_number": "109",
+"addr:city": "Kyoto City",
+"addr:county": "Horinouecho",
+"addr:postcode": "604-8117",
+"addr:province": "Kyoto",
+"addr:suburb": "Nakagyo-ku",
+"name": "KYOTO SAMURAI NINJA MUSEUM With Experience",
+"tourism": "attraction"
+}
+},
+"12850366223": {
+"lon": 135.7667701,
+"lat": 35.0048744,
+"version": 1,
+"timestamp": "2025-05-20T07:25:09Z",
+"visible": true,
+"tags": {
+"addr:block_number": "292-4",
+"addr:city": "Kyoto City",
+"addr:county": "Higashidaimonjicho",
+"addr:postcode": "604-8071",
+"addr:province": "Kyoto",
+"addr:suburb": "Nakagyo-ku",
+"name": "KYOTO SAMURAI NINJA MUSEUM With Experience (Experience Floor of the Kyoto Samurai Ninja Museum)",
+"tourism": "attraction"
+}
+},
+"12850369649": {
+"lon": 135.7574987,
+"lat": 35.0015239,
+"version": 1,
+"timestamp": "2025-05-20T07:28:45Z",
+"visible": true,
+"tags": {
+"addr:block_number": "219",
+"addr:city": "Kyoto City",
+"addr:county": "Itoyacho",
+"addr:housenumber": "1F & 2F",
+"addr:postcode": "600-8432",
+"addr:province": "Kyoto",
+"addr:suburb": "Shimogyo-ku",
+"name": "PRIVATE KimonoTea Ceremony by MAIKOYA Karasuma Shijo",
+"tourism": "attraction"
+}
+},
+"12850396749": {
+"lon": 135.7741432,
+"lat": 34.9982265,
+"version": 1,
+"timestamp": "2025-05-20T07:42:28Z",
+"visible": true,
+"tags": {
+"addr:city": "Kyoto",
+"addr:postcode": "605-0811",
+"addr:province": "Kyoto",
+"addr:suburb": "Higashiyama-ku",
+"name": "KIMONO PRIVATE TEA CEREMONY MAIKOYA GION",
+"tourism": "attraction"
+}
+},
+"12850473560": {
+"lon": 135.7635721,
+"lat": 35.0072637,
+"version": 2,
+"timestamp": "2026-03-25T10:25:27Z",
+"visible": true,
+"tags": {
+"addr:block_number": "4",
+"addr:city": "Kyoto City",
+"addr:county": "Higashidaimonjicho",
+"addr:housename": "Utanokoji Building",
+"addr:postcode": "604-8043",
+"addr:province": "Kyoto",
+"addr:suburb": "Nakagyo-ku",
+"name": "Kyoto Samurai & Kyoto Swords (Annex of Kyoto Samurai Museum)",
+"tourism": "attraction"
+}
+},
+"12860318502": {
+"lon": 135.7718409,
+"lat": 35.0036685,
+"version": 1,
+"timestamp": "2025-05-24T08:14:02Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"12925548240": {
+"lon": 135.6800444,
+"lat": 35.011821,
+"version": 1,
+"timestamp": "2025-06-19T09:54:38Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"12952852346": {
+"lon": 135.3848985,
+"lat": 35.4743218,
+"version": 1,
+"timestamp": "2025-06-25T23:17:13Z",
+"visible": true,
+"tags": {
+"name": "海上自衛隊制服試着体験ブース",
+"tourism": "attraction"
+}
+},
+"12952852348": {
+"lon": 135.3837523,
+"lat": 35.4747601,
+"version": 1,
+"timestamp": "2025-06-25T23:17:13Z",
+"visible": true,
+"tags": {
+"name": "舞鶴海軍鎮守府跡",
+"tourism": "attraction"
+}
+},
+"13006284568": {
+"lon": 135.7512038,
+"lat": 35.011972,
+"version": 1,
+"timestamp": "2025-07-17T10:51:42Z",
+"visible": true,
+"tags": {
+"name": "南東から見た二条城東南隅櫓の眺め",
+"name:en": "Viewpoint of Tonan Sumi-yagura (Southeast Corner Turret) in Nijo-jo Castle from the South-East",
+"name:ja": "南東から見た二条城東南隅櫓の眺め",
+"source": "Listed on the castle guide map https://nijo-jocastle.city.kyoto.lg.jp/wp-content/themes/nijojo/assets/pdf/castle_guide/map/guide_map2503_en.pdf",
+"tourism": "viewpoint"
+}
+},
+"13006284569": {
+"lon": 135.7509042,
+"lat": 35.0122506,
+"version": 1,
+"timestamp": "2025-07-17T10:51:42Z",
+"visible": true,
+"tags": {
+"name": "西から見た二条城東南隅櫓の眺め",
+"name:en": "Viewpoint of Tonan Sumi-yagura (Southeast Corner Turret) in Nijo-jo Castle from the West",
+"name:ja": "西から見た二条城東南隅櫓の眺め",
+"source": "Listed on the castle guide map https://nijo-jocastle.city.kyoto.lg.jp/wp-content/themes/nijojo/assets/pdf/castle_guide/map/guide_map2503_en.pdf",
+"tourism": "viewpoint"
+}
+},
+"13006284570": {
+"lon": 135.7497403,
+"lat": 35.0132699,
+"version": 1,
+"timestamp": "2025-07-17T10:51:42Z",
+"visible": true,
+"tags": {
+"source": "Listed on the castle guide map https://nijo-jocastle.city.kyoto.lg.jp/wp-content/themes/nijojo/assets/pdf/castle_guide/map/guide_map2503_en.pdf",
+"tourism": "viewpoint"
+}
+},
+"13006284571": {
+"lon": 135.7489168,
+"lat": 35.0149266,
+"version": 1,
+"timestamp": "2025-07-17T10:51:42Z",
+"visible": true,
+"tags": {
+"name": "北東から見た二条城本丸の城壁と内堀の眺望",
+"name:en": "Viewpoint of the Nijo Castle inner castle wall and the Nijo Castle inner castle moat, from the North-East",
+"name:ja": "北東から見た二条城本丸の城壁と内堀の眺望",
+"source": "Listed on the castle guide map https://nijo-jocastle.city.kyoto.lg.jp/wp-content/themes/nijojo/assets/pdf/castle_guide/map/guide_map2503_en.pdf",
+"tourism": "viewpoint"
+}
+},
+"13011586124": {
+"lon": 135.369463,
+"lat": 35.4764681,
+"version": 1,
+"timestamp": "2025-07-19T13:08:39Z",
+"visible": true,
+"tags": {
+"historic": "locomotive",
+"locomotive:type": "steam",
+"name": "C58 113",
+"tourism": "attraction",
+"wikidata": "Q2687330",
+"wikipedia": "ja:国鉄C58形蒸気機関車"
+}
+},
+"13033314388": {
+"lon": 135.8171581,
+"lat": 34.9438023,
+"version": 1,
+"timestamp": "2025-07-29T06:50:45Z",
+"visible": true,
+"tags": {
+"direction": "NW",
+"tourism": "viewpoint"
+}
+},
+"13124263329": {
+"lon": 135.7868009,
+"lat": 35.0018588,
+"version": 1,
+"timestamp": "2025-09-07T01:26:50Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"13260786581": {
+"lon": 135.7859658,
+"lat": 35.0553105,
+"version": 1,
+"timestamp": "2025-10-27T06:16:33Z",
+"visible": true,
+"tags": {
+"direction": "187",
+"tourism": "viewpoint"
+}
+},
+"13264169397": {
+"lon": 135.770969,
+"lat": 35.1179495,
+"version": 1,
+"timestamp": "2025-10-28T03:14:28Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"13266078082": {
+"lon": 135.7849283,
+"lat": 35.0061326,
+"version": 1,
+"timestamp": "2025-10-29T01:23:37Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"13316892240": {
+"lon": 135.7851713,
+"lat": 35.0082961,
+"version": 1,
+"timestamp": "2025-11-19T16:58:10Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"13316950221": {
+"lon": 135.8315427,
+"lat": 35.0661349,
+"version": 1,
+"timestamp": "2025-11-19T17:19:33Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"13316950222": {
+"lon": 135.8314435,
+"lat": 35.0653796,
+"version": 1,
+"timestamp": "2025-11-19T17:19:33Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"13321698501": {
+"lon": 135.7821815,
+"lat": 35.0240969,
+"version": 1,
+"timestamp": "2025-11-21T10:06:38Z",
+"visible": true,
+"tags": {
+"name": "重森三玲庭園美術館",
+"name:en": "Mirei Shigemori Garden Museum",
+"tourism": "museum",
+"website": "http://www.est.hi-ho.ne.jp/shigemori/association-jp.html"
+}
+},
+"13349618245": {
+"lon": 135.6895302,
+"lat": 34.8769338,
+"version": 1,
+"timestamp": "2025-12-03T03:32:36Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"13360558540": {
+"lon": 135.7654182,
+"lat": 34.9837455,
+"version": 2,
+"timestamp": "2026-04-13T22:36:28Z",
+"visible": true,
+"tags": {
+"name": "teamLab BioVortex",
+"opening_hours": "Mo-Su 09:00-21:00",
+"operator": "teamLab",
+"tourism": "attraction",
+"website": "https://www.teamlab.art/e/kyoto/"
+}
+},
+"13610776201": {
+"lon": 135.6775795,
+"lat": 35.0102493,
+"version": 1,
+"timestamp": "2026-03-02T01:33:50Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"13613531301": {
+"lon": 135.7507982,
+"lat": 35.0130596,
+"version": 1,
+"timestamp": "2026-03-03T03:31:33Z",
+"visible": true,
+"tags": {
+"name:en": "Phoenix Trer",
+"tourism": "attraction"
+}
+},
+"13664582319": {
+"lon": 135.5422512,
+"lat": 35.0787373,
+"version": 1,
+"timestamp": "2026-03-20T11:12:32Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "刑部城跡"
+}
+},
+"13664582359": {
+"lon": 135.5451865,
+"lat": 35.0757314,
+"version": 1,
+"timestamp": "2026-03-20T11:15:30Z",
+"visible": true,
+"tags": {
+"historic": "castle",
+"name": "西田城跡"
+}
+},
+"13704681901": {
+"lon": 135.7710436,
+"lat": 35.0304516,
+"version": 1,
+"timestamp": "2026-04-04T01:37:20Z",
+"visible": true,
+"tags": {
+"name": "Sakura viewpoint",
+"tourism": "viewpoint"
+}
+},
+"13751633772": {
+"lon": 135.6712658,
+"lat": 35.0167957,
+"version": 1,
+"timestamp": "2026-04-22T02:15:30Z",
+"visible": true,
+"tags": {
+"attraction": "nature",
+"direction": "70;250",
+"name": "竹林の道",
+"name:en": "Arashiyama Bamboo Forest",
+"name:fr": "Chemin forestier de bambous",
+"name:ja-Latn": "Chikurin-no-michi",
+"note": "これは普通の道。車など使用可。 This is a public road open to normal traffic.",
+"tourism": "viewpoint"
+}
+},
+"13913901761": {
+"lon": 135.7589161,
+"lat": 34.9921043,
+"version": 2,
+"timestamp": "2026-06-06T07:30:26Z",
+"visible": true,
+"tags": {
+"fixme": "Location isn’t precise, but it’s there somewhere",
+"name": "Stamp Point №3",
+"opening_hours": "09:00-16:00",
+"tourism": "attraction"
+}
+},
+"13913901762": {
+"lon": 135.7586886,
+"lat": 34.9906654,
+"version": 1,
+"timestamp": "2026-06-06T07:27:24Z",
+"visible": true,
+"tags": {
+"name": "Stamp Point №1",
+"tourism": "attraction"
+}
+},
+"13913901763": {
+"lon": 135.7586328,
+"lat": 34.9905007,
+"version": 1,
+"timestamp": "2026-06-06T07:27:24Z",
+"visible": true,
+"tags": {
+"name": "Stamp Point №2",
+"tourism": "attraction"
+}
+},
+"13955687104": {
+"lon": 135.7674492,
+"lat": 34.9856759,
+"version": 1,
+"timestamp": "2026-06-21T14:01:43Z",
+"visible": true,
+"tags": {
+"check_date": "2026-06-21",
+"name": "撮り鉄",
+"tourism": "viewpoint"
+}
+},
+"13998480701": {
+"lon": 135.7717386,
+"lat": 35.0294645,
+"version": 1,
+"timestamp": "2026-07-08T20:36:33Z",
+"visible": true,
+"tags": {
+"name": "Turtle stepping stones",
+"tourism": "attraction"
+}
+},
+"14088957423": {
+"lon": 135.7461255,
+"lat": 34.7994338,
+"version": 1,
+"timestamp": "2026-08-12T03:24:36Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"14121444605": {
+"lon": 135.8061406,
+"lat": 34.8927096,
+"version": 1,
+"timestamp": "2026-08-25T02:14:41Z",
+"visible": true,
+"tags": {
+"name": "宇治橋三の間",
+"tourism": "attraction"
+}
+},
+"14135226006": {
+"lon": 135.7475382,
+"lat": 34.9815139,
+"version": 1,
+"timestamp": "2026-08-30T16:32:13Z",
+"visible": true,
+"tags": {
+"fee": "yes",
+"indoor": "yes",
+"name": "御朱印所",
+"name:es": "Oficina de Goshuin",
+"name:ja": "御朱印所",
+"name:ja-Hira": "ごしゅいんじょ",
+"name:ja-Latn": "Goshuinjo",
+"tourism": "attraction"
+}
+},
+"14145368553": {
+"lon": 135.758439,
+"lat": 34.9852308,
+"version": 1,
+"timestamp": "2026-09-03T21:18:44Z",
+"visible": true,
+"tags": {
+"indoor": "yes",
+"name": "京都駅 駅スタンプ",
+"name:en": "Kyoto Eki Stamp",
+"name:es": "Sello de la Estación de Kioto",
+"name:ja": "京都駅 駅スタンプ",
+"name:ja-Hira": "きょうとえき えきすたんぷ",
+"name:ja-Latn": "Kyōto-eki Eki Sutanpu",
+"ref": "Eki Stamp",
+"tourism": "attraction"
+}
+},
+"14145368568": {
+"lon": 135.7470593,
+"lat": 34.9815303,
+"version": 1,
+"timestamp": "2026-09-03T21:18:44Z",
+"visible": true,
+"tags": {
+"tourism": "attraction"
+}
+},
+"14145385836": {
+"lon": 135.7759918,
+"lat": 34.9998745,
+"version": 1,
+"timestamp": "2026-09-03T21:18:44Z",
+"visible": true,
+"tags": {
+"fee": "yes",
+"name": "御朱印所",
+"name:es": "Oficina de Goshuin",
+"name:ja": "御朱印所",
+"name:ja-Hira": "ごしゅいんじょ",
+"name:ja-Latn": "Goshuinjo",
+"tourism": "attraction"
+}
+},
+"14161661601": {
+"lon": 135.75379,
+"lat": 35.0200888,
+"version": 1,
+"timestamp": "2026-09-08T02:05:15Z",
+"visible": true,
+"tags": {
+"name": "中信美術館",
+"opening_hours": "Tu-Su 10:00-17:00",
+"phone": "0754172323",
+"tourism": "museum",
+"website": "https://www.chushin.co.jp/bijyutu/"
+}
+},
+"14257185302": {
+"lon": 135.2673185,
+"lat": 35.288688,
+"version": 1,
+"timestamp": "2026-10-07T05:50:28Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"14264667127": {
+"lon": 135.7446107,
+"lat": 34.8092734,
+"version": 1,
+"timestamp": "2026-10-08T13:07:55Z",
+"visible": true,
+"tags": {
+"tourism": "viewpoint"
+}
+},
+"14350901465": {
+"lon": 135.7724239,
+"lat": 35.004465,
+"version": 1,
+"timestamp": "2026-11-05T04:17:46Z",
+"visible": true,
+"tags": {
+"name": "ぎをん思いで博物館",
+"tourism": "museum"
+}
+}
+}
+}
