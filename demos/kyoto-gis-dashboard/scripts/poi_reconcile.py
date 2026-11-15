@@ -177,6 +177,7 @@ def main():
                         "unnamed": sum(1 for p in ps if not (p.get("name") or "").strip()),
                         "raw_records": len(raw_ids), "merged_duplicates": len(rel["merged"]),
                         "added_from_dsight": sum(1 for p in ps if p.get("dsight_ids"))}
+    m["point_municipality"] = {"joined": sum(1 for v in pm["points"].values() if v), "outside_all_polygons": sum(1 for v in pm["points"].values() if not v)}
     json.dump(m, open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     checklist(fc, rel)
     print(json.dumps(m["attractions"], ensure_ascii=False))
