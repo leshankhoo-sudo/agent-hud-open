@@ -526,3 +526,33 @@ test('categories: temples and shrines told apart with a stated basis; the source
   for (const f of g) if (f.geometry.type === 'Point') assert.match(f.properties.evidence, /agree within \d+ m/);
   assert.ok(g.some((f) => f.geometry.type === 'LineString' && f.properties.kind === 'river'));
 });
+
+// ---------- landmark symbols: three levels from the data, a symbol for every record ----------
+test('landmark symbols: 15 iconic records exist, levels come from data fields, every record has a symbol to fall back on', async () => {
+  const { applyLandmarks, ICONIC, CAT_ICONS } = await import('../src/lib/landmarks.js');
+  const data = { attractions: { features: structuredClone(A) }, photos: J('photos.json') };
+  applyLandmarks(data);
+  const F = data.attractions.features;
+  assert.equal(F.length, 638);                                   // nothing is dropped
+  const byId = new Map(F.map((f) => [f.properties.id, f.properties]));
+  assert.equal(Object.keys(ICONIC).length, 15);
+  assert.equal(new Set(Object.values(ICONIC).map((v) => v.icon)).size, 15);
+  // the listed IDs are the records they claim to be (checked against the record's own name)
+  const NAME = { A00265: '金閣', A00560: '清水寺', A00306: '伏見稲荷大社', A00579: '二条城', A00564: '東寺', A00540: '銀閣寺', A00182: '平等院', A00563: '南禅寺', A00011: '天橋立ビューランド', A00014: '福知山城', A00582: '平安神宮', A00559: '八坂神社', A00553: '三十三間堂', A00566: '法観寺', A00074: '京都タワー' };
+  for (const [id, v] of Object.entries(ICONIC)) {
+    const q = byId.get(id);
+    assert.ok(q, id); assert.equal(q.name, NAME[id]); assert.equal(q.lm_tier, 1); assert.equal(q.lm_icon, 'lm-' + v.icon);
+  }
+  const names = new Set([...Object.values(ICONIC).map((v) => 'lm-' + v.icon), ...CAT_ICONS.map((c) => 'cat-' + c)]);
+  const n = { 1: 0, 2: 0, 3: 0 };
+  for (const f of F) {
+    const q = f.properties;
+    n[q.lm_tier]++;
+    assert.ok(names.has(q.lm_icon) && names.has(q.lm_cat), q.id);   // never a blank symbol
+    assert.equal(q.lm_cat, 'cat-' + q.category);                    // the fallback is the record's own category
+    if (q.lm_tier === 2) assert.ok(q.wikidata || data.photos.photos[q.id] || q.category === 'castle', q.id);
+    if (q.lm_tier === 3) assert.ok(!q.wikidata && !data.photos.photos[q.id], q.id);
+  }
+  assert.equal(n[1], 15);
+  assert.ok(n[2] > 100 && n[3] > 300, JSON.stringify(n));
+});

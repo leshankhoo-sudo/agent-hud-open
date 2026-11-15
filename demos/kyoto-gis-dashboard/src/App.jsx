@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { iconURL } from './lib/icons.js';
+import { landmarkURL, ICONIC } from './lib/landmarks.js';
 import MapView, { BASEMAPS, KDE_BREAKS, kdeColors, OFFLINE_PREVIEW } from './MapView.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import Weather from './Weather.jsx';
@@ -610,7 +611,9 @@ export default function App() {
           <div className="map-legend" id="map-legend" role="region" aria-label="Map legend">
             <header><b>Legend</b><button className="x" type="button" onClick={() => setLegend(false)} aria-label="Close legend">×</button></header>
             <ul>
-              {ATTRACTION_CATS.filter((c) => catCount[c.key] > 0).map((c) => <li key={c.key}><span className="dot" style={{ background: T.cat[c.key] }} />{c.label}</li>)}
+              <li className="lm-key"><img src={landmarkURL('lm-kinkaku', theme)} alt="" width="30" height="30" /><span>Iconic landmark <span className="muted">({Object.keys(ICONIC).length} places, each with its own symbol)</span></span></li>
+              {ATTRACTION_CATS.filter((c) => catCount[c.key] > 0).map((c) => <li key={c.key}><img src={landmarkURL('cat-' + c.key, theme, T.cat[c.key])} alt="" width="20" height="20" /><span className="dot" style={{ background: T.cat[c.key] }} />{c.label}</li>)}
+              <li className="muted xs">Symbol: major place, or any place when zoomed in. Dot: every record, at any zoom.</li>
               {TRANSPORT_TYPES.map((t) => <li key={t.key}><img src={iconURL(t.key)} alt="" width="16" height="16" />{t.label} stop <span className="muted">(dot when zoomed out)</span></li>)}
               <li><span className="ln" style={{ borderColor: T.outline.line }} />Kyoto Prefecture boundary</li>
               {walk.pilot && <li><span className="ln dash" style={{ borderColor: T.pilot }} />Walking pilot area</li>}

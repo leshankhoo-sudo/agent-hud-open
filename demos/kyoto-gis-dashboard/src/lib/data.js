@@ -1,3 +1,4 @@
+import { applyLandmarks } from './landmarks.js';
 // Loads the prepared files from public/data and exposes counts used by the UI.
 
 export const ATTRACTION_CATS = [
@@ -64,6 +65,7 @@ export async function loadAll(base = import.meta.env.BASE_URL) {
   );
   applyEnglishNames(out);
   applyContext(out);
+  applyLandmarks(out);
   return { data: out, status };
 }
 

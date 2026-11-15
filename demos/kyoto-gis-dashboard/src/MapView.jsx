@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { ATTRACTION_CATS, TRANSPORT_TYPES } from './lib/data.js';
 import { addTransitIcons } from './lib/icons.js';
+import { addLandmarkImages } from './lib/landmarks.js';
 import { themeOf } from './lib/theme.js';
 
 // Basemaps, no API key. See README for usage terms.
@@ -78,6 +79,48 @@ function styleFor(basemap, theme) {
   return { version: 8, glyphs: GLYPHS, sources: p.sources, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': p.bg } }, ...p.layers] };
 }
 const TRANSIT_LAYERS = ['transport-pt', 'transport-sym-rail', 'transport-sym-bus'];
+// Landmark symbols (lib/landmarks.js). Three levels drawn by the map engine from cached images:
+//   lm-iconic  the 15 places with their own silhouette: any zoom, lowest rank wins where they would overlap
+//   lm-major   places with a verified item or photo, and castles: category plate from zoom 10.5
+//   lm-minor   everything else: category plate from zoom 14.5 (below that, its dot)
+//   lm-search  while a search is typed: a symbol for every match at any zoom
+//   lm-hover / lm-sel  the hovered and the selected place, enlarged, at any zoom, never hidden by collision
+// The dots (attractions-pt) always hold every record, so a hidden symbol never hides a place.
+const LM_BASE = ['lm-minor', 'lm-major', 'lm-iconic'];
+const LM_LAYERS = [...LM_BASE, 'lm-search', 'lm-hover', 'lm-sel'];
+const LM_PICK = ['attractions-pt', ...LM_LAYERS];
+const NONE = ['==', ['get', 'id'], '__none__'];
+const TIER = (n) => ['==', ['get', 'lm_tier'], n];
+const isIconic = TIER(1);
+const lmSize = (k = 1) => ['interpolate', ['linear'], ['zoom'],
+  7, ['*', k, ['match', ['get', 'lm_tier'], 1, 0.56, 0.5]],
+  10.5, ['*', k, ['match', ['get', 'lm_tier'], 1, 0.68, 0.56]],
+  13, ['*', k, ['match', ['get', 'lm_tier'], 1, 0.84, 0.8]],
+  16, ['*', k, ['match', ['get', 'lm_tier'], 1, 1.12, ['match', ['get', 'lm_tier'], 2, 1, 0.86]]]];
+// attraction dots: ordinary records start smaller, so the well-known places lead when zoomed out
+// (an iconic place keeps a small dot: the exact point its building stands on)
+const PT_RADIUS = ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'lm_tier'], 3, 2.3, 3], 12, ['match', ['get', 'lm_tier'], 3, 4.6, 1, 3.2, 5.5], 16, ['match', ['get', 'lm_tier'], 1, 3.6, 8]];
+const lmText = (T) => ({ 'text-color': T.base.label, 'text-halo-color': T.base.halo, 'text-halo-width': 1.5, 'text-halo-blur': 0.4 });
+// name under the symbol: Japanese from `from`, with the English name on a second line from `en`
+const lmLabel = (from, en) => ({
+  'text-field': ['step', ['zoom'], '', from, ['coalesce', ['get', 'name'], ''],
+    en, ['case', ['has', 'name_en'], ['format', ['coalesce', ['get', 'name'], ''], {}, '\n', {}, ['get', 'name_en'], { 'font-scale': 0.82 }], ['coalesce', ['get', 'name'], '']]],
+  'text-font': ['Noto Sans Regular'], 'text-size': ['interpolate', ['linear'], ['zoom'], 9, 10.5, 15, 12.5], 'text-anchor': 'top', 'text-max-width': 9, 'text-line-height': 1.25,
+  'text-offset': ['case', isIconic, ['literal', [0, 0.35]], ['literal', [0, 1.05]]], 'text-optional': true, 'text-padding': 3,
+});
+function lmLayer(id, filter, T, { minzoom = 0, k = 1, overlap = false, label = null } = {}) {
+  return {
+    id, type: 'symbol', source: 'attractions', minzoom, filter,
+    layout: {
+      'icon-image': ['get', 'lm_icon'], 'icon-size': lmSize(k),
+      'icon-anchor': ['case', isIconic, 'bottom', 'center'], 'icon-offset': ['case', isIconic, ['literal', [0, 9]], ['literal', [0, 0]]],   // an iconic building stands on its point
+      'icon-padding': 1, 'symbol-sort-key': ['get', 'lm_rank'], 'symbol-z-order': 'source',
+      'icon-allow-overlap': overlap, 'icon-ignore-placement': overlap,
+      ...(label && !OFFLINE_PREVIEW ? lmLabel(...label) : {}),
+    },
+    paint: { 'icon-opacity': 1, ...(label && !OFFLINE_PREVIEW ? lmText(T) : {}) },
+  };
+}
 
 export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, onGeo, geoOn = false, mapRef: externalRef, walkSet, maxWalk, busRun, busHighlight, onBusProgress, busCtl }) {
   const el = useRef(null);
@@ -101,6 +144,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       attributionControl: false,
       maxPitch: 0,
       dragRotate: false,
+      fadeDuration: prefersReducedMotion() ? 0 : 320,   // symbols fade in and out as zoom and collisions change
     });
     map.touchZoomRotate.disableRotation();
     map.addControl(new maplibregl.AttributionControl({ compact: innerWidth <= 760, customAttribution: DATA_ATTR }), 'bottom-right');
@@ -121,17 +165,26 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       applyFilters(map, latest.current);
     });
 
-    const interactive = ['attractions-pt', ...TRANSIT_LAYERS, 'geo-pt'];
+    const interactive = [...LM_PICK, ...TRANSIT_LAYERS, 'geo-pt'];
+    // the hovered place gets its symbol, a little larger, on a soft ring; the filter only changes when the place does
+    let hoverId = null;
+    const setHoverId = (id) => {
+      if (id === hoverId || !map.getLayer('lm-hover')) return;
+      hoverId = id;
+      const f = id ? ['==', ['get', 'id'], id] : NONE;
+      map.setFilter('lm-hover', f); map.setFilter('lm-hover-ring', f);
+    };
     map.on('mousemove', (e) => {
-      const f = map.getLayer('attractions-pt') ? map.queryRenderedFeatures(e.point, { layers: interactive }) : [];
+      const f = map.getLayer('attractions-pt') ? map.queryRenderedFeatures(e.point, { layers: interactive.filter((l) => map.getLayer(l)) }) : [];
       map.getCanvas().style.cursor = f.length ? 'pointer' : '';
+      setHoverId(f.length && f[0].source === 'attractions' ? f[0].properties.id : null);
       latest.current.onHover(f.length ? { feature: f[0], x: e.point.x, y: e.point.y } : null);
     });
-    map.on('mouseout', () => latest.current.onHover(null));
+    map.on('mouseout', () => { setHoverId(null); latest.current.onHover(null); });
     map.on('click', (e) => {
       const pad = 4;
       const box = [[e.point.x - pad, e.point.y - pad], [e.point.x + pad, e.point.y + pad]];
-      const a = map.queryRenderedFeatures(box, { layers: ['attractions-pt'] });
+      const a = map.queryRenderedFeatures(box, { layers: LM_PICK.filter((l) => map.getLayer(l)) });
       const s = a.length ? [] : map.queryRenderedFeatures(box, { layers: TRANSIT_LAYERS.filter((l) => map.getLayer(l)) });
       const f = a[0] || s[0];
       // a place name, mountain or river of the Kyoto City records: opens that record in the library
@@ -177,7 +230,13 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       map.setPaintProperty(l, 'icon-opacity-transition', T);
       map.setPaintProperty(l, 'icon-opacity', iOp);
     }
-    map.setPaintProperty('attractions-pt', 'circle-radius', grow(['interpolate', ['linear'], ['zoom'], 7, 3, 12, 5.5, 16, 8], aMatch));
+    for (const l of [...LM_BASE, 'lm-search']) {
+      if (!map.getLayer(l)) continue;
+      map.setPaintProperty(l, 'icon-opacity-transition', T);
+      map.setPaintProperty(l, 'icon-opacity', aOp);
+      if (!OFFLINE_PREVIEW) map.setPaintProperty(l, 'text-opacity', aOp);
+    }
+    map.setPaintProperty('attractions-pt', 'circle-radius', grow(PT_RADIUS, aMatch));
     map.setPaintProperty('transport-pt', 'circle-radius', grow(['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'transport_type'], 'bus', 0.9, 2.4], 12, ['match', ['get', 'transport_type'], 'bus', 2.6, 4.5], 16, ['match', ['get', 'transport_type'], 'bus', 5, 7]], tMatch));
   }, [focus]);
 
@@ -381,6 +440,10 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
     marker.current = null;
     callout.current?.remove();
     callout.current = null;
+    // the selected place keeps its symbol at any zoom, enlarged, on a soft vermilion glow
+    const selF = selected?.layer === 'attraction' ? ['==', ['get', 'id'], selected.id] : NONE;
+    const setSel = () => { for (const l of ['lm-sel', 'lm-sel-glow']) if (map.getLayer(l)) map.setFilter(l, selF); };
+    if (map.getLayer('lm-sel')) setSel(); else map.once('idle', setSel);
     if (!selected) return;
     const node = document.createElement('div');
     node.className = 'sel-marker' + (selected.layer === 'transport' ? ' is-stop' : '');
@@ -538,6 +601,7 @@ function intro(map) {
   set('attractions-glow', 'circle-opacity', 0, 0.45, 900, 1100);
   set('attractions-pt', 'circle-opacity', 0, 1, 700, 1100);
   set('attractions-pt', 'circle-stroke-opacity', 0, 1, 700, 1100);
+  for (const l of LM_BASE) set(l, 'icon-opacity', 0, 1, 800, 1300);
   if (!reduce) {
     const c = map.getCenter(), z = map.getZoom();
     map.jumpTo({ center: [c.lng - 0.08, c.lat + 0.05], zoom: z - 0.45 });
@@ -614,6 +678,10 @@ function restyleData(map, theme) {
   set('geo-line', 'line-color', geoCol);
   set('geo-pt', 'circle-color', geoCol);
   set('attractions-pt', 'circle-stroke-color', T.stroke);
+  // landmark symbols: the same images repainted for the theme (no layer is rebuilt)
+  addLandmarkImages(map, theme, T.cat);
+  if (!OFFLINE_PREVIEW) for (const l of [...LM_BASE, 'lm-search']) for (const [k, v] of Object.entries(lmText(T))) set(l, k, v);
+  for (const l of ['lm-sel-glow', 'lm-hover-ring']) set(l, 'circle-color', T.landmark);
 }
 
 function addDataLayers(map, data, theme) {
@@ -709,11 +777,23 @@ function addDataLayers(map, data, theme) {
     id: 'attractions-pt', type: 'circle', source: 'attractions',
     paint: {
       'circle-color': catColorExpr(T),
-      'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 3, 12, 5.5, 16, 8],
+      'circle-radius': PT_RADIUS,
       'circle-stroke-color': T.stroke,
       'circle-stroke-width': 1.2,
     },
   });
+  // landmark symbols above the dots (see LM_LAYERS)
+  addLandmarkImages(map, theme, T.cat);
+  const glow = (id, r, op) => ({ id, type: 'circle', source: 'attractions', filter: NONE,
+    paint: { 'circle-color': T.landmark, 'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, r * 0.7, 14, r], 'circle-blur': 0.85, 'circle-opacity': op, 'circle-translate': [0, -4] } });
+  map.addLayer(lmLayer('lm-minor', TIER(3), T, { minzoom: 14.5, label: [15.6, 17] }));
+  map.addLayer(lmLayer('lm-major', TIER(2), T, { minzoom: 10.5, label: [13.4, 15] }));
+  map.addLayer(lmLayer('lm-iconic', isIconic, T, { label: [9.6, 12] }));
+  map.addLayer(lmLayer('lm-search', NONE, T, { label: [11, 13.5] }));
+  map.addLayer(glow('lm-hover-ring', 24, 0.34));
+  map.addLayer(lmLayer('lm-hover', NONE, T, { k: 1.22, overlap: true }));
+  map.addLayer(glow('lm-sel-glow', 34, 0.6));
+  map.addLayer(lmLayer('lm-sel', NONE, T, { k: 1.34, overlap: true }));
 }
 
 function applyFilters(map, { cats, types, query, densityMode, theme }) {
@@ -727,6 +807,11 @@ function applyFilters(map, { cats, types, query, densityMode, theme }) {
       ...(qf.length >= 3 ? [['in', qf, ['downcase', ['coalesce', ['get', 'search_text'], '']]]] : [])]
     : true;
   map.setFilter('attractions-pt', ['all', catExpr(cats), qExpr]);
+  // symbols follow the same category filter; while a search is typed the matches get their symbols at any zoom
+  if (map.getLayer('lm-iconic')) {
+    LM_BASE.forEach((l, i) => map.setFilter(l, q ? NONE : ['all', TIER(3 - i), catExpr(cats)]));
+    map.setFilter('lm-search', q ? ['all', catExpr(cats), qExpr] : NONE);
+  }
   map.setFilter('attractions-glow', ['all', catExpr(cats), qExpr]);
   map.setFilter('transport-pt', ['all', typeExpr(types), qExpr]);
   map.setFilter('transport-sym-rail', ['all', RAIL_F, typeExpr(types), qExpr]);

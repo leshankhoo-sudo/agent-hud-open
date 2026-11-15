@@ -579,6 +579,62 @@ await rm.waitForSelector('#explore .season-drift', { state: 'attached', timeout:
 check('reduced motion: no seasonal drift', await rm.evaluate(() => getComputedStyle(document.querySelector('#explore .season-drift')).display === 'none'));
 await rm.close();
 
+// 8z. landmark symbols: three levels by zoom, hover, selection and search break the zoom limits, both themes
+const lp = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const lpErr = []; lp.on('pageerror', (e) => lpErr.push(e.message));
+await lp.goto(url);
+await lp.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.getLayer('lm-iconic') && window.__kyotoMap.loaded(), null, { timeout: 30000 });
+await lp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+await lp.waitForTimeout(5000);
+const lmSeen = () => lp.evaluate(() => { const m = window.__kyotoMap; const o = {}; for (const l of ['lm-iconic', 'lm-major', 'lm-minor', 'lm-search', 'lm-sel', 'lm-hover', 'attractions-pt']) o[l] = [...new Set(m.queryRenderedFeatures({ layers: [l] }).map((f) => f.properties.id))]; return o; });
+const lmGo = async (c, z) => { await lp.evaluate(([c, z]) => (c ? window.__kyotoMap.jumpTo({ center: c, zoom: z }) : window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: 0 })), [c, z]); await lp.waitForTimeout(3000); };
+const lmImg = await lp.evaluate(() => { const m = window.__kyotoMap; const fs = m.querySourceFeatures('attractions'); const icons = [...new Set(fs.map((f) => f.properties.lm_icon))]; return { icons: icons.length, missing: icons.filter((i) => !i || !m.hasImage(i)), lm: m.listImages().filter((i) => i.startsWith('lm-')).length, cat: m.listImages().filter((i) => i.startsWith('cat-')).length, t3: fs.find((f) => f.properties.lm_tier === 3 && f.properties.name)?.properties.id }; });
+check('landmark symbols: 15 building symbols and 7 category symbols are registered once as map images; no record points at a missing one', lmImg.lm === 15 && lmImg.cat === 7 && lmImg.missing.length === 0, JSON.stringify(lmImg));
+await lmGo(null);
+let ls = await lmSeen();
+check('whole prefecture: only iconic symbols are drawn (the rest collide away), yet every record keeps its dot', ls['lm-iconic'].length >= 3 && ls['lm-major'].length === 0 && ls['lm-minor'].length === 0 && ls['attractions-pt'].length === 638, JSON.stringify({ i: ls['lm-iconic'].length, pt: ls['attractions-pt'].length }));
+await lmGo([135.78, 35.0], 12.6);
+ls = await lmSeen();
+check('city zoom: more iconic symbols and the major places as category symbols; ordinary places stay dots', ls['lm-iconic'].length >= 8 && ls['lm-major'].length >= 20 && ls['lm-minor'].length === 0, JSON.stringify({ i: ls['lm-iconic'].length, M: ls['lm-major'].length }));
+await lmGo([135.781, 34.998], 14.8);
+ls = await lmSeen();
+check('street zoom: ordinary places get their category symbol too', ls['lm-minor'].length >= 10 && ls['lm-major'].length >= 5, JSON.stringify({ M: ls['lm-major'].length, m: ls['lm-minor'].length }));
+// hover and click on a building symbol (above its point), not on the dot
+await lmGo([135.7292, 35.0394], 13.2);
+const kp = await lp.evaluate(() => { const m = window.__kyotoMap; const f = m.querySourceFeatures('attractions').find((x) => x.properties.id === 'A00265'); const p = m.project(f.geometry.coordinates); const r = m.getContainer().getBoundingClientRect(); return { x: r.x + p.x, y: r.y + p.y - 22 }; });
+await lp.mouse.move(kp.x, kp.y);
+await lp.waitForTimeout(900);
+ls = await lmSeen();
+const tipTxt = await lp.locator('.tip').innerText().catch(() => '');
+check('hover on the Kinkaku symbol: enlarged symbol on a soft ring, tooltip with the Japanese and English name', ls['lm-hover'].join() === 'A00265' && tipTxt.includes('金閣') && /Kinkaku|Golden/i.test(tipTxt), JSON.stringify({ h: ls['lm-hover'], tipTxt }));
+await lp.mouse.click(kp.x, kp.y);
+await lp.waitForTimeout(2600);
+const lmDetail = await lp.locator('aside.right').innerText();
+await lmGo(null);
+await lp.mouse.move(5, 5);
+ls = await lmSeen();
+check('click on the symbol selects the record (details panel), and the selected symbol stays at any zoom', lmDetail.includes('金閣') && ls['lm-sel'].join() === 'A00265', JSON.stringify(ls['lm-sel']) + lmDetail.slice(0, 80));
+// search: an ordinary record gets its symbol even at prefecture zoom
+await lp.locator('#q').fill(lmImg.t3);
+await lp.waitForTimeout(1500);
+ls = await lmSeen();
+check('search: the match shows its symbol at prefecture zoom, where ordinary places are otherwise dots', ls['lm-search'].join() === lmImg.t3 && ls['attractions-pt'].join() === lmImg.t3, JSON.stringify(ls['lm-search']));
+await lp.locator('#q').fill('');
+await lp.getByLabel('Temple').first().uncheck();
+await lmGo([135.78, 35.0], 12.6);
+const lmCats = await lp.evaluate(() => [...new Set(window.__kyotoMap.queryRenderedFeatures({ layers: ['lm-iconic', 'lm-major'] }).map((f) => f.properties.category))]);
+check('category filter also hides the symbols of that category', lmCats.length > 0 && !lmCats.includes('temple'), lmCats.join());
+await lp.getByLabel('Temple').first().check();
+const lmHash = () => lp.evaluate(() => { const d = window.__kyotoMap.getImage('cat-temple').data.data; let h = 0; for (let i = 0; i < d.length; i += 7) h = (h * 31 + d[i]) | 0; return h; });
+const h1 = await lmHash();
+await lp.locator('.theme-toggle').first().click();
+await lp.waitForTimeout(2500);
+await lmGo([135.78, 35.0], 12.6);
+ls = await lmSeen();
+check('theme switch repaints the same symbols (no layer rebuilt, nothing blank)', (await lmHash()) !== h1 && ls['lm-iconic'].length >= 8 && ls['lm-major'].length >= 20 && lpErr.length === 0, JSON.stringify({ i: ls['lm-iconic'].length, M: ls['lm-major'].length, lpErr }));
+await lp.screenshot({ path: `${out}/26-landmarks.png` });
+await lp.close();
+
 // 9. phone layout
 const ph = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
 await ph.goto(url);
