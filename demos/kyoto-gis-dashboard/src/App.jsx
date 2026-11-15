@@ -87,7 +87,9 @@ export default function App() {
   const [basemap, setBasemap] = useState('night');
   const [sel, setSel] = useState(null);
   const [hover, setHover] = useState(null);
-  const [sheet, setSheet] = useState(null); // 'journeys' | 'sources' | null
+  const [sheet, setSheet] = useState(null); // 'journeys' | 'sources' | 'records' | null
+  const [geoOn, setGeoOn] = useState(false);   // the Places and landscape layer
+  const [recFocus, setRecFocus] = useState(null); // a Kyoto City record to open in the library
   const [maxWalk, setMaxWalk] = useState(500);
   const [walkTypes, setWalkTypes] = useState(['bus', 'rail']);
   const [walkShow, setWalkShow] = useState(false);
@@ -154,6 +156,13 @@ export default function App() {
   const fa = useMemo(() => filterAttractions(A, cats, query), [A, cats, query]);
   const ft = useMemo(() => filterTransport(Tr, types, query), [Tr, types, query]);
   const catCount = useMemo(() => countBy(A, 'category'), [A]);
+  // Kyoto City records by ID, and the records whose text names each map record
+  const recById = useMemo(() => {
+    const m = new Map((d?.records?.records || []).map((r) => [r.id, r]));
+    m.mentions = new Map();
+    for (const r of d?.records?.records || []) for (const id of r.mentions || []) { if (!m.mentions.has(id)) m.mentions.set(id, []); m.mentions.get(id).push(r); }
+    return m;
+  }, [d?.records]);
   const typeCount = useMemo(() => countBy(Tr, 'transport_type'), [Tr]);
   const subCount = useMemo(() => countBy(Tr, 'category'), [Tr]);
   const walk = useMemo(() => walkingAvailability(d?.walking), [d]);
@@ -411,6 +420,7 @@ export default function App() {
           <button className={'btn ghost lang-order' + (enFirst ? ' on' : '')} type="button" onClick={toggleEnFirst} aria-pressed={enFirst} title="Name order: English first, Japanese in brackets"><span aria-hidden="true">{enFirst ? 'EN' : '日'}</span>English first</button>
           <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'journeys' ? null : 'journeys')} aria-expanded={sheet === 'journeys'}>Journeys & Fares</button>
           <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'sources' ? null : 'sources')} aria-expanded={sheet === 'sources'}>Data & Sources</button>
+          {d?.records && <button className="btn ghost" type="button" onClick={() => { setRecFocus(null); setSheet(sheet === 'records' ? null : 'records'); }} aria-expanded={sheet === 'records'}>Kyoto City Records</button>}
         </nav>
       </header>
 
@@ -438,7 +448,7 @@ export default function App() {
 
         <section className="card">
           <h3>Attraction categories</h3>
-          {ATTRACTION_CATS.map((c) => (
+          {ATTRACTION_CATS.filter((c) => catCount[c.key] > 0).map((c) => (
             <label className="chk" key={c.key} onMouseEnter={() => setFocus({ kind: 'cat', key: c.key })} onMouseLeave={() => setFocus(null)}>
               <input type="checkbox" checked={cats.includes(c.key)} onChange={() => toggle(cats, setCats, c.key)} />
               <span className="sw" style={{ background: T.cat[c.key] }} />
@@ -448,6 +458,20 @@ export default function App() {
           ))}
           <div className="row-btns"><button className="link" type="button" onClick={() => setCats(ATTRACTION_CATS.map((c) => c.key))}>All</button><button className="link" type="button" onClick={() => setCats([])}>None</button></div>
         </section>
+
+        {d.records && (
+          <section className="card">
+            <h3>Kyoto City records</h3>
+            <label className="chk">
+              <input type="checkbox" checked={geoOn} onChange={() => setGeoOn(!geoOn)} />
+              <span className="sw ring" style={{ borderColor: T.geo.land }} />
+              <span>Places and landscape</span>
+              <span className="n">{d.geography?.features.filter((g) => g.geometry.type === 'Point').length || 0}</span>
+            </label>
+            <p className="xs muted">Place names, mountains, rivers and springs from the city's sightseeing list, placed where two sources agree.</p>
+            <button className="link" type="button" onClick={() => { setRecFocus(null); setSheet('records'); }}>All {d.records.records.length} records and what was done with each →</button>
+          </section>
+        )}
 
         <section className="card">
           <h3>Public transport</h3>
@@ -568,7 +592,7 @@ export default function App() {
       <main className="center">
         <i className="corner c1" /><i className="corner c2" /><i className="corner c3" /><i className="corner c4" />
         {core ? (
-          <MapView theme={theme} data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={selForMap} active={dashSeen} focus={focus} onSelect={(s) => select(s, false)} onHover={setHover} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} busRun={busRun} busHighlight={busHl?.ids} onBusProgress={setBusProg} busCtl={busCtl} />
+          <MapView theme={theme} data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={selForMap} active={dashSeen} focus={focus} onSelect={(s) => select(s, false)} onHover={setHover} onGeo={(id) => { setRecFocus(id); setSheet('records'); }} geoOn={geoOn} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} busRun={busRun} busHighlight={busHl?.ids} onBusProgress={setBusProg} busCtl={busCtl} />
         ) : (
           <div className="alert big" role="alert"><b>Map data could not be loaded.</b>{failed.map(([k, v]) => <span key={k}>{v.file}: {v.error}</span>)}</div>
         )}
@@ -586,7 +610,7 @@ export default function App() {
           <div className="map-legend" id="map-legend" role="region" aria-label="Map legend">
             <header><b>Legend</b><button className="x" type="button" onClick={() => setLegend(false)} aria-label="Close legend">×</button></header>
             <ul>
-              {ATTRACTION_CATS.map((c) => <li key={c.key}><span className="dot" style={{ background: T.cat[c.key] }} />{c.label}</li>)}
+              {ATTRACTION_CATS.filter((c) => catCount[c.key] > 0).map((c) => <li key={c.key}><span className="dot" style={{ background: T.cat[c.key] }} />{c.label}</li>)}
               {TRANSPORT_TYPES.map((t) => <li key={t.key}><img src={iconURL(t.key)} alt="" width="16" height="16" />{t.label} stop <span className="muted">(dot when zoomed out)</span></li>)}
               <li><span className="ln" style={{ borderColor: T.outline.line }} />Kyoto Prefecture boundary</li>
               {walk.pilot && <li><span className="ln dash" style={{ borderColor: T.pilot }} />Walking pilot area</li>}
@@ -631,13 +655,17 @@ export default function App() {
         {hover && (
           <div className="tip" style={{ left: hover.x + 14, top: hover.y + 10 }}>
             <b lang="ja"><NameEn p={hover.feature.properties} /></b>
-            <span>{CATEGORY_LABEL[hover.feature.properties.category]}</span>
+            <span>{CATEGORY_LABEL[hover.feature.properties.category] || (hover.feature.properties.kind ? `${hover.feature.properties.kind[0].toUpperCase()}${hover.feature.properties.kind.slice(1)} · Kyoto City record` : '')}</span>
           </div>
         )}
         {failed.length > 0 && core && <div className="toast" role="alert">Some files failed to load: {failed.map(([, v]) => v.file).join(', ')}</div>}
 
         {sheet === 'journeys' && <Journeys journeys={d.journeys} onClose={() => setSheet(null)} />}
         {sheet === 'sources' && <Sources d={d} status={loaded.status} walk={walk} failed={failed} onClose={() => setSheet(null)} />}
+        {sheet === 'records' && d.records && <Records data={d.records} geo={d.geography} byId={byId} focus={recFocus}
+          onOpen={(id) => { setSheet(null); select({ id }); }}
+          onShow={(f) => { setSheet(null); setGeoOn(true); mapRef.current?.flyTo({ center: f.geometry.coordinates, zoom: 14, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1200, essential: true }); }}
+          onClose={() => setSheet(null)} />}
       </main>
 
       <aside className="right" id="details" aria-label="Selected place">
@@ -653,7 +681,7 @@ export default function App() {
               {tabs.map(([k, l]) => <button key={k} type="button" role="tab" id={`tab-${k}`} aria-selected={curTab === k} aria-controls={`pane-${k}`} className={curTab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
             </div>
             <div className="pane card" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" hidden={curTab !== 'overview'}>
-              <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} rel={d.relations} byId={byId} onOpen={(id) => select({ id })} />
+              <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} rel={d.relations} byId={byId} onOpen={(id) => select({ id })} recs={recById} onRecord={(id) => { setRecFocus(id); setSheet('records'); }} />
             </div>
             {selStopKeys && (
               <div className="pane card" role="tabpanel" id="pane-bus" aria-labelledby="tab-bus" hidden={curTab !== 'bus'}>
@@ -748,7 +776,7 @@ function Clock() {
 }
 
 // One kanji per record type for the seal on the details card (decoration; the English label is the text).
-const SEAL = { attraction: '名', viewpoint: '景', museum: '館', castle: '城', bus_stop: '停', bus_station: '停', railway_station: '駅', railway_halt: '駅', tram_stop: '停' };
+const SEAL = { attraction: '名', viewpoint: '景', museum: '館', castle: '城', temple: '寺', shrine: '社', garden: '庭', bus_stop: '停', bus_station: '停', railway_station: '駅', railway_halt: '駅', tram_stop: '停' };
 
 function Chip({ ok, warn, label }) {
   return <span className={'chip ' + (ok ? 'ok' : warn ? 'warn' : 'bad')}><i />{label}</span>;
@@ -811,7 +839,7 @@ function Summary({ hit, pm, photos, color, onClose, onHide }) {
 // How a containing OSM area is described: a location, never an identification of the point.
 const insidePhrase = (k) => (/temple|shrine|place of worship|church/.test(k) ? 'Inside the grounds of' : k === 'building' ? 'At' : 'Inside');
 
-function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk, rel, byId, onOpen }) {
+function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk, rel, byId, onOpen, recs, onRecord }) {
   const p = hit.f.properties;
   const [lon, lat] = hit.f.geometry.coordinates;
   const muniCode = pm?.points?.[p.id];
@@ -839,7 +867,7 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk, rel, byId,
           <div><dt>In the name</dt><dd className="terms">{terms.map((x) => <span key={x.t}><b lang="ja">{x.t}</b> {x.m}</span>)}<small className="muted">Meaning of common words in the name, not a translation.</small></dd></div>
         ); })()}
         <div><dt>Area</dt><dd lang="ja">{muniCode ? muniLabel(pm, muniCode) : 'outside all boundary polygons'}</dd></div>
-        {hit.layer === 'attraction' && <SiteLinks p={p} rel={rel} byId={byId} onOpen={onOpen} />}
+        {hit.layer === 'attraction' && <SiteLinks p={p} rel={rel} byId={byId} onOpen={onOpen} recs={recs} onRecord={onRecord} />}
         {hit.layer === 'attraction' && (
           <div><dt>Walking access</dt><dd>{inPilot ? <button className="link" type="button" onClick={onWalk}>Network routes available · open Walking Routes</button> : walk.available ? `Not calculated yet (pilot covers ${walk.scopeIds.size} records in ${walk.pilotInfo?.name})` : 'Not calculated yet'}</dd></div>
         )}
@@ -892,7 +920,7 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk, rel, byId,
 // belongs to, what belongs to it (dashboard records, and DSIGHT_1.csv buildings, objects and trees,
 // which have no point of their own), duplicates merged into it, and separate features of one place.
 const KIND_EN = { building: 'building', object: 'cultural object', 'guardian figure': 'guardian figure', 'named tree': 'named tree', 'burial mound': 'burial mound', 'cultural property': 'cultural property' };
-function SiteLinks({ p, rel, byId, onOpen }) {
+function SiteLinks({ p, rel, byId, onOpen, recs, onRecord }) {
   if (!rel) return null;
   const name = (id) => { const h = byId.get(id); return h ? (h.f.properties.name || h.f.properties.name_en || h.f.properties.display_name) : id; };
   const parent = rel.child_of?.[p.id];
@@ -906,14 +934,26 @@ function SiteLinks({ p, rel, byId, onOpen }) {
       {here && (here.children.length > 0 || here.dsight.length > 0) && (
         <div><dt>At this site</dt><dd className="site-parts">
           {here.children.map((id) => <span key={id}><button className="link" type="button" onClick={() => onOpen(id)} lang="ja">{name(id)}</button> <small className="muted">· on the map</small></span>)}
-          {here.dsight.map((x) => <span key={x.csv_id}><b lang="ja">{x.part || x.name}</b> <small className="muted">· {KIND_EN[x.kind] || x.kind} · DSIGHT {x.csv_id}</small></span>)}
-          {here.dsight.length > 0 && <small className="muted">Listed in DSIGHT_1.csv as part of this site; shown here without points of their own.</small>}
+          {here.dsight.map((x) => {
+            const r = recs?.get(x.csv_id);
+            return r?.description
+              ? <details key={x.csv_id} className="rec-d"><summary><b lang="ja">{x.part || x.name}</b> <small className="muted">· {KIND_EN[x.kind] || x.kind} · {x.csv_id}</small></summary><p lang="ja">{r.description}</p></details>
+              : <span key={x.csv_id}><b lang="ja">{x.part || x.name}</b> <small className="muted">· {KIND_EN[x.kind] || x.kind} · {x.csv_id}</small></span>;
+          })}
+          {here.dsight.length > 0 && <small className="muted">From the Kyoto City sightseeing list (DSIGHT_1.csv, © Kyoto City, CC BY 4.0), as published; no points of their own.</small>}
         </dd></div>
       )}
       {p.merged_ids && <div><dt>Merged</dt><dd>{p.merged_ids.join(', ')} <small className="muted">· the same place entered more than once in OpenStreetMap. {rel.merged?.[p.merged_ids[0]]?.evidence}</small></dd></div>}
       {group && <div><dt>Group</dt><dd>One of {group.ids.length} separate features: <span lang="ja">{group.name}</span> <small className="muted">· {group.note}</small></dd></div>}
       {maybe && <div><dt>Check</dt><dd>Possible duplicate of {maybe.ids.filter((x) => x !== p.id).join(', ')}, kept until checked. <small className="muted">{maybe.note}</small></dd></div>}
       {distinct && <div><dt>Note</dt><dd><small className="muted">{distinct.note}</small></dd></div>}
+      {(() => { const m = recs?.mentions?.get(p.id) || []; return m.length > 0 && (
+        <div><dt>Mentioned in</dt><dd className="site-parts">
+          {m.slice(0, 6).map((r) => <span key={r.id}><button className="link" type="button" onClick={() => onRecord(r.id)} lang="ja">{r.name}</button> <small className="muted">· {r.series}</small></span>)}
+          {m.length > 6 && <small className="muted">and {m.length - 6} more</small>}
+          <small className="muted">Kyoto City records whose text names this place. They are not filed under it.</small>
+        </dd></div>
+      ); })()}
     </>
   );
 }
@@ -1036,6 +1076,66 @@ function Journeys({ journeys, onClose }) {
         ))}
       </div>
       {list[0]?.workbook && <p className="xs muted">Fare basis: {list[0].workbook.fare_basis}. {list[0].workbook.conditions} Weekend and holiday express services must be checked for the travel date. The accessed date is when the source was read, not when a fare took effect.</p>}
+    </div>
+  );
+}
+
+// The Kyoto City sightseeing list (DSIGHT_1.csv, 648 records): every record with what was done with it.
+const OUTCOME = {
+  attraction: ['On the map', 'A place of its own on the map'],
+  sub: ['Part of a site', 'A building, tree or feature of a site on the map'],
+  culture: ['Culture & history', 'Objects kept at a site, performing arts, literature, food and local history'],
+  geography: ['Places & landscape', 'Place names, mountains, rivers and springs placed by two sources'],
+  unverified: ['Not placed', 'Its place, or the site it belongs to, could not be confirmed; kept here, not placed'],
+};
+function Records({ data, geo, byId, focus, onOpen, onShow, onClose }) {
+  const [q, setQ] = useState('');
+  const [f, setF] = useState('all');
+  const [n, setN] = useState(60);
+  const geoBy = useMemo(() => new Map((geo?.features || []).filter((g) => g.geometry.type === 'Point').map((g) => [g.properties.csv_id, g])), [geo]);
+  const focusRef = useRef(null);
+  useEffect(() => { if (focus) { setQ(''); setF('all'); setN(1000); setTimeout(() => focusRef.current?.scrollIntoView({ block: 'center' }), 60); } }, [focus]);
+  const qq = q.trim().toLowerCase();
+  const list = data.records.filter((r) => (f === 'all' || r.outcome === f) && (!qq || [r.name, r.kana, r.other_name, r.id, r.description, r.address].some((v) => (v || '').toLowerCase().includes(qq))));
+  const name = (id) => { const h = byId.get(id); return h ? (h.f.properties.name || h.f.properties.display_name) : id; };
+  return (
+    <div className="sheet" role="dialog" aria-label="Kyoto City records">
+      <header className="sheet-h">
+        <div><h2>Kyoto City sightseeing records</h2>
+          <p>All {data.records.length} records of <a href={data.source.url} target="_blank" rel="noreferrer">{data.source.title}</a>, {data.source.publisher}, {data.source.licence}, updated {data.source.updated}. Names, readings, descriptions and addresses are shown as published. Each record says what was done with it; nothing is placed without two agreeing sources.</p></div>
+        <button className="x" type="button" onClick={onClose} aria-label="Close">×</button>
+      </header>
+      <div className="sheet-meta rec-filter" role="group" aria-label="Filter by outcome">
+        <button type="button" className={'chip' + (f === 'all' ? ' ok' : '')} onClick={() => setF('all')} aria-pressed={f === 'all'}><i />All {data.records.length}</button>
+        {Object.entries(OUTCOME).map(([k, [lab, tip]]) => (
+          <button type="button" key={k} title={tip} className={'chip' + (f === k ? ' ok' : k === 'unverified' ? ' warn' : '')} onClick={() => setF(k)} aria-pressed={f === k}><i />{lab} {data.outcomes[k] || 0}</button>
+        ))}
+        <input className="rec-q" type="search" placeholder="Search the records · 日本語 / ID" aria-label="Search the records" value={q} onChange={(e) => setQ(e.target.value)} />
+      </div>
+      <ul className="rec-list">
+        {list.slice(0, n).map((r) => (
+          <li key={r.id} ref={r.id === focus ? focusRef : null} className={r.id === focus ? 'on' : ''}>
+            <details open={r.id === focus}>
+              <summary>
+                <b lang="ja">{r.name}</b> <small className="muted" lang="ja">{r.kana}</small>
+                <span className={'rec-o ' + r.outcome}>{OUTCOME[r.outcome][0]}</span>
+              </summary>
+              <div className="rec-b">
+                <p className="xs muted">{r.id} · {r.series}{r.kind !== r.series ? ` · ${r.kind}` : ''}{r.other_name ? <> · <span lang="ja">{r.other_name}</span></> : null}{r.address ? <> · <span lang="ja">{r.address}</span></> : null}</p>
+                {r.description && <p lang="ja">{r.description}</p>}
+                <p className="xs">
+                  {r.site_id && <button className="link" type="button" onClick={() => onOpen(r.site_id)}>Open <span lang="ja">{name(r.site_id)}</span> on the map</button>}
+                  {geoBy.get(r.id) && <button className="link" type="button" onClick={() => onShow(geoBy.get(r.id))}>Show on the map</button>}
+                </p>
+                {r.mentions && <p className="xs">Names in the text: {r.mentions.map((id, i) => <span key={id}>{i ? ', ' : ''}<button className="link" type="button" onClick={() => onOpen(id)} lang="ja">{name(id)}</button></span>)}</p>}
+                {r.evidence && <p className="xs muted">{r.outcome === 'unverified' ? 'Why not placed: ' : 'How it was placed: '}{r.evidence}</p>}
+              </div>
+            </details>
+          </li>
+        ))}
+      </ul>
+      {list.length > n && <button className="btn ghost" type="button" onClick={() => setN(n + 120)}>Show more ({list.length - n} left)</button>}
+      {list.length === 0 && <p className="muted">No records match.</p>}
     </div>
   );
 }

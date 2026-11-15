@@ -79,13 +79,13 @@ function styleFor(basemap, theme) {
 }
 const TRANSIT_LAYERS = ['transport-pt', 'transport-sym-rail', 'transport-sym-bus'];
 
-export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, mapRef: externalRef, walkSet, maxWalk, busRun, busHighlight, onBusProgress, busCtl }) {
+export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, onGeo, geoOn = false, mapRef: externalRef, walkSet, maxWalk, busRun, busHighlight, onBusProgress, busCtl }) {
   const el = useRef(null);
   const mapRef = useRef(null);
   const marker = useRef(null);
   const callout = useRef(null);
   const latest = useRef({});
-  latest.current = { onSelect, onHover, cats, types, query, densityMode, active, theme, onBusProgress };
+  latest.current = { onSelect, onHover, onGeo, cats, types, query, densityMode, active, theme, onBusProgress };
   const introPending = useRef(false);
   useEffect(() => {
     if (active && introPending.current && mapRef.current) { introPending.current = false; mapRef.current.resize(); intro(mapRef.current); }
@@ -121,7 +121,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       applyFilters(map, latest.current);
     });
 
-    const interactive = ['attractions-pt', ...TRANSIT_LAYERS];
+    const interactive = ['attractions-pt', ...TRANSIT_LAYERS, 'geo-pt'];
     map.on('mousemove', (e) => {
       const f = map.getLayer('attractions-pt') ? map.queryRenderedFeatures(e.point, { layers: interactive }) : [];
       map.getCanvas().style.cursor = f.length ? 'pointer' : '';
@@ -134,6 +134,9 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       const a = map.queryRenderedFeatures(box, { layers: ['attractions-pt'] });
       const s = a.length ? [] : map.queryRenderedFeatures(box, { layers: TRANSIT_LAYERS.filter((l) => map.getLayer(l)) });
       const f = a[0] || s[0];
+      // a place name, mountain or river of the Kyoto City records: opens that record in the library
+      const g = f || !map.getLayer('geo-pt') ? [] : map.queryRenderedFeatures(box, { layers: ['geo-pt'] });
+      if (g.length) { latest.current.onGeo?.(g[0].properties.csv_id); return; }
       latest.current.onSelect(f ? { layer: a[0] ? 'attraction' : 'transport', id: f.properties.id } : null);
     });
     return () => map.remove();
@@ -144,6 +147,12 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
     const map = mapRef.current;
     if (map && map.getSource('attractions') && map.getLayer('attractions-pt')) applyFilters(map, { cats, types, query, densityMode, theme });
   }, [cats, types, query, densityMode]);
+
+  // the "Places and landscape" layer (Kyoto City records placed by two sources), off by default
+  useEffect(() => {
+    const map = mapRef.current;
+    for (const id of ['geo-line', 'geo-ring', 'geo-pt']) if (map?.getLayer(id)) map.setLayoutProperty(id, 'visibility', geoOn ? 'visible' : 'none');
+  }, [geoOn]);
 
   // Linked hover from the earlier dashboard: hovering a category or transit type in the filter
   // list lifts those points and dims the rest.
@@ -600,6 +609,10 @@ function restyleData(map, theme) {
   set('transport-pt', 'circle-stroke-color', T.stroke);
   set('attractions-glow', 'circle-color', catColorExpr(T));
   set('attractions-pt', 'circle-color', catColorExpr(T));
+  const geoCol = ['match', ['get', 'kind'], ['river', 'pond', 'spring or well', 'waterfall', 'river basin', 'gorge'], T.geo.water, ['area', 'street'], T.geo.area, T.geo.land];
+  set('geo-ring', 'circle-stroke-color', geoCol);
+  set('geo-line', 'line-color', geoCol);
+  set('geo-pt', 'circle-color', geoCol);
   set('attractions-pt', 'circle-stroke-color', T.stroke);
 }
 
@@ -643,6 +656,18 @@ function addDataLayers(map, data, theme) {
   map.addLayer({ id: 'bus-lit', type: 'line', source: 'bus-lit', layout: round, paint: { 'line-color': T.busLine, 'line-width': 4 } });
   map.addSource('attractions', { type: 'geojson', data: data.attractions });
   map.addSource('transport', { type: 'geojson', data: data.transport });
+  // place names, mountains, rivers and springs from the Kyoto City records: a ring with a dot, under the
+  // attractions, coloured by kind (land, water, area); hidden until switched on
+  map.addSource('geography', { type: 'geojson', data: data.geography || EMPTY });
+  const geoCol = ['match', ['get', 'kind'], ['river', 'pond', 'spring or well', 'waterfall', 'river basin', 'gorge'], T.geo.water, ['area', 'street'], T.geo.area, T.geo.land];
+  const isPt = ['==', ['geometry-type'], 'Point'];
+  // rivers and streets that OSM maps as lines are drawn as lines (the matched way), with their label point on it
+  map.addLayer({ id: 'geo-line', type: 'line', source: 'geography', filter: ['==', ['geometry-type'], 'LineString'], layout: { visibility: 'none', 'line-cap': 'round', 'line-join': 'round' },
+    paint: { 'line-color': geoCol, 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 14, 4], 'line-opacity': 0.75 } });
+  map.addLayer({ id: 'geo-ring', type: 'circle', source: 'geography', filter: isPt, layout: { visibility: 'none' },
+    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 6, 14, 12], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': geoCol, 'circle-stroke-width': 1.6, 'circle-stroke-opacity': 0.85 } });
+  map.addLayer({ id: 'geo-pt', type: 'circle', source: 'geography', filter: isPt, layout: { visibility: 'none' },
+    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 2, 14, 3.5], 'circle-color': geoCol } });
   map.addLayer({
     id: 'heat', type: 'heatmap', source: 'attractions', layout: { visibility: 'none' },
     paint: {

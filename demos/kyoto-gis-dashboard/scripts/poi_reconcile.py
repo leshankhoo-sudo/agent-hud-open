@@ -45,12 +45,40 @@ def ascii_fold(s):
     return re.sub(r"[^a-z0-9]", "", "".join(c for c in s if not unicodedata.combining(c)).lower())
 
 
-def category(tags):
+# single characters that also end ordinary words (社 in 本社, 堂 in 食堂) are not used
+TEMPLE_END = ("寺", "院", "庵", "寺門跡", "院門跡")
+SHRINE_END = ("神社", "大社", "神宮", "天満宮", "八幡宮", "稲荷", "宮")
+NOT_SHRINE = ("離宮", "御所", "東宮")
+
+
+def refine(cat, tags, name):
+    """(category, basis): viewpoint / museum / castle stay as the source has them; an 'attraction' becomes
+    temple, shrine or garden when its OSM tags say so, or else when its Japanese name ends that way."""
+    if cat != "attraction":
+        return cat, "source category"
+    rel = tags.get("religion")
+    if rel == "buddhist":
+        return "temple", "OSM religion=buddhist"
+    if rel == "shinto":
+        return "shrine", "OSM religion=shinto"
+    if tags.get("leisure") == "garden" or tags.get("garden:type"):
+        return "garden", "OSM leisure=garden"
+    n = re.sub(r"[（(<＜].*?[）)>＞]", "", unicodedata.normalize("NFKC", name or "")).strip()
+    if n.endswith("庭園") or n.endswith("庭"):
+        return "garden", f"name ends with {'庭園' if n.endswith('庭園') else '庭'}"
+    if n.endswith(SHRINE_END) and not n.endswith(NOT_SHRINE):
+        return "shrine", "name ends with " + next(e for e in SHRINE_END if n.endswith(e))
+    if n.endswith(TEMPLE_END):
+        return "temple", "name ends with " + next(e for e in TEMPLE_END if n.endswith(e))
+    return "attraction", "source category"
+
+
+def category(tags, name):
     if tags.get("historic") == "castle":
         return "castle"
     if tags.get("tourism") == "museum":
         return "museum"
-    return "attraction"
+    return refine("attraction", tags, name)[0]
 
 
 def build():
@@ -61,6 +89,7 @@ def build():
     ids_path = os.path.join(AUD, "poi_ids.json")
     ids = J(ids_path) if os.path.exists(ids_path) else {}
 
+    nodes = J(os.path.join(ROOT, "data", "cache", "osm_attraction_nodes.json"))["nodes"]
     merged = {}
     for d in dec["duplicates"]:
         for m in d["merge"]:
@@ -75,6 +104,8 @@ def build():
         if p["id"] in merged:
             continue
         g = {"type": "Feature", "geometry": f["geometry"], "properties": dict(p)}
+        c, basis = refine(p["category"], (nodes.get(p["osm_id"]) or {}).get("tags", {}), p["name"])
+        g["properties"].update(source_category=p["category"], category=c, category_basis=basis)
         if p["id"] in keep_info:
             g["properties"]["merged_ids"] = [x for k in keep_info[p["id"]] for x in k["merged"]]
         feats.append(g)
@@ -83,8 +114,8 @@ def build():
     last = max(int(f["properties"]["id"][1:]) for f in raw["features"])
     used = set(ids.values())
     nxt = max([last] + [int(v[1:]) for v in used]) + 1
-    for s in sorted(add, key=lambda s: s["properties"]["osm"]):
-        o = s["properties"]["osm"]
+    for s in sorted(add, key=lambda s: s["properties"]["ref"]):
+        o = s["properties"]["ref"]
         if o not in ids:
             ids[o] = f"A{nxt:05d}"
             nxt += 1
@@ -93,13 +124,14 @@ def build():
     names_en = {}
     for s in add:
         q = s["properties"]
-        aid = ids[q["osm"]]
-        typ, num = q["osm"].split("/")
+        aid = ids[q["ref"]]
+        num = q["osm"].split("/")[1] if q["osm"] else ""
         name = q["osm_name"] or q["site"]
         al = sorted({a for a in q["aliases"] + [q["site"]] if a != name})
         spell = sorted({ascii_fold(x) for x in [q.get("name_en") or ""] if ascii_fold(x)})
         feats.append({"type": "Feature", "geometry": s["geometry"], "properties": {
-            "id": aid, "osm_id": num, "name": name, "display_name": name, "category": category(q["osm_tags"]),
+            "id": aid, "osm_id": num, "name": name, "display_name": name, "category": category(q["osm_tags"], name), "source_category": None,
+            "category_basis": "OSM historic=castle" if q["osm_tags"].get("historic") == "castle" else "OSM tourism=museum" if q["osm_tags"].get("tourism") == "museum" else refine("attraction", q["osm_tags"], name)[1],
             "source": "DSIGHT_1.csv (site) · OpenStreetMap (location) · Wikidata (check)", "validation_status": "verified location",
             "osm_element": q["osm"], "wikidata": q["wikidata"], "aliases": al, "search_text": " ".join(al + spell),
             "dsight_ids": q["dsight_ids"], "location_evidence": q["location_evidence"], "point_is": q["point_is"]}})
@@ -112,8 +144,8 @@ def build():
     for s in audit["sites"]:
         if s.get("parent_id"):
             parent_of_site[s["key"]] = s["parent_id"]
-        elif s["status"] == "Verified" and s.get("osm") in ids:
-            parent_of_site[s["key"]] = ids[s["osm"]]
+        elif s["status"] == "Verified" and s.get("ref") in ids:
+            parent_of_site[s["key"]] = ids[s["ref"]]
     parents = collections.defaultdict(lambda: {"children": [], "dsight": []})
     child_of = {}
     for key, pid in parent_of_site.items():
@@ -197,7 +229,7 @@ def checklist(fc, rel):
         if s.get("parent_id"):
             final = f"already on the map as {s['parent_id']}; CSV records attached to it"
         elif s["status"] == "Verified":
-            final = f"added as {ids[s['osm']]} ({by_id[ids[s['osm']]]['category']})"
+            final = f"added as {ids[s['ref']]} ({by_id[ids[s['ref']]]['category']})"
         else:
             final = "not added: Unverified Location (kept in this list)"
         rows.append(["CSV site", " ".join(s["records"]), s["site"], " / ".join(s["aliases"]),
@@ -205,7 +237,7 @@ def checklist(fc, rel):
                      s["action"], f"{s['status']}: {s['reason']}", final])
     for x in audit["records"]:
         site = next((t for t in audit["sites"] if t["key"] == x.get("site_key")), None)
-        parent = (site.get("parent_id") or ids.get(site.get("osm"))) if site and (site.get("parent_id") or site["status"] == "Verified") else None
+        parent = (site.get("parent_id") or ids.get(site.get("ref"))) if site and (site.get("parent_id") or site["status"] == "Verified") else None
         rows.append(["CSV record", x["csv_id"], x["name"], x.get("alt_name") or "", x.get("site") or "", x["kind"], x.get("address") or "",
                      f"child of {parent} (no point of its own)" if parent else x["result"]])
     for d in dec["duplicates"]:

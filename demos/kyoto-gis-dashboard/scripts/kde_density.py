@@ -44,7 +44,7 @@ OUT = os.path.join(ROOT, "public", "data", "analysis")
 H = 2000.0
 CELL = 500.0
 EPSG = 6674
-CATS = ["attraction", "viewpoint", "museum", "castle"]
+CATS = ["attraction", "viewpoint", "museum", "castle", "temple", "shrine", "garden"]
 
 
 def main():

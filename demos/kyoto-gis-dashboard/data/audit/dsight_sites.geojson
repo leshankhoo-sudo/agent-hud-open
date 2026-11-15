@@ -15,6 +15,7 @@
     "aliases": [
      "北野天満宮"
     ],
+    "ref": "way/432120699",
     "osm": "way/432120699",
     "osm_name": "北野天満宮",
     "wikidata": "Q662176",
@@ -40,7 +41,7 @@
      "10000005",
      "10000006"
     ],
-    "location_evidence": "OSM way/432120699 and Wikidata Q662176 tagged on the OSM feature agree within 116 m; inside the address area 京都市 上京区"
+    "location_evidence": "OSM way/432120699 and Wikidata Q662176 tagged on the OSM feature agree within 116 m; the official address (GSI: 京都府京都市上京区馬喰町) is 369 m away"
    }
   },
   {
@@ -60,6 +61,7 @@
      "銀閣寺",
      "銀閣寺(慈照寺)"
     ],
+    "ref": "way/105817561",
     "osm": "way/105817561",
     "osm_name": "銀閣寺",
     "wikidata": "Q257473",
@@ -79,7 +81,7 @@
      "2000042",
      "2000043"
     ],
-    "location_evidence": "OSM way/105817561 and Wikidata Q257473 tagged on the OSM feature agree within 29 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM way/105817561 and Wikidata Q257473 tagged on the OSM feature agree within 29 m; the official address (GSI: 京都府京都市左京区銀閣寺町２番地) is 21 m away"
    }
   },
   {
@@ -96,6 +98,7 @@
     "aliases": [
      "清水寺"
     ],
+    "ref": "way/336641107",
     "osm": "way/336641107",
     "osm_name": "清水寺",
     "wikidata": "Q221716",
@@ -116,7 +119,41 @@
      "1000079",
      "10000008"
     ],
-    "location_evidence": "OSM way/336641107 and Wikidata Q221716 tagged on the OSM feature agree within 65 m; inside the address area 京都市 東山区"
+    "location_evidence": "OSM way/336641107 and Wikidata Q221716 tagged on the OSM feature agree within 65 m; the official address (GSI: 京都府京都市東山区清水一丁目２９４番地) is 202 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.6777774,
+     35.0604829
+    ]
+   },
+   "properties": {
+    "site": "高山寺",
+    "aliases": [
+     "高山寺"
+    ],
+    "ref": "way/358636058",
+    "osm": "way/358636058",
+    "osm_name": "高山寺",
+    "wikidata": "Q986750",
+    "name_en": "Kousanji Temple",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "historic": "heritage",
+     "religion": "buddhist",
+     "denomination": "shingon_shu"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "1000005"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 1000005 is at 右京区栂尾高山寺; way/358636058 (Q986750) is the Kōzan-ji at Toganoo; the other OSM 高山寺 is a different temple in 中京区; Wikidata Q986750 is 81 m from it"
    }
   },
   {
@@ -135,6 +172,7 @@
      "三十三間堂(蓮華王院)",
      "蓮華王院"
     ],
+    "ref": "way/31842037",
     "osm": "way/31842037",
     "osm_name": "三十三間堂",
     "wikidata": "Q653319",
@@ -171,6 +209,7 @@
      "東寺",
      "東寺(教王護国寺)"
     ],
+    "ref": "way/359896810",
     "osm": "way/359896810",
     "osm_name": "東寺",
     "wikidata": "Q1046403",
@@ -208,10 +247,12 @@
    "properties": {
     "site": "下鴨神社(賀茂御祖神社)東本殿",
     "aliases": [
+     "下鴨神社",
      "下鴨神社(賀茂御祖神社)東本殿",
      "下鴨神社東本殿",
      "賀茂御祖神社"
     ],
+    "ref": "way/98106488",
     "osm": "way/98106488",
     "osm_name": "下鴨神社",
     "wikidata": "Q701620",
@@ -225,9 +266,11 @@
     "point_is": "site centre (polygon centre)",
     "muni": "京都市 左京区",
     "dsight_ids": [
-     "1000010"
+     "1000010",
+     "2000066",
+     "2000067"
     ],
-    "location_evidence": "OSM way/98106488 and Wikidata Q701620 tagged on the OSM feature agree within 233 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM way/98106488 and Wikidata Q701620 tagged on the OSM feature agree within 233 m; the official address (GSI: 京都府京都市左京区下鴨泉川町５９番地) is 191 m away"
    }
   },
   {
@@ -244,6 +287,7 @@
     "aliases": [
      "常寂光寺"
     ],
+    "ref": "way/925807376",
     "osm": "way/925807376",
     "osm_name": "常寂光寺",
     "wikidata": "Q11060322",
@@ -278,6 +322,7 @@
      "千本釈迦堂(大報恩寺)",
      "大報恩寺"
     ],
+    "ref": "way/1062741378",
     "osm": "way/1062741378",
     "osm_name": "大報恩寺",
     "wikidata": "Q10934650",
@@ -298,7 +343,7 @@
      "1000112",
      "2000056"
     ],
-    "location_evidence": "OSM way/1062741378 and Wikidata Q10934650 tagged on the OSM feature agree within 24 m"
+    "location_evidence": "OSM way/1062741378 and Wikidata Q10934650 tagged on the OSM feature agree within 24 m; the official address (GSI: 京都府京都市上京区溝前町) is 30 m away"
    }
   },
   {
@@ -315,6 +360,7 @@
     "aliases": [
      "大徳寺"
     ],
+    "ref": "way/969457939",
     "osm": "way/969457939",
     "osm_name": "大徳寺",
     "wikidata": "Q901256",
@@ -333,7 +379,7 @@
      "1000082",
      "2000062"
     ],
-    "location_evidence": "OSM way/969457939 and Wikidata Q901256 tagged on the OSM feature agree within 122 m; inside the address area 京都市 北区"
+    "location_evidence": "OSM way/969457939 and Wikidata Q901256 tagged on the OSM feature agree within 122 m; the official address (GSI: 京都府京都市北区紫野大徳寺町) is 214 m away"
    }
   },
   {
@@ -350,6 +396,7 @@
     "aliases": [
      "大覚寺"
     ],
+    "ref": "way/1157357955",
     "osm": "way/1157357955",
     "osm_name": "大覚寺",
     "wikidata": "Q1157585",
@@ -384,6 +431,7 @@
     "aliases": [
      "知恩院"
     ],
+    "ref": "way/456122965",
     "osm": "way/456122965",
     "osm_name": "知恩院",
     "wikidata": "Q873645",
@@ -401,7 +449,7 @@
      "1000218",
      "2000068"
     ],
-    "location_evidence": "OSM way/456122965 and Wikidata Q873645 tagged on the OSM feature agree within 37 m; inside the address area 京都市 東山区"
+    "location_evidence": "OSM way/456122965 and Wikidata Q873645 tagged on the OSM feature agree within 37 m; the official address (GSI: 京都府京都市東山区林下町４００番地) is 370 m away"
    }
   },
   {
@@ -418,6 +466,7 @@
     "aliases": [
      "東福寺"
     ],
+    "ref": "way/768987591",
     "osm": "way/768987591",
     "osm_name": "東福寺",
     "wikidata": "Q2166743",
@@ -437,7 +486,7 @@
      "1000056",
      "1000087"
     ],
-    "location_evidence": "OSM way/768987591 and Wikidata Q2166743 tagged on the OSM feature agree within 218 m"
+    "location_evidence": "OSM way/768987591 and Wikidata Q2166743 tagged on the OSM feature agree within 218 m; the official address (GSI: 京都府京都市東山区本町十五丁目) is 207 m away"
    }
   },
   {
@@ -454,6 +503,7 @@
     "aliases": [
      "南禅寺"
     ],
+    "ref": "way/352013907",
     "osm": "way/352013907",
     "osm_name": "南禅寺",
     "wikidata": "Q1089767",
@@ -471,7 +521,7 @@
      "1000025",
      "2000073"
     ],
-    "location_evidence": "OSM way/352013907 and Wikidata Q1089767 tagged on the OSM feature agree within 147 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM way/352013907 and Wikidata Q1089767 tagged on the OSM feature agree within 147 m; the official address (GSI: 京都府京都市左京区南禅寺福地町) is 111 m away"
    }
   },
   {
@@ -488,6 +538,7 @@
     "aliases": [
      "二条城"
     ],
+    "ref": "way/57111281",
     "osm": "way/57111281",
     "osm_name": "二条城",
     "wikidata": "Q1013399",
@@ -525,6 +576,7 @@
     "aliases": [
      "仁和寺"
     ],
+    "ref": "way/98103060",
     "osm": "way/98103060",
     "osm_name": "仁和寺",
     "wikidata": "Q1202871",
@@ -552,9 +604,49 @@
      "1000186",
      "1000187",
      "1000188",
-     "1000189"
+     "1000189",
+     "2000011"
     ],
-    "location_evidence": "OSM way/98103060 and Wikidata Q1202871 tagged on the OSM feature agree within 151 m; inside the address area 京都市 右京区"
+    "location_evidence": "OSM way/98103060 and Wikidata Q1202871 tagged on the OSM feature agree within 151 m; the official address (GSI: 京都府京都市右京区御室大内３３番地) is 145 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7510539,
+     34.991585
+    ]
+   },
+   "properties": {
+    "site": "本願寺",
+    "aliases": [
+     "本願寺"
+    ],
+    "ref": "way/372460724",
+    "osm": "way/372460724",
+    "osm_name": "西本願寺",
+    "wikidata": "Q1146038",
+    "name_en": "Nishi-Hongan-ji",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "historic": "heritage",
+     "religion": "buddhist",
+     "denomination": "jodo_shinshu"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 下京区",
+    "dsight_ids": [
+     "1000031",
+     "1000032",
+     "1000059",
+     "1000060",
+     "1000095",
+     "2000074"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 1000031/1000032/1000059/1000060/1000095 are 西本願寺にある, and 2000074 gives 堀川花屋町下る; way/372460724 is 西本願寺 (Q1146038) at Horikawa-Hanayacho; Wikidata Q1146038 is 72 m from it"
    }
   },
   {
@@ -571,6 +663,7 @@
     "aliases": [
      "妙心寺"
     ],
+    "ref": "way/558026803",
     "osm": "way/558026803",
     "osm_name": "妙心寺",
     "wikidata": "Q376288",
@@ -591,7 +684,7 @@
      "1000107",
      "1000211"
     ],
-    "location_evidence": "OSM way/558026803 and Wikidata Q376288 tagged on the OSM feature agree within 29 m; inside the address area 京都市 右京区"
+    "location_evidence": "OSM way/558026803 and Wikidata Q376288 tagged on the OSM feature agree within 29 m; the official address (GSI: 京都府京都市右京区花園妙心寺町１番地) is 69 m away"
    }
   },
   {
@@ -608,6 +701,7 @@
     "aliases": [
      "八坂神社"
     ],
+    "ref": "way/328903218",
     "osm": "way/328903218",
     "osm_name": "八坂神社",
     "wikidata": "Q692714",
@@ -640,6 +734,7 @@
     "aliases": [
      "建仁寺"
     ],
+    "ref": "way/760889100",
     "osm": "way/760889100",
     "osm_name": "建仁寺",
     "wikidata": "Q1440954",
@@ -672,6 +767,7 @@
     "aliases": [
      "高台寺"
     ],
+    "ref": "way/759391880",
     "osm": "way/759391880",
     "osm_name": "高台寺",
     "wikidata": "Q2702064",
@@ -703,12 +799,13 @@
     ]
    },
    "properties": {
-    "site": "賀茂別雷神社(上賀茂神社)",
+    "site": "上賀茂神社",
     "aliases": [
      "上賀茂神社",
      "賀茂別雷神社",
      "賀茂別雷神社(上賀茂神社)"
     ],
+    "ref": "way/98106482",
     "osm": "way/98106482",
     "osm_name": "上賀茂神社",
     "wikidata": "Q700448",
@@ -726,9 +823,11 @@
      "1000066",
      "1000092",
      "2000012",
-     "2000013"
+     "2000013",
+     "2000014",
+     "2000015"
     ],
-    "location_evidence": "OSM way/98106482 and Wikidata Q700448 tagged on the OSM feature agree within 26 m"
+    "location_evidence": "OSM way/98106482 and Wikidata Q700448 tagged on the OSM feature agree within 26 m; the official address (GSI: 京都府京都市北区上賀茂本山) is 571 m away"
    }
   },
   {
@@ -745,6 +844,7 @@
     "aliases": [
      "神護寺"
     ],
+    "ref": "way/407730160",
     "osm": "way/407730160",
     "osm_name": "神護寺",
     "wikidata": "Q1075034",
@@ -781,6 +881,7 @@
     "aliases": [
      "泉涌寺"
     ],
+    "ref": "way/878535619",
     "osm": "way/878535619",
     "osm_name": "泉涌寺",
     "wikidata": "Q1060966",
@@ -813,6 +914,7 @@
     "aliases": [
      "即成院"
     ],
+    "ref": "node/2656063040",
     "osm": "node/2656063040",
     "osm_name": "即成院",
     "wikidata": "Q11409172",
@@ -835,6 +937,79 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     135.8295929,
+     34.9486638
+    ]
+   },
+   "properties": {
+    "site": "醍醐寺",
+    "aliases": [
+     "醍醐寺"
+    ],
+    "ref": "relation/5897672",
+    "osm": "relation/5897672",
+    "osm_name": "醍醐寺",
+    "wikidata": "Q1157535",
+    "name_en": "Daigoji Temple",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "historic": "heritage",
+     "religion": "buddhist",
+     "denomination": "shingon_shu"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 伏見区",
+    "dsight_ids": [
+     "1000053",
+     "1000054",
+     "1000085",
+     "1000122"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says these are Daigo-ji's 五重塔, 金堂, 上醍醐 薬師堂 and 清瀧宮; relation/5897672 (Q1157535) is the Daigo-ji precinct in 伏見区; the other OSM places named 醍醐寺 are other temples (福知山市 and elsewhere); Wikidata Q1157535 is 965 m from it"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.8195149,
+     34.9522209
+    ]
+   },
+   "properties": {
+    "site": "醍醐寺三宝院",
+    "aliases": [
+     "三宝院",
+     "醍醐寺三宝院"
+    ],
+    "ref": "way/400537118",
+    "osm": "way/400537118",
+    "osm_name": "三宝院",
+    "wikidata": "Q3471686",
+    "name_en": "Sanboin",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 伏見区",
+    "dsight_ids": [
+     "1000055",
+     "1000123",
+     "1000124",
+     "2000041"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says these are buildings of 三宝院, the 門跡 temple of Daigo-ji; way/400537118 三宝院 (Q3471686) lies in the Daigo-ji precinct; Wikidata Q3471686 is 9 m from it"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      135.7723519,
      34.9913418
     ]
@@ -844,6 +1019,7 @@
     "aliases": [
      "豊国神社"
     ],
+    "ref": "way/31844031",
     "osm": "way/31844031",
     "osm_name": "豊国神社",
     "wikidata": "Q709822",
@@ -877,6 +1053,7 @@
     "aliases": [
      "法金剛院"
     ],
+    "ref": "node/1166397167",
     "osm": "node/1166397167",
     "osm_name": "法金剛院",
     "wikidata": "Q11143738",
@@ -891,10 +1068,11 @@
     "dsight_ids": [
      "1000062",
      "1000098",
+     "1000172",
      "1000206",
      "1000207"
     ],
-    "location_evidence": "OSM node/1166397167 and Wikidata Q11143738 with the same Japanese label agree within 8 m; inside the address area 京都市 右京区"
+    "location_evidence": "OSM node/1166397167 and Wikidata Q11143738 with the same Japanese label agree within 8 m; the official address (GSI: 京都府京都市右京区花園扇野町４９番地) is 72 m away"
    }
   },
   {
@@ -911,6 +1089,7 @@
     "aliases": [
      "松尾大社"
     ],
+    "ref": "node/1741489390",
     "osm": "node/1741489390",
     "osm_name": "松尾大社",
     "wikidata": "Q710302",
@@ -944,6 +1123,7 @@
     "aliases": [
      "安楽寿院"
     ],
+    "ref": "way/1204820851",
     "osm": "way/1204820851",
     "osm_name": "案樂壽院",
     "wikidata": "Q2852420",
@@ -958,7 +1138,41 @@
     "dsight_ids": [
      "1000064"
     ],
-    "location_evidence": "OSM way/1204820851 and Wikidata Q2852420 tagged on the OSM feature agree within 16 m; inside the address area 京都市 伏見区"
+    "location_evidence": "OSM way/1204820851 and Wikidata Q2852420 tagged on the OSM feature agree within 16 m; the official address (GSI: 京都府京都市伏見区竹田中内畑町７４番地) is 60 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.6612389,
+     35.0310873
+    ]
+   },
+   "properties": {
+    "site": "愛宕念仏寺",
+    "aliases": [
+     "愛宕念仏寺"
+    ],
+    "ref": "way/1230442951",
+    "osm": "way/1230442951",
+    "osm_name": "愛宕念仏寺",
+    "wikidata": "Q3080421",
+    "name_en": "Otagi Nenbutsu Temple",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "tendai"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "1000065",
+     "1000168"
+    ],
+    "location_evidence": "OSM way/1230442951 and Wikidata Q3080421 tagged on the OSM feature agree within 34 m"
    }
   },
   {
@@ -975,6 +1189,7 @@
     "aliases": [
      "京都国立博物館"
     ],
+    "ref": "way/31843043",
     "osm": "way/31843043",
     "osm_name": "京都国立博物館",
     "wikidata": "Q147286",
@@ -987,7 +1202,8 @@
     "muni": "京都市 東山区",
     "dsight_ids": [
      "1000068",
-     "1000069"
+     "1000069",
+     "1000169"
     ],
     "location_evidence": "OSM way/31843043 and Wikidata Q147286 tagged on the OSM feature agree within 20 m"
    }
@@ -1006,6 +1222,7 @@
     "aliases": [
      "圓徳院"
     ],
+    "ref": "way/371728884",
     "osm": "way/371728884",
     "osm_name": "圓徳院",
     "wikidata": "Q11422904",
@@ -1028,6 +1245,41 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     135.7905,
+     35.0103662
+    ]
+   },
+   "properties": {
+    "site": "金地院",
+    "aliases": [
+     "金地院"
+    ],
+    "ref": "way/1144260113",
+    "osm": "way/1144260113",
+    "osm_name": "金地院",
+    "wikidata": "Q11646614",
+    "name_en": "Konchi Temple",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "rinzai"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 左京区",
+    "dsight_ids": [
+     "1000072",
+     "2000036",
+     "2000037"
+    ],
+    "location_evidence": "OSM way/1144260113 and the official address placed by the GSI address search (京都府京都市左京区南禅寺福地町) agree within 143 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      135.7064269,
      35.014758
     ]
@@ -1037,6 +1289,7 @@
     "aliases": [
      "広隆寺"
     ],
+    "ref": "way/407472704",
     "osm": "way/407472704",
     "osm_name": "広隆寺",
     "wikidata": "Q3076920",
@@ -1069,6 +1322,7 @@
     "aliases": [
      "三千院"
     ],
+    "ref": "way/759390999",
     "osm": "way/759390999",
     "osm_name": "三千院",
     "wikidata": "Q1072538",
@@ -1084,7 +1338,7 @@
     "dsight_ids": [
      "1000074"
     ],
-    "location_evidence": "OSM way/759390999 and Wikidata Q1072538 tagged on the OSM feature agree within 59 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM way/759390999 and Wikidata Q1072538 tagged on the OSM feature agree within 59 m; the official address (GSI: 京都府京都市左京区大原来迎院町５４０番地) is 574 m away"
    }
   },
   {
@@ -1103,6 +1357,7 @@
      "真如堂(真正極楽寺)",
      "真正極楽寺"
     ],
+    "ref": "way/601342721",
     "osm": "way/601342721",
     "osm_name": "真正極楽寺",
     "wikidata": "Q1089231",
@@ -1126,7 +1381,7 @@
      "2000052",
      "2000053"
     ],
-    "location_evidence": "OSM way/601342721 and Wikidata Q1089231 tagged on the OSM feature agree within 121 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM way/601342721 and Wikidata Q1089231 tagged on the OSM feature agree within 121 m; the official address (GSI: 京都府京都市左京区浄土寺真如町８２番地) is 19 m away"
    }
   },
   {
@@ -1143,6 +1398,7 @@
     "aliases": [
      "清凉寺"
     ],
+    "ref": "way/702180554",
     "osm": "way/702180554",
     "osm_name": "清凉寺",
     "wikidata": "Q534101",
@@ -1183,6 +1439,7 @@
     "aliases": [
      "鞍馬寺"
     ],
+    "ref": "way/1243730752",
     "osm": "way/1243730752",
     "osm_name": "鞍馬寺",
     "wikidata": "Q608668",
@@ -1206,6 +1463,39 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     135.7195702,
+     35.0255299
+    ]
+   },
+   "properties": {
+    "site": "天球院",
+    "aliases": [
+     "天球院"
+    ],
+    "ref": "way/1073346918",
+    "osm": "way/1073346918",
+    "osm_name": "天球院",
+    "wikidata": null,
+    "name_en": "Tenkyuin temple",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "zen"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "1000086"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 1000086 is in 妙心寺塔頭の天球院; way/1073346918 天球院 lies inside the verified 妙心寺 precinct"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      135.6683431,
      35.0215564
     ]
@@ -1217,6 +1507,7 @@
      "二尊院(本尊二尊)",
      "本尊二尊"
     ],
+    "ref": "way/961234250",
     "osm": "way/961234250",
     "osm_name": "二尊院",
     "wikidata": "Q3096514",
@@ -1248,6 +1539,7 @@
     "aliases": [
      "妙法院"
     ],
+    "ref": "way/31845858",
     "osm": "way/31845858",
     "osm_name": "妙法院門跡",
     "wikidata": "Q10943054",
@@ -1281,6 +1573,7 @@
     "aliases": [
      "平安神宮"
     ],
+    "ref": "way/619903245",
     "osm": "way/619903245",
     "osm_name": "平安神宮",
     "wikidata": "Q385141",
@@ -1305,6 +1598,108 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     135.8148884,
+     34.9341695
+    ]
+   },
+   "properties": {
+    "site": "法界寺",
+    "aliases": [
+     "法界寺"
+    ],
+    "ref": "node/5175641302",
+    "osm": "node/5175641302",
+    "osm_name": "法界寺",
+    "wikidata": "Q11555272",
+    "name_en": "Hōkai-ji Temple",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 伏見区",
+    "dsight_ids": [
+     "1000100",
+     "1000130"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 1000100 is 法界寺's national-treasure 阿弥陀堂; node/5175641302 (Q11555272) is 法界寺 at Hino, 伏見区, the temple of that hall; Wikidata Q11555272 is 3 m from it"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.8027724,
+     35.0490333
+    ]
+   },
+   "properties": {
+    "site": "曼殊院",
+    "aliases": [
+     "曼殊院"
+    ],
+    "ref": "relation/15519150",
+    "osm": "relation/15519150",
+    "osm_name": "曼殊院",
+    "wikidata": "Q3076940",
+    "name_en": "Manshu-in",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "tiantai"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 左京区",
+    "dsight_ids": [
+     "1000102",
+     "1000129",
+     "1000136",
+     "1000209",
+     "1000210"
+    ],
+    "location_evidence": "OSM relation/15519150 and Wikidata Q3076940 tagged on the OSM feature agree within 35 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7731487,
+     34.9879493
+    ]
+   },
+   "properties": {
+    "site": "養源院",
+    "aliases": [
+     "養源院"
+    ],
+    "ref": "node/1422972915",
+    "osm": "node/1422972915",
+    "osm_name": "養源院",
+    "wikidata": "Q11666843",
+    "name_en": "Yogen-in",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 東山区",
+    "dsight_ids": [
+     "1000108"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 1000108 holds 俵屋宗達's paintings; node/1422972915 (Q11666843) is the 養源院 near Sanjūsangen-dō, 東山区, which holds them; Wikidata Q11666843 is 46 m from it"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      135.7754064,
      34.998384
     ]
@@ -1314,6 +1709,7 @@
     "aliases": [
      "六道珍皇寺"
     ],
+    "ref": "node/1522769902",
     "osm": "node/1522769902",
     "osm_name": "六道珍皇寺",
     "wikidata": "Q1391664",
@@ -1345,6 +1741,7 @@
     "aliases": [
      "春光院"
     ],
+    "ref": "way/1075712782",
     "osm": "way/1075712782",
     "osm_name": "春光院",
     "wikidata": "Q669494",
@@ -1368,6 +1765,40 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     135.7501722,
+     35.0345245
+    ]
+   },
+   "properties": {
+    "site": "妙蓮寺",
+    "aliases": [
+     "妙蓮寺"
+    ],
+    "ref": "way/736961793",
+    "osm": "way/736961793",
+    "osm_name": "妙蓮寺",
+    "wikidata": "Q11447007",
+    "name_en": "myorenji",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "nichiren"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 上京区",
+    "dsight_ids": [
+     "1000133",
+     "2000084"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 2000084 gives 寺之内大宮東妙蓮寺前町875; way/736961793 (Q11447007) is 妙蓮寺 in that town, 上京区; Wikidata Q11447007 is 22 m from it"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      135.7768287,
      34.9879368
     ]
@@ -1377,6 +1808,7 @@
     "aliases": [
      "智積院"
     ],
+    "ref": "way/31845891",
     "osm": "way/31845891",
     "osm_name": "智積院",
     "wikidata": "Q11090279",
@@ -1400,6 +1832,44 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     135.821961,
+     34.9914407
+    ]
+   },
+   "properties": {
+    "site": "徳林庵",
+    "aliases": [
+     "徳林庵"
+    ],
+    "ref": "way/183367005",
+    "osm": "way/183367005",
+    "osm_name": "徳林庵 (六角堂・山科地蔵)",
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "臨済宗南禅寺派",
+     "building": "yes"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 山科区",
+    "dsight_ids": [
+     "1000137",
+     "1000138",
+     "1000139",
+     "1000140",
+     "1000141"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says these are the 山科地蔵 / 四ノ宮地蔵 of 徳林庵; way/183367005 is named 徳林庵 (六角堂・山科地蔵) at Shinomiya, 山科区"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      135.6747987,
      35.0572308
     ]
@@ -1409,6 +1879,7 @@
     "aliases": [
      "西明寺"
     ],
+    "ref": "node/4355966389",
     "osm": "node/4355966389",
     "osm_name": "西明寺",
     "wikidata": "Q11628431",
@@ -1445,6 +1916,7 @@
     "aliases": [
      "金光寺"
     ],
+    "ref": "node/12150374515",
     "osm": "node/12150374515",
     "osm_name": "金光寺",
     "wikidata": "Q11646439",
@@ -1459,7 +1931,104 @@
     "dsight_ids": [
      "1000170"
     ],
-    "location_evidence": "OSM node/12150374515 and Wikidata Q11646439 tagged on the OSM feature agree within 36 m; inside the address area 京都市 下京区"
+    "location_evidence": "OSM node/12150374515 and Wikidata Q11646439 tagged on the OSM feature agree within 36 m; the official address (GSI: 京都府京都市下京区本塩竈町５８６番地) is 36 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.753149,
+     35.0302768
+    ]
+   },
+   "properties": {
+    "site": "白峯神宮",
+    "aliases": [
+     "白峯神宮"
+    ],
+    "ref": "node/1058638384",
+    "osm": "node/1058638384",
+    "osm_name": "白峯神宮",
+    "wikidata": "Q705635",
+    "name_en": "Shiramine Jingu",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "shinto"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 上京区",
+    "dsight_ids": [
+     "1000149",
+     "2000047"
+    ],
+    "location_evidence": "OSM node/1058638384 and Wikidata Q705635 tagged on the OSM feature agree within 14 m; the official address (GSI: 京都府京都市上京区飛鳥井町) is 48 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7747784,
+     35.0632921
+    ]
+   },
+   "properties": {
+    "site": "愛染院",
+    "aliases": [
+     "愛染院"
+    ],
+    "ref": "node/2078412962",
+    "osm": "node/2078412962",
+    "osm_name": "愛染院",
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "shinto"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 左京区",
+    "dsight_ids": [
+     "1000150"
+    ],
+    "location_evidence": "OSM node/2078412962 and the official address placed by the GSI address search (京都府京都市左京区岩倉幡枝町) agree within 407 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7673307,
+     35.0057829
+    ]
+   },
+   "properties": {
+    "site": "安養寺",
+    "aliases": [
+     "安養寺"
+    ],
+    "ref": "node/5204146112",
+    "osm": "node/5204146112",
+    "osm_name": "安養寺(傾蓮華寺)",
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 中京区",
+    "dsight_ids": [
+     "1000151"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 1000151 is the 倒蓮華寺 at 新京極通蛸薬師東南角東側町511, 中京区; node/5204146112 is named 安養寺(傾蓮華寺) at that corner"
    }
   },
   {
@@ -1476,6 +2045,7 @@
     "aliases": [
      "雨宝院"
     ],
+    "ref": "way/310643755",
     "osm": "way/310643755",
     "osm_name": "雨宝院",
     "wikidata": "Q57338123",
@@ -1490,7 +2060,7 @@
     "dsight_ids": [
      "1000152"
     ],
-    "location_evidence": "OSM way/310643755 and Wikidata Q57338123 tagged on the OSM feature agree within 18 m; inside the address area 京都市 上京区"
+    "location_evidence": "OSM way/310643755 and Wikidata Q57338123 tagged on the OSM feature agree within 18 m; the official address (GSI: 京都府京都市上京区聖天町９番地) is 19 m away"
    }
   },
   {
@@ -1507,6 +2077,7 @@
     "aliases": [
      "西芳寺"
     ],
+    "ref": "way/218470281",
     "osm": "way/218470281",
     "osm_name": "西芳寺",
     "wikidata": "Q1516753",
@@ -1523,7 +2094,39 @@
     "dsight_ids": [
      "1000155"
     ],
-    "location_evidence": "OSM way/218470281 and Wikidata Q1516753 tagged on the OSM feature agree within 55 m; inside the address area 京都市 西京区"
+    "location_evidence": "OSM way/218470281 and Wikidata Q1516753 tagged on the OSM feature agree within 55 m; the official address (GSI: 京都府京都市西京区松尾神ケ谷町５６番地) is 93 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7772013,
+     35.0130537
+    ]
+   },
+   "properties": {
+    "site": "三福寺",
+    "aliases": [
+     "三福寺"
+    ],
+    "ref": "node/10697670109",
+    "osm": "node/10697670109",
+    "osm_name": "三福寺",
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 左京区",
+    "dsight_ids": [
+     "1000156"
+    ],
+    "location_evidence": "OSM node/10697670109 and the official address placed by the GSI address search (京都府京都市左京区正往寺町４６３番地) agree within 24 m"
    }
   },
   {
@@ -1540,6 +2143,7 @@
     "aliases": [
      "相国寺"
     ],
+    "ref": "way/619901458",
     "osm": "way/619901458",
     "osm_name": "相国寺",
     "wikidata": "Q1786709",
@@ -1559,7 +2163,131 @@
      "1000162",
      "1000163"
     ],
-    "location_evidence": "OSM way/619901458 and Wikidata Q1786709 tagged on the OSM feature agree within 68 m; inside the address area 京都市 上京区"
+    "location_evidence": "OSM way/619901458 and Wikidata Q1786709 tagged on the OSM feature agree within 68 m; the official address (GSI: 京都府京都市上京区相国寺門前町７０１番地) is 147 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.744639,
+     35.001778
+    ]
+   },
+   "properties": {
+    "site": "新徳寺",
+    "aliases": [
+     "新徳寺"
+    ],
+    "ref": "wikidata/Q11502277",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": "Q11502277",
+    "name_en": "Shintoku-ji Temple",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {},
+    "point_is": "Wikidata coordinates",
+    "muni": "京都市 中京区",
+    "dsight_ids": [
+     "1000164"
+    ],
+    "location_evidence": "Wikidata Q11502277 (新徳寺) and the official address placed by the GSI address search (京都府京都市中京区壬生賀陽御所町４８番地) agree within 30 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.748016,
+     35.00703
+    ]
+   },
+   "properties": {
+    "site": "善想寺",
+    "aliases": [
+     "善想寺"
+    ],
+    "ref": "dsight/1000165",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {},
+    "point_is": "official address (GSI address search, block level)",
+    "muni": "京都市 中京区",
+    "dsight_ids": [
+     "1000165",
+     "1000166"
+    ],
+    "location_evidence": "not in OSM or Wikidata; placed at its official Kyoto City address, which the GSI address search finds at block level (京都府京都市中京区三条大宮町２４０番地)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.8006663,
+     35.0656428
+    ]
+   },
+   "properties": {
+    "site": "崇道神社",
+    "aliases": [
+     "崇道神社"
+    ],
+    "ref": "node/4142095611",
+    "osm": "node/4142095611",
+    "osm_name": "崇道神社",
+    "wikidata": "Q11477104",
+    "name_en": "Sudō Shrine",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "shinto"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 左京区",
+    "dsight_ids": [
+     "1000171"
+    ],
+    "location_evidence": "OSM node/4142095611 and Wikidata Q11477104 tagged on the OSM feature agree within 4 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7684081,
+     35.025339
+    ]
+   },
+   "properties": {
+    "site": "清浄華院",
+    "aliases": [
+     "清浄華院"
+    ],
+    "ref": "way/638459818",
+    "osm": "way/638459818",
+    "osm_name": "清浄華院",
+    "wikidata": "Q11561286",
+    "name_en": "Shōjōke-in Temple",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 上京区",
+    "dsight_ids": [
+     "1000173",
+     "1000174"
+    ],
+    "location_evidence": "OSM way/638459818 and Wikidata Q11561286 tagged on the OSM feature agree within 19 m"
    }
   },
   {
@@ -1576,6 +2304,7 @@
     "aliases": [
      "狸谷山不動院"
     ],
+    "ref": "node/13375867830",
     "osm": "node/13375867830",
     "osm_name": "狸谷山不動院",
     "wikidata": "Q22119355",
@@ -1591,7 +2320,7 @@
     "dsight_ids": [
      "1000180"
     ],
-    "location_evidence": "OSM node/13375867830 and Wikidata Q22119355 tagged on the OSM feature agree within 35 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM node/13375867830 and Wikidata Q22119355 tagged on the OSM feature agree within 35 m; the official address (GSI: 京都府京都市左京区一乗寺松原町６番地) is 142 m away"
    }
   },
   {
@@ -1608,6 +2337,7 @@
     "aliases": [
      "長講堂"
     ],
+    "ref": "node/12150374513",
     "osm": "node/12150374513",
     "osm_name": "長講堂",
     "wikidata": "Q11653663",
@@ -1622,7 +2352,7 @@
     "dsight_ids": [
      "1000181"
     ],
-    "location_evidence": "OSM node/12150374513 and Wikidata Q11653663 tagged on the OSM feature agree within 15 m; inside the address area 京都市 下京区"
+    "location_evidence": "OSM node/12150374513 and Wikidata Q11653663 tagged on the OSM feature agree within 15 m; the official address (GSI: 京都府京都市下京区本塩竈町５２８番地) is 20 m away"
    }
   },
   {
@@ -1639,6 +2369,7 @@
     "aliases": [
      "天授庵"
     ],
+    "ref": "way/1226598255",
     "osm": "way/1226598255",
     "osm_name": "天授庵",
     "wikidata": "Q11442642",
@@ -1654,7 +2385,7 @@
     "dsight_ids": [
      "1000182"
     ],
-    "location_evidence": "OSM way/1226598255 and Wikidata Q11442642 tagged on the OSM feature agree within 19 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM way/1226598255 and Wikidata Q11442642 tagged on the OSM feature agree within 19 m; the official address (GSI: 京都府京都市左京区南禅寺福地町) is 48 m away"
    }
   },
   {
@@ -1671,6 +2402,7 @@
     "aliases": [
      "平等寺"
     ],
+    "ref": "node/810650911",
     "osm": "node/810650911",
     "osm_name": "平等寺",
     "wikidata": "Q11483471",
@@ -1687,7 +2419,7 @@
      "1000192",
      "1000193"
     ],
-    "location_evidence": "OSM node/810650911 and Wikidata Q11483471 tagged on the OSM feature agree within 2 m; inside the address area 京都市 下京区"
+    "location_evidence": "OSM node/810650911 and Wikidata Q11483471 tagged on the OSM feature agree within 2 m; the official address (GSI: 京都府京都市下京区因幡堂町７２８番地) is 26 m away"
    }
   },
   {
@@ -1704,6 +2436,7 @@
     "aliases": [
      "藤森神社"
     ],
+    "ref": "way/368465614",
     "osm": "way/368465614",
     "osm_name": "藤森神社",
     "wikidata": "Q11624431",
@@ -1718,7 +2451,7 @@
     "dsight_ids": [
      "1000194"
     ],
-    "location_evidence": "OSM way/368465614 and Wikidata Q11624431 tagged on the OSM feature agree within 114 m; inside the address area 京都市 伏見区"
+    "location_evidence": "OSM way/368465614 and Wikidata Q11624431 tagged on the OSM feature agree within 114 m; the official address (GSI: 京都府京都市伏見区深草鳥居崎町６０９番地) is 37 m away"
    }
   },
   {
@@ -1735,6 +2468,7 @@
     "aliases": [
      "峰定寺"
     ],
+    "ref": "node/10760299627",
     "osm": "node/10760299627",
     "osm_name": "峰定寺",
     "wikidata": "Q11476122",
@@ -1753,7 +2487,7 @@
      "1000198",
      "1000199"
     ],
-    "location_evidence": "OSM node/10760299627 and Wikidata Q11476122 tagged on the OSM feature agree within 3 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM node/10760299627 and Wikidata Q11476122 tagged on the OSM feature agree within 3 m; the official address (GSI: 京都府京都市左京区花脊原地町) is 187 m away"
    }
   },
   {
@@ -1770,6 +2504,7 @@
     "aliases": [
      "補陀洛寺"
     ],
+    "ref": "node/12797505688",
     "osm": "node/12797505688",
     "osm_name": "補陀洛寺",
     "wikidata": "Q124482750",
@@ -1786,7 +2521,7 @@
      "1000200",
      "1000201"
     ],
-    "location_evidence": "OSM node/12797505688 and Wikidata Q124482750 tagged on the OSM feature agree within 35 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM node/12797505688 and Wikidata Q124482750 tagged on the OSM feature agree within 35 m; the official address (GSI: 京都府京都市左京区静市市原町１１４０番地) is 149 m away"
    }
   },
   {
@@ -1803,6 +2538,7 @@
     "aliases": [
      "佛光寺"
     ],
+    "ref": "way/344429497",
     "osm": "way/344429497",
     "osm_name": "佛光寺",
     "wikidata": "Q2413893",
@@ -1818,7 +2554,71 @@
     "dsight_ids": [
      "1000202"
     ],
-    "location_evidence": "OSM way/344429497 and Wikidata Q2413893 tagged on the OSM feature agree within 17 m; inside the address area 京都市 下京区"
+    "location_evidence": "OSM way/344429497 and Wikidata Q2413893 tagged on the OSM feature agree within 17 m; the official address (GSI: 京都府京都市下京区新開町３９７番地) is 108 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.765854,
+     34.998837
+    ]
+   },
+   "properties": {
+    "site": "南岩倉明王院不動寺",
+    "aliases": [
+     "南岩倉明王院不動寺"
+    ],
+    "ref": "dsight/1000203",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {},
+    "point_is": "official address (GSI address search, block level)",
+    "muni": "京都市 下京区",
+    "dsight_ids": [
+     "1000203"
+    ],
+    "location_evidence": "not in OSM or Wikidata; placed at its official Kyoto City address, which the GSI address search finds at block level (京都府京都市下京区石不動之町６７５番地)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7629968,
+     35.1218145
+    ]
+   },
+   "properties": {
+    "site": "貴船神社",
+    "aliases": [
+     "貴船神社"
+    ],
+    "ref": "way/343853160",
+    "osm": "way/343853160",
+    "osm_name": "貴船神社",
+    "wikidata": "Q276779",
+    "name_en": "Kifune Shrine",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "shinto"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 左京区",
+    "dsight_ids": [
+     "2000027",
+     "2000023",
+     "2000024",
+     "2000025"
+    ],
+    "location_evidence": "OSM way/343853160 and Wikidata Q276779 tagged on the OSM feature agree within 9 m; the official address (GSI: 京都府京都市左京区鞍馬貴船町１８０番地) is 116 m away"
    }
   },
   {
@@ -1835,6 +2635,7 @@
     "aliases": [
      "桂春院"
     ],
+    "ref": "way/1075792952",
     "osm": "way/1075792952",
     "osm_name": "桂春院",
     "wikidata": "Q11536768",
@@ -1850,7 +2651,7 @@
     "dsight_ids": [
      "2000028"
     ],
-    "location_evidence": "OSM way/1075792952 and Wikidata Q11536768 tagged on the OSM feature agree within 10 m"
+    "location_evidence": "OSM way/1075792952 and Wikidata Q11536768 tagged on the OSM feature agree within 10 m; the official address (GSI: 京都府京都市右京区花園妙心寺町) is 220 m away"
    }
   },
   {
@@ -1867,6 +2668,7 @@
     "aliases": [
      "遍照寺"
     ],
+    "ref": "node/11232463268",
     "osm": "node/11232463268",
     "osm_name": "遍照寺",
     "wikidata": "Q11640503",
@@ -1881,7 +2683,7 @@
     "dsight_ids": [
      "1000204"
     ],
-    "location_evidence": "OSM node/11232463268 and Wikidata Q11640503 tagged on the OSM feature agree within 14 m; inside the address area 京都市 右京区"
+    "location_evidence": "OSM node/11232463268 and Wikidata Q11640503 tagged on the OSM feature agree within 14 m; the official address (GSI: 京都府京都市右京区嵯峨広沢西裏町１４番地) is 104 m away"
    }
   },
   {
@@ -1898,6 +2700,7 @@
     "aliases": [
      "法観寺"
     ],
+    "ref": "way/371717423",
     "osm": "way/371717423",
     "osm_name": "法観寺",
     "wikidata": "Q11555353",
@@ -1913,7 +2716,7 @@
     "dsight_ids": [
      "1000205"
     ],
-    "location_evidence": "OSM way/371717423 and Wikidata Q11555353 tagged on the OSM feature agree within 10 m; inside the address area 京都市 東山区"
+    "location_evidence": "OSM way/371717423 and Wikidata Q11555353 tagged on the OSM feature agree within 10 m"
    }
   },
   {
@@ -1931,6 +2734,7 @@
      "法輪寺",
      "法輪寺<西京区>"
     ],
+    "ref": "node/4693597064",
     "osm": "node/4693597064",
     "osm_name": "法輪寺",
     "wikidata": "Q3146371",
@@ -1947,7 +2751,73 @@
      "10000014",
      "10000015"
     ],
-    "location_evidence": "OSM node/4693597064 and Wikidata Q3146371 tagged on the OSM feature agree within 34 m; inside the address area 京都市 西京区"
+    "location_evidence": "OSM node/4693597064 and Wikidata Q3146371 tagged on the OSM feature agree within 34 m; the official address (GSI: 京都府京都市西京区嵐山虚空蔵山町) is 75 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7672571,
+     35.0089073
+    ]
+   },
+   "properties": {
+    "site": "矢田寺",
+    "aliases": [
+     "矢田寺"
+    ],
+    "ref": "node/12768059805",
+    "osm": "node/12768059805",
+    "osm_name": "矢田寺",
+    "wikidata": "Q65275830",
+    "name_en": "Yata-dera Temple",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 中京区",
+    "dsight_ids": [
+     "1000212"
+    ],
+    "location_evidence": "OSM node/12768059805 and Wikidata Q65275830 tagged on the OSM feature agree within 5 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7638616,
+     34.9942431
+    ]
+   },
+   "properties": {
+    "site": "蓮光寺",
+    "aliases": [
+     "蓮光寺"
+    ],
+    "ref": "node/4450008991",
+    "osm": "node/4450008991",
+    "osm_name": "蓮光寺",
+    "wikidata": null,
+    "name_en": "Renkoji Temple",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "jodo_shu"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 下京区",
+    "dsight_ids": [
+     "1000213",
+     "1000214"
+    ],
+    "location_evidence": "OSM node/4450008991 and the official address placed by the GSI address search (京都府京都市下京区本塩竈町５３４番地) agree within 24 m"
    }
   },
   {
@@ -1964,6 +2834,7 @@
     "aliases": [
      "廬山寺"
     ],
+    "ref": "way/1329256624",
     "osm": "way/1329256624",
     "osm_name": "廬山寺",
     "wikidata": "Q11064894",
@@ -1980,7 +2851,7 @@
      "1000216",
      "1000217"
     ],
-    "location_evidence": "OSM way/1329256624 and Wikidata Q11064894 tagged on the OSM feature agree within 15 m; inside the address area 京都市 上京区"
+    "location_evidence": "OSM way/1329256624 and Wikidata Q11064894 tagged on the OSM feature agree within 15 m; the official address (GSI: 京都府京都市上京区北之辺町３９７番地) is 97 m away"
    }
   },
   {
@@ -1997,6 +2868,7 @@
     "aliases": [
      "一言寺"
     ],
+    "ref": "node/13033298688",
     "osm": "node/13033298688",
     "osm_name": "一言寺",
     "wikidata": "Q11353186",
@@ -2010,7 +2882,102 @@
     "dsight_ids": [
      "2000002"
     ],
-    "location_evidence": "OSM node/13033298688 and Wikidata Q11353186 with the same Japanese label agree within 26 m"
+    "location_evidence": "OSM node/13033298688 and Wikidata Q11353186 with the same Japanese label agree within 26 m; the official address (GSI: 京都府京都市伏見区醍醐南里町) is 314 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7777778,
+     34.9888889
+    ]
+   },
+   "properties": {
+    "site": "新日吉神宮",
+    "aliases": [
+     "新日吉神宮"
+    ],
+    "ref": "wikidata/Q11502342",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": "Q11502342",
+    "name_en": "Imahie Jingū",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {},
+    "point_is": "Wikidata coordinates",
+    "muni": "京都市 東山区",
+    "dsight_ids": [
+     "2000003",
+     "10000003"
+    ],
+    "location_evidence": "Wikidata Q11502342 (新日吉神宮) and the official address placed by the GSI address search (京都府京都市東山区今熊野日吉町) agree within 262 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7420947,
+     35.0456879
+    ]
+   },
+   "properties": {
+    "site": "今宮神社",
+    "aliases": [
+     "今宮神社"
+    ],
+    "ref": "way/1376744520",
+    "osm": "way/1376744520",
+    "osm_name": "今宮神社",
+    "wikidata": "Q500955",
+    "name_en": "Imamiya Shrine",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "shinto"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 北区",
+    "dsight_ids": [
+     "2000004"
+    ],
+    "location_evidence": "OSM way/1376744520 and Wikidata Q500955 tagged on the OSM feature agree within 11 m; the official address (GSI: 京都府京都市北区紫野今宮町) is 35 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7949741,
+     35.0140953
+    ]
+   },
+   "properties": {
+    "site": "永観堂",
+    "aliases": [
+     "永観堂"
+    ],
+    "ref": "way/859305371",
+    "osm": "way/859305371",
+    "osm_name": "永観堂 禅林寺",
+    "wikidata": "Q2380134",
+    "name_en": "Eikan-dō Zenrin-ji Temple",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "jodo_shinshu"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 左京区",
+    "dsight_ids": [
+     "2000005"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 2000005 is behind 禅林寺 御影堂, 浄土寺永観堂町48; way/859305371 is 永観堂 禅林寺 (Q2380134); Wikidata Q2380134 is 56 m from it"
    }
   },
   {
@@ -2027,6 +2994,7 @@
     "aliases": [
      "大原野神社"
     ],
+    "ref": "way/808232357",
     "osm": "way/808232357",
     "osm_name": "大原野神社",
     "wikidata": "Q3594020",
@@ -2043,7 +3011,7 @@
      "2000009",
      "10000018"
     ],
-    "location_evidence": "OSM way/808232357 and Wikidata Q3594020 tagged on the OSM feature agree within 110 m; inside the address area 京都市 西京区"
+    "location_evidence": "OSM way/808232357 and Wikidata Q3594020 tagged on the OSM feature agree within 110 m; the official address (GSI: 京都府京都市西京区大原野南春日町１１５２番地) is 229 m away"
    }
   },
   {
@@ -2060,6 +3028,7 @@
     "aliases": [
      "護王神社"
     ],
+    "ref": "way/345029419",
     "osm": "way/345029419",
     "osm_name": "護王神社",
     "wikidata": "Q11632526",
@@ -2075,7 +3044,7 @@
      "2000031",
      "10000009"
     ],
-    "location_evidence": "OSM way/345029419 and Wikidata Q11632526 tagged on the OSM feature agree within 563 m; inside the address area 京都市 上京区"
+    "location_evidence": "OSM way/345029419 and Wikidata Q11632526 tagged on the OSM feature agree within 563 m; the official address (GSI: 京都府京都市上京区桜鶴円町) is 110 m away"
    }
   },
   {
@@ -2092,6 +3061,7 @@
     "aliases": [
      "勧修寺"
     ],
+    "ref": "way/546816129",
     "osm": "way/546816129",
     "osm_name": "勧修寺",
     "wikidata": "Q772598",
@@ -2114,30 +3084,220 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
-     135.8195149,
-     34.9522209
+     135.7678618,
+     34.9337251
     ]
    },
    "properties": {
-    "site": "三宝院",
+    "site": "御香宮",
     "aliases": [
-     "三宝院"
+     "御香宮"
     ],
-    "osm": "way/400537118",
-    "osm_name": "三宝院",
-    "wikidata": "Q3471686",
-    "name_en": "Sanboin",
+    "ref": "node/5613230332",
+    "osm": "node/5613230332",
+    "osm_name": "御香宮",
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {
+     "historic": "memorial"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 伏見区",
+    "dsight_ids": [
+     "2000032",
+     "2000033"
+    ],
+    "location_evidence": "OSM node/5613230332 and the official address placed by the GSI address search (京都府京都市伏見区御香宮門前町１７４番地) agree within 77 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.8279246,
+     35.138188
+    ]
+   },
+   "properties": {
+    "site": "古知谷",
+    "aliases": [
+     "古知谷"
+    ],
+    "ref": "way/519457510",
+    "osm": "way/519457510",
+    "osm_name": "古知谷阿弥陀寺",
+    "wikidata": null,
+    "name_en": "Kochidani Amidashi Temple",
     "name_en_source": "OSM name:en",
     "osm_tags": {
      "amenity": "place_of_worship",
-     "religion": "buddhist"
+     "religion": "buddhist",
+     "building": "yes"
     },
     "point_is": "site centre (polygon centre)",
-    "muni": "京都市 伏見区",
+    "muni": "京都市 左京区",
     "dsight_ids": [
-     "2000041"
+     "2000035"
     ],
-    "location_evidence": "OSM way/400537118 and Wikidata Q3471686 tagged on the OSM feature agree within 9 m"
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 2000035 is in 左京区古知谷の阿弥陀寺境内 (大原古知平町); way/519457510 is 古知谷阿弥陀寺"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.6877083,
+     35.0259519
+    ]
+   },
+   "properties": {
+    "site": "兒神社",
+    "aliases": [
+     "兒神社"
+    ],
+    "ref": "node/2385156982",
+    "osm": "node/2385156982",
+    "osm_name": "兒神社",
+    "wikidata": null,
+    "name_en": "Chigo Shrine",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "shinto"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "2000038"
+    ],
+    "location_evidence": "OSM node/2385156982 and the official address placed by the GSI address search (京都府京都市右京区嵯峨釣殿町) agree within 154 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.68425,
+     35.015694
+    ]
+   },
+   "properties": {
+    "site": "曇華院",
+    "aliases": [
+     "曇華院"
+    ],
+    "ref": "wikidata/Q134888240",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": "Q134888240",
+    "name_en": "Donge-in Temple",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {},
+    "point_is": "Wikidata coordinates",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "2000039"
+    ],
+    "location_evidence": "Wikidata Q134888240 (曇華院) and the official address placed by the GSI address search (京都府京都市右京区嵯峨北堀町２５番地) agree within 64 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7211511,
+     35.0235153
+    ]
+   },
+   "properties": {
+    "site": "雑華院",
+    "aliases": [
+     "雑華院"
+    ],
+    "ref": "way/1075542745",
+    "osm": "way/1075542745",
+    "osm_name": "雑華院",
+    "wikidata": null,
+    "name_en": "Zakkein temple",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "zen"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "2000040"
+    ],
+    "location_evidence": "OSM way/1075542745 and the official address placed by the GSI address search (京都府京都市右京区花園妙心寺町５５番地) agree within 89 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.64429,
+     34.9384086
+    ]
+   },
+   "properties": {
+    "site": "善峯寺",
+    "aliases": [
+     "善峯寺"
+    ],
+    "ref": "way/677361829",
+    "osm": "way/677361829",
+    "osm_name": "善峯寺",
+    "wikidata": "Q169621",
+    "name_en": "Yoshimine Temple",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "denomination": "tendai"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 西京区",
+    "dsight_ids": [
+     "2000055"
+    ],
+    "location_evidence": "OSM way/677361829 and Wikidata Q169621 tagged on the OSM feature agree within 27 m; the official address (GSI: 京都府京都市西京区大原野小塩町１３７２番地) is 48 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.730347,
+     35.025517
+    ]
+   },
+   "properties": {
+    "site": "地蔵院",
+    "aliases": [
+     "地蔵院"
+    ],
+    "ref": "dsight/2000044",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {},
+    "point_is": "official address (GSI address search, block level)",
+    "muni": "京都市 北区",
+    "dsight_ids": [
+     "2000044"
+    ],
+    "location_evidence": "the OSM places named 地蔵院 are other places; placed at its official Kyoto City address, which the GSI address search finds at block level (京都府京都市北区大将軍西町４１番地)"
    }
   },
   {
@@ -2154,6 +3314,7 @@
     "aliases": [
      "十輪寺"
     ],
+    "ref": "node/6342331485",
     "osm": "node/6342331485",
     "osm_name": "十輪寺",
     "wikidata": "Q11405174",
@@ -2169,7 +3330,7 @@
     "dsight_ids": [
      "2000045"
     ],
-    "location_evidence": "OSM node/6342331485 and Wikidata Q11405174 tagged on the OSM feature agree within 24 m"
+    "location_evidence": "OSM node/6342331485 and Wikidata Q11405174 tagged on the OSM feature agree within 24 m; the official address (GSI: 京都府京都市西京区大原野小塩町) is 1084 m away"
    }
   },
   {
@@ -2186,6 +3347,7 @@
     "aliases": [
      "青蓮院"
     ],
+    "ref": "way/456124860",
     "osm": "way/456124860",
     "osm_name": "青蓮院",
     "wikidata": "Q377386",
@@ -2201,7 +3363,7 @@
     "dsight_ids": [
      "2000046"
     ],
-    "location_evidence": "OSM way/456124860 and Wikidata Q377386 tagged on the OSM feature agree within 25 m"
+    "location_evidence": "OSM way/456124860 and Wikidata Q377386 tagged on the OSM feature agree within 25 m; the official address (GSI: 京都府京都市東山区粟田口三条坊町) is 32 m away"
    }
   },
   {
@@ -2218,6 +3380,7 @@
     "aliases": [
      "水火天満宮"
     ],
+    "ref": "way/736954820",
     "osm": "way/736954820",
     "osm_name": "水火天満宮",
     "wikidata": "Q11548940",
@@ -2232,7 +3395,7 @@
     "dsight_ids": [
      "2000089"
     ],
-    "location_evidence": "OSM way/736954820 and Wikidata Q11548940 tagged on the OSM feature agree within 3 m; inside the address area 京都市 上京区"
+    "location_evidence": "OSM way/736954820 and Wikidata Q11548940 tagged on the OSM feature agree within 3 m; the official address (GSI: 京都府京都市上京区扇町７２２番地) is 54 m away"
    }
   },
   {
@@ -2249,6 +3412,7 @@
     "aliases": [
      "総見院"
     ],
+    "ref": "way/972811489",
     "osm": "way/972811489",
     "osm_name": "総見院",
     "wikidata": "Q1058324",
@@ -2264,7 +3428,127 @@
     "dsight_ids": [
      "2000057"
     ],
-    "location_evidence": "OSM way/972811489 and Wikidata Q1058324 tagged on the OSM feature agree within 42 m; inside the address area 京都市 北区"
+    "location_evidence": "OSM way/972811489 and Wikidata Q1058324 tagged on the OSM feature agree within 42 m; the official address (GSI: 京都府京都市北区紫野大徳寺町５９番地) is 36 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7075,
+     35.087778
+    ]
+   },
+   "properties": {
+    "site": "道風神社",
+    "aliases": [
+     "道風神社"
+    ],
+    "ref": "wikidata/Q11641865",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": "Q11641865",
+    "name_en": "Tofu Shrine",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {},
+    "point_is": "Wikidata coordinates",
+    "muni": "京都市 北区",
+    "dsight_ids": [
+     "2000069"
+    ],
+    "location_evidence": "Wikidata Q11641865 (道風神社) and the official address placed by the GSI address search (京都府京都市北区杉阪道風町) agree within 515 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.787444,
+     35.023056
+    ]
+   },
+   "properties": {
+    "site": "東北院",
+    "aliases": [
+     "東北院"
+    ],
+    "ref": "wikidata/Q11526269",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": "Q11526269",
+    "name_en": "Tōhoku-in Temple",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {},
+    "point_is": "Wikidata coordinates",
+    "muni": "京都市 左京区",
+    "dsight_ids": [
+     "2000070",
+     "2000071"
+    ],
+    "location_evidence": "Wikidata Q11526269 (東北院) and the official address placed by the GSI address search (京都府京都市左京区浄土寺真如町) agree within 301 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.687694,
+     35.041
+    ]
+   },
+   "properties": {
+    "site": "平岡八幡宮",
+    "aliases": [
+     "平岡八幡宮"
+    ],
+    "ref": "wikidata/Q17226256",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": "Q17226256",
+    "name_en": "Hiraoka Hachimangū",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {},
+    "point_is": "Wikidata coordinates",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "2000075"
+    ],
+    "location_evidence": "Wikidata Q17226256 (平岡八幡宮) and the official address placed by the GSI address search (京都府京都市右京区梅ケ畑宮ノ口町) agree within 91 m"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7325114,
+     35.032364
+    ]
+   },
+   "properties": {
+    "site": "平野神社",
+    "aliases": [
+     "平野神社"
+    ],
+    "ref": "way/98106492",
+    "osm": "way/98106492",
+    "osm_name": "平野神社",
+    "wikidata": "Q738971",
+    "name_en": "Hirano Shrine",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "shinto"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 北区",
+    "dsight_ids": [
+     "2000076"
+    ],
+    "location_evidence": "OSM way/98106492 and Wikidata Q738971 tagged on the OSM feature agree within 24 m; the official address (GSI: 京都府京都市北区平野宮本町) is 84 m away"
    }
   },
   {
@@ -2281,6 +3565,7 @@
     "aliases": [
      "宝鏡寺"
     ],
+    "ref": "node/5276966703",
     "osm": "node/5276966703",
     "osm_name": "宝鏡寺",
     "wikidata": "Q11452697",
@@ -2295,7 +3580,7 @@
     "dsight_ids": [
      "2000077"
     ],
-    "location_evidence": "OSM node/5276966703 and Wikidata Q11452697 tagged on the OSM feature agree within 3 m; inside the address area 京都市 上京区"
+    "location_evidence": "OSM node/5276966703 and Wikidata Q11452697 tagged on the OSM feature agree within 3 m; the official address (GSI: 京都府京都市上京区百々町５４７番地) is 24 m away"
    }
   },
   {
@@ -2312,6 +3597,7 @@
     "aliases": [
      "宝泉院"
     ],
+    "ref": "way/556023622",
     "osm": "way/556023622",
     "osm_name": "宝泉院",
     "wikidata": "Q11452598",
@@ -2328,7 +3614,7 @@
     "dsight_ids": [
      "2000078"
     ],
-    "location_evidence": "OSM way/556023622 and Wikidata Q11452598 tagged on the OSM feature agree within 1 m"
+    "location_evidence": "OSM way/556023622 and Wikidata Q11452598 tagged on the OSM feature agree within 1 m; the official address (GSI: 京都府京都市左京区大原勝林院町１８７番地) is 87 m away"
    }
   },
   {
@@ -2345,6 +3631,7 @@
     "aliases": [
      "法然院"
     ],
+    "ref": "way/684381894",
     "osm": "way/684381894",
     "osm_name": "法然院",
     "wikidata": "Q11555257",
@@ -2380,6 +3667,7 @@
     "aliases": [
      "由岐神社"
     ],
+    "ref": "way/319198861",
     "osm": "way/319198861",
     "osm_name": "由岐神社",
     "wikidata": "Q11577577",
@@ -2395,7 +3683,7 @@
     "dsight_ids": [
      "2000085"
     ],
-    "location_evidence": "OSM way/319198861 and Wikidata Q11577577 tagged on the OSM feature agree within 19 m"
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 2000085 is beside the approach to Kurama-dera, 鞍馬本町; way/319198861 (Q11577577) is 由岐神社 on that approach; Wikidata Q11577577 is 19 m from it"
    }
   },
   {
@@ -2412,6 +3700,7 @@
     "aliases": [
      "霊鑑寺"
     ],
+    "ref": "way/684545298",
     "osm": "way/684545298",
     "osm_name": "霊鑑寺",
     "wikidata": "Q122833543",
@@ -2427,7 +3716,50 @@
      "2000086",
      "2000087"
     ],
-    "location_evidence": "OSM way/684545298 and Wikidata Q122833543 tagged on the OSM feature agree within 28 m"
+    "location_evidence": "OSM way/684545298 and Wikidata Q122833543 tagged on the OSM feature agree within 28 m; the official address (GSI: 京都府京都市左京区鹿ケ谷御所ノ段町) is 208 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.7962164,
+     35.0182325
+    ]
+   },
+   "properties": {
+    "site": "愛宕社<大豊神社>",
+    "aliases": [
+     "大国社",
+     "大国社<大豊神社>",
+     "大豊神社",
+     "愛宕社",
+     "愛宕社<大豊神社>",
+     "日吉社",
+     "日吉社<大豊神社>",
+     "稲荷社",
+     "稲荷社<大豊神社>"
+    ],
+    "ref": "way/684545282",
+    "osm": "way/684545282",
+    "osm_name": "大豊神社",
+    "wikidata": "Q123114982",
+    "name_en": "Otoyo Shrine",
+    "name_en_source": "OSM name:en",
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "shinto"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 左京区",
+    "dsight_ids": [
+     "10000001",
+     "10000002",
+     "10000011",
+     "10000012"
+    ],
+    "location_evidence": "OSM way/684545282 and Wikidata Q123114982 tagged on the OSM feature agree within 13 m; the official address (GSI: 京都府京都市左京区鹿ケ谷宮ノ前町１番地) is 31 m away"
    }
   },
   {
@@ -2444,6 +3776,7 @@
     "aliases": [
      "菅大臣神社"
     ],
+    "ref": "way/762386069",
     "osm": "way/762386069",
     "osm_name": "菅大臣神社",
     "wikidata": "Q17209556",
@@ -2475,6 +3808,7 @@
     "aliases": [
      "禅居庵"
     ],
+    "ref": "way/484504279",
     "osm": "way/484504279",
     "osm_name": "禅居庵",
     "wikidata": "Q85882834",
@@ -2507,6 +3841,7 @@
     "aliases": [
      "三宅八幡宮"
     ],
+    "ref": "way/554924931",
     "osm": "way/554924931",
     "osm_name": "三宅八幡神社",
     "wikidata": "Q11354999",
@@ -2521,7 +3856,7 @@
     "dsight_ids": [
      "10000016"
     ],
-    "location_evidence": "OSM way/554924931 and Wikidata Q11354999 tagged on the OSM feature agree within 60 m; inside the address area 京都市 左京区"
+    "location_evidence": "OSM way/554924931 and Wikidata Q11354999 tagged on the OSM feature agree within 60 m; the official address (GSI: 京都府京都市左京区上高野三宅町２２番地) is 20 m away"
    }
   },
   {
@@ -2538,6 +3873,7 @@
     "aliases": [
      "安井金比羅宮"
     ],
+    "ref": "way/1554873121",
     "osm": "way/1554873121",
     "osm_name": "安井金比羅宮",
     "wikidata": "Q11450246",
@@ -2552,7 +3888,158 @@
     "dsight_ids": [
      "10000017"
     ],
-    "location_evidence": "OSM way/1554873121 and Wikidata Q11450246 tagged on the OSM feature agree within 50 m; inside the address area 京都市 東山区"
+    "location_evidence": "OSM way/1554873121 and Wikidata Q11450246 tagged on the OSM feature agree within 50 m; the official address (GSI: 京都府京都市東山区下弁天町７０番地) is 38 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.6976102,
+     35.0253729
+    ]
+   },
+   "properties": {
+    "site": "御堂ヶ池1号墳",
+    "aliases": [
+     "御堂ヶ池1号墳"
+    ],
+    "ref": "node/10684663852",
+    "osm": "node/10684663852",
+    "osm_name": "御堂ヶ池古墳 1号墳",
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {
+     "historic": "archaeological_site"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "11000001"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 11000001 was moved and rebuilt on さざれ石山 at 右京区鳴滝音戸山町12-1; node/10684663852 御堂ヶ池古墳 1号墳 lies in that town (the GSI address search places the town about 1 km away, at its centre)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.690765,
+     35.019249
+    ]
+   },
+   "properties": {
+    "site": "甲塚古墳",
+    "aliases": [
+     "甲塚古墳"
+    ],
+    "ref": "dsight/11000002",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {},
+    "point_is": "official address (GSI address search, block level)",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "11000002"
+    ],
+    "location_evidence": "not in OSM or Wikidata; placed at its official Kyoto City address, which the GSI address search finds at block level (京都府京都市右京区嵯峨甲塚町１８番地)"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.6851435,
+     35.0289795
+    ]
+   },
+   "properties": {
+    "site": "嵯峨七ッ塚古墳",
+    "aliases": [
+     "嵯峨七ッ塚古墳"
+    ],
+    "ref": "node/5510899066",
+    "osm": "node/5510899066",
+    "osm_name": "七ツ塚古墳",
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {
+     "historic": "archaeological_site"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 右京区",
+    "dsight_ids": [
+     "11000003"
+    ],
+    "location_evidence": "Reviewed: the DSIGHT_1.csv description (Kyoto City) says 11000003 lies in the fields east of Ōsawa Pond, 右京区北嵯峨洞ノ内町付近; node/5510899066 七ツ塚古墳 lies there"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.689616,
+     34.9775824
+    ]
+   },
+   "properties": {
+    "site": "天皇の杜古墳",
+    "aliases": [
+     "天皇の杜古墳"
+    ],
+    "ref": "node/7019118890",
+    "osm": "node/7019118890",
+    "osm_name": "天皇の杜古墳",
+    "wikidata": "Q28608917",
+    "name_en": "Tenno-no-mori Kofun",
+    "name_en_source": "Wikidata label",
+    "osm_tags": {
+     "historic": "archaeological_site"
+    },
+    "point_is": "OSM point",
+    "muni": "京都市 西京区",
+    "dsight_ids": [
+     "11000004"
+    ],
+    "location_evidence": "OSM node/7019118890 and Wikidata Q28608917 tagged on the OSM feature agree within 8 m; the official address (GSI: 京都府京都市西京区御陵塚ノ越町) is 50 m away"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     135.679382,
+     34.963169
+    ]
+   },
+   "properties": {
+    "site": "福西古墳7号墳及び10号墳",
+    "aliases": [
+     "福西古墳7号墳及び10号墳"
+    ],
+    "ref": "dsight/11000005",
+    "osm": null,
+    "osm_name": null,
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {},
+    "point_is": "official address (GSI address search, block level)",
+    "muni": "京都市 西京区",
+    "dsight_ids": [
+     "11000005"
+    ],
+    "location_evidence": "not in OSM or Wikidata; placed at its official Kyoto City address, which the GSI address search finds at block level (京都府京都市西京区大枝北福西町四丁目２番地)"
    }
   },
   {
@@ -2569,6 +4056,7 @@
     "aliases": [
      "蛇塚古墳"
     ],
+    "ref": "way/198767161",
     "osm": "way/198767161",
     "osm_name": "蛇塚古墳",
     "wikidata": "Q11625508",
@@ -2582,7 +4070,7 @@
     "dsight_ids": [
      "11000006"
     ],
-    "location_evidence": "OSM way/198767161 and Wikidata Q11625508 tagged on the OSM feature agree within 2 m; inside the address area 京都市 右京区"
+    "location_evidence": "OSM way/198767161 and Wikidata Q11625508 tagged on the OSM feature agree within 2 m; the official address (GSI: 京都府京都市右京区太秦面影町) is 64 m away"
    }
   }
  ]

@@ -400,3 +400,17 @@ kyoto-gis-dashboard/
 - 地图上现在有 **595 个景点**：attraction 231、viewpoint 243、museum 101、castle 20。搜索支持日文、英文和别名（`南禅寺`、`Nanzen-ji`、`nanzenji` 都能找到）。
 - 新增脚本：`scripts/fetch_osm_reference.py`、`scripts/audit_poi.py`、`scripts/poi_reconcile.py`；`scripts/prepare_data.py` 和 `scripts/kde_density.py` 改为使用核查后的图层。步行路线、核密度、行政区、英文名、地点上下文和照片都重新生成了。
 - 原始 `DSIGHT_1.csv` 的来源和许可证不明，没有提交到仓库（放在 `data/raw/dsight/`）。要重跑核查，需要把文件放到这个位置。
+
+## 6l. 2026-11-15：京都市官方 648 条记录的完整整合
+
+- 来源确认：`DSIGHT_1.csv` 是京都市开放数据「京都観光見もの情報」（资源 ID 7052，© 京都市，**CC BY 4.0**，2021-03-26 更新，https://data.city.kyoto.lg.jp/resource/?id=7052 ）。原始文件现在放在 `data/raw/dsight/` 并提交到仓库；界面按原文显示名称、读音、说明和地址，并注明出处。
+- **每条记录都有处理结果**（`public/data/dsight_records.json`，脚本 `scripts/dsight_records.py`）：独立景点 6、附属建筑 / 名木 186、文化与历史资料 271、地理要素 30、未能核实 155。
+- 地图景点 **638 个**（523 − 5 + 120）。在上一轮 77 个的基础上，又核实并加入 43 个地点。新增的定位依据：
+  - 国土地理院（GSI）地址检索，把 CSV 的官方地址定位（`scripts/fetch_gsi_geocode.py`）。只采用町名对得上且结果唯一的；京都的"通名"写法先提取町名再查；ノ/之、竃/竈、背/脊 等异体写法视为相同。
+  - 多个地点的文物共用的地址（例如京都国立博物馆的 茶屋町527）是收藏地址，不用于定位寺社。
+  - 人工复核 16 个地点和 7 组归属，每条都引用京都市说明原文作为依据（`data/audit/poi_decisions.json` 的 `manual_sites` / `manual_parents`）。
+  - 只剩 10 个地点（11 条记录）核实不了，例如没写所在寺的「平清盛公坐像」、有 5 座同名的白山神社。
+- **类别**：新增 Temple（88）、Shrine（27）、Garden（规则已有，目前没有符合的记录，筛选列表只显示有记录的类别）。依据写在每条记录的 `category_basis`（OSM 的 religion 标签，或名称以 寺 / 院 / 神社 / 宮 等结尾），原始类别保留在 `source_category`。
+- **地理要素图层**（Places and landscape，默认关闭）：山、河、池、瀑布、地区、坂道共 29 个，要求 OSM、Wikidata、GSI 里有两个来源一致；河流和坂道按 OSM 的线画出。其余 145 个地名和山川只有一个来源或找不到，标为未核实。脚本 `scripts/fetch_osm_geography.py`、`scripts/dsight_geography.py`（加 `--cached` 时只用缓存，不联网）。
+- **资料库**（页首的 Kyoto City Records）：648 条记录都可以搜索，按处理结果筛选，展开看说明原文、处理依据，并跳到地图上的对应地点。景点卡片的 "At this site" 可以展开看每条的说明；"Mentioned in" 列出说明文字里提到这个地点的记录（只表示文中提到，不做归属）。
+- 步行路线、密度图、行政区、英文名、地点上下文、照片（共 168 张）都按 638 个景点重新生成。测试：逻辑 29 / 29，浏览器 110 / 110。

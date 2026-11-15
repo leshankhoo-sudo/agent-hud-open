@@ -1378,3 +1378,22 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
 .ld-nav { left: calc(max(14px, env(safe-area-inset-left, 0px)) + 52px); }
 .top { padding-left: calc(max(14px, env(safe-area-inset-left, 0px)) + 56px); }
 @media (max-width: 760px) { .ld-nav { right: calc(166px + env(safe-area-inset-right, 0px)); } }
+
+/* Kyoto City records: the layer switch, the library and the descriptions on a card */
+.sw.ring { background: none !important; border: 2px solid; border-radius: 50%; }
+.rec-filter { align-items: center; }
+.rec-filter .chip { cursor: pointer; font: inherit; }
+.rec-q { margin-left: auto; min-width: 220px; background: var(--panel-solid); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; color: var(--ink); font: 13px var(--sans, inherit); }
+.rec-list { list-style: none; margin: 10px 0; padding: 0; display: grid; gap: 4px; }
+.rec-list li { border-bottom: 1px solid var(--line); padding: 4px 2px; }
+.rec-list li.on { background: color-mix(in srgb, var(--season, #f7a) 10%, transparent); border-radius: 8px; }
+.rec-list summary { cursor: pointer; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.rec-list .rec-b { padding: 4px 0 8px 14px; }
+.rec-list .rec-b p { margin: 4px 0; white-space: pre-line; max-width: 90ch; }
+.rec-list .rec-b .link { margin-right: 14px; }
+.rec-o { margin-left: auto; font-size: 11px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); white-space: nowrap; }
+.rec-o.unverified { border-color: var(--warn); color: var(--warn); }
+.rec-o.attraction, .rec-o.sub { border-color: var(--ok, #6c6); }
+.rec-d summary { cursor: pointer; }
+.rec-d p { margin: 4px 0 6px; font-size: 12.5px; white-space: pre-line; color: var(--ink-2); }
+@media (max-width: 760px) { .rec-q { min-width: 0; width: 100%; margin-left: 0; } }

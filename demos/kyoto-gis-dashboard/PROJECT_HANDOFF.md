@@ -520,3 +520,10 @@ git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 - 注意：`fetch_names_en.py` 会重建 names_en.json 的景点部分；重跑它之后要再运行一次 `poi_reconcile.py`，把新增地点的英文名补回去。
 - Windows ZIP（`Kyoto-GIS-Dashboard-Windows-2026-11-15.zip`，672 个文件，73.6 MB）和在线预览链接（第 23 版）已更新到这一版。ZIP 解压后用它自带的启动服务器跑浏览器测试，107 / 107 通过；线上第 22–23 版读回清单确认是 595 个景点，南禅寺的照片也在。
 - 在线预览一个版本最多 511 个文件，所以第 22 版去掉了页面用不到的 46 个字体文件（老浏览器用的 .woff 备用格式，以及西里尔、希腊、越南语子集），还有 4 个核对用的表格（ZIP 和仓库里仍保留）。以后再加照片时，要注意这个上限。
+
+## 20. 2026-11-15 更新（三）：648 条官方记录完整整合（本节优先于上文）
+
+- 说明见 README 6l。运行顺序：`fetch_osm_reference.py` → `fetch_gsi_geocode.py` → `audit_poi.py` → `poi_reconcile.py` → `fetch_osm_geography.py` → `dsight_geography.py [--cached]` → `dsight_records.py` → `walking_prefecture.py <roads>` → `kde_density.py` → `prepare_context.py` → `fetch_photos_linked.py --sites-only`。
+- 地图图层 638 条；新增编号 A00524–A00643（`data/audit/poi_ids.json`，键是 OSM 引用、`wikidata/Q…` 或 `dsight/<CSV 编号>`，固定不变）。
+- 没有做的：CSV 的建筑和名木没有单独的点（只列在所属地点下）；145 个地名 / 山川未放置；Wikidata 搜索因限速有 108 个名字没查成（缓存里记为 null，下次不加 `--cached` 运行会重试，每个请求最多重试 3 次）。
+- Windows ZIP 和在线预览链接还是上一版（595 个景点）。在线预览有 511 个文件的上限，再发布时要先腾位置。

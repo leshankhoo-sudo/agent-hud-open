@@ -1,0 +1,1646 @@
+[
+ {
+  "csv_id": "6000016",
+  "name": "大枝",
+  "kana": "おおえ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000001",
+  "name": "化野",
+  "kana": "あだしの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000002",
+  "name": "嵐山",
+  "kana": "あらしやま",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000003",
+  "name": "粟田口",
+  "kana": "あわたぐち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000004",
+  "name": "出雲路",
+  "kana": "いずもじ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (GSI)"
+ },
+ {
+  "csv_id": "6000005",
+  "name": "一乗寺",
+  "kana": "いちじょうじ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "the sources do not agree within 2000 m"
+ },
+ {
+  "csv_id": "6000006",
+  "name": "市原",
+  "kana": "いちはら",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000007",
+  "name": "今熊野",
+  "kana": "いまくまの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (GSI)"
+ },
+ {
+  "csv_id": "6000008",
+  "name": "岩倉",
+  "kana": "いわくら",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000009",
+  "name": "太秦",
+  "kana": "うずまさ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000010",
+  "name": "宇多野",
+  "kana": "うたの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000011",
+  "name": "梅ケ畑",
+  "kana": "うめがはた",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "6000012",
+  "name": "梅津",
+  "kana": "うめづ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000013",
+  "name": "円町",
+  "kana": "えんまち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000014",
+  "name": "追分",
+  "kana": "おいわけ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000017",
+  "name": "大原",
+  "kana": "おおはら",
+  "series": "6",
+  "kind": "area",
+  "result": "placed",
+  "osm": "node/3964246675",
+  "evidence": "OSM node/3964246675 and Wikidata Q3594017 (大原) agree within 248 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "6000018",
+  "name": "大原口",
+  "kana": "おおはらぐち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000019",
+  "name": "大原野",
+  "kana": "おおはらの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000020",
+  "name": "小野",
+  "kana": "おの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "6000021",
+  "name": "御室",
+  "kana": "おむろ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000022",
+  "name": "帷子の辻",
+  "kana": "かたびらのつじ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000023",
+  "name": "桂",
+  "kana": "かつら",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000024",
+  "name": "上七軒",
+  "kana": "かみしちけん",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000025",
+  "name": "上終町",
+  "kana": "かみはてちょう",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000026",
+  "name": "唐橋",
+  "kana": "からはし",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (GSI)"
+ },
+ {
+  "csv_id": "6000027",
+  "name": "祇園",
+  "kana": "ぎおん",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000028",
+  "name": "祇園新橋",
+  "kana": "ぎおんしんばし",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000029",
+  "name": "北白川",
+  "kana": "きたしらかわ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (GSI)"
+ },
+ {
+  "csv_id": "6000030",
+  "name": "北野",
+  "kana": "きたの",
+  "series": "6",
+  "kind": "area",
+  "result": "placed",
+  "osm": null,
+  "evidence": "Wikidata Q11404253 (北野) and GSI: the towns of 京都市北区 beginning with 北野 (5, e.g. 京都府京都市北区北野下白梅町) agree within 80 m",
+  "point_is": "feature point"
+ },
+ {
+  "csv_id": "6000031",
+  "name": "衣笠",
+  "kana": "きぬがさ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000032",
+  "name": "木野",
+  "kana": "きの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000033",
+  "name": "貴船",
+  "kana": "きぶね",
+  "series": "6",
+  "kind": "area",
+  "result": "placed",
+  "osm": "node/2927230525",
+  "evidence": "OSM node/2927230525 and Wikidata Q3196329 (貴船) agree within 168 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "6000034",
+  "name": "京橋",
+  "kana": "きょうばし",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000035",
+  "name": "清滝",
+  "kana": "きよたき",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000036",
+  "name": "雲ケ畑",
+  "kana": "くもがはた",
+  "series": "6",
+  "kind": "area",
+  "result": "placed",
+  "osm": "node/7449011486",
+  "evidence": "OSM node/7449011486 and Wikidata Q11659992 (雲ケ畑) agree within 243 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "6000037",
+  "name": "鞍馬口",
+  "kana": "くらまぐち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000038",
+  "name": "栗栖野",
+  "kana": "くるすの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000039",
+  "name": "蹴上",
+  "kana": "けあげ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000040",
+  "name": "玄琢",
+  "kana": "げんたく",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000041",
+  "name": "荒神口",
+  "kana": "こうじんぐち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000042",
+  "name": "五条坂",
+  "kana": "ごじょうざか",
+  "series": "6",
+  "kind": "street",
+  "result": "same place as an attraction on the map",
+  "parent_id": "A00230",
+  "evidence": "OSM way/409367262 and Wikidata Q11372483 (五条坂) agree within 3 m"
+ },
+ {
+  "csv_id": "6000043",
+  "name": "西院",
+  "kana": "さいいん",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000044",
+  "name": "嵯峨鳥居本",
+  "kana": "さがとりいもと",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000045",
+  "name": "嵯峨野",
+  "kana": "さがの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000046",
+  "name": "猿ヶ辻",
+  "kana": "さるがつじ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000047",
+  "name": "三年坂",
+  "kana": "さんねんざか",
+  "series": "6",
+  "kind": "street",
+  "result": "placed",
+  "osm": "way/179116810",
+  "evidence": "OSM way/179116810 and Wikidata Q11574990 (産寧坂; matched '三年坂') agree within 1 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "6000048",
+  "name": "鹿ケ谷",
+  "kana": "ししがたに",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000049",
+  "name": "四条大宮",
+  "kana": "しじょうおおみや",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000050",
+  "name": "四条河原町",
+  "kana": "しじょうかわらまち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000051",
+  "name": "静原",
+  "kana": "しずはら",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000052",
+  "name": "四宮",
+  "kana": "しのみや",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000053",
+  "name": "島原",
+  "kana": "しまばら",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000054",
+  "name": "下河原",
+  "kana": "しもがわら",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000055",
+  "name": "修学院",
+  "kana": "しゅうがくいん",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (GSI)"
+ },
+ {
+  "csv_id": "6000056",
+  "name": "聚楽廻",
+  "kana": "じゅらくまわり",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000057",
+  "name": "白川口",
+  "kana": "しらかわぐち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000058",
+  "name": "杉坂",
+  "kana": "すぎさか",
+  "series": "6",
+  "kind": "street",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000059",
+  "name": "滑石越",
+  "kana": "すべりいしごえ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000060",
+  "name": "墨染",
+  "kana": "すみぞめ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000061",
+  "name": "清蔵口",
+  "kana": "せいぞうぐち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000062",
+  "name": "大将軍",
+  "kana": "たいしょうぐん",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000063",
+  "name": "高雄",
+  "kana": "たかお",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000064",
+  "name": "宝ヶ池",
+  "kana": "たからがいけ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000065",
+  "name": "田中",
+  "kana": "たなか",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "6000066",
+  "name": "丹波口",
+  "kana": "たんばぐち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000067",
+  "name": "丹波橋",
+  "kana": "たんばばし",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000068",
+  "name": "中書島",
+  "kana": "ちゅうしょじま",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000069",
+  "name": "出町",
+  "kana": "でまち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000070",
+  "name": "東寺口",
+  "kana": "とうじぐち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000071",
+  "name": "栂尾",
+  "kana": "とがのお",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000072",
+  "name": "常盤",
+  "kana": "ときわ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000073",
+  "name": "鳥辺野",
+  "kana": "とりべの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000074",
+  "name": "中川",
+  "kana": "なかがわ",
+  "series": "6",
+  "kind": "area",
+  "result": "placed",
+  "osm": "node/7449011491",
+  "evidence": "OSM node/7449011491 and GSI: the towns of 京都市北区 beginning with 中川 (8, e.g. 京都府京都市北区中川奥山) agree within 451 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "6000075",
+  "name": "長坂口",
+  "kana": "ながさかぐち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000076",
+  "name": "椥辻",
+  "kana": "なぎのつじ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000077",
+  "name": "鳴滝",
+  "kana": "なるたき",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000078",
+  "name": "西京極",
+  "kana": "にしきょうごく",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000079",
+  "name": "西陣",
+  "kana": "にしじん",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000080",
+  "name": "花園",
+  "kana": "はなぞの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000081",
+  "name": "原谷",
+  "kana": "はらだに",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000082",
+  "name": "氷室",
+  "kana": "ひむろ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000083",
+  "name": "百万遍",
+  "kana": "ひゃくまんべん",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000084",
+  "name": "深草",
+  "kana": "ふかくさ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000085",
+  "name": "福王子",
+  "kana": "ふくおうじ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000086",
+  "name": "藤森",
+  "kana": "ふじのもり",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000087",
+  "name": "伏見",
+  "kana": "ふしみ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000088",
+  "name": "先斗町",
+  "kana": "ぽんとちょう",
+  "series": "6",
+  "kind": "street",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000089",
+  "name": "槙尾",
+  "kana": "まきのお",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000090",
+  "name": "松ヶ崎",
+  "kana": "まつがさき",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000091",
+  "name": "松室",
+  "kana": "まつむろ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000092",
+  "name": "御陵",
+  "kana": "みささぎ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000093",
+  "name": "水尾",
+  "kana": "みずお",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000094",
+  "name": "壬生",
+  "kana": "みぶ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000095",
+  "name": "宮川町",
+  "kana": "みやがわちょう",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "6000096",
+  "name": "向島",
+  "kana": "むかいじま",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "only one source (GSI)"
+ },
+ {
+  "csv_id": "6000097",
+  "name": "紫野",
+  "kana": "むらさきの",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000098",
+  "name": "桃山",
+  "kana": "ももやま",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000099",
+  "name": "八坂",
+  "kana": "やさか",
+  "series": "6",
+  "kind": "street",
+  "result": "not placed",
+  "reason": "only one source (GSI)"
+ },
+ {
+  "csv_id": "6000100",
+  "name": "八瀬",
+  "kana": "やせ",
+  "series": "6",
+  "kind": "area",
+  "result": "placed",
+  "osm": "node/3964246674",
+  "evidence": "OSM node/3964246674 and GSI: the towns of 京都市左京区 beginning with 八瀬 (4, e.g. 京都府京都市左京区八瀬秋元町) agree within 310 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "6000101",
+  "name": "山越",
+  "kana": "やまごえ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000102",
+  "name": "山ノ内",
+  "kana": "やまのうち",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000103",
+  "name": "横大路",
+  "kana": "よこおおじ",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000104",
+  "name": "淀",
+  "kana": "よど",
+  "series": "6",
+  "kind": "area",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000105",
+  "name": "新京極",
+  "kana": "しんきょうごく",
+  "series": "6",
+  "kind": "street",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "6000106",
+  "name": "二年坂",
+  "kana": "にねんざか",
+  "series": "6",
+  "kind": "street",
+  "result": "placed",
+  "osm": "way/30913263",
+  "evidence": "OSM way/30913263 and Wikidata Q80622906 (二寧坂; matched '二年坂') agree within 2 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000001",
+  "name": "愛宕山",
+  "kana": "あたごやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "placed",
+  "osm": "node/3265440969",
+  "evidence": "OSM node/3265440969 and Wikidata Q2975204 (愛宕山) agree within 12 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000002",
+  "name": "阿弥陀ヶ峰",
+  "kana": "あみだがみね",
+  "series": "7",
+  "kind": "mountains",
+  "result": "placed",
+  "osm": "node/6392004464",
+  "evidence": "OSM node/6392004464 and Wikidata Q96074702 (阿弥陀ヶ峰) agree within 5 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000003",
+  "name": "有栖川",
+  "kana": "ありすがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000004",
+  "name": "粟田山",
+  "kana": "あわたやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000005",
+  "name": "稲荷山",
+  "kana": "いなりやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000006",
+  "name": "牛尾山",
+  "kana": "うしおさん",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000007",
+  "name": "宇治川",
+  "kana": "うじがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000008",
+  "name": "瓜生山",
+  "kana": "うりゅうざん",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000009",
+  "name": "江文峠",
+  "kana": "えぶみとうげ",
+  "series": "7",
+  "kind": "pass",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000010",
+  "name": "老ノ坂",
+  "kana": "おいのさか",
+  "series": "7",
+  "kind": "slope",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000011",
+  "name": "名勝　大沢池",
+  "kana": "めいしょう　おおさわのいけ",
+  "series": "7",
+  "kind": "pond",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000012",
+  "name": "大原御香水",
+  "kana": "おおはらごこうすい",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000014",
+  "name": "音無の滝",
+  "kana": "おとなしのたき",
+  "series": "7",
+  "kind": "waterfall",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000015",
+  "name": "音羽川",
+  "kana": "おとわがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "placed",
+  "osm": "way/83330831",
+  "evidence": "OSM way/83330831 and Wikidata Q30931091 (音羽川) agree within 3 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000016",
+  "name": "音羽の滝",
+  "kana": "おとわのたき",
+  "series": "7",
+  "kind": "waterfall",
+  "result": "placed",
+  "osm": "node/3476170467",
+  "evidence": "OSM node/3476170467 and Wikidata Q140571034 (音羽の滝) agree within 32 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000017",
+  "name": "音羽山",
+  "kana": "おとわやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "placed",
+  "osm": "node/296918539",
+  "evidence": "OSM node/296918539 and Wikidata Q11664332 (音羽山) agree within 29 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000018",
+  "name": "音戸山",
+  "kana": "おんどやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000019",
+  "name": "華頂山",
+  "kana": "かちょうざん",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000020",
+  "name": "桂川",
+  "kana": "かつらがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "placed",
+  "osm": "way/681649795",
+  "evidence": "OSM way/681649795 and Wikidata Q2909307 (桂川) agree within 25 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000021",
+  "name": "鉄輪の井戸",
+  "kana": "かなわのいど",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000022",
+  "name": "紙屋川",
+  "kana": "かみやがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000023",
+  "name": "亀の井",
+  "kana": "かめのい",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000024",
+  "name": "鴨川（賀茂川）",
+  "kana": "かもがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "placed",
+  "osm": "way/83328208",
+  "evidence": "OSM way/83328208 and Wikidata Q27218 (鴨川) agree within 4 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000025",
+  "name": "木津川",
+  "kana": "きづがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "placed",
+  "osm": "way/83331747",
+  "evidence": "OSM way/83331747 and Wikidata Q3746236 (木津川) agree within 17 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000026",
+  "name": "衣笠山",
+  "kana": "きぬがさやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "placed",
+  "osm": "node/5743446177",
+  "evidence": "OSM node/5743446177 and Wikidata Q11626402 (衣笠山) agree within 3 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000027",
+  "name": "貴船山",
+  "kana": "きぶねやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000028",
+  "name": "京見峠",
+  "kana": "きょうみとうげ",
+  "series": "7",
+  "kind": "pass",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000029",
+  "name": "雲母坂",
+  "kana": "きららざか",
+  "series": "7",
+  "kind": "slope",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000030",
+  "name": "空也の滝",
+  "kana": "くうやのたき",
+  "series": "7",
+  "kind": "waterfall",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000031",
+  "name": "九条山",
+  "kana": "くじょうやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000032",
+  "name": "鞍馬山",
+  "kana": "くらまやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "the sources do not agree within 600 m"
+ },
+ {
+  "csv_id": "7000033",
+  "name": "小町化粧水",
+  "kana": "こまちのけしょうすい",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000034",
+  "name": "金毘羅山",
+  "kana": "こんぴらやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000035",
+  "name": "桟敷岳",
+  "kana": "さじきがたけ",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000036",
+  "name": "祐の井",
+  "kana": "さちのい",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000037",
+  "name": "菖蒲谷池",
+  "kana": "しょうぶだにいけ",
+  "series": "7",
+  "kind": "pond",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000038",
+  "name": "白川",
+  "kana": "しらかわ",
+  "series": "7",
+  "kind": "river",
+  "result": "placed",
+  "osm": "way/292396408",
+  "evidence": "OSM way/292396408 and Wikidata Q7498246 (白川) agree within 3 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000039",
+  "name": "姿見の井",
+  "kana": "すがたみのい",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000040",
+  "name": "染井の水",
+  "kana": "そめいのみず",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000041",
+  "name": "醍醐水",
+  "kana": "だいごすい",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000042",
+  "name": "大日山",
+  "kana": "だいにちやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000043",
+  "name": "高雄山",
+  "kana": "たかおやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000044",
+  "name": "高瀬川",
+  "kana": "たかせがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "placed",
+  "osm": "way/482270852",
+  "evidence": "OSM way/482270852 and Wikidata Q7677301 (高瀬川) agree within 42 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000045",
+  "name": "高野川",
+  "kana": "たかのがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "placed",
+  "osm": "way/83328138",
+  "evidence": "OSM way/83328138 and Wikidata Q10566852 (高野川) agree within 17 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000046",
+  "name": "糺の森",
+  "kana": "ただすのもり",
+  "series": "7",
+  "kind": "wood",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000047",
+  "name": "天王山",
+  "kana": "てんのうざん",
+  "series": "7",
+  "kind": "mountain",
+  "result": "placed",
+  "osm": "node/4349281890",
+  "evidence": "OSM node/4349281890 and Wikidata Q10940452 (天王山) agree within 9 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000048",
+  "name": "七瀬川",
+  "kana": "ななせがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "placed",
+  "osm": "way/824889142",
+  "evidence": "OSM way/824889142 and Wikidata Q21019686 (七瀬川) agree within 0 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000049",
+  "name": "雙ヶ岡",
+  "kana": "ならびがおか",
+  "series": "7",
+  "kind": "hill",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000050",
+  "name": "如意ヶ嶽",
+  "kana": "にょいがたけ",
+  "series": "7",
+  "kind": "mountain",
+  "result": "placed",
+  "osm": "node/5743446149",
+  "evidence": "OSM node/5743446149 and Wikidata Q10942951 (如意ヶ嶽) agree within 9 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000051",
+  "name": "比叡山",
+  "kana": "ひえいざん",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000052",
+  "name": "東山三十六峰",
+  "kana": "ひがしやまさんじゅうろっぽう",
+  "series": "7",
+  "kind": "mountains",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000053",
+  "name": "広沢池",
+  "kana": "ひろさわのいけ",
+  "series": "7",
+  "kind": "pond",
+  "result": "placed",
+  "osm": "way/54478244",
+  "evidence": "OSM way/54478244 and Wikidata Q11485497 (広沢池) agree within 106 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000054",
+  "name": "伏見の御香水",
+  "kana": "ふしみのごこうすい",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000055",
+  "name": "船岡山",
+  "kana": "ふなおかやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000056",
+  "name": "遍照寺山",
+  "kana": "へんじょうじさん",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000057",
+  "name": "堀川",
+  "kana": "ほりかわ",
+  "series": "7",
+  "kind": "river",
+  "result": "placed",
+  "osm": "way/27829316",
+  "evidence": "OSM way/27829316 and Wikidata Q11427408 (堀川) agree within 2 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000058",
+  "name": "ポンポン山",
+  "kana": "ぽんぽんやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "placed",
+  "osm": "node/12661997924",
+  "evidence": "OSM node/12661997924 and Wikidata Q11339416 (ポンポン山) agree within 9 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000059",
+  "name": "御手洗川",
+  "kana": "みたらしがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000060",
+  "name": "深泥池",
+  "kana": "みどろがいけ",
+  "series": "7",
+  "kind": "pond",
+  "result": "not placed",
+  "reason": "only one source (Wikidata)"
+ },
+ {
+  "csv_id": "7000061",
+  "name": "皆子山",
+  "kana": "みなこやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "placed",
+  "osm": "node/3265440973",
+  "evidence": "OSM node/3265440973 and Wikidata Q11580925 (皆子山) agree within 12 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000062",
+  "name": "明神川",
+  "kana": "みょうじんがわ",
+  "series": "7",
+  "kind": "river",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000063",
+  "name": "吉田山",
+  "kana": "よしだやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "placed",
+  "osm": "node/5743446155",
+  "evidence": "OSM node/5743446155 and Wikidata Q18457625 (吉田山) agree within 73 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ },
+ {
+  "csv_id": "7000064",
+  "name": "知恩院　紫雲水",
+  "kana": "ちおんいん　しうんすい",
+  "series": "7",
+  "kind": "spring or well",
+  "result": "part of a site",
+  "parent_id": "A00572",
+  "evidence": "the name begins with the site 知恩院"
+ },
+ {
+  "csv_id": "7000065",
+  "name": "八丁・片波源流域",
+  "kana": "はっちょう・かたなみげんりゅういき",
+  "series": "7",
+  "kind": "river basin",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000066",
+  "name": "滝又滝",
+  "kana": "たきまたのたき",
+  "series": "7",
+  "kind": "waterfall",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000067",
+  "name": "栗尾峠の展望",
+  "kana": "くりおとうげのてんぼう",
+  "series": "7",
+  "kind": "view",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000068",
+  "name": "魚ケ渕のつり橋と桜",
+  "kana": "うおがふちのつりばしとさくら",
+  "series": "7",
+  "kind": "landscape",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000069",
+  "name": "菩提樹の道とゼミナールハウスからの眺望",
+  "kana": "ぼだいじゅのみちとぜみなーるはうすからのちょうぼう",
+  "series": "7",
+  "kind": "view",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000070",
+  "name": "宇津峡",
+  "kana": "うつきょう",
+  "series": "7",
+  "kind": "gorge",
+  "result": "not placed",
+  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+ },
+ {
+  "csv_id": "7000071",
+  "name": "雲取山",
+  "kana": "くもとりやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "not placed",
+  "reason": "only one source (OSM)"
+ },
+ {
+  "csv_id": "7000013",
+  "name": "小倉山",
+  "kana": "おぐらやま",
+  "series": "7",
+  "kind": "mountain",
+  "result": "placed",
+  "osm": "node/6392004472",
+  "evidence": "OSM node/6392004472 and Wikidata Q27921552 (小倉山) agree within 13 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
+ }
+]

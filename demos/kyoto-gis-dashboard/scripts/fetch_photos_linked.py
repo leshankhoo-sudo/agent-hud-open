@@ -1,6 +1,6 @@
 """More attraction photos, added to the ones from fetch_photos.py (run that first).
 
-Run from the project folder:  python3 scripts/fetch_photos_linked.py [--refresh-osm] [--dry-run]
+Run from the project folder:  python3 scripts/fetch_photos_linked.py [--refresh-osm] [--dry-run] [--sites-only]
 Needs: pip install pillow ; network access to api.openstreetmap.org, www.wikidata.org,
 commons.wikimedia.org and upload.wikimedia.org.
 
@@ -228,6 +228,8 @@ def main():
     # ---------- B. Commons photos taken within 150 m whose file name or category names the place ----------
     names = Counter(norm(f["properties"]["name"]) for f in A if (f["properties"]["name"] or "").strip())
     rest = [f for f in A if (f["properties"]["name"] or "").strip() and f["properties"]["id"] not in have and f["properties"]["id"] not in pick]
+    if "--sites-only" in sys.argv:   # only the added sites (A2): skip the long Commons search
+        rest = []
     nb = 0
     for i, f in enumerate(rest):
         p, pt = f["properties"], f["geometry"]["coordinates"]

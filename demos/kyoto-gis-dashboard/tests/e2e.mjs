@@ -67,7 +67,7 @@ const story = await page.evaluate(async () => {
 });
 check('page 2: four season cards, each drawn with WebGL (no fallback)', story.ok);
 check('page 2: the card of the season it is now is the highlighted one, marked "Now in Kyoto"', story.on.length === 1 && story.on[0] === story.season && story.now === 1, JSON.stringify({ on: story.on, season: story.season }));
-check('page 2: story lines appear with the scroll, counts roll up to the data totals', story.lines0 < 0.2 && story.lines1 > 0.9 && story.nums.join('|') === '595|5,479', JSON.stringify({ l0: story.lines0, l1: story.lines1, nums: story.nums }));
+check('page 2: story lines appear with the scroll, counts roll up to the data totals', story.lines0 < 0.2 && story.lines1 > 0.9 && story.nums.join('|') === '638|5,479', JSON.stringify({ l0: story.lines0, l1: story.lines1, nums: story.nums }));
 check('page 2: "Now in Kyoto" line follows the season; image source stated as unverified', story.pill.toLowerCase().includes(story.season) && story.credit.includes('Pinterest') && story.credit.includes('illustrative'), story.pill.replace(/\n/g, ' '));
 const other = story.season === 'winter' ? 'spring' : 'winter';
 await page.locator(`.scard-pick[aria-label="Use the ${other} theme"]`).click();
@@ -232,13 +232,13 @@ const srcCounts = await page.evaluate(() => {
   const m = window.__kyotoMap;
   return { a: m.getSource('attractions')._data.features.length, t: m.getSource('transport')._data.features.length };
 });
-check('map sources hold 595 attractions (523 raw - 5 merged duplicates + 77 verified CSV sites) and 5,479 stops', srcCounts.a === 595 && srcCounts.t === 5479, JSON.stringify(srcCounts));
+check('map sources hold 638 attractions (523 raw - 5 merged duplicates + 120 verified CSV sites) and 5,479 stops', srcCounts.a === 638 && srcCounts.t === 5479, JSON.stringify(srcCounts));
 check('basemap tiles load', tiles.ok > 0 && tiles.fail === 0, `${tiles.ok} ok, ${tiles.fail} failed`);
 
 const counts = async () => page.evaluate(() => [...document.querySelectorAll('.count .v')].map((e) => e.textContent.replace(/\s/g, '')));
 await page.waitForTimeout(700);
 let c = await counts();
-check('top counts at start', c[0] === '595/595' && c[1] === '5,479/5,479', c.join(' | '));
+check('top counts at start', c[0] === '638/638' && c[1] === '5,479/5,479', c.join(' | '));
 
 // 2. map position: known points render where their coordinates are
 const pos = await page.evaluate(async () => {
@@ -261,7 +261,7 @@ await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 
 await page.getByLabel('Viewpoint').uncheck();
 await page.waitForTimeout(800);
 c = await counts();
-check('uncheck Viewpoint → 352 attractions', c[0] === '352/595', c[0]);
+check('uncheck Viewpoint → 395 attractions', c[0] === '395/638', c[0]);
 await page.getByLabel('Bus').uncheck();
 await page.waitForTimeout(800);
 c = await counts();
@@ -296,7 +296,7 @@ await page.waitForTimeout(1800);
 await page.getByRole('tab', { name: 'Walking Routes' }).click();
 const walkText = await page.locator('.walk').innerText();
 check('Kinkaku-ji (outside the old pilot) now shows network walking distances', /\d+ m · ≈[\d.]+ min walk/.test(walkText) && !walkText.includes('Pilot result'), walkText.replace(/\n/g, ' / ').slice(0, 200));
-check('walking entry shows the prefecture record count', (await page.locator('aside.left').innerText()).includes('595 records'));
+check('walking entry shows the prefecture record count', (await page.locator('aside.left').innerText()).includes('638 records'));
 await page.getByRole('tab', { name: 'Overview' }).click();
 await page.locator('.tech summary').click();
 const ovText = await page.locator('#pane-overview').innerText();
@@ -317,13 +317,30 @@ await page.waitForTimeout(1600);
 await page.getByRole('tab', { name: 'Overview' }).click();
 await page.locator('.tech summary').click();
 const nz = await page.locator('aside.right').innerText();
-check('search "Nanzen-ji" finds 南禅寺; its card lists the CSV buildings and the two-source location check', nzList.includes('南禅寺') && nz.includes('南禅寺') && nz.includes('三門') && nz.includes('方丈') && nz.includes('DSIGHT 1000024') && /OSM way\/352013907 and Wikidata Q1089767/.test(nz) && nz.includes('京都市 左京区'), nz.replace(/\n/g, ' / ').slice(0, 260));
+check('search "Nanzen-ji" finds 南禅寺; its card lists the CSV buildings and the two-source location check', nzList.includes('南禅寺') && nz.includes('南禅寺') && nz.includes('三門') && nz.includes('方丈') && nz.includes('1000024') && nz.includes('Kyoto City sightseeing list') && /OSM way\/352013907 and Wikidata Q1089767/.test(nz) && nz.includes('京都市 左京区'), nz.replace(/\n/g, ' / ').slice(0, 260));
 const nzOnMap = await page.evaluate(() => window.__kyotoMap.querySourceFeatures('attractions').filter((f) => f.properties.name === '南禅寺').length);
 check('南禅寺 is a point of the map\'s attraction layer', nzOnMap >= 1, String(nzOnMap));
 // a merged duplicate's ID opens the record that keeps the place
 await page.locator('#q').fill('A00224');
 await page.waitForTimeout(400);
 check('the ID of a merged duplicate finds the record that keeps it', (await page.locator('.results').innerText()).includes('A00222'));
+// Kyoto City records: categories, the library of all 648 records, and the places-and-landscape layer
+await page.locator('#q').fill('');
+const leftText = await page.locator('aside.left').innerText();
+check('filters list Temple and Shrine with counts; Nanzen-ji is a temple', /Temple\s*\d{2,}/.test(leftText) && /Shrine\s*\d{2,}/.test(leftText) && nz.includes('Temple'), leftText.replace(/\n/g, ' ').slice(0, 200));
+await page.getByRole('button', { name: 'Kyoto City Records' }).click();
+await page.waitForSelector('.rec-list li');
+const lib0 = await page.locator('.sheet').innerText();
+await page.locator('.rec-q').fill('三門');
+await page.waitForTimeout(300);
+const libHit = await page.locator('.rec-list').innerText();
+check('record library: all 648 Kyoto City records with source and licence; search finds 南禅寺 三門 as part of a site', lib0.includes('All 648') && lib0.includes('CC BY 4.0') && lib0.includes('Not placed') && libHit.includes('南禅寺') && libHit.includes('Part of a site'), libHit.replace(/\n/g, ' ').slice(0, 160));
+await page.keyboard.press('Escape');
+await page.locator('aside.left label.chk', { hasText: 'Places and landscape' }).locator('input').check();
+await page.waitForTimeout(600);
+const geoVis = await page.evaluate(() => ({ vis: window.__kyotoMap.getLayoutProperty('geo-pt', 'visibility'), n: window.__kyotoMap.getSource('geography')._data.features.length, lines: window.__kyotoMap.getSource('geography')._data.features.filter((f) => f.geometry.type === 'LineString').length }));
+check('places and landscape layer switches on: points and river lines from the Kyoto City records', geoVis.vis === 'visible' && geoVis.n >= 30 && geoVis.lines >= 5, JSON.stringify(geoVis));
+await page.locator('aside.left label.chk', { hasText: 'Places and landscape' }).locator('input').uncheck();
 // back to Kinkaku-ji for the weather checks below
 await page.locator('#q').fill('A00265');
 await page.locator('.results button').first().click();
@@ -389,9 +406,9 @@ const zt = await page.locator('.walk').innerText();
 check('A00453 and its station share a street point: shown as "Next to this place", not as 0 m', zt.includes('Next to this place') && !/\b0 m\b/.test(zt), zt.replace(/\n/g, ' / ').slice(0, 220));
 await page.locator('.entry', { hasText: 'Walking Access' }).click();
 const cov = await page.locator('.cov').innerText();
-check('coverage counts named + OSM-tagged records by default (429 = 377 named + 52 OSM-tagged), five states listed', cov.includes('of 429 records') && cov.includes('within 3 km on foot') && cov.includes('Not connected to the street network'), cov.replace(/\n/g, ' / '));
+check('coverage counts named + OSM-tagged records by default (472 = 420 named + 52 OSM-tagged), five states listed', cov.includes('of 472 records') && cov.includes('within 3 km on foot') && cov.includes('Not connected to the street network'), cov.replace(/\n/g, ' / '));
 await page.getByRole('button', { name: /^Unverified/ }).click();
-check('including unverified records raises the denominator to 595', (await page.locator('.cov').innerText()).includes('of 595 records'));
+check('including unverified records raises the denominator to 638', (await page.locator('.cov').innerText()).includes('of 638 records'));
 await page.getByRole('button', { name: /^Unverified/ }).click();
 await page.locator('#q').fill('');
 await page.getByRole('button', { name: 'Show routes on map' }).click();
@@ -483,7 +500,7 @@ await page.keyboard.press('Escape');
 await page.locator('.status').getByRole('button', { name: 'Data & Sources' }).click();
 await page.waitForTimeout(900);
 const st = await page.locator('.sheet').innerText();
-check('sources panel holds the status chips and visitor statistics', st.includes('Map data loaded') && st.includes('Walking: prefecture (595 records)') && st.includes('Visitor statistics'));
+check('sources panel holds the status chips and visitor statistics', st.includes('Map data loaded') && st.includes('Walking: prefecture (638 records)') && st.includes('Visitor statistics'));
 check('sources panel: OSM, N03, Open-Meteo, hash check, quality notes', st.includes('ODbL') && st.includes('N03') && st.includes('Open-Meteo') && st.includes('all match') && st.includes('2771085349'));
 await page.screenshot({ path: `${out}/07-sources.png` });
 await page.keyboard.press('Escape');

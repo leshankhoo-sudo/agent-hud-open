@@ -10,17 +10,19 @@
   "walking_routes.geojson": "match"
  },
  "attractions": {
-  "records": 595,
+  "records": 638,
   "by_category": {
-   "attraction": 231,
+   "attraction": 159,
    "viewpoint": 243,
    "museum": 101,
-   "castle": 20
+   "castle": 20,
+   "temple": 88,
+   "shrine": 27
   },
   "unnamed": 218,
   "raw_records": 523,
   "merged_duplicates": 5,
-  "added_from_dsight": 77
+  "added_from_dsight": 120
  },
  "transport": {
   "records": 5479,
@@ -60,7 +62,7 @@
   "raw_package_status": "NOT_CALCULATED"
  },
  "point_municipality": {
-  "joined": 6074,
+  "joined": 6117,
   "outside_all_polygons": 0
  },
  "journeys": {

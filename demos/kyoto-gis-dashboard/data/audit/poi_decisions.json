@@ -1,30 +1,270 @@
 {
  "about": "Reviewed decisions for the POI audit (2026-11-15). scripts/audit_poi.py proposes, a person decides here, scripts/poi_reconcile.py applies. Nothing is deleted from data/raw: a merged record stays there and in data/audit, and is only left out of the map layer, with merged_into pointing at the record that keeps it.",
  "duplicates": [
-  {"class": "A", "keep": "A00297", "merge": ["A00296"], "name": "絵馬展示資料館",
+  {
+   "class": "A",
+   "keep": "A00297",
+   "merge": [
+    "A00296"
+   ],
+   "name": "絵馬展示資料館",
    "evidence": "Two OSM museum nodes 3 m apart, added by the same edit on 2019-06-29 (nodes 6578053381 and 6578080296); the second carries operator=三宅八幡神社. One museum exists there.",
-   "keep_reason": "keeps the node with the operator tag"},
-  {"class": "A", "keep": "A00222", "merge": ["A00223", "A00224", "A00225"], "name": "Best Breakfast Point",
+   "keep_reason": "keeps the node with the operator tag"
+  },
+  {
+   "class": "A",
+   "keep": "A00222",
+   "merge": [
+    "A00223",
+    "A00224",
+    "A00225"
+   ],
+   "name": "Best Breakfast Point",
    "evidence": "Four viewpoint nodes within 7 m, all added on 2018-03-25 in two batches (5502313424-25 and 5502354121/5502354221); names 'Best Breakfast Point' (x2) and 'Breakfast Point', English 'Best Breakfast Point' and the misspelling 'Beat Breakfast Point'. The same viewpoint entered twice.",
-   "keep_reason": "keeps the first node, whose name is the one used most"},
-  {"class": "A", "keep": "A00076", "merge": ["A00459"], "name": "黄桜記念館",
+   "keep_reason": "keeps the first node, whose name is the one used most"
+  },
+  {
+   "class": "A",
+   "keep": "A00076",
+   "merge": [
+    "A00459"
+   ],
+   "name": "黄桜記念館",
    "evidence": "Two OSM museum nodes 14 m apart with the same name: the older one (2022, operator カッパカントリー, brewery=yes) and one added on 2024-12-28 with no other tags. One memorial hall exists at Kizakura Kappa Country.",
-   "keep_reason": "keeps the older node with more tags"}
+   "keep_reason": "keeps the older node with more tags"
+  }
  ],
  "possible_duplicates": [
-  {"class": "B", "ids": ["A00085", "A00360"], "name": "おもかる石", "note": "1 m apart, same tags. At Fushimi Inari's Okusha Hohaisho there is a pair of these stone lanterns (left and right), so these may be the two stones. Kept both; needs a site check."},
-  {"class": "B", "ids": ["A00142", "A00231"], "name": "石塀小路", "note": "One lane, two points 134 m apart (2017 and 2018 edits). Probably the same lane marked twice, at different spots. Kept both; needs a decision on which point represents the lane."},
-  {"class": "B", "ids": ["A00021", "A00370"], "name": "保津峡展望台", "note": "Same name, 341 m apart. Could be two different viewpoints over the gorge. Kept both."}
+  {
+   "class": "B",
+   "ids": [
+    "A00085",
+    "A00360"
+   ],
+   "name": "おもかる石",
+   "note": "1 m apart, same tags. At Fushimi Inari's Okusha Hohaisho there is a pair of these stone lanterns (left and right), so these may be the two stones. Kept both; needs a site check."
+  },
+  {
+   "class": "B",
+   "ids": [
+    "A00142",
+    "A00231"
+   ],
+   "name": "石塀小路",
+   "note": "One lane, two points 134 m apart (2017 and 2018 edits). Probably the same lane marked twice, at different spots. Kept both; needs a decision on which point represents the lane."
+  },
+  {
+   "class": "B",
+   "ids": [
+    "A00021",
+    "A00370"
+   ],
+   "name": "保津峡展望台",
+   "note": "Same name, 341 m apart. Could be two different viewpoints over the gorge. Kept both."
+  }
  ],
  "related_groups": [
-  {"class": "C", "name": "股のぞき台 (傘松公園)", "ids": ["A00177", "A00280", "A00332", "A00281"], "note": "A row of separate 'look between your legs' platforms at Kasamatsu Park; each is a real platform. Kept, grouped."},
-  {"class": "C", "name": "股のぞき台 (天橋立ビューランド)", "ids": ["A00283", "A00284", "A00285", "A00287", "A00288", "A00289", "A00290"], "note": "Several separate platforms at Amanohashidate View Land within about 50 m, mapped in one edit on 2019-05-02. Kept, grouped."},
-  {"class": "C", "name": "宇治橋", "ids": ["A00455", "A00515", "A00186"], "note": "The Uji Bridge and its 三の間 (the old and the present one). Different features of the same bridge."},
-  {"class": "C", "name": "京都御所", "ids": ["A00258", "A00238"], "note": "The palace and its entrance."}
+  {
+   "class": "C",
+   "name": "股のぞき台 (傘松公園)",
+   "ids": [
+    "A00177",
+    "A00280",
+    "A00332",
+    "A00281"
+   ],
+   "note": "A row of separate 'look between your legs' platforms at Kasamatsu Park; each is a real platform. Kept, grouped."
+  },
+  {
+   "class": "C",
+   "name": "股のぞき台 (天橋立ビューランド)",
+   "ids": [
+    "A00283",
+    "A00284",
+    "A00285",
+    "A00287",
+    "A00288",
+    "A00289",
+    "A00290"
+   ],
+   "note": "Several separate platforms at Amanohashidate View Land within about 50 m, mapped in one edit on 2019-05-02. Kept, grouped."
+  },
+  {
+   "class": "C",
+   "name": "宇治橋",
+   "ids": [
+    "A00455",
+    "A00515",
+    "A00186"
+   ],
+   "note": "The Uji Bridge and its 三の間 (the old and the present one). Different features of the same bridge."
+  },
+  {
+   "class": "C",
+   "name": "京都御所",
+   "ids": [
+    "A00258",
+    "A00238"
+   ],
+   "note": "The palace and its entrance."
+  }
  ],
  "distinct": [
-  {"class": "D", "ids": ["A00078", "A00488"], "name": "西から見た二条城東南隅櫓の眺め", "note": "Two different viewpoints 387 m apart: their English names describe different views (A00078: from the ruins of the donjon; A00488: the southeast corner turret from the west). A00078's Japanese name looks copied from A00488's; it is left as the source has it and flagged here."},
-  {"class": "D", "ids": ["A00478", "A00479"], "name": "KYOTO SAMURAI NINJA MUSEUM", "note": "Different addresses (堀之上町 109 and 東大文字町 292-4): two premises."}
+  {
+   "class": "D",
+   "ids": [
+    "A00078",
+    "A00488"
+   ],
+   "name": "西から見た二条城東南隅櫓の眺め",
+   "note": "Two different viewpoints 387 m apart: their English names describe different views (A00078: from the ruins of the donjon; A00488: the southeast corner turret from the west). A00078's Japanese name looks copied from A00488's; it is left as the source has it and flagged here."
+  },
+  {
+   "class": "D",
+   "ids": [
+    "A00478",
+    "A00479"
+   ],
+   "name": "KYOTO SAMURAI NINJA MUSEUM",
+   "note": "Different addresses (堀之上町 109 and 東大文字町 292-4): two premises."
+  }
  ],
- "dashboard_records_inside_new_sites": "Filled in by scripts/poi_reconcile.py from data/audit/poi_audit.json: dashboard records that are part of a CSV site (for example the Nijo Castle viewpoints) get parent_id."
+ "dashboard_records_inside_new_sites": "Filled in by scripts/poi_reconcile.py from data/audit/poi_audit.json: dashboard records that are part of a CSV site (for example the Nijo Castle viewpoints) get parent_id.",
+ "manual_sites": [
+  {
+   "site": "高山寺",
+   "ref": "way/358636058",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 1000005 is at 右京区栂尾高山寺; way/358636058 (Q986750) is the Kōzan-ji at Toganoo; the other OSM 高山寺 is a different temple in 中京区"
+  },
+  {
+   "site": "本願寺",
+   "ref": "way/372460724",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 1000031/1000032/1000059/1000060/1000095 are 西本願寺にある, and 2000074 gives 堀川花屋町下る; way/372460724 is 西本願寺 (Q1146038) at Horikawa-Hanayacho"
+  },
+  {
+   "site": "醍醐寺",
+   "ref": "relation/5897672",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says these are Daigo-ji's 五重塔, 金堂, 上醍醐 薬師堂 and 清瀧宮; relation/5897672 (Q1157535) is the Daigo-ji precinct in 伏見区; the other OSM places named 醍醐寺 are other temples (福知山市 and elsewhere)"
+  },
+  {
+   "site": "醍醐寺三宝院",
+   "ref": "way/400537118",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says these are buildings of 三宝院, the 門跡 temple of Daigo-ji; way/400537118 三宝院 (Q3471686) lies in the Daigo-ji precinct"
+  },
+  {
+   "site": "法界寺",
+   "ref": "node/5175641302",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 1000100 is 法界寺's national-treasure 阿弥陀堂; node/5175641302 (Q11555272) is 法界寺 at Hino, 伏見区, the temple of that hall"
+  },
+  {
+   "site": "養源院",
+   "ref": "node/1422972915",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 1000108 holds 俵屋宗達's paintings; node/1422972915 (Q11666843) is the 養源院 near Sanjūsangen-dō, 東山区, which holds them"
+  },
+  {
+   "site": "妙蓮寺",
+   "ref": "way/736961793",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 2000084 gives 寺之内大宮東妙蓮寺前町875; way/736961793 (Q11447007) is 妙蓮寺 in that town, 上京区"
+  },
+  {
+   "site": "安養寺",
+   "ref": "node/5204146112",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 1000151 is the 倒蓮華寺 at 新京極通蛸薬師東南角東側町511, 中京区; node/5204146112 is named 安養寺(傾蓮華寺) at that corner"
+  },
+  {
+   "site": "天球院",
+   "ref": "way/1073346918",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 1000086 is in 妙心寺塔頭の天球院; way/1073346918 天球院 lies inside the verified 妙心寺 precinct"
+  },
+  {
+   "site": "由岐神社",
+   "ref": "way/319198861",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 2000085 is beside the approach to Kurama-dera, 鞍馬本町; way/319198861 (Q11577577) is 由岐神社 on that approach"
+  },
+  {
+   "site": "永観堂",
+   "ref": "way/859305371",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 2000005 is behind 禅林寺 御影堂, 浄土寺永観堂町48; way/859305371 is 永観堂 禅林寺 (Q2380134)"
+  },
+  {
+   "site": "徳林庵",
+   "ref": "way/183367005",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says these are the 山科地蔵 / 四ノ宮地蔵 of 徳林庵; way/183367005 is named 徳林庵 (六角堂・山科地蔵) at Shinomiya, 山科区"
+  },
+  {
+   "site": "古知谷",
+   "ref": "way/519457510",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 2000035 is in 左京区古知谷の阿弥陀寺境内 (大原古知平町); way/519457510 is 古知谷阿弥陀寺"
+  },
+  {
+   "site": "嵯峨・兒神社",
+   "ref": "node/2385156982",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 2000038 is at 嵯峨広沢池畔の兒神社 (嵯峨釣殿町); node/2385156982 兒神社 is the only one, beside Hirosawa Pond"
+  },
+  {
+   "site": "御堂ヶ池1号墳",
+   "ref": "node/10684663852",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 11000001 was moved and rebuilt on さざれ石山 at 右京区鳴滝音戸山町12-1; node/10684663852 御堂ヶ池古墳 1号墳 lies in that town (the GSI address search places the town about 1 km away, at its centre)"
+  },
+  {
+   "site": "嵯峨七ッ塚古墳",
+   "ref": "node/5510899066",
+   "evidence": "the DSIGHT_1.csv description (Kyoto City) says 11000003 lies in the fields east of Ōsawa Pond, 右京区北嵯峨洞ノ内町付近; node/5510899066 七ツ塚古墳 lies there"
+  }
+ ],
+ "manual_parents": [
+  {
+   "records": [
+    "1000169"
+   ],
+   "site": "京都国立博物館",
+   "evidence": "the record is 京都国立博物館所蔵 (held by the museum)"
+  },
+  {
+   "records": [
+    "2000066",
+    "2000067"
+   ],
+   "site": "下鴨神社",
+   "evidence": "糺の森: the description says 下鴨神社境内 (inside Shimogamo Shrine)"
+  },
+  {
+   "records": [
+    "2000023",
+    "2000024",
+    "2000025"
+   ],
+   "site": "貴船神社",
+   "evidence": "the descriptions place them at 貴船神社奥宮, the inner shrine of Kifune Shrine"
+  },
+  {
+   "records": [
+    "2000011"
+   ],
+   "site": "仁和寺",
+   "evidence": "御室桜: the description says 仁和寺境内中門"
+  },
+  {
+   "records": [
+    "2000014",
+    "2000015"
+   ],
+   "site": "上賀茂神社",
+   "evidence": "the descriptions say 上賀茂神社境内 / 上賀茂神社東部渉渓園内"
+  },
+  {
+   "records": [
+    "1000172"
+   ],
+   "site": "法金剛院",
+   "evidence": "the description calls this 地蔵院 a 法金剛院塔頭 (sub-temple of Hōkongō-in), address 花園扇野町49"
+  },
+  {
+   "records": [
+    "1000149"
+   ],
+   "site": "白峯神宮",
+   "evidence": "the description of 精大明神像 begins 白峯神宮"
+  }
+ ]
 }

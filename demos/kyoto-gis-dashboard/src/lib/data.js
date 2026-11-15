@@ -5,6 +5,10 @@ export const ATTRACTION_CATS = [
   { key: 'viewpoint', label: 'Viewpoint', color: '#3fe0c5' },
   { key: 'museum', label: 'Museum', color: '#b18cff' },
   { key: 'castle', label: 'Castle', color: '#f2c86b' },
+  // after the POI audit: temples, shrines and gardens told apart (scripts/poi_reconcile.py, category_basis)
+  { key: 'temple', label: 'Temple', color: '#f78fb3' },
+  { key: 'shrine', label: 'Shrine', color: '#ff5b4a' },
+  { key: 'garden', label: 'Garden', color: '#9bd36a' },
 ];
 
 export const TRANSPORT_TYPES = [
@@ -14,7 +18,7 @@ export const TRANSPORT_TYPES = [
 ];
 
 export const CATEGORY_LABEL = {
-  attraction: 'Attraction', viewpoint: 'Viewpoint', museum: 'Museum', castle: 'Castle',
+  attraction: 'Attraction', viewpoint: 'Viewpoint', museum: 'Museum', castle: 'Castle', temple: 'Temple', shrine: 'Shrine', garden: 'Garden',
   bus_stop: 'Bus stop', bus_station: 'Bus station', railway_station: 'Railway station', railway_halt: 'Railway halt', tram_stop: 'Tram stop',
 };
 
@@ -37,6 +41,8 @@ const FILES = {
   bus: 'bus/index.json',
   context: 'attraction_context.json',
   relations: 'poi_relations.json',
+  records: 'dsight_records.json',       // every Kyoto City DSIGHT_1.csv record and what was done with it
+  geography: 'dsight_geography.geojson', // its place names, mountains and rivers that two sources place
 };
 
 // Each file is loaded on its own so one failure is reported without hiding the others.

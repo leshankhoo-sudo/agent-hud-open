@@ -60,7 +60,8 @@ def nfkc(s):
 
 
 def norm(s):
-    return re.sub(r"[\s・･·\-‐ー()（）「」『』<>＜＞、,。.　]", "", nfkc(s)).lower()
+    # ヶ/ケ and ッ/ツ are written either way in names (御堂ヶ池, 七ッ塚)
+    return re.sub(r"[\s・･·\-‐ー()（）「」『』<>＜＞、,。.　]", "", nfkc(s)).lower().replace("ヶ", "ケ").replace("ッ", "ツ")
 
 
 def dist(a, b):
@@ -132,6 +133,11 @@ def main():
     ref = json.load(open(os.path.join(ROOT, "data", "cache", "osm_reference_kyoto.json"), encoding="utf-8"))
     wdc = json.load(open(os.path.join(ROOT, "data", "cache", "wikidata_ja_en_kyoto_box.json"), encoding="utf-8"))
     nodes = json.load(open(os.path.join(ROOT, "data", "cache", "osm_attraction_nodes.json"), encoding="utf-8"))["nodes"]
+    # the official addresses, placed by the GSI address search (scripts/fetch_gsi_geocode.py): only an
+    # address with exactly one result whose own name contains the address's town is used
+    gsi_path = os.path.join(ROOT, "data", "cache", "gsi_address.json")
+    gsi = json.load(open(gsi_path, encoding="utf-8")) if os.path.exists(gsi_path) else {}
+    gsi_pt = {a: (v["matches"][0]["lon"], v["matches"][0]["lat"], v["matches"][0]["title"]) for a, v in gsi.items() if len(v.get("matches", [])) == 1}
     wd_xy = {w["q"]: tuple(w["xy"]) for w in wdc if w.get("xy")}
     wd_by_label = collections.defaultdict(list)
     for w in wdc:
@@ -211,10 +217,24 @@ def main():
         # the building code also holds statues, paintings and sutras: the description says which
         if kind == "building" and re.search(r"美術工芸品|彫刻|絵画|書跡|典籍|工芸品|木造.{0,12}像|坐像|立像", r[12] + r[8]):
             kind = "object"
-        site, part = split_name(r[8]) if series in "12" else (nfkc(r[8]).strip(), None)
+        site, part = split_name(r[8]) if series in "12" and kind != "burial mound" else (nfkc(r[8]).strip(), None)
         recs.append({"csv_id": r[0], "series": series, "code": r[4], "group": r[7].strip() or None, "name": r[8].strip(), "kana": r[9].strip(),
                      "alt_name": r[10].strip() or None, "address": r[17].strip() or None, "kind": kind, "site_from_name": site, "part": part,
                      })   # the description text is not copied: the file's source and licence are not stated
+    # names known as places: OSM reference features and Wikidata items (used to cut tree names)
+    place_names = set(wd_by_label)
+    for e in ref["elements"]:
+        for k in ("name", "name:ja", "alt_name", "official_name"):
+            if e["tags"].get(k):
+                place_names.add(norm(e["tags"][k]))
+    for x in recs:
+        if x["series"] == "2":
+            n = nfkc(x["name"]).strip()
+            stem = n.split("・", 1)[1] if re.match(r"^[^・]{1,3}・", n) else n          # '嵯峨・兒神社の…' -> '兒神社の…'
+            cuts = [m.start() for m in re.finditer(r"[の、]", stem)]
+            hit = next((stem[:c] for c in cuts if norm(stem[:c]) in place_names), None)
+            if hit:
+                x["site_from_name"], x["part"] = hit, stem[len(hit):].lstrip("の、") or None
     # a named tree belongs to the site its name starts with ('北野天満宮しらがしの森' -> 北野天満宮,
     # '慈照寺の千代の槙' -> 慈照寺), when that site is known from the cultural-property records
     known = set()
@@ -228,6 +248,13 @@ def main():
             if hit:
                 x["site_from_name"], x["part"] = hit, n[len(hit):].lstrip("のの、 ") or None
 
+    decisions = json.load(open(os.path.join(OUT, "poi_decisions.json"), encoding="utf-8"))
+    for mp in decisions.get("manual_parents", []):
+        for x in recs:
+            if x["csv_id"] in mp["records"]:
+                x["part"] = x["name"] if not x["part"] or x["site_from_name"] == x["name"] else x["part"]
+                x["site_from_name"] = mp["site"]
+                x["parent_evidence"] = mp["evidence"]
     # a site per name: records whose site names share an alias are one site (column 7 is not used to
     # group: one column-7 value holds both 法金剛院 and 地蔵院 records); burial mounds are each their own site
     parent = {}
@@ -253,14 +280,24 @@ def main():
     groups = collections.defaultdict(list)
     for x in keyed:
         groups[find("r" + x["csv_id"])].append(x)
+    # an address that objects of two or more sites share is where they are kept (a museum), not a site
+    obj_addr_sites = collections.defaultdict(set)
+    for key, xs in groups.items():
+        for x in xs:
+            if x["address"] and x["kind"] == "object":
+                obj_addr_sites[x["address"]].add(key)
     sites = []
     for key, xs in groups.items():
         names = collections.Counter(x["site_from_name"] for x in xs)
         site = names.most_common(1)[0][0]
         al = set().union(*(x["aliases"] for x in xs))
-        areas = {address_area(x["address"]) for x in xs if x["address"]} - {None}
+        # an object's address is where it is kept (often the Kyoto National Museum, 東山区茶屋町527), not
+        # where its temple is: only buildings, trees, burial mounds and guardian figures place a site
+        insitu = [x for x in xs if x["address"] and len(obj_addr_sites[x["address"]]) < 2]
+        areas = {address_area(x["address"]) for x in insitu} - {None}
         sites.append({"key": key, "site": site, "aliases": sorted(al), "records": [x["csv_id"] for x in xs], "areas": sorted(areas),
-                      "addresses": sorted({x["address"] for x in xs if x["address"]}), "column7": sorted({x["group"] for x in xs if x["group"]})})
+                      "addresses": sorted({x["address"] for x in insitu}), "object_addresses": sorted({x["address"] for x in xs if x["address"] and x["kind"] == "object"}),
+                      "column7": sorted({x["group"] for x in xs if x["group"]})})
         for x in xs:
             x["site_key"] = key
             del x["aliases"]
@@ -285,7 +322,22 @@ def main():
         return (t.get("amenity") == "place_of_worship" or t.get("historic") in ("castle", "tomb", "archaeological_site", "memorial", "monument") or t.get("tourism") in ("attraction", "museum"),
                 not e["osm"].startswith("node"), "wikidata" in t)
 
+    by_ref = {e["osm"]: e for e in els}
+    manual = {norm(m["site"]): m for m in decisions.get("manual_sites", [])}
     for s in sites:
+        m = next((manual[norm(a)] for a in [s["site"]] + s["aliases"] if norm(a) in manual), None)
+        if m and m["ref"] in by_ref:
+            e = by_ref[m["ref"]]
+            pt = (e["lon"], e["lat"])
+            q = e["tags"].get("wikidata")
+            wd = f"; Wikidata {q} is {round(dist(pt, wd_xy[q]))} m from it" if q in wd_xy else (f"; Wikidata {q}" if q else "")
+            s.update(osm=e["osm"], osm_name=e["tags"].get("name"), xy=[round(pt[0], 7), round(pt[1], 7)], muni=muni(pt), wikidata=q,
+                     name_en=e["tags"].get("name:en") or next((w["en"] for w in wdc if w["q"] == q and w.get("en")), None),
+                     name_en_source="OSM name:en" if e["tags"].get("name:en") else ("Wikidata label" if any(w["q"] == q and w.get("en") for w in wdc) else None),
+                     osm_tags={k: e["tags"][k] for k in ("amenity", "historic", "tourism", "religion", "denomination", "building", "natural") if k in e["tags"]},
+                     point_is="site centre (polygon centre)" if not e["osm"].startswith("node") else "OSM point",
+                     status="Verified", reviewed=True, reason=f"Reviewed: {m['evidence']}{wd}")
+            continue
         cands = {}
         for a in s["aliases"]:
             for e in by_name.get(norm(a), []):
@@ -300,7 +352,25 @@ def main():
                     cands.setdefault(e["osm"], e)
         cands = list(cands.values())
         s["osm_candidates"] = len(cands)
-        if s["areas"]:
+        addr_pts = [gsi_pt[nfkc(a).strip()] for a in s["addresses"] if nfkc(a).strip() in gsi_pt]
+        # a block number (番地) places the address closely; a town alone gives the town's centre
+        tol = 600 if addr_pts and all("番地" in q[2] for q in addr_pts) else 1500
+        if addr_pts:
+            s["address_point"] = {"lon": addr_pts[0][0], "lat": addr_pts[0][1], "gsi_title": addr_pts[0][2]}
+        if addr_pts:
+            # the official address decides between same-name places: keep those within 600 m of it
+            near_addr = [e for e in cands if min(dist((e["lon"], e["lat"]), q[:2]) for q in addr_pts) <= tol]
+            if cands and not near_addr:
+                if tol == 600:   # the same-name OSM places are elsewhere; the official address is exact enough
+                    q0 = addr_pts[0]
+                    s.update(osm=None, osm_name=None, xy=[round(q0[0], 7), round(q0[1], 7)], muni=muni(q0[:2]), wikidata=None, name_en=None, name_en_source=None,
+                             osm_tags={}, point_is="official address (GSI address search, block level)", status="Verified",
+                             reason=f"the OSM places named {s['site']} are other places; placed at its official Kyoto City address, which the GSI address search finds at block level ({q0[2]})")
+                    continue
+                s["status"], s["reason"] = "Unverified Location", f"no OSM place named {s['site']} lies within {tol} m of the official address ({addr_pts[0][2]})"
+                continue
+            cands = near_addr
+        if s["areas"] and not addr_pts:
             inarea = [e for e in cands if any(in_area(muni((e["lon"], e["lat"])), ar) for ar in s["areas"])]
             if cands and not inarea:
                 s["status"], s["reason"] = "Unverified Location", f"OSM places named {s['site']} lie outside the address area ({', '.join(s['areas'])})"
@@ -316,7 +386,29 @@ def main():
             else:
                 clusters.append([e])
         if not clusters:
-            s["status"], s["reason"] = "Unverified Location", "no OpenStreetMap place with this name in Kyoto Prefecture"
+            # not in OSM: a Wikidata item with this Japanese label that lies at the official address
+            hit = None
+            for a in s["aliases"]:
+                for w in wd_by_label.get(norm(a), []):
+                    if addr_pts and min(dist(tuple(w["xy"]), q[:2]) for q in addr_pts) <= tol:
+                        hit = w
+                        break
+                if hit:
+                    break
+            if hit:
+                d0 = min(dist(tuple(hit["xy"]), q[:2]) for q in addr_pts)
+                s.update(osm=None, osm_name=None, xy=[round(hit["xy"][0], 7), round(hit["xy"][1], 7)], muni=muni(tuple(hit["xy"])), wikidata=hit["q"],
+                         name_en=hit.get("en"), name_en_source="Wikidata label" if hit.get("en") else None, osm_tags={}, wd_label=hit.get("ja"),
+                         point_is="Wikidata coordinates", status="Verified",
+                         reason=f"Wikidata {hit['q']} ({hit.get('ja')}) and the official address placed by the GSI address search ({addr_pts[0][2]}) agree within {round(d0)} m")
+                continue
+            if addr_pts and all("番地" in q[2] for q in addr_pts):
+                q0 = addr_pts[0]
+                s.update(osm=None, osm_name=None, xy=[round(q0[0], 7), round(q0[1], 7)], muni=muni(q0[:2]), wikidata=None, name_en=None, name_en_source=None,
+                         osm_tags={}, point_is="official address (GSI address search, block level)", status="Verified",
+                         reason=f"not in OSM or Wikidata; placed at its official Kyoto City address, which the GSI address search finds at block level ({q0[2]})")
+                continue
+            s["status"], s["reason"] = "Unverified Location", "no OpenStreetMap place with this name in Kyoto Prefecture" + ("" if addr_pts else ", and no usable official address")
             continue
         # a large temple or shrine: its precinct polygon plus same-name signs or attraction points
         # elsewhere in the precinct are one place (same ward, within 1.2 km, and either the same
@@ -363,20 +455,27 @@ def main():
                  name_en_source="OSM name:en" if best["tags"].get("name:en") else ("Wikidata label" if any(w["q"] == qid and w.get("en") for w in wdc) else None),
                  osm_tags={k: best["tags"][k] for k in ("amenity", "historic", "tourism", "religion", "denomination", "building", "natural") if k in best["tags"]},
                  point_is="site centre (polygon centre)" if not best["osm"].startswith("node") else "OSM point")
-        if wd_pt is None:
-            s["status"], s["reason"] = "Unverified Location", "found in OpenStreetMap only; no independent second source within 600 m"
-        elif dist(pt, wd_pt) > 600:
+        d_addr = min(dist(pt, q[:2]) for q in addr_pts) if addr_pts else None
+        if wd_pt is not None and dist(pt, wd_pt) <= 600:
+            s["status"] = "Verified"
+            s["reason"] = f"OSM {best['osm']} and {wd_how} agree within {round(dist(pt, wd_pt))} m" + (
+                f"; the official address (GSI: {addr_pts[0][2]}) is {round(d_addr)} m away" if d_addr is not None else (f"; inside the address area {', '.join(s['areas'])}" if s["areas"] else ""))
+        elif d_addr is not None and d_addr <= tol:
+            s["status"] = "Verified"
+            s["reason"] = f"OSM {best['osm']} and the official address placed by the GSI address search ({addr_pts[0][2]}) agree within {round(d_addr)} m"
+        elif wd_pt is not None:
             s["status"], s["reason"] = "Unverified Location", f"OSM and {wd_how} are {round(dist(pt, wd_pt))} m apart"
         else:
-            s["status"] = "Verified"
-            s["reason"] = f"OSM {best['osm']} and {wd_how} agree within {round(dist(pt, wd_pt))} m" + (f"; inside the address area {', '.join(s['areas'])}" if s["areas"] else "")
+            s["status"], s["reason"] = "Unverified Location", "found in OpenStreetMap only; no independent second source within 600 m"
 
     # sites located at the same OSM feature are one site
     by_osm = {}
     for s in list(sites):
-        if s.get("osm") and s["status"] == "Verified":
-            if s["osm"] in by_osm:
-                t = by_osm[s["osm"]]
+        ref = s.get("osm") or (("wikidata/" + s["wikidata"]) if s.get("wikidata") else None) or (("dsight/" + sorted(s["records"])[0]) if s.get("xy") else None)
+        if ref and s["status"] == "Verified":
+            s["ref"] = ref
+            if ref in by_osm:
+                t = by_osm[ref]
                 t["records"] += s["records"]; t["aliases"] = sorted(set(t["aliases"]) | set(s["aliases"]))
                 t["addresses"] = sorted(set(t["addresses"]) | set(s["addresses"])); t["column7"] = sorted(set(t["column7"]) | set(s["column7"]))
                 for x in recs:
@@ -384,7 +483,7 @@ def main():
                         x["site_key"] = t["key"]
                 sites.remove(s)
             else:
-                by_osm[s["osm"]] = s
+                by_osm[ref] = s
 
     # ---------------- 4. CSV sites against the dashboard ----------------
     for s in sites:
@@ -475,7 +574,7 @@ def main():
     for s in sites:
         if s["status"] == "Verified" and not s.get("parent_id"):
             feats.append({"type": "Feature", "geometry": {"type": "Point", "coordinates": s["xy"]},
-                          "properties": {"site": s["site"], "aliases": s["aliases"], "osm": s["osm"], "osm_name": s["osm_name"], "wikidata": s["wikidata"],
+                          "properties": {"site": s["site"], "aliases": s["aliases"], "ref": s["ref"], "osm": s["osm"], "osm_name": s["osm_name"], "wikidata": s["wikidata"],
                                          "name_en": s["name_en"], "name_en_source": s["name_en_source"], "osm_tags": s["osm_tags"], "point_is": s["point_is"], "muni": s["muni"],
                                          "dsight_ids": s["records"], "location_evidence": s["reason"]}})
     json.dump({"type": "FeatureCollection", "features": feats}, open(os.path.join(OUT, "dsight_sites.geojson"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)

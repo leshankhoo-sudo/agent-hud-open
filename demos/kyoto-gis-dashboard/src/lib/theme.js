@@ -2,7 +2,8 @@
 // the light theme only uses deeper shades of the same hues so they stay readable on a pale map.
 export const MAP_THEME = {
   dark: {
-    cat: { attraction: '#ff8a4c', viewpoint: '#3fe0c5', museum: '#b18cff', castle: '#f2c86b' },
+    cat: { attraction: '#ff8a4c', viewpoint: '#3fe0c5', museum: '#b18cff', castle: '#f2c86b', temple: '#f78fb3', shrine: '#ff5b4a', garden: '#9bd36a' },
+    geo: { land: '#c9b98a', water: '#7cc4ff', area: '#e8e2ff' },
     transit: { bus: '#7f93d8', rail: '#eeeefa', tram: '#ff6fae' },
     stroke: '#07080f',
     // boundary: soft white-violet light instead of the earlier bright blue; it still glows and breathes
@@ -24,7 +25,8 @@ export const MAP_THEME = {
     },
   },
   light: {
-    cat: { attraction: '#e2622b', viewpoint: '#0f9d86', museum: '#7a55d6', castle: '#c08a12' },
+    cat: { attraction: '#e2622b', viewpoint: '#0f9d86', museum: '#7a55d6', castle: '#c08a12', temple: '#c4457a', shrine: '#cf3123', garden: '#4f8f25' },
+    geo: { land: '#7a6533', water: '#2b6fb3', area: '#5a4f8a' },
     transit: { bus: '#4a6db0', rail: '#4d4038', tram: '#d2447c' },
     stroke: '#fffaf1',
     outline: { line: '#8a5f45', glow: '#c98a5e', fill: '#c9a27c' },

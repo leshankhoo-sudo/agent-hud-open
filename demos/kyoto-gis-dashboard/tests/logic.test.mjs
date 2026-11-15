@@ -22,8 +22,8 @@ test('record counts match data_inventory.json (the raw package; the map layer is
 });
 
 test('filter counts', () => {
-  // 523 raw records - 5 merged duplicates + 77 sites added from DSIGHT_1.csv (see data/audit)
-  assert.equal(filterAttractions(A, ['attraction', 'viewpoint', 'museum', 'castle']).length, 595);
+  // 523 raw records - 5 merged duplicates + 120 sites added from DSIGHT_1.csv (see data/audit)
+  assert.equal(filterAttractions(A, ['attraction', 'viewpoint', 'museum', 'castle', 'temple', 'shrine', 'garden']).length, 638);
   assert.equal(filterAttractions(A, ['museum']).length, 101);
   assert.equal(filterAttractions(A, ['castle', 'museum']).length, 121);
   assert.equal(filterAttractions(A, []).length, 0);
@@ -36,7 +36,7 @@ test('filter counts', () => {
 });
 
 test('IDs are kept and unique, coordinates are [lon, lat] inside Kyoto Prefecture bounds', () => {
-  assert.equal(new Set(A.map((f) => f.properties.id)).size, 595);
+  assert.equal(new Set(A.map((f) => f.properties.id)).size, 638);
   assert.equal(new Set(T.map((f) => f.properties.id)).size, 5479);
   for (const f of [...A, ...T]) {
     const [lon, lat] = f.geometry.coordinates;
@@ -61,7 +61,7 @@ test('KDE output is documented and consistent', () => {
   assert.equal(meta.search_radius_m, 2000);
   assert.equal(meta.cell_size_m, 500);
   assert.match(meta.crs, /6674/);
-  assert.ok(Math.abs(meta.check_sum_density_x_cell_area - 595) < 45);
+  assert.ok(Math.abs(meta.check_sum_density_x_cell_area - 638) < 48);
   const kde = J('analysis/density_kde.geojson');
   assert.equal(kde.features.length, meta.cells_written);
 });
@@ -119,7 +119,7 @@ test('walking pilot results: 19 records, bus and rail separate, no zero or strai
   assert.equal(cov.within + cov.beyond + cov.noRoute + cov.notComputed, 19);
 });
 
-test('walking prefecture: all 595 records, reasons kept apart, pilot rows reproduced, no straight-line substitutes', () => {
+test('walking prefecture: all 638 records, reasons kept apart, pilot rows reproduced, no straight-line substitutes', () => {
   const w = J('walking_routes_prefecture.geojson');
   const a = walkingAvailability(w);
   assert.equal(a.available, true);
@@ -444,15 +444,19 @@ test('POI audit: raw records untouched; confirmed duplicates merged with a point
   }
   assert.deepEqual(Object.keys(rel.merged).sort(), ['A00223', 'A00224', 'A00225', 'A00296', 'A00459']);
   const added = A.filter((f) => f.properties.dsight_ids);
-  assert.equal(added.length, 77);
+  assert.equal(added.length, 120);
   for (const f of added) {
     const p = f.properties;
     assert.match(p.id, /^A\d{5}$/);
     assert.ok(Number(p.id.slice(1)) > 523, p.id);
-    assert.match(p.location_evidence, /^OSM (node|way|relation)\/\d+ and Wikidata Q\d+ .* agree within \d+ m/);
-    assert.match(p.wikidata, /^Q\d+$/);
+    // two sources agree (OSM, Wikidata, the official address placed by GSI), or a reviewed match that quotes
+    // the official description, or the official address itself at block level
+    assert.match(p.location_evidence, /agree within \d+ m|^Reviewed: the DSIGHT_1\.csv description|placed at its official Kyoto City address, which the GSI address search finds at block level/);
+    if (p.wikidata) assert.match(p.wikidata, /^Q\d+$/);
+    assert.ok(p.osm_element || p.wikidata || /official Kyoto City address/.test(p.location_evidence), p.id);
     assert.ok(pm.points[p.id], `${p.id} outside the N03 polygons`);
-    assert.ok(['attraction', 'museum', 'castle'].includes(p.category));
+    assert.ok(['attraction', 'museum', 'castle', 'temple', 'shrine', 'garden'].includes(p.category));
+    assert.ok(p.category_basis, p.id);
     // no added site repeats a raw record: none has the same name within 700 m
     const [x, y] = f.geometry.coordinates;
     for (const g of raw) {
@@ -465,7 +469,7 @@ test('POI audit: raw records untouched; confirmed duplicates merged with a point
 });
 
 test('POI audit: Nanzen-ji is on the map and found by 南禅寺, Nanzen-ji and nanzenji', () => {
-  const all = ['attraction', 'viewpoint', 'museum', 'castle'];
+  const all = ['attraction', 'viewpoint', 'museum', 'castle', 'temple', 'shrine', 'garden'];
   const data = { attractions: J('attractions.geojson'), transport: J('transport.geojson'), namesEn: J('names_en.json') };
   applyEnglishNames(data);
   const F = data.attractions.features;
@@ -480,4 +484,45 @@ test('POI audit: Nanzen-ji is on the map and found by 南禅寺, Nanzen-ji and n
   assert.deepEqual(kids.sort(), ['三門', '方丈', '白檀'].sort());
   // a merged duplicate's ID still finds the record that keeps it
   assert.deepEqual(filterAttractions(F, all, 'A00224').map((f) => f.properties.id), ['A00222']);
+});
+
+// ---------- Kyoto City records (DSIGHT_1.csv): every record has an outcome; categories; geography ----------
+test('Kyoto City records: all 648 kept with ID, name, source and one of five outcomes; links point at map records', () => {
+  const R = J('dsight_records.json');
+  assert.equal(R.records.length, 648);
+  assert.equal(new Set(R.records.map((r) => r.id)).size, 648);
+  assert.equal(R.source.licence, 'CC BY 4.0');
+  assert.match(R.source.url, /data\.city\.kyoto\.lg\.jp\/resource\/\?id=7052/);
+  const ids = new Set(A.map((f) => f.properties.id));
+  const geo = new Set(J('dsight_geography.geojson').features.map((f) => f.properties.csv_id));
+  const n = {};
+  for (const r of R.records) {
+    assert.ok(['attraction', 'sub', 'culture', 'geography', 'unverified'].includes(r.outcome), r.id);
+    assert.ok(r.name && r.series, r.id);
+    n[r.outcome] = (n[r.outcome] || 0) + 1;
+    if (r.site_id) assert.ok(ids.has(r.site_id), `${r.id} -> ${r.site_id}`);
+    if (r.outcome === 'sub' || r.outcome === 'attraction') assert.ok(r.site_id, r.id);
+    if (r.outcome === 'geography') assert.ok(geo.has(r.id) || r.site_id, r.id);
+    if (r.outcome === 'unverified') { assert.ok(!r.site_id && !geo.has(r.id), r.id); assert.ok(r.evidence, r.id); }   // kept, never placed
+    for (const m of r.mentions || []) assert.ok(ids.has(m), `${r.id} mentions ${m}`);
+  }
+  assert.deepEqual(n, R.outcomes);
+  // the original text is kept as published
+  const raw = readFileSync(new URL('../data/raw/dsight/DSIGHT_1.csv', import.meta.url), 'utf8');
+  for (const r of R.records.slice(0, 40)) assert.ok(raw.includes(r.name), r.name);
+});
+
+test('categories: temples and shrines told apart with a stated basis; the source category is kept', () => {
+  const by = countBy(A, 'category');
+  assert.ok(by.temple > 80 && by.shrine > 20 && by.viewpoint === 243 && by.museum === 101 && by.castle === 20, JSON.stringify(by));
+  for (const f of A) {
+    const p = f.properties;
+    assert.ok(p.category_basis, p.id);
+    if (!p.dsight_ids) { assert.ok(p.source_category, p.id); if (p.source_category !== 'attraction') assert.equal(p.category, p.source_category); }
+    if (p.category === 'shrine') assert.ok(!/株式会社|本社$/.test(p.name || ''), p.name);
+  }
+  const g = J('dsight_geography.geojson').features;
+  assert.ok(g.filter((f) => f.geometry.type === 'Point').length >= 25);
+  for (const f of g) if (f.geometry.type === 'Point') assert.match(f.properties.evidence, /agree within \d+ m/);
+  assert.ok(g.some((f) => f.geometry.type === 'LineString' && f.properties.kind === 'river'));
 });
