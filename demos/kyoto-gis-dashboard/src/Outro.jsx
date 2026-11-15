@@ -7,7 +7,7 @@ import { useScene } from './lib/depth.js';
 // slide down one after another, then text and the team names rise in.
 export const TEAM = ['KHOO LE SHAN', 'ER ZE XI', 'NICHOLAS LIM JUN XIAN', 'LUI YING HUI'];
 const PANELS = [
-  { k: '01', t: 'Explore', s: '523 attraction records across Kyoto Prefecture' },
+  { k: '01', t: 'Explore', s: 'Attraction records across Kyoto Prefecture, checked against a second list and deduplicated' },
   { k: '02', t: 'Connect', s: '5,479 transit stops and road-network walking access' },
   { k: '03', t: 'Measure', s: 'Kernel density, live forecasts and credited photos' },
   { k: '04', t: 'Share', s: 'An open-data GIS dashboard, built as a team' },

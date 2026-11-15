@@ -1,5 +1,5 @@
 {
- "computed_at": "2026-11-12T14:03:05+00:00",
+ "computed_at": "2026-11-15T13:45:28+00:00",
  "scope": "Kyoto Prefecture, all 523 attraction records (named and unnamed). Not validated record by record.",
  "road_data_check": {
   "files": {
@@ -53,19 +53,19 @@
   "busway": 55
  },
  "graph": {
-  "nodes": 1283741,
-  "edges": 1394888,
+  "nodes": 1283813,
+  "edges": 1395027,
   "components": 1158,
-  "largest_component_nodes": 1267879,
+  "largest_component_nodes": 1267951,
   "small_component_threshold_vertices": 1000
  },
- "attractions": 523,
+ "attractions": 595,
  "attractions_by_identity": {
-  "named": 305,
+  "named": 377,
   "unverified": 166,
   "osm_tags": 52
  },
- "attractions_near_prefecture_boundary": 56,
+ "attractions_near_prefecture_boundary": 60,
  "boundary_rule": "flagged when a road vertex outside Kyoto Prefecture (original N03 polygons) is closer in a straight line than the walking result (or than the 3 km cut-off when no stop was found); the coast has no roads outside, so it is never flagged",
  "stops_considered": {
   "rail": 248,
@@ -96,20 +96,20 @@
  ],
  "results": {
   "bus:failed:attraction_too_far_from_network": 4,
-  "bus:ok": 489,
+  "bus:ok": 561,
   "bus:ok:same_access_point": 1,
   "bus:unreachable:isolated_network": 12,
   "bus:unreachable:no_stop_within_cutoff": 17,
   "rail:failed:attraction_too_far_from_network": 4,
-  "rail:ok": 418,
+  "rail:ok": 483,
   "rail:ok:same_access_point": 1,
   "rail:unreachable:isolated_network": 12,
-  "rail:unreachable:no_stop_within_cutoff": 88
+  "rail:unreachable:no_stop_within_cutoff": 95
  },
- "ok_rows_with_flags": 554,
- "ok_rows_with_steps": 319,
+ "ok_rows_with_flags": 655,
+ "ok_rows_with_steps": 375,
  "points_attached_to_main_network_instead_of_fragment": {
-  "attractions": 26,
+  "attractions": 32,
   "stops": 52
  },
  "assumptions": {

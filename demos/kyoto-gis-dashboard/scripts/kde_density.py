@@ -4,8 +4,9 @@ Run from the project folder:  python3 scripts/kde_density.py
 Needs: pip install pyproj shapely
 
 Method (written to public/data/analysis/density_kde_meta.json as well)
-- Input: data/raw/attractions.geojson, all 523 records, each weighted 1.
-  Points are not deduplicated or verified; unnamed records are included.
+- Input: public/data/attractions.geojson, the map's attraction layer (the raw records with the
+  reviewed POI audit applied: confirmed duplicates merged, verified DSIGHT_1.csv sites added),
+  each weighted 1. Unnamed records are included; possible duplicates are kept.
 - Projection: EPSG:6674, JGD2011 / Japan Plane Rectangular CS VI (metres),
   the plane zone that covers Kyoto Prefecture. No distance is computed in degrees.
 - Kernel: quartic (biweight), K(u) = 3/pi * (1 - u^2)^2 for u = d/h < 1, else 0.
@@ -52,7 +53,7 @@ def main():
     pts_fwd = Transformer.from_crs(4326, EPSG, always_xy=True)
     back = Transformer.from_crs(EPSG, 4326, always_xy=True)
 
-    feats = json.load(open(os.path.join(RAW, "attractions.geojson"), encoding="utf-8"))["features"]
+    feats = json.load(open(os.path.join(ROOT, "public", "data", "attractions.geojson"), encoding="utf-8"))["features"]
     xy = np.array([pts_fwd.transform(*f["geometry"]["coordinates"]) for f in feats])
     cat = np.array([f["properties"]["category"] for f in feats])
 
@@ -110,7 +111,7 @@ def main():
     meta = {
         "analysis": "Kernel density of preliminary attraction point records",
         "computed_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-        "input": "data/raw/attractions.geojson (523 records, weight 1 each; unnamed records included; not deduplicated)",
+        "input": f"public/data/attractions.geojson ({len(feats)} records after the POI audit, weight 1 each; unnamed records included; confirmed duplicates merged)",
         "crs": f"EPSG:{EPSG} JGD2011 / Japan Plane Rectangular CS VI (metres)",
         "kernel": "quartic (biweight): K(u) = 3/pi * (1-u^2)^2 for u<1",
         "search_radius_m": H,

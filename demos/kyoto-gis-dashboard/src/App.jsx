@@ -653,7 +653,7 @@ export default function App() {
               {tabs.map(([k, l]) => <button key={k} type="button" role="tab" id={`tab-${k}`} aria-selected={curTab === k} aria-controls={`pane-${k}`} className={curTab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
             </div>
             <div className="pane card" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" hidden={curTab !== 'overview'}>
-              <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} />
+              <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} rel={d.relations} byId={byId} onOpen={(id) => select({ id })} />
             </div>
             {selStopKeys && (
               <div className="pane card" role="tabpanel" id="pane-bus" aria-labelledby="tab-bus" hidden={curTab !== 'bus'}>
@@ -763,6 +763,8 @@ const MATCH_TEXT = {
   'osm-image': () => "Photo named in this place's own OpenStreetMap record",
   'osm-commons': (p) => `Commons photo linked from this place's own OpenStreetMap record${p.distance_m != null ? `, taken ${p.distance_m} m from this point` : ''}`,
   'commons-near': (p) => `Commons photo taken ${p.distance_m} m from this point whose ${p.matched_label ? `category (${p.matched_label.slice(9)})` : 'file name'} names this place`,
+  // a site added by the POI audit: the Wikidata item that, with OpenStreetMap, confirmed where it is
+  'site-wikidata': (p) => `Photo of Wikidata ${p.wikidata}${p.matched_label ? ` (${p.matched_label})` : ''}, the item that confirmed this site's location with OpenStreetMap`,
 };
 const BADGE = { 'wikidata-related': 'Related place', 'commons-geo': 'Nearby photo', 'commons-near': 'Nearby photo', 'osm-wikidata': 'Linked in OSM', 'osm-image': 'Linked in OSM', 'osm-commons': 'Linked in OSM' };
 
@@ -809,7 +811,7 @@ function Summary({ hit, pm, photos, color, onClose, onHide }) {
 // How a containing OSM area is described: a location, never an identification of the point.
 const insidePhrase = (k) => (/temple|shrine|place of worship|church/.test(k) ? 'Inside the grounds of' : k === 'building' ? 'At' : 'Inside');
 
-function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk }) {
+function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk, rel, byId, onOpen }) {
   const p = hit.f.properties;
   const [lon, lat] = hit.f.geometry.coordinates;
   const muniCode = pm?.points?.[p.id];
@@ -837,6 +839,7 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk }) {
           <div><dt>In the name</dt><dd className="terms">{terms.map((x) => <span key={x.t}><b lang="ja">{x.t}</b> {x.m}</span>)}<small className="muted">Meaning of common words in the name, not a translation.</small></dd></div>
         ); })()}
         <div><dt>Area</dt><dd lang="ja">{muniCode ? muniLabel(pm, muniCode) : 'outside all boundary polygons'}</dd></div>
+        {hit.layer === 'attraction' && <SiteLinks p={p} rel={rel} byId={byId} onOpen={onOpen} />}
         {hit.layer === 'attraction' && (
           <div><dt>Walking access</dt><dd>{inPilot ? <button className="link" type="button" onClick={onWalk}>Network routes available · open Walking Routes</button> : walk.available ? `Not calculated yet (pilot covers ${walk.scopeIds.size} records in ${walk.pilotInfo?.name})` : 'Not calculated yet'}</dd></div>
         )}
@@ -874,11 +877,44 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk }) {
           <div><dt>Municipality join</dt><dd>N03 spatial join{muniCode ? ` · code ${muniCode}` : ''}</dd></div>
           <div><dt>English name</dt><dd>{p.name_en ? `${p.name_en_source}${p.osm_element ? ` (${p.osm_element})` : ''}` : p.name ? 'no verified English name; original shown' : 'no name in source'}</dd></div>
           <div><dt>Status</dt><dd>{p.validation_status} · {p.source}</dd></div>
+          {hit.layer === 'attraction' && <div><dt>Location check</dt><dd>{p.location_evidence ? `${p.location_evidence}. Point: ${p.point_is}.` : rel?.location_check?.raw || 'OpenStreetMap point as supplied'}</dd></div>}
+          {p.wikidata && <div><dt>Wikidata</dt><dd className="mono"><a href={`https://www.wikidata.org/wiki/${p.wikidata}`} target="_blank" rel="noreferrer">{p.wikidata}</a></dd></div>}
+          {p.dsight_ids && <div><dt>DSIGHT_1.csv</dt><dd className="mono">{p.dsight_ids.join(', ')}</dd></div>}
           {ph?.wikidata && <div><dt>Photo item</dt><dd className="mono"><a href={`https://www.wikidata.org/wiki/${ph.wikidata}`} target="_blank" rel="noreferrer">{ph.wikidata}</a></dd></div>}
         </dl>
         {dup && <p className="xs warnline">Shares OSM ID {dup.osm_id} with {dup.ids.filter((x) => x !== p.id).join(', ')}. Both records are kept as supplied.</p>}
       </details>
     </div>
+  );
+}
+
+// How a record relates to others after the POI audit (public/data/poi_relations.json): the site it
+// belongs to, what belongs to it (dashboard records, and DSIGHT_1.csv buildings, objects and trees,
+// which have no point of their own), duplicates merged into it, and separate features of one place.
+const KIND_EN = { building: 'building', object: 'cultural object', 'guardian figure': 'guardian figure', 'named tree': 'named tree', 'burial mound': 'burial mound', 'cultural property': 'cultural property' };
+function SiteLinks({ p, rel, byId, onOpen }) {
+  if (!rel) return null;
+  const name = (id) => { const h = byId.get(id); return h ? (h.f.properties.name || h.f.properties.name_en || h.f.properties.display_name) : id; };
+  const parent = rel.child_of?.[p.id];
+  const here = rel.parents?.[p.id];
+  const group = rel.groups?.find((g) => g.ids.includes(p.id));
+  const maybe = rel.possible_duplicates?.find((g) => g.ids.includes(p.id));
+  const distinct = rel.distinct?.find((g) => g.ids.includes(p.id));
+  return (
+    <>
+      {parent && <div><dt>Part of</dt><dd><button className="link" type="button" onClick={() => onOpen(parent)} lang="ja">{name(parent)}</button> <small className="muted">· {parent}</small></dd></div>}
+      {here && (here.children.length > 0 || here.dsight.length > 0) && (
+        <div><dt>At this site</dt><dd className="site-parts">
+          {here.children.map((id) => <span key={id}><button className="link" type="button" onClick={() => onOpen(id)} lang="ja">{name(id)}</button> <small className="muted">· on the map</small></span>)}
+          {here.dsight.map((x) => <span key={x.csv_id}><b lang="ja">{x.part || x.name}</b> <small className="muted">· {KIND_EN[x.kind] || x.kind} · DSIGHT {x.csv_id}</small></span>)}
+          {here.dsight.length > 0 && <small className="muted">Listed in DSIGHT_1.csv as part of this site; shown here without points of their own.</small>}
+        </dd></div>
+      )}
+      {p.merged_ids && <div><dt>Merged</dt><dd>{p.merged_ids.join(', ')} <small className="muted">· the same place entered more than once in OpenStreetMap. {rel.merged?.[p.merged_ids[0]]?.evidence}</small></dd></div>}
+      {group && <div><dt>Group</dt><dd>One of {group.ids.length} separate features: <span lang="ja">{group.name}</span> <small className="muted">· {group.note}</small></dd></div>}
+      {maybe && <div><dt>Check</dt><dd>Possible duplicate of {maybe.ids.filter((x) => x !== p.id).join(', ')}, kept until checked. <small className="muted">{maybe.note}</small></dd></div>}
+      {distinct && <div><dt>Note</dt><dd><small className="muted">{distinct.note}</small></dd></div>}
+    </>
   );
 }
 
@@ -1052,7 +1088,7 @@ function Sources({ d, status, walk, failed, onClose }) {
         {d.photos && (
           <section>
             <h3>Attraction photos</h3>
-            <p className="xs">Wikidata (P18) and Wikimedia Commons, retrieved {d.photos.retrieved_at.replace('T', ' ').replace('Z', ' UTC')}. {d.photos.with_photo} of {d.photos.records ?? d.photos.named_records} records have a photo: {d.photos.by_match['wikidata-exact']} same-name Wikidata items, {d.photos.by_match['wikidata-related']} related places, {(d.photos.by_match['osm-wikidata'] || 0) + (d.photos.by_match['osm-image'] || 0) + (d.photos.by_match['osm-commons'] || 0)} linked from the record's own OpenStreetMap entry, {(d.photos.by_match['commons-geo'] || 0) + (d.photos.by_match['commons-near'] || 0)} Commons photos taken nearby that name the place. Records without a name get a photo only through their own OpenStreetMap link. Only CC0, public-domain, CC BY and CC BY-SA files are used; each photo shows its author and licence.</p>
+            <p className="xs">Wikidata (P18) and Wikimedia Commons, retrieved {d.photos.retrieved_at.replace('T', ' ').replace('Z', ' UTC')}. {d.photos.with_photo} of {d.photos.records ?? d.photos.named_records} records have a photo: {d.photos.by_match['wikidata-exact'] + (d.photos.by_match['site-wikidata'] || 0)} Wikidata items of the place itself, {d.photos.by_match['wikidata-related']} related places, {(d.photos.by_match['osm-wikidata'] || 0) + (d.photos.by_match['osm-image'] || 0) + (d.photos.by_match['osm-commons'] || 0)} linked from the record's own OpenStreetMap entry, {(d.photos.by_match['commons-geo'] || 0) + (d.photos.by_match['commons-near'] || 0)} Commons photos taken nearby that name the place. Records without a name get a photo only through their own OpenStreetMap link. Only CC0, public-domain, CC BY and CC BY-SA files are used; each photo shows its author and licence.</p>
           </section>
         )}
         {d.namesEn?.meta && (

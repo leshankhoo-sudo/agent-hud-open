@@ -12,17 +12,19 @@ const J = (p) => JSON.parse(readFileSync(new URL('../public/data/' + p, import.m
 const A = J('attractions.geojson').features;
 const T = J('transport.geojson').features;
 
-test('record counts match data_inventory.json', () => {
+test('record counts match data_inventory.json (the raw package; the map layer is checked in the POI audit tests)', () => {
   const inv = JSON.parse(readFileSync(new URL('../data/raw/package_docs/data_inventory.json', import.meta.url), 'utf8'));
-  assert.equal(A.length, inv.attractions.records);
+  const rawA = JSON.parse(readFileSync(new URL('../data/raw/attractions.geojson', import.meta.url), 'utf8')).features;
+  assert.equal(rawA.length, inv.attractions.records);
   assert.equal(T.length, inv.transport.records);
-  assert.deepEqual(countBy(A, 'category'), inv.attractions.categories);
+  assert.deepEqual(countBy(rawA, 'category'), inv.attractions.categories);
   assert.deepEqual(countBy(T, 'category'), inv.transport.categories);
 });
 
 test('filter counts', () => {
-  assert.equal(filterAttractions(A, ['attraction', 'viewpoint', 'museum', 'castle']).length, 523);
-  assert.equal(filterAttractions(A, ['museum']).length, 102);
+  // 523 raw records - 5 merged duplicates + 77 sites added from DSIGHT_1.csv (see data/audit)
+  assert.equal(filterAttractions(A, ['attraction', 'viewpoint', 'museum', 'castle']).length, 595);
+  assert.equal(filterAttractions(A, ['museum']).length, 101);
   assert.equal(filterAttractions(A, ['castle', 'museum']).length, 121);
   assert.equal(filterAttractions(A, []).length, 0);
   assert.equal(filterTransport(T, ['bus']).length, 5229);
@@ -34,7 +36,7 @@ test('filter counts', () => {
 });
 
 test('IDs are kept and unique, coordinates are [lon, lat] inside Kyoto Prefecture bounds', () => {
-  assert.equal(new Set(A.map((f) => f.properties.id)).size, 523);
+  assert.equal(new Set(A.map((f) => f.properties.id)).size, 595);
   assert.equal(new Set(T.map((f) => f.properties.id)).size, 5479);
   for (const f of [...A, ...T]) {
     const [lon, lat] = f.geometry.coordinates;
@@ -49,7 +51,7 @@ test('IDs are kept and unique, coordinates are [lon, lat] inside Kyoto Prefectur
 
 test('municipality join covers every point and places known points correctly', () => {
   const pm = J('point_municipality.json');
-  assert.equal(Object.keys(pm.points).length, 6002);
+  assert.equal(Object.keys(pm.points).length, A.length + T.length);
   assert.equal(pm.names[pm.points.S00019], '京都市 下京区');
   assert.equal(pm.names[pm.points.A00265], '京都市 北区');
 });
@@ -59,7 +61,7 @@ test('KDE output is documented and consistent', () => {
   assert.equal(meta.search_radius_m, 2000);
   assert.equal(meta.cell_size_m, 500);
   assert.match(meta.crs, /6674/);
-  assert.ok(Math.abs(meta.check_sum_density_x_cell_area - 523) < 40);
+  assert.ok(Math.abs(meta.check_sum_density_x_cell_area - 595) < 45);
   const kde = J('analysis/density_kde.geojson');
   assert.equal(kde.features.length, meta.cells_written);
 });
@@ -117,7 +119,7 @@ test('walking pilot results: 19 records, bus and rail separate, no zero or strai
   assert.equal(cov.within + cov.beyond + cov.noRoute + cov.notComputed, 19);
 });
 
-test('walking prefecture: all 523 records, reasons kept apart, pilot rows reproduced, no straight-line substitutes', () => {
+test('walking prefecture: all 595 records, reasons kept apart, pilot rows reproduced, no straight-line substitutes', () => {
   const w = J('walking_routes_prefecture.geojson');
   const a = walkingAvailability(w);
   assert.equal(a.available, true);
@@ -249,8 +251,9 @@ test('photos: real files, free licences, credits; name matches only for named re
     assert.match(p.license, /^(CC0|Public domain|CC BY(-SA)? [\d.]+)$/);
     assert.ok(!/\b(NC|ND)\b/.test(p.license));
     assert.ok(p.artist && p.page.startsWith('https://commons.wikimedia.org/'));
-    assert.ok(p.distance_m == null ? p.match.startsWith('osm-') : p.distance_m <= (p.match === 'osm-wikidata' ? 1000 : p.match === 'commons-near' ? 150 : 300));
-    assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo', 'osm-wikidata', 'osm-image', 'osm-commons', 'commons-near'].includes(p.match));
+    assert.ok(p.distance_m == null ? p.match.startsWith('osm-') : p.distance_m <= (['osm-wikidata', 'site-wikidata'].includes(p.match) ? 1000 : p.match === 'commons-near' ? 150 : 300));
+    assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo', 'osm-wikidata', 'osm-image', 'osm-commons', 'commons-near', 'site-wikidata'].includes(p.match));
+    if (p.match === 'site-wikidata') assert.equal(byId[id].wikidata, p.wikidata);
   }
 });
 
@@ -424,4 +427,57 @@ test('beat clock: the tempo map adds up to the loop in music.json and gives whol
   for (let i = 1; i < T.length; i++) assert.ok(T[i] - T[i - 1] >= 60 / m.bpm - 1e-9 && T[i] - T[i - 1] < (60 / m.bpm) * 1.04); // only ever a touch slower than 80 BPM
   assert.ok(Math.abs(beatAt(T, T[57]) - 57) < 1e-9 && Math.abs(beatAt(T, (T[10] + T[11]) / 2) - 10.5) < 1e-9);
   assert.ok(Math.abs(beatAt(T, T[m.bars * 4] + T[3]) - 3) < 1e-6 && beatAt(T, -0.01) > m.bars * 4 - 1); // wraps with the loop
+});
+
+// ---------- POI audit: DSIGHT_1.csv cross-check, duplicates, added sites ----------
+test('POI audit: raw records untouched; confirmed duplicates merged with a pointer; added sites carry two-source evidence', () => {
+  const raw = JSON.parse(readFileSync(new URL('../data/raw/attractions.geojson', import.meta.url), 'utf8')).features;
+  const rel = J('poi_relations.json');
+  const pm = J('point_municipality.json');
+  assert.equal(raw.length, 523);
+  const ids = new Set(A.map((f) => f.properties.id));
+  // every raw record is either on the map or merged into one that is
+  for (const f of raw) {
+    const id = f.properties.id;
+    if (rel.merged[id]) { assert.ok(!ids.has(id), id); assert.ok(ids.has(rel.merged[id].into), id); assert.ok(rel.merged[id].evidence.length > 40); }
+    else assert.ok(ids.has(id), `${id} missing`);
+  }
+  assert.deepEqual(Object.keys(rel.merged).sort(), ['A00223', 'A00224', 'A00225', 'A00296', 'A00459']);
+  const added = A.filter((f) => f.properties.dsight_ids);
+  assert.equal(added.length, 77);
+  for (const f of added) {
+    const p = f.properties;
+    assert.match(p.id, /^A\d{5}$/);
+    assert.ok(Number(p.id.slice(1)) > 523, p.id);
+    assert.match(p.location_evidence, /^OSM (node|way|relation)\/\d+ and Wikidata Q\d+ .* agree within \d+ m/);
+    assert.match(p.wikidata, /^Q\d+$/);
+    assert.ok(pm.points[p.id], `${p.id} outside the N03 polygons`);
+    assert.ok(['attraction', 'museum', 'castle'].includes(p.category));
+    // no added site repeats a raw record: none has the same name within 700 m
+    const [x, y] = f.geometry.coordinates;
+    for (const g of raw) {
+      const [u, v] = g.geometry.coordinates;
+      if (g.properties.name && g.properties.name === p.name) assert.ok(Math.hypot((u - x) * 91290, (v - y) * 111000) > 700, `${p.id} repeats ${g.properties.id}`);
+    }
+  }
+  // CSV records hang under their site; children of an added site point back to it
+  for (const [pid, v] of Object.entries(rel.parents)) { assert.ok(ids.has(pid), pid); for (const c of v.children) assert.equal(rel.child_of[c], pid); }
+});
+
+test('POI audit: Nanzen-ji is on the map and found by 南禅寺, Nanzen-ji and nanzenji', () => {
+  const all = ['attraction', 'viewpoint', 'museum', 'castle'];
+  const data = { attractions: J('attractions.geojson'), transport: J('transport.geojson'), namesEn: J('names_en.json') };
+  applyEnglishNames(data);
+  const F = data.attractions.features;
+  for (const q of ['南禅寺', 'Nanzen-ji', 'nanzenji', 'NANZEN JI']) {
+    const hit = filterAttractions(F, all, q).map((f) => f.properties.name);
+    assert.ok(hit.includes('南禅寺'), `${q}: ${hit.join(', ')}`);
+  }
+  const n = F.find((f) => f.properties.name === '南禅寺');
+  assert.equal(n.properties.wikidata, 'Q1089767');
+  assert.equal(J('point_municipality.json').names[J('point_municipality.json').points[n.properties.id]], '京都市 左京区');
+  const kids = J('poi_relations.json').parents[n.properties.id].dsight.map((x) => x.part);
+  assert.deepEqual(kids.sort(), ['三門', '方丈', '白檀'].sort());
+  // a merged duplicate's ID still finds the record that keeps it
+  assert.deepEqual(filterAttractions(F, all, 'A00224').map((f) => f.properties.id), ['A00222']);
 });

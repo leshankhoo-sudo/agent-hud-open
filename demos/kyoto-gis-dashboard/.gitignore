@@ -7,3 +7,7 @@ data/cache/explore/*.jpg
 music-master/
 __pycache__/
 *.pyc
+
+# DSIGHT_1.csv (POI audit input): source and licence not stated, so the raw file is kept local only.
+# The audit keeps IDs, names and addresses in data/audit; see docs/POI_AUDIT.md.
+data/raw/dsight/

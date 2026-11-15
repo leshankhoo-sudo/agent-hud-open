@@ -1,0 +1,1844 @@
+{
+"about": "Built by scripts/poi_reconcile.py from data/audit. merged: record -> record that keeps it. parents: a site and what belongs to it (dashboard records and DSIGHT_1.csv records, which are buildings, objects and trees of that site, without points of their own). groups: separate features of one place.",
+"merged": {
+"A00296": {
+"into": "A00297",
+"evidence": "Two OSM museum nodes 3 m apart, added by the same edit on 2019-06-29 (nodes 6578053381 and 6578080296); the second carries operator=三宅八幡神社. One museum exists there."
+},
+"A00223": {
+"into": "A00222",
+"evidence": "Four viewpoint nodes within 7 m, all added on 2018-03-25 in two batches (5502313424-25 and 5502354121/5502354221); names 'Best Breakfast Point' (x2) and 'Breakfast Point', English 'Best Breakfast Point' and the misspelling 'Beat Breakfast Point'. The same viewpoint entered twice."
+},
+"A00224": {
+"into": "A00222",
+"evidence": "Four viewpoint nodes within 7 m, all added on 2018-03-25 in two batches (5502313424-25 and 5502354121/5502354221); names 'Best Breakfast Point' (x2) and 'Breakfast Point', English 'Best Breakfast Point' and the misspelling 'Beat Breakfast Point'. The same viewpoint entered twice."
+},
+"A00225": {
+"into": "A00222",
+"evidence": "Four viewpoint nodes within 7 m, all added on 2018-03-25 in two batches (5502313424-25 and 5502354121/5502354221); names 'Best Breakfast Point' (x2) and 'Breakfast Point', English 'Best Breakfast Point' and the misspelling 'Beat Breakfast Point'. The same viewpoint entered twice."
+},
+"A00459": {
+"into": "A00076",
+"evidence": "Two OSM museum nodes 14 m apart with the same name: the older one (2022, operator カッパカントリー, brewery=yes) and one added on 2024-12-28 with no other tags. One memorial hall exists at Kizakura Kappa Country."
+}
+},
+"parents": {
+"A00579": {
+"children": [
+"A00078",
+"A00487",
+"A00488",
+"A00490"
+],
+"dsight": [
+{
+"csv_id": "1000026",
+"name": "二条城　二の丸御殿唐門",
+"part": "二の丸御殿唐門",
+"kind": "object"
+},
+{
+"csv_id": "1000089",
+"name": "二条城　本丸櫓門",
+"part": "本丸櫓門",
+"kind": "building"
+},
+{
+"csv_id": "1000090",
+"name": "二条城　本丸御殿御常御殿",
+"part": "本丸御殿御常御殿",
+"kind": "building"
+},
+{
+"csv_id": "1000125",
+"name": "二条城　二の丸御殿遠侍及び車寄",
+"part": "二の丸御殿遠侍及び車寄",
+"kind": "building"
+},
+{
+"csv_id": "1000126",
+"name": "二条城　二の丸御殿御清所",
+"part": "二の丸御殿御清所",
+"kind": "building"
+},
+{
+"csv_id": "1000127",
+"name": "二条城　二の丸土蔵（米蔵）",
+"part": "二の丸土蔵(米蔵)",
+"kind": "building"
+},
+{
+"csv_id": "1000131",
+"name": "二条城　本丸御殿台所及び雁之間",
+"part": "本丸御殿台所及び雁之間",
+"kind": "building"
+}
+]
+},
+"A00588": {
+"children": [
+"A00077"
+],
+"dsight": [
+{
+"csv_id": "1000044",
+"name": "高台寺　開山堂",
+"part": "開山堂",
+"kind": "building"
+},
+{
+"csv_id": "1000045",
+"name": "高台寺　霊屋",
+"part": "霊屋",
+"kind": "building"
+},
+{
+"csv_id": "1000046",
+"name": "高台寺　傘亭",
+"part": "傘亭",
+"kind": "building"
+},
+{
+"csv_id": "1000047",
+"name": "高台寺　時雨亭",
+"part": "時雨亭",
+"kind": "building"
+}
+]
+},
+"A00555": {
+"children": [
+"A00065"
+],
+"dsight": [
+{
+"csv_id": "1000061",
+"name": "豊国神社　唐門",
+"part": "唐門",
+"kind": "building"
+},
+{
+"csv_id": "1000099",
+"name": "豊国神社　紙本著色豊国大明神臨時祭礼図",
+"part": "紙本著色豊国大明神臨時祭礼図",
+"kind": "object"
+},
+{
+"csv_id": "1000128",
+"name": "豊国神社　鉄灯籠",
+"part": "鉄灯籠",
+"kind": "object"
+}
+]
+},
+"A00571": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000001",
+"name": "北野天満宮　本殿、石の間、拝殿及び楽の間",
+"part": "本殿、石の間、拝殿及び楽の間",
+"kind": "building"
+},
+{
+"csv_id": "1000153",
+"name": "北野天満宮　北野天神縁起絵巻",
+"part": "北野天神縁起絵巻",
+"kind": "object"
+},
+{
+"csv_id": "2000017",
+"name": "北野天満宮、梅苑の大むく",
+"part": "梅苑の大むく",
+"kind": "named tree"
+},
+{
+"csv_id": "2000018",
+"name": "北野天満宮しらがしの森",
+"part": "しらがしの森",
+"kind": "named tree"
+},
+{
+"csv_id": "2000019",
+"name": "北野天満宮の大けやき",
+"part": "大けやき",
+"kind": "named tree"
+},
+{
+"csv_id": "2000020",
+"name": "北野天満宮の大椎",
+"part": "大椎",
+"kind": "named tree"
+},
+{
+"csv_id": "2000021",
+"name": "北野天満宮の双幹鹿子の木",
+"part": "双幹鹿子の木",
+"kind": "named tree"
+},
+{
+"csv_id": "2000022",
+"name": "北野天満宮東門の椋",
+"part": "東門の椋",
+"kind": "named tree"
+},
+{
+"csv_id": "2000088",
+"name": "北野天満宮　影向松",
+"part": "影向松",
+"kind": "named tree"
+},
+{
+"csv_id": "10000007",
+"name": "北野天満宮　神使",
+"part": "神使",
+"kind": "guardian figure"
+},
+{
+"csv_id": "10000005",
+"name": "北野天満宮　狛犬　その一",
+"part": "狛犬 その一",
+"kind": "guardian figure"
+},
+{
+"csv_id": "10000006",
+"name": "北野天満宮　狛犬　その二",
+"part": "狛犬 その二",
+"kind": "guardian figure"
+}
+]
+},
+"A00540": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000002",
+"name": "慈照寺（銀閣寺）　銀閣",
+"part": "銀閣",
+"kind": "building"
+},
+{
+"csv_id": "1000003",
+"name": "銀閣寺（慈照寺）　東求堂",
+"part": "東求堂",
+"kind": "building"
+},
+{
+"csv_id": "2000042",
+"name": "慈照寺（銀閣寺）の椿垣",
+"part": "椿垣",
+"kind": "named tree"
+},
+{
+"csv_id": "2000043",
+"name": "慈照寺の千代の槙",
+"part": "千代の槙",
+"kind": "named tree"
+}
+]
+},
+"A00560": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000004",
+"name": "清水寺　本堂",
+"part": "本堂",
+"kind": "object"
+},
+{
+"csv_id": "1000071",
+"name": "清水寺　木造十一面観音立像",
+"part": "木造十一面観音立像",
+"kind": "object"
+},
+{
+"csv_id": "1000079",
+"name": "清水寺　渡海船額（絵馬）",
+"part": "渡海船額(絵馬)",
+"kind": "object"
+},
+{
+"csv_id": "10000008",
+"name": "清水寺　狛犬",
+"part": "狛犬",
+"kind": "guardian figure"
+}
+]
+},
+"A00553": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000006",
+"name": "三十三間堂（蓮華王院）南大門",
+"part": "南大門",
+"kind": "building"
+},
+{
+"csv_id": "1000007",
+"name": "三十三間堂（蓮華王院）築地塀",
+"part": "築地塀",
+"kind": "building"
+},
+{
+"csv_id": "1000008",
+"name": "三十三間堂（蓮華王院）木造千手観音坐像",
+"part": "木造千手観音坐像",
+"kind": "object"
+},
+{
+"csv_id": "1000009",
+"name": "三十三間堂（蓮華王院）木造千手観音立像",
+"part": "木造千手観音立像",
+"kind": "object"
+}
+]
+},
+"A00564": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000020",
+"name": "東寺（教王護国寺）　金堂",
+"part": "金堂",
+"kind": "building"
+},
+{
+"csv_id": "1000021",
+"name": "東寺（教王護国寺）　五重塔",
+"part": "五重塔",
+"kind": "building"
+},
+{
+"csv_id": "1000022",
+"name": "東寺（教王護国寺）　講堂",
+"part": "講堂",
+"kind": "building"
+},
+{
+"csv_id": "1000023",
+"name": "東寺（教王護国寺）　灌頂院",
+"part": "灌頂院",
+"kind": "building"
+},
+{
+"csv_id": "1000057",
+"name": "東寺（教王護国寺）　大師堂",
+"part": "大師堂",
+"kind": "object"
+},
+{
+"csv_id": "1000058",
+"name": "東寺（教王護国寺）　南大門",
+"part": "南大門",
+"kind": "building"
+},
+{
+"csv_id": "1000088",
+"name": "東寺（教王護国寺）　木造五大明王像",
+"part": "木造五大明王像",
+"kind": "object"
+}
+]
+},
+"A00600": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000010",
+"name": "下鴨神社（賀茂御祖神社）東本殿　西本殿",
+"part": "西本殿",
+"kind": "building"
+}
+]
+},
+"A00594": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000011",
+"name": "常寂光寺　塔婆（多宝塔）",
+"part": "塔婆(多宝塔)",
+"kind": "building"
+}
+]
+},
+"A00541": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000012",
+"name": "千本釈迦堂（大報恩寺）本堂",
+"part": "本堂",
+"kind": "building"
+},
+{
+"csv_id": "1000049",
+"name": "千本釈迦堂（大報恩寺）　木造六観音菩薩像",
+"part": "木造六観音菩薩像",
+"kind": "object"
+},
+{
+"csv_id": "1000078",
+"name": "千本釈迦堂（大報恩寺）　木造十大弟子立像",
+"part": "木造十大弟子立像",
+"kind": "object"
+},
+{
+"csv_id": "1000080",
+"name": "千本釈迦堂（大報恩寺）　木造千手観音立像",
+"part": "木造千手観音立像",
+"kind": "object"
+},
+{
+"csv_id": "1000112",
+"name": "千本釈迦堂（大報恩寺）　だ太鼓縁",
+"part": "だ太鼓縁",
+"kind": "object"
+},
+{
+"csv_id": "2000056",
+"name": "千本釈迦堂のくろがねもち",
+"part": "くろがねもち",
+"kind": "named tree"
+}
+]
+},
+"A00596": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000013",
+"name": "大徳寺　山門（三門）",
+"part": "山門(三門)",
+"kind": "building"
+},
+{
+"csv_id": "1000052",
+"name": "大徳寺　法堂",
+"part": "法堂",
+"kind": "building"
+},
+{
+"csv_id": "1000082",
+"name": "大徳寺　勅使門",
+"part": "勅使門",
+"kind": "building"
+},
+{
+"csv_id": "2000062",
+"name": "大徳寺の柏槙",
+"part": "柏槙",
+"kind": "named tree"
+}
+]
+},
+"A00544": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000014",
+"name": "大覚寺　宸殿",
+"part": "宸殿",
+"kind": "building"
+},
+{
+"csv_id": "1000083",
+"name": "大覚寺　正寝殿",
+"part": "正寝殿",
+"kind": "building"
+},
+{
+"csv_id": "1000121",
+"name": "大覚寺　障壁画",
+"part": "障壁画",
+"kind": "building"
+},
+{
+"csv_id": "1000135",
+"name": "大覚寺　五大明王像",
+"part": "五大明王像",
+"kind": "building"
+}
+]
+},
+"A00572": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000015",
+"name": "知恩院　大方丈",
+"part": "大方丈",
+"kind": "building"
+},
+{
+"csv_id": "1000016",
+"name": "知恩院　小方丈",
+"part": "小方丈",
+"kind": "building"
+},
+{
+"csv_id": "1000218",
+"name": "知恩院　濡髪大明神",
+"part": "濡髪大明神",
+"kind": "building"
+},
+{
+"csv_id": "2000068",
+"name": "知恩院参道のむくろじ",
+"part": "参道のむくろじ",
+"kind": "named tree"
+}
+]
+},
+"A00591": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000017",
+"name": "東福寺　三門",
+"part": "三門",
+"kind": "building"
+},
+{
+"csv_id": "1000018",
+"name": "東福寺　東司",
+"part": "東司",
+"kind": "building"
+},
+{
+"csv_id": "1000019",
+"name": "東福寺　浴室",
+"part": "浴室",
+"kind": "building"
+},
+{
+"csv_id": "1000056",
+"name": "東福寺　禅堂",
+"part": "禅堂",
+"kind": "building"
+},
+{
+"csv_id": "1000087",
+"name": "東福寺　木造二天王立像",
+"part": "木造二天王立像",
+"kind": "object"
+}
+]
+},
+"A00563": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000024",
+"name": "南禅寺　三門",
+"part": "三門",
+"kind": "building"
+},
+{
+"csv_id": "1000025",
+"name": "南禅寺　方丈",
+"part": "方丈",
+"kind": "building"
+},
+{
+"csv_id": "2000073",
+"name": "南禅寺の白檀",
+"part": "白檀",
+"kind": "named tree"
+}
+]
+},
+"A00598": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000027",
+"name": "仁和寺　金堂",
+"part": "金堂",
+"kind": "building"
+},
+{
+"csv_id": "1000028",
+"name": "仁和寺　五重塔",
+"part": "五重塔",
+"kind": "building"
+},
+{
+"csv_id": "1000029",
+"name": "仁和寺　二王門",
+"part": "二王門",
+"kind": "building"
+},
+{
+"csv_id": "1000030",
+"name": "仁和寺　御影堂",
+"part": "御影堂",
+"kind": "building"
+},
+{
+"csv_id": "1000093",
+"name": "仁和寺　遼廓亭",
+"part": "遼廓亭",
+"kind": "building"
+},
+{
+"csv_id": "1000094",
+"name": "仁和寺　飛濤亭",
+"part": "飛濤亭",
+"kind": "building"
+},
+{
+"csv_id": "1000183",
+"name": "仁和寺　医心方",
+"part": "医心方",
+"kind": "object"
+},
+{
+"csv_id": "1000184",
+"name": "仁和寺　絹本著色孔雀明王像",
+"part": "絹本著色孔雀明王像",
+"kind": "object"
+},
+{
+"csv_id": "1000185",
+"name": "仁和寺　黄帝内経明堂・黄帝内経太素",
+"part": "黄帝内経明堂・黄帝内経太素",
+"kind": "object"
+},
+{
+"csv_id": "1000186",
+"name": "仁和寺　三十帖冊子",
+"part": "三十帖冊子",
+"kind": "object"
+},
+{
+"csv_id": "1000187",
+"name": "仁和寺　新修本草",
+"part": "新修本草",
+"kind": "object"
+},
+{
+"csv_id": "1000188",
+"name": "仁和寺　宝相華蒔絵宝珠箱",
+"part": "宝相華蒔絵宝珠箱",
+"kind": "object"
+},
+{
+"csv_id": "1000189",
+"name": "仁和寺　木造阿弥陀如来及両脇侍像",
+"part": "木造阿弥陀如来及両脇侍像",
+"kind": "object"
+}
+]
+},
+"A00306": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000033",
+"name": "伏見稲荷大社　本殿",
+"part": "本殿",
+"kind": "object"
+},
+{
+"csv_id": "1000034",
+"name": "伏見稲荷大社　御茶屋",
+"part": "御茶屋",
+"kind": "building"
+},
+{
+"csv_id": "10000013",
+"name": "伏見稲荷大社　眷属像",
+"part": "眷属像",
+"kind": "guardian figure"
+}
+]
+},
+"A00578": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000035",
+"name": "妙心寺　仏殿",
+"part": "仏殿",
+"kind": "object"
+},
+{
+"csv_id": "1000036",
+"name": "妙心寺　法堂",
+"part": "法堂",
+"kind": "building"
+},
+{
+"csv_id": "1000037",
+"name": "妙心寺　三門",
+"part": "三門",
+"kind": "building"
+},
+{
+"csv_id": "1000038",
+"name": "妙心寺　勅使門",
+"part": "勅使門",
+"kind": "building"
+},
+{
+"csv_id": "1000107",
+"name": "妙心寺　浴室",
+"part": "浴室",
+"kind": "building"
+},
+{
+"csv_id": "1000211",
+"name": "妙心寺　黄鐘調の鐘",
+"part": "黄鐘調の鐘",
+"kind": "building"
+}
+]
+},
+"A00559": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000039",
+"name": "八坂神社　西楼門",
+"part": "西楼門",
+"kind": "building"
+},
+{
+"csv_id": "1000040",
+"name": "八坂神社　本殿",
+"part": "本殿",
+"kind": "building"
+}
+]
+},
+"A00589": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000043",
+"name": "建仁寺　方丈",
+"part": "方丈",
+"kind": "building"
+}
+]
+},
+"A00599": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000067",
+"name": "賀茂別雷神社（上賀茂神社）　細殿",
+"part": "細殿",
+"kind": "building"
+},
+{
+"csv_id": "1000066",
+"name": "賀茂別雷神社（上賀茂神社）　本殿",
+"part": "本殿",
+"kind": "building"
+},
+{
+"csv_id": "1000092",
+"name": "賀茂別雷神社（上賀茂神社）　権殿",
+"part": "権殿",
+"kind": "building"
+},
+{
+"csv_id": "2000012",
+"name": "上賀茂神社のいちいがし",
+"part": "いちいがし",
+"kind": "named tree"
+},
+{
+"csv_id": "2000013",
+"name": "上賀茂神社の椋",
+"part": "椋",
+"kind": "named tree"
+}
+]
+},
+"A00570": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000048",
+"name": "神護寺　梵鐘",
+"part": "梵鐘",
+"kind": "object"
+},
+{
+"csv_id": "1000077",
+"name": "神護寺　絹本著色伝源頼朝像",
+"part": "絹本著色伝源頼朝像",
+"kind": "object"
+},
+{
+"csv_id": "1000110",
+"name": "神護寺　絹本著色伝平重盛像",
+"part": "絹本著色伝平重盛像",
+"kind": "object"
+},
+{
+"csv_id": "1000219",
+"name": "神護寺　五大虚空蔵菩薩像",
+"part": "五大虚空蔵菩薩像",
+"kind": "object"
+},
+{
+"csv_id": "1000220",
+"name": "神護寺　板彫弘法大師像",
+"part": "板彫弘法大師像",
+"kind": "object"
+}
+]
+},
+"A00593": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000050",
+"name": "泉涌寺　仏殿",
+"part": "仏殿",
+"kind": "building"
+}
+]
+},
+"A00534": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000051",
+"name": "即成院　木造阿弥陀如来及二十五菩薩坐像",
+"part": "木造阿弥陀如来及二十五菩薩坐像",
+"kind": "object"
+}
+]
+},
+"A00526": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000062",
+"name": "法金剛院　木造阿弥陀如来坐像（重文）",
+"part": "木造阿弥陀如来坐像(重文)",
+"kind": "object"
+},
+{
+"csv_id": "1000098",
+"name": "法金剛院　木造厨子入十一面観音坐像",
+"part": "木造厨子入十一面観音坐像",
+"kind": "object"
+},
+{
+"csv_id": "1000206",
+"name": "法金剛院　木造地蔵菩薩立像",
+"part": "木造地蔵菩薩立像",
+"kind": "object"
+},
+{
+"csv_id": "1000207",
+"name": "法金剛院　木造僧形文殊坐像",
+"part": "木造僧形文殊坐像",
+"kind": "object"
+}
+]
+},
+"A00533": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000063",
+"name": "松尾大社　本殿",
+"part": "本殿",
+"kind": "building"
+},
+{
+"csv_id": "1000103",
+"name": "松尾大社　木造神像男神坐像",
+"part": "木造神像男神坐像",
+"kind": "object"
+},
+{
+"csv_id": "1000104",
+"name": "松尾大社　木造神像女神坐像",
+"part": "木造神像女神坐像",
+"kind": "object"
+}
+]
+},
+"A00545": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000064",
+"name": "安楽寿院　木造阿弥陀如来坐像",
+"part": "木造阿弥陀如来坐像",
+"kind": "object"
+}
+]
+},
+"A00554": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000068",
+"name": "京都国立博物館　旧帝国京都博物館本館",
+"part": "旧帝国京都博物館本館",
+"kind": "building"
+},
+{
+"csv_id": "1000069",
+"name": "京都国立博物館　旧帝国京都博物館正門",
+"part": "旧帝国京都博物館正門",
+"kind": "building"
+}
+]
+},
+"A00567": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000070",
+"name": "圓徳院　紙本墨画山水図",
+"part": "紙本墨画山水図",
+"kind": "object"
+}
+]
+},
+"A00569": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000073",
+"name": "広隆寺　木造弥勒菩薩半跏像（宝冠弥勒）",
+"part": "木造弥勒菩薩半跏像(宝冠弥勒)",
+"kind": "object"
+}
+]
+},
+"A00587": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000074",
+"name": "三千院　木造阿弥陀如来両脇士坐像",
+"part": "木造阿弥陀如来両脇士坐像",
+"kind": "object"
+}
+]
+},
+"A00580": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000076",
+"name": "真如堂（真正極楽寺）　木造阿弥陀如来立像",
+"part": "木造阿弥陀如来立像",
+"kind": "object"
+},
+{
+"csv_id": "1000175",
+"name": "真正極楽寺　絹本著色普賢菩薩像",
+"part": "絹本著色普賢菩薩像",
+"kind": "object"
+},
+{
+"csv_id": "1000176",
+"name": "真正極楽寺　紙本著色真如堂縁起",
+"part": "紙本著色真如堂縁起",
+"kind": "object"
+},
+{
+"csv_id": "1000177",
+"name": "真正極楽寺　法華経",
+"part": "法華経",
+"kind": "object"
+},
+{
+"csv_id": "2000049",
+"name": "真如堂の大しゃしゃんぽ",
+"part": "大しゃしゃんぽ",
+"kind": "named tree"
+},
+{
+"csv_id": "2000050",
+"name": "真如堂の百日紅",
+"part": "百日紅",
+"kind": "named tree"
+},
+{
+"csv_id": "2000051",
+"name": "真如堂の立皮桜",
+"part": "立皮桜",
+"kind": "named tree"
+},
+{
+"csv_id": "2000052",
+"name": "真如堂の花の木",
+"part": "花の木",
+"kind": "named tree"
+},
+{
+"csv_id": "2000053",
+"name": "真如堂の菩提樹",
+"part": "菩提樹",
+"kind": "named tree"
+}
+]
+},
+"A00585": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000081",
+"name": "清凉寺　木造釈迦如来立像",
+"part": "木造釈迦如来立像",
+"kind": "object"
+},
+{
+"csv_id": "1000113",
+"name": "清凉寺　木造阿弥陀如来両脇侍像",
+"part": "木造阿弥陀如来両脇侍像",
+"kind": "object"
+},
+{
+"csv_id": "1000114",
+"name": "清凉寺　木造十大弟子立像",
+"part": "木造十大弟子立像",
+"kind": "object"
+},
+{
+"csv_id": "1000115",
+"name": "清凉寺　紙本著色融通念仏縁起",
+"part": "紙本著色融通念仏縁起",
+"kind": "object"
+},
+{
+"csv_id": "1000116",
+"name": "清凉寺　木造兜跋毘沙門天立像",
+"part": "木造兜跋毘沙門天立像",
+"kind": "object"
+},
+{
+"csv_id": "1000117",
+"name": "清凉寺　木造地蔵菩薩立像",
+"part": "木造地蔵菩薩立像",
+"kind": "object"
+},
+{
+"csv_id": "1000118",
+"name": "清凉寺　木造文殊菩薩騎獅像",
+"part": "木造文殊菩薩騎獅像",
+"kind": "object"
+},
+{
+"csv_id": "1000119",
+"name": "清凉寺　普賢菩薩騎象像",
+"part": "普賢菩薩騎象像",
+"kind": "object"
+},
+{
+"csv_id": "1000120",
+"name": "清凉寺　木造四天王立像",
+"part": "木造四天王立像",
+"kind": "object"
+},
+{
+"csv_id": "1000132",
+"name": "清凉寺　紙本著色釈迦堂縁起",
+"part": "紙本著色釈迦堂縁起",
+"kind": "object"
+}
+]
+},
+"A00547": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000084",
+"name": "鞍馬寺　木造毘沙門天立像",
+"part": "木造毘沙門天立像",
+"kind": "object"
+}
+]
+},
+"A00595": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000091",
+"name": "二尊院（本尊二尊）木造釈迦如来立像",
+"part": "木造釈迦如来立像",
+"kind": "object"
+}
+]
+},
+"A00556": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000106",
+"name": "妙法院　庫裏",
+"part": "庫裏",
+"kind": "building"
+},
+{
+"csv_id": "1000105",
+"name": "妙法院　大書院",
+"part": "大書院",
+"kind": "building"
+}
+]
+},
+"A00582": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000096",
+"name": "平安神宮　応天門（神門）",
+"part": "応天門(神門)",
+"kind": "building"
+},
+{
+"csv_id": "1000097",
+"name": "平安神宮　大極殿",
+"part": "大極殿",
+"kind": "building"
+}
+]
+},
+"A00532": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000109",
+"name": "六道珍皇寺　木造薬師如来坐像",
+"part": "木造薬師如来坐像",
+"kind": "object"
+}
+]
+},
+"A00542": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000111",
+"name": "春光院　銅鐘",
+"part": "銅鐘",
+"kind": "object"
+}
+]
+},
+"A00557": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000134",
+"name": "智積院　国宝障壁画",
+"part": "国宝障壁画",
+"kind": "object"
+}
+]
+},
+"A00535": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000143",
+"name": "西明寺　釈迦如来像",
+"part": "釈迦如来像",
+"kind": "object"
+},
+{
+"csv_id": "1000144",
+"name": "西明寺　千手観世音菩薩像",
+"part": "千手観世音菩薩像",
+"kind": "object"
+},
+{
+"csv_id": "1000145",
+"name": "西明寺　愛染明王像",
+"part": "愛染明王像",
+"kind": "object"
+},
+{
+"csv_id": "1000146",
+"name": "西明寺　本堂",
+"part": "本堂",
+"kind": "building"
+},
+{
+"csv_id": "1000147",
+"name": "西明寺　客殿",
+"part": "客殿",
+"kind": "building"
+},
+{
+"csv_id": "1000148",
+"name": "西明寺　表門",
+"part": "表門",
+"kind": "building"
+}
+]
+},
+"A00528": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000170",
+"name": "金光寺　紙本著色遊行上人絵巻",
+"part": "紙本著色遊行上人絵巻",
+"kind": "object"
+}
+]
+},
+"A00552": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000152",
+"name": "雨宝院　木造千手観音立像",
+"part": "木造千手観音立像",
+"kind": "object"
+}
+]
+},
+"A00551": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000155",
+"name": "西芳寺　絹本著色夢窓国師像",
+"part": "絹本著色夢窓国師像",
+"kind": "object"
+}
+]
+},
+"A00581": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000158",
+"name": "相国寺　絹本著色十六羅漢図",
+"part": "絹本著色十六羅漢図",
+"kind": "object"
+},
+{
+"csv_id": "1000159",
+"name": "相国寺　絹本著色鳴鶴図",
+"part": "絹本著色鳴鶴図",
+"kind": "object"
+},
+{
+"csv_id": "1000160",
+"name": "相国寺　絹本墨画淡彩鳳凰図",
+"part": "絹本墨画淡彩鳳凰図",
+"kind": "object"
+},
+{
+"csv_id": "1000161",
+"name": "相国寺　紙本墨画竹林猿猴図",
+"part": "紙本墨画竹林猿猴図",
+"kind": "object"
+},
+{
+"csv_id": "1000162",
+"name": "相国寺　紙本墨画山水図",
+"part": "紙本墨画山水図",
+"kind": "object"
+},
+{
+"csv_id": "1000163",
+"name": "相国寺　無学祖元墨蹟",
+"part": "無学祖元墨蹟",
+"kind": "object"
+}
+]
+},
+"A00531": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000180",
+"name": "狸谷山不動院　不動明王像",
+"part": "不動明王像",
+"kind": "building"
+}
+]
+},
+"A00527": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000181",
+"name": "長講堂　木造後白河法皇像",
+"part": "木造後白河法皇像",
+"kind": "object"
+}
+]
+},
+"A00546": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000182",
+"name": "天授庵　絹本著色細川幽斎像　同夫人像",
+"part": "絹本著色細川幽斎像 同夫人像",
+"kind": "object"
+}
+]
+},
+"A00539": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000191",
+"name": "平等寺　木造釈迦如来立像",
+"part": "木造釈迦如来立像",
+"kind": "object"
+},
+{
+"csv_id": "1000192",
+"name": "平等寺　木造如意輪観音坐像",
+"part": "木造如意輪観音坐像",
+"kind": "object"
+},
+{
+"csv_id": "1000193",
+"name": "平等寺　木造薬師如来立像",
+"part": "木造薬師如来立像",
+"kind": "object"
+}
+]
+},
+"A00565": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000194",
+"name": "藤森神社　紫糸威大鎧",
+"part": "紫糸威大鎧",
+"kind": "object"
+}
+]
+},
+"A00524": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000195",
+"name": "峰定寺　木造金剛力士立像",
+"part": "木造金剛力士立像",
+"kind": "object"
+},
+{
+"csv_id": "1000196",
+"name": "峰定寺　木造釈迦如来立像",
+"part": "木造釈迦如来立像",
+"kind": "object"
+},
+{
+"csv_id": "1000197",
+"name": "峰定寺　木造十一面千手観音坐像",
+"part": "木造十一面千手観音坐像",
+"kind": "object"
+},
+{
+"csv_id": "1000198",
+"name": "峰定寺　木造毘沙門天立像",
+"part": "木造毘沙門天立像",
+"kind": "object"
+},
+{
+"csv_id": "1000199",
+"name": "峰定寺　木造不動明王及二童子立像",
+"part": "木造不動明王及二童子立像",
+"kind": "object"
+}
+]
+},
+"A00529": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000200",
+"name": "補陀洛寺　小町老衰像",
+"part": "小町老衰像",
+"kind": "building"
+},
+{
+"csv_id": "1000201",
+"name": "補陀洛寺　三相変図",
+"part": "三相変図",
+"kind": "building"
+}
+]
+},
+"A00561": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000202",
+"name": "佛光寺　木造聖徳太子立像",
+"part": "木造聖徳太子立像",
+"kind": "object"
+}
+]
+},
+"A00543": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000028",
+"name": "桂春院のくろがねもち",
+"part": "くろがねもち",
+"kind": "named tree"
+}
+]
+},
+"A00525": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000204",
+"name": "遍照寺　木造十一面観音立像",
+"part": "木造十一面観音立像",
+"kind": "object"
+}
+]
+},
+"A00566": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000205",
+"name": "法観寺　紙本著色八坂塔絵図",
+"part": "紙本著色八坂塔絵図",
+"kind": "object"
+}
+]
+},
+"A00536": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000208",
+"name": "法輪寺　木造持国天・多聞天立像",
+"part": "木造持国天・多聞天立像",
+"kind": "object"
+},
+{
+"csv_id": "10000014",
+"name": "法輪寺＜西京区＞　牛",
+"part": "牛",
+"kind": "guardian figure"
+},
+{
+"csv_id": "10000015",
+"name": "法輪寺＜西京区＞　虎",
+"part": "虎",
+"kind": "guardian figure"
+}
+]
+},
+"A00548": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000215",
+"name": "廬山寺　絹本著色普賢十羅刹女像",
+"part": "絹本著色普賢十羅刹女像",
+"kind": "object"
+},
+{
+"csv_id": "1000216",
+"name": "廬山寺　慈恵大師自筆遺告",
+"part": "慈恵大師自筆遺告",
+"kind": "object"
+},
+{
+"csv_id": "1000217",
+"name": "廬山寺　木造如意輪観音半跏像",
+"part": "木造如意輪観音半跏像",
+"kind": "object"
+}
+]
+},
+"A00530": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000002",
+"name": "一言寺の梅",
+"part": "梅",
+"kind": "named tree"
+}
+]
+},
+"A00592": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000008",
+"name": "大原野神社の椎",
+"part": "椎",
+"kind": "named tree"
+},
+{
+"csv_id": "2000009",
+"name": "大原野神社の樅",
+"part": "樅",
+"kind": "named tree"
+},
+{
+"csv_id": "10000018",
+"name": "大原野神社　神鹿",
+"part": "神鹿",
+"kind": "guardian figure"
+}
+]
+},
+"A00562": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000031",
+"name": "護王神社のかりん",
+"part": "かりん",
+"kind": "named tree"
+},
+{
+"csv_id": "10000009",
+"name": "護王神社　猪",
+"part": "猪",
+"kind": "guardian figure"
+}
+]
+},
+"A00575": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000016",
+"name": "勧修寺のはいびゃくしん",
+"part": "はいびゃくしん",
+"kind": "named tree"
+}
+]
+},
+"A00568": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000041",
+"name": "三宝院の枝垂桜",
+"part": "枝垂桜",
+"kind": "named tree"
+}
+]
+},
+"A00538": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000045",
+"name": "十輪寺の大樟",
+"part": "大樟",
+"kind": "named tree"
+}
+]
+},
+"A00573": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000046",
+"name": "青蓮院の大楠",
+"part": "大楠",
+"kind": "named tree"
+}
+]
+},
+"A00586": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000089",
+"name": "水火天満宮　菅公影向松",
+"part": "菅公影向松",
+"kind": "named tree"
+}
+]
+},
+"A00597": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000057",
+"name": "総見院の胡蝶佗助",
+"part": "胡蝶佗助",
+"kind": "named tree"
+}
+]
+},
+"A00537": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000077",
+"name": "宝鏡寺の熊谷と月光と村娘",
+"part": "熊谷と月光と村娘",
+"kind": "named tree"
+}
+]
+},
+"A00577": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000078",
+"name": "宝泉院の五葉松",
+"part": "五葉松",
+"kind": "named tree"
+}
+]
+},
+"A00583": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000079",
+"name": "法然院、北門の楓",
+"part": "北門の楓",
+"kind": "named tree"
+},
+{
+"csv_id": "2000080",
+"name": "法然院の楓",
+"part": "楓",
+"kind": "named tree"
+},
+{
+"csv_id": "2000081",
+"name": "法然院の散椿",
+"part": "散椿",
+"kind": "named tree"
+},
+{
+"csv_id": "2000082",
+"name": "法然院の椋",
+"part": "椋",
+"kind": "named tree"
+}
+]
+},
+"A00558": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000085",
+"name": "由岐神社の大杉",
+"part": "大杉",
+"kind": "named tree"
+}
+]
+},
+"A00584": {
+"children": [],
+"dsight": [
+{
+"csv_id": "2000086",
+"name": "霊鑑寺の紅梅",
+"part": "紅梅",
+"kind": "named tree"
+},
+{
+"csv_id": "2000087",
+"name": "霊鑑寺の日光椿",
+"part": "日光椿",
+"kind": "named tree"
+}
+]
+},
+"A00590": {
+"children": [],
+"dsight": [
+{
+"csv_id": "10000004",
+"name": "菅大臣神社　狛犬",
+"part": "狛犬",
+"kind": "guardian figure"
+}
+]
+},
+"A00574": {
+"children": [],
+"dsight": [
+{
+"csv_id": "10000010",
+"name": "禅居庵　摩利支天堂",
+"part": "摩利支天堂",
+"kind": "guardian figure"
+}
+]
+},
+"A00576": {
+"children": [],
+"dsight": [
+{
+"csv_id": "10000016",
+"name": "三宅八幡宮　鳩",
+"part": "鳩",
+"kind": "guardian figure"
+}
+]
+},
+"A00549": {
+"children": [],
+"dsight": [
+{
+"csv_id": "10000017",
+"name": "安井金比羅宮　狛犬",
+"part": "狛犬",
+"kind": "guardian figure"
+}
+]
+},
+"A00550": {
+"children": [],
+"dsight": [
+{
+"csv_id": "11000006",
+"name": "蛇塚古墳",
+"part": null,
+"kind": "burial mound"
+}
+]
+}
+},
+"child_of": {
+"A00078": "A00579",
+"A00487": "A00579",
+"A00488": "A00579",
+"A00490": "A00579",
+"A00077": "A00588",
+"A00065": "A00555"
+},
+"groups": [
+{
+"name": "股のぞき台 (傘松公園)",
+"ids": [
+"A00177",
+"A00280",
+"A00332",
+"A00281"
+],
+"note": "A row of separate 'look between your legs' platforms at Kasamatsu Park; each is a real platform. Kept, grouped."
+},
+{
+"name": "股のぞき台 (天橋立ビューランド)",
+"ids": [
+"A00283",
+"A00284",
+"A00285",
+"A00287",
+"A00288",
+"A00289",
+"A00290"
+],
+"note": "Several separate platforms at Amanohashidate View Land within about 50 m, mapped in one edit on 2019-05-02. Kept, grouped."
+},
+{
+"name": "宇治橋",
+"ids": [
+"A00455",
+"A00515",
+"A00186"
+],
+"note": "The Uji Bridge and its 三の間 (the old and the present one). Different features of the same bridge."
+},
+{
+"name": "京都御所",
+"ids": [
+"A00258",
+"A00238"
+],
+"note": "The palace and its entrance."
+}
+],
+"possible_duplicates": [
+{
+"class": "B",
+"ids": [
+"A00085",
+"A00360"
+],
+"name": "おもかる石",
+"note": "1 m apart, same tags. At Fushimi Inari's Okusha Hohaisho there is a pair of these stone lanterns (left and right), so these may be the two stones. Kept both; needs a site check."
+},
+{
+"class": "B",
+"ids": [
+"A00142",
+"A00231"
+],
+"name": "石塀小路",
+"note": "One lane, two points 134 m apart (2017 and 2018 edits). Probably the same lane marked twice, at different spots. Kept both; needs a decision on which point represents the lane."
+},
+{
+"class": "B",
+"ids": [
+"A00021",
+"A00370"
+],
+"name": "保津峡展望台",
+"note": "Same name, 341 m apart. Could be two different viewpoints over the gorge. Kept both."
+}
+],
+"distinct": [
+{
+"class": "D",
+"ids": [
+"A00078",
+"A00488"
+],
+"name": "西から見た二条城東南隅櫓の眺め",
+"note": "Two different viewpoints 387 m apart: their English names describe different views (A00078: from the ruins of the donjon; A00488: the southeast corner turret from the west). A00078's Japanese name looks copied from A00488's; it is left as the source has it and flagged here."
+},
+{
+"class": "D",
+"ids": [
+"A00478",
+"A00479"
+],
+"name": "KYOTO SAMURAI NINJA MUSEUM",
+"note": "Different addresses (堀之上町 109 and 東大文字町 292-4): two premises."
+}
+],
+"csv": {
+"file": "DSIGHT_1.csv",
+"rows": 648,
+"by_series": {
+"cultural property": 236,
+"named tree": 77,
+"performing art": 14,
+"literature": 72,
+"food": 24,
+"place name (area)": 105,
+"mountain or river": 71,
+"townhouse term or local history": 49
+},
+"sites": 141,
+"sites_verified": 77,
+"sites_already_on_map": 1,
+"sites_to_add": 77,
+"sites_unverified": 63
+},
+"location_check": {
+"raw": "OpenStreetMap point of the original package; the node was read again from OSM on 2026-11-15 and is at the same position (within 30 m) with the same name, inside the N03 municipality polygon. One source: not independently confirmed",
+"added": "OpenStreetMap feature and Wikidata item agree; see location_evidence on each record"
+}
+}

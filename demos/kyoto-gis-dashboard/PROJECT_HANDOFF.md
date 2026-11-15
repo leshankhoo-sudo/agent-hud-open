@@ -509,3 +509,13 @@ git diff faf1ebe -- demos/kyoto-gis-dashboard   # 查看之后改了什么
 - 界面：详情卡片新增 "Linked in OSM" 标记和对应说明；Data & Sources 里的照片统计改成按 523 条记录计算。
 - 测试：逻辑 25 / 25（照片测试改为：名称匹配只限有名称的记录，OSM 链接必须和节点上的标签一致），浏览器 104 / 104（新增：金阁显示自己 OSM 记录链接的照片和作者许可证）。
 - Windows ZIP 和在线预览链接还是上一版。
+
+## 19. 2026-11-15 更新（二）：POI 核查与整合（本节优先于上文）
+
+- 报告：`docs/POI_AUDIT.md`；逐条清单：`data/audit/poi_audit_checklist.csv`；人工复核结论：`data/audit/poi_decisions.json`（改合并或分组只改这个文件，再运行 `scripts/poi_reconcile.py`）。
+- 运行顺序：`fetch_osm_reference.py`（联网）→ `audit_poi.py data/raw/dsight/DSIGHT_1.csv`（只读，只看 `data/raw` 的原始 523 条）→ 人工复核 → `poi_reconcile.py` → `walking_prefecture.py <roads 文件夹>` → `kde_density.py` → `prepare_context.py` → `fetch_photos_linked.py`。
+- 地图图层 595 条 = 523 − 5 + 77。新增编号 A00524–A00600 固定在 `data/audit/poi_ids.json`，重跑不会变。
+- `public/data/poi_relations.json`：合并记录、父子关系、分组、疑似重复，以及各地点下的 CSV 记录；界面在详情卡片中读取。
+- 测试：逻辑 27 / 27（新增：原始记录不变、合并有依据、新增地点有两个来源的依据、南禅寺用三种写法都能搜到），浏览器测试见本次提交说明。
+- 注意：`fetch_names_en.py` 会重建 names_en.json 的景点部分；重跑它之后要再运行一次 `poi_reconcile.py`，把新增地点的英文名补回去。
+- Windows ZIP 和在线预览链接还是上一版。

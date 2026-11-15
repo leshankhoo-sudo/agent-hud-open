@@ -1,0 +1,810 @@
+﻿subject,original_id,name,other_names_or_osm,matched_to_or_site,decision_or_kind,location_evidence_or_note,final_result
+CSV site,2000002,一言寺,一言寺,node/13033298688,add as a new site; attach the CSV records to it,Verified: OSM node/13033298688 and Wikidata Q11353186 with the same Japanese label agree within 26 m,added as A00530 (attraction)
+CSV site,1000006 1000007 1000008 1000009,三十三間堂(蓮華王院),三十三間堂 / 三十三間堂(蓮華王院) / 蓮華王院,way/31842037,add as a new site; attach the CSV records to it,Verified: OSM way/31842037 and Wikidata Q653319 tagged on the OSM feature agree within 14 m,added as A00553 (attraction)
+CSV site,1000074,三千院,三千院,way/759390999,add as a new site; attach the CSV records to it,Verified: OSM way/759390999 and Wikidata Q1072538 tagged on the OSM feature agree within 59 m; inside the address area 京都市 左京区,added as A00587 (attraction)
+CSV site,10000016,三宅八幡宮,三宅八幡宮,way/554924931,add as a new site; attach the CSV records to it,Verified: OSM way/554924931 and Wikidata Q11354999 tagged on the OSM feature agree within 60 m; inside the address area 京都市 左京区,added as A00576 (attraction)
+CSV site,2000041,三宝院,三宝院,way/400537118,add as a new site; attach the CSV records to it,Verified: OSM way/400537118 and Wikidata Q3471686 tagged on the OSM feature agree within 9 m,added as A00568 (attraction)
+CSV site,1000156,三福寺,三福寺,node/10697670109,not added (location not verified); kept in this list,Unverified Location: found in OpenStreetMap only; no independent second source within 600 m,not added: Unverified Location (kept in this list)
+CSV site,1000010,下鴨神社(賀茂御祖神社)東本殿,下鴨神社(賀茂御祖神社)東本殿 / 下鴨神社東本殿 / 賀茂御祖神社,way/98106488,add as a new site; attach the CSV records to it,Verified: OSM way/98106488 and Wikidata Q701620 tagged on the OSM feature agree within 233 m; inside the address area 京都市 左京区,added as A00600 (attraction)
+CSV site,1000091,二尊院(本尊二尊),二尊院 / 二尊院(本尊二尊) / 本尊二尊,way/961234250,add as a new site; attach the CSV records to it,Verified: OSM way/961234250 and Wikidata Q3096514 tagged on the OSM feature agree within 50 m,added as A00595 (attraction)
+CSV site,1000026 1000089 1000090 1000125 1000126 1000127 1000131,二条城,二条城,"A00078 西から見た二条城東南隅櫓の眺め (part of the site, 153 m); A00487 南東から見た二条城東南隅櫓の眺め (part of the site, 330 m); A00488 西から見た二条城東南隅櫓の眺め (part of the site, 289 m); A00490 北東から見た二条城本丸の城壁と内堀の眺望 (part of the site, 113 m)",add as a new site; attach the CSV records to it,Verified: OSM way/57111281 and Wikidata Q1013399 tagged on the OSM feature agree within 95 m,added as A00579 (castle)
+CSV site,1000068 1000069,京都国立博物館,京都国立博物館,way/31843043,add as a new site; attach the CSV records to it,Verified: OSM way/31843043 and Wikidata Q147286 tagged on the OSM feature agree within 20 m,added as A00554 (museum)
+CSV site,1000169,京都国立博物館所蔵,京都国立博物館所蔵,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000027 1000028 1000029 1000030 1000093 1000094 1000183 1000184 1000185 1000186 1000187 1000188 1000189,仁和寺,仁和寺,way/98103060,add as a new site; attach the CSV records to it,Verified: OSM way/98103060 and Wikidata Q1202871 tagged on the OSM feature agree within 151 m; inside the address area 京都市 右京区,added as A00598 (attraction)
+CSV site,2000004,今宮神社,今宮神社,,not added (location not verified); kept in this list,Unverified Location: 3 different OSM places share this name and the CSV gives no address to tell them apart,not added: Unverified Location (kept in this list)
+CSV site,1000033 1000034 10000013,伏見稲荷大社,伏見稲荷大社,A00306 伏見稲荷大社 (same site),already on the map as A00306: attach the CSV records to it,Unverified Location: 2 different OSM places share this name inside the address area (京都市 伏見区),already on the map as A00306; CSV records attached to it
+CSV site,1000202,佛光寺,佛光寺,way/344429497,add as a new site; attach the CSV records to it,Verified: OSM way/344429497 and Wikidata Q2413893 tagged on the OSM feature agree within 17 m; inside the address area 京都市 下京区,added as A00561 (attraction)
+CSV site,1000039 1000040,八坂神社,八坂神社,way/328903218,add as a new site; attach the CSV records to it,Verified: OSM way/328903218 and Wikidata Q692714 tagged on the OSM feature agree within 22 m; inside the address area 京都市 東山区,added as A00559 (attraction)
+CSV site,1000109,六道珍皇寺,六道珍皇寺,node/1522769902,add as a new site; attach the CSV records to it,Verified: OSM node/1522769902 and Wikidata Q1391664 tagged on the OSM feature agree within 19 m,added as A00532 (attraction)
+CSV site,2000016,勧修寺,勧修寺,way/546816129,add as a new site; attach the CSV records to it,Verified: OSM way/546816129 and Wikidata Q772598 tagged on the OSM feature agree within 5 m,added as A00575 (attraction)
+CSV site,1000001 1000153 2000017 2000018 2000019 2000020 2000021 2000022 2000088 10000007 10000005 10000006,北野天満宮,北野天満宮,way/432120699,add as a new site; attach the CSV records to it,Verified: OSM way/432120699 and Wikidata Q662176 tagged on the OSM feature agree within 116 m; inside the address area 京都市 上京区,added as A00571 (attraction)
+CSV site,2000045,十輪寺,十輪寺,node/6342331485,add as a new site; attach the CSV records to it,Verified: OSM node/6342331485 and Wikidata Q11405174 tagged on the OSM feature agree within 24 m,added as A00538 (attraction)
+CSV site,1000012 1000049 1000078 1000080 1000112 2000056,千本釈迦堂(大報恩寺),千本釈迦堂 / 千本釈迦堂(大報恩寺) / 大報恩寺,way/1062741378,add as a new site; attach the CSV records to it,Verified: OSM way/1062741378 and Wikidata Q10934650 tagged on the OSM feature agree within 24 m,added as A00541 (attraction)
+CSV site,1000203,南岩倉明王院不動寺,南岩倉明王院不動寺,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000024 1000025 2000073,南禅寺,南禅寺,way/352013907,add as a new site; attach the CSV records to it,Verified: OSM way/352013907 and Wikidata Q1089767 tagged on the OSM feature agree within 147 m; inside the address area 京都市 左京区,added as A00563 (attraction)
+CSV site,1000051,即成院,即成院,node/2656063040,add as a new site; attach the CSV records to it,Verified: OSM node/2656063040 and Wikidata Q11409172 tagged on the OSM feature agree within 46 m,added as A00534 (attraction)
+CSV site,2000035,古知谷,古知谷,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000055,善峯寺の遊龍,善峯寺の遊龍,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000165 1000166,善想寺,善想寺,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000070,圓徳院,圓徳院,way/371728884,add as a new site; attach the CSV records to it,Verified: OSM way/371728884 and Wikidata Q11422904 tagged on the OSM feature agree within 30 m,added as A00567 (attraction)
+CSV site,1000172 2000044,地蔵院,地蔵院,A00150 地蔵院 (same name only (not confirmed)),not added (location not verified); kept in this list,Unverified Location: 2 different OSM places share this name inside the address area (京都市 右京区),not added: Unverified Location (kept in this list)
+CSV site,2000008 2000009 10000018,大原野神社,大原野神社,way/808232357,add as a new site; attach the CSV records to it,Verified: OSM way/808232357 and Wikidata Q3594020 tagged on the OSM feature agree within 110 m; inside the address area 京都市 西京区,added as A00592 (attraction)
+CSV site,1000013 1000052 1000082 2000062,大徳寺,大徳寺,way/969457939,add as a new site; attach the CSV records to it,Verified: OSM way/969457939 and Wikidata Q901256 tagged on the OSM feature agree within 122 m; inside the address area 京都市 北区,added as A00596 (attraction)
+CSV site,1000179,大興寺,大興寺,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000014 1000083 1000121 1000135,大覚寺,大覚寺,way/1157357955,add as a new site; attach the CSV records to it,Verified: OSM way/1157357955 and Wikidata Q1157585 tagged on the OSM feature agree within 165 m,added as A00544 (attraction)
+CSV site,1000182,天授庵,天授庵,way/1226598255,add as a new site; attach the CSV records to it,Verified: OSM way/1226598255 and Wikidata Q11442642 tagged on the OSM feature agree within 19 m; inside the address area 京都市 左京区,added as A00546 (attraction)
+CSV site,1000086,天球院,天球院,way/1073346918,not added (location not verified); kept in this list,Unverified Location: found in OpenStreetMap only; no independent second source within 600 m,not added: Unverified Location (kept in this list)
+CSV site,11000004,天皇,天皇,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000035 1000036 1000037 1000038 1000107 1000211,妙心寺,妙心寺,way/558026803,add as a new site; attach the CSV records to it,Verified: OSM way/558026803 and Wikidata Q376288 tagged on the OSM feature agree within 29 m; inside the address area 京都市 右京区,added as A00578 (attraction)
+CSV site,1000106 1000105,妙法院,妙法院,way/31845858,add as a new site; attach the CSV records to it,Verified: OSM way/31845858 and Wikidata Q10943054 with the same Japanese label agree within 23 m,added as A00556 (attraction)
+CSV site,1000133 2000084,妙蓮寺,妙蓮寺,,not added (location not verified); kept in this list,Unverified Location: 2 different OSM places share this name and the CSV gives no address to tell them apart,not added: Unverified Location (kept in this list)
+CSV site,10000017,安井金比羅宮,安井金比羅宮,way/1554873121,add as a new site; attach the CSV records to it,Verified: OSM way/1554873121 and Wikidata Q11450246 tagged on the OSM feature agree within 50 m; inside the address area 京都市 東山区,added as A00549 (attraction)
+CSV site,1000064,安楽寿院,安楽寿院,way/1204820851,add as a new site; attach the CSV records to it,Verified: OSM way/1204820851 and Wikidata Q2852420 tagged on the OSM feature agree within 16 m; inside the address area 京都市 伏見区,added as A00545 (attraction)
+CSV site,1000151,安養寺,安養寺,,not added (location not verified); kept in this list,Unverified Location: OSM places named 安養寺 lie outside the address area (京都市 中京区),not added: Unverified Location (kept in this list)
+CSV site,2000078,宝泉院,宝泉院,way/556023622,add as a new site; attach the CSV records to it,Verified: OSM way/556023622 and Wikidata Q11452598 tagged on the OSM feature agree within 1 m,added as A00577 (attraction)
+CSV site,2000077,宝鏡寺,宝鏡寺,node/5276966703,add as a new site; attach the CSV records to it,Verified: OSM node/5276966703 and Wikidata Q11452697 tagged on the OSM feature agree within 3 m; inside the address area 京都市 上京区,added as A00537 (attraction)
+CSV site,2000063,対龍山荘のはぜ,対龍山荘のはぜ,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000195 1000196 1000197 1000198 1000199,峰定寺,峰定寺,node/10760299627,add as a new site; attach the CSV records to it,Verified: OSM node/10760299627 and Wikidata Q11476122 tagged on the OSM feature agree within 3 m; inside the address area 京都市 左京区,added as A00524 (attraction)
+CSV site,1000171,崇道神社,崇道神社,,not added (location not verified); kept in this list,Unverified Location: OSM places named 崇道神社 lie outside the address area (京都市 東山区),not added: Unverified Location (kept in this list)
+CSV site,2000001,嵐山・渡月橋畔,嵐山・渡月橋畔,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000038,嵯峨・兒神社,嵯峨・兒神社,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000039,嵯峨・曇華院,嵯峨・曇華院,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,11000003,嵯峨七ッ塚古墳,嵯峨七ッ塚古墳,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000011,常寂光寺,常寂光寺,way/925807376,add as a new site; attach the CSV records to it,Verified: OSM way/925807376 and Wikidata Q11060322 tagged on the OSM feature agree within 9 m,added as A00594 (attraction)
+CSV site,1000096 1000097,平安神宮,平安神宮,way/619903245,add as a new site; attach the CSV records to it,Verified: OSM way/619903245 and Wikidata Q385141 tagged on the OSM feature agree within 83 m,added as A00582 (attraction)
+CSV site,2000075,平岡八幡宮,平岡八幡宮,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000041,平清盛公坐像,平清盛公坐像,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000191 1000192 1000193,平等寺,平等寺,node/810650911,add as a new site; attach the CSV records to it,Verified: OSM node/810650911 and Wikidata Q11483471 tagged on the OSM feature agree within 2 m; inside the address area 京都市 下京区,added as A00539 (attraction)
+CSV site,2000076,平野神社,平野神社,,not added (location not verified); kept in this list,Unverified Location: 2 different OSM places share this name and the CSV gives no address to tell them apart,not added: Unverified Location (kept in this list)
+CSV site,1000073,広隆寺,広隆寺,way/407472704,add as a new site; attach the CSV records to it,Verified: OSM way/407472704 and Wikidata Q3076920 tagged on the OSM feature agree within 115 m,added as A00569 (attraction)
+CSV site,1000215 1000216 1000217,廬山寺,廬山寺,way/1329256624,add as a new site; attach the CSV records to it,Verified: OSM way/1329256624 and Wikidata Q11064894 tagged on the OSM feature agree within 15 m; inside the address area 京都市 上京区,added as A00548 (attraction)
+CSV site,1000043,建仁寺,建仁寺,way/760889100,add as a new site; attach the CSV records to it,Verified: OSM way/760889100 and Wikidata Q1440954 tagged on the OSM feature agree within 124 m; inside the address area 京都市 東山区,added as A00589 (attraction)
+CSV site,11000001,御堂ヶ池1号墳,御堂ヶ池1号墳,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000011,御室桜,御室桜,node/3780505857,not added (location not verified); kept in this list,Unverified Location: found in OpenStreetMap only; no independent second source within 600 m,not added: Unverified Location (kept in this list)
+CSV site,2000032 2000033,御香宮,御香宮,node/5613230332,not added (location not verified); kept in this list,Unverified Location: found in OpenStreetMap only; no independent second source within 600 m,not added: Unverified Location (kept in this list)
+CSV site,1000137 1000138 1000139 1000140 1000141,徳林庵,徳林庵,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000065 1000168,愛宕念仏寺,愛宕念仏寺,,not added (location not verified); kept in this list,Unverified Location: OSM places named 愛宕念仏寺 lie outside the address area (京都市 東山区),not added: Unverified Location (kept in this list)
+CSV site,10000001 10000002 10000011 10000012,愛宕社<大豊神社>,大国社 / 大国社<大豊神社> / 大豊神社 / 愛宕社 / 愛宕社<大豊神社> / 日吉社 / 日吉社<大豊神社> / 稲荷社 / 稲荷社<大豊神社>,,not added (location not verified); kept in this list,Unverified Location: 4 different OSM places share this name inside the address area (京都市 左京区),not added: Unverified Location (kept in this list)
+CSV site,1000150,愛染院,愛染院,node/2078412962,not added (location not verified); kept in this list,Unverified Location: found in OpenStreetMap only; no independent second source within 600 m,not added: Unverified Location (kept in this list)
+CSV site,1000002 1000003 2000042 2000043,慈照寺(銀閣寺),慈照寺 / 慈照寺(銀閣寺) / 銀閣寺 / 銀閣寺(慈照寺),way/105817561,add as a new site; attach the CSV records to it,Verified: OSM way/105817561 and Wikidata Q257473 tagged on the OSM feature agree within 29 m; inside the address area 京都市 左京区,added as A00540 (attraction)
+CSV site,1000164,新徳寺,新徳寺,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000003 10000003,新日吉神宮,新日吉神宮,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000111,春光院,春光院,way/1075712782,add as a new site; attach the CSV records to it,Verified: OSM way/1075712782 and Wikidata Q669494 tagged on the OSM feature agree within 53 m,added as A00542 (attraction)
+CSV site,1000134,智積院,智積院,way/31845891,add as a new site; attach the CSV records to it,Verified: OSM way/31845891 and Wikidata Q11090279 tagged on the OSM feature agree within 43 m,added as A00557 (attraction)
+CSV site,1000102 1000129 1000136 1000209 1000210,曼殊院,曼殊院,,not added (location not verified); kept in this list,Unverified Location: OSM places named 曼殊院 lie outside the address area (京都市 東山区),not added: Unverified Location (kept in this list)
+CSV site,1000031 1000032 1000059 1000060 1000095 2000074,本願寺,本願寺,,not added (location not verified); kept in this list,Unverified Location: 2 different OSM places share this name and the CSV gives no address to tell them apart,not added: Unverified Location (kept in this list)
+CSV site,2000070,東北院,東北院,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000071,東北院の軒端,東北院の軒端,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000020 1000021 1000022 1000023 1000057 1000058 1000088,東寺(教王護国寺),教王護国寺 / 東寺 / 東寺(教王護国寺),way/359896810,add as a new site; attach the CSV records to it,Verified: OSM way/359896810 and Wikidata Q1046403 tagged on the OSM feature agree within 70 m,added as A00564 (attraction)
+CSV site,1000017 1000018 1000019 1000056 1000087,東福寺,東福寺,way/768987591,add as a new site; attach the CSV records to it,Verified: OSM way/768987591 and Wikidata Q2166743 tagged on the OSM feature agree within 218 m,added as A00591 (attraction)
+CSV site,1000063 1000103 1000104,松尾大社,松尾大社,node/1741489390,add as a new site; attach the CSV records to it,Verified: OSM node/1741489390 and Wikidata Q710302 tagged on the OSM feature agree within 35 m,added as A00533 (attraction)
+CSV site,1000178,染殿院,染殿院,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000028,桂春院,桂春院,way/1075792952,add as a new site; attach the CSV records to it,Verified: OSM way/1075792952 and Wikidata Q11536768 tagged on the OSM feature agree within 10 m,added as A00543 (attraction)
+CSV site,2000089,水火天満宮,水火天満宮,way/736954820,add as a new site; attach the CSV records to it,Verified: OSM way/736954820 and Wikidata Q11548940 tagged on the OSM feature agree within 3 m; inside the address area 京都市 上京区,added as A00586 (attraction)
+CSV site,2000005,永観堂,永観堂,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000050,泉涌寺,泉涌寺,way/878535619,add as a new site; attach the CSV records to it,Verified: OSM way/878535619 and Wikidata Q1060966 tagged on the OSM feature agree within 52 m,added as A00593 (attraction)
+CSV site,2000079 2000080 2000081 2000082,法然院,法然院,way/684381894,add as a new site; attach the CSV records to it,Verified: OSM way/684381894 and Wikidata Q11555257 tagged on the OSM feature agree within 23 m,added as A00583 (attraction)
+CSV site,1000100 1000130,法界寺,法界寺,,not added (location not verified); kept in this list,Unverified Location: 2 different OSM places share this name and the CSV gives no address to tell them apart,not added: Unverified Location (kept in this list)
+CSV site,1000205,法観寺,法観寺,way/371717423,add as a new site; attach the CSV records to it,Verified: OSM way/371717423 and Wikidata Q11555353 tagged on the OSM feature agree within 10 m; inside the address area 京都市 東山区,added as A00566 (attraction)
+CSV site,1000208 10000014 10000015,法輪寺<西京区>,法輪寺 / 法輪寺<西京区>,node/4693597064,add as a new site; attach the CSV records to it,Verified: OSM node/4693597064 and Wikidata Q3146371 tagged on the OSM feature agree within 34 m; inside the address area 京都市 西京区,added as A00536 (attraction)
+CSV site,1000062 1000098 1000206 1000207,法金剛院,法金剛院,node/1166397167,add as a new site; attach the CSV records to it,Verified: OSM node/1166397167 and Wikidata Q11143738 with the same Japanese label agree within 8 m; inside the address area 京都市 右京区,added as A00526 (attraction)
+CSV site,1000081 1000113 1000114 1000115 1000116 1000117 1000118 1000119 1000120 1000132,清凉寺,清凉寺,way/702180554,add as a new site; attach the CSV records to it,Verified: OSM way/702180554 and Wikidata Q534101 tagged on the OSM feature agree within 19 m,added as A00585 (attraction)
+CSV site,1000004 1000071 1000079 10000008,清水寺,清水寺,way/336641107,add as a new site; attach the CSV records to it,Verified: OSM way/336641107 and Wikidata Q221716 tagged on the OSM feature agree within 65 m; inside the address area 京都市 東山区,added as A00560 (attraction)
+CSV site,1000173 1000174,清浄華院,清浄華院,,not added (location not verified); kept in this list,Unverified Location: OSM places named 清浄華院 lie outside the address area (京都市 東山区),not added: Unverified Location (kept in this list)
+CSV site,2000092,片波,片波,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000180,狸谷山不動院,狸谷山不動院,node/13375867830,add as a new site; attach the CSV records to it,Verified: OSM node/13375867830 and Wikidata Q22119355 tagged on the OSM feature agree within 35 m; inside the address area 京都市 左京区,added as A00531 (attraction)
+CSV site,2000085,由岐神社,由岐神社,way/319198861,add as a new site; attach the CSV records to it,Verified: OSM way/319198861 and Wikidata Q11577577 tagged on the OSM feature agree within 19 m,added as A00558 (attraction)
+CSV site,11000002,甲塚古墳,甲塚古墳,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000058,疏水岸,疏水岸,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000090,白山神社,白山神社,,not added (location not verified); kept in this list,Unverified Location: 5 different OSM places share this name and the CSV gives no address to tell them apart,not added: Unverified Location (kept in this list)
+CSV site,2000047,白峯神宮の小賀玉,白峯神宮の小賀玉,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000158 1000159 1000160 1000161 1000162 1000163,相国寺,相国寺,way/619901458,add as a new site; attach the CSV records to it,Verified: OSM way/619901458 and Wikidata Q1786709 tagged on the OSM feature agree within 68 m; inside the address area 京都市 上京区,added as A00581 (attraction)
+CSV site,1000076 1000175 1000176 1000177 2000049 2000050 2000051 2000052 2000053,真如堂,真如堂 / 真如堂(真正極楽寺) / 真正極楽寺,way/601342721,add as a new site; attach the CSV records to it,Verified: OSM way/601342721 and Wikidata Q1089231 tagged on the OSM feature agree within 121 m; inside the address area 京都市 左京区,added as A00580 (attraction)
+CSV site,1000212,矢田寺,矢田寺,,not added (location not verified); kept in this list,Unverified Location: OSM places named 矢田寺 lie outside the address area (京都市 東山区),not added: Unverified Location (kept in this list)
+CSV site,1000015 1000016 1000218 2000068,知恩院,知恩院,way/456122965,add as a new site; attach the CSV records to it,Verified: OSM way/456122965 and Wikidata Q873645 tagged on the OSM feature agree within 37 m; inside the address area 京都市 東山区,added as A00572 (attraction)
+CSV site,1000048 1000077 1000110 1000219 1000220,神護寺,神護寺,way/407730160,add as a new site; attach the CSV records to it,Verified: OSM way/407730160 and Wikidata Q1075034 tagged on the OSM feature agree within 112 m,added as A00570 (attraction)
+CSV site,10000010,禅居庵,禅居庵,way/484504279,add as a new site; attach the CSV records to it,Verified: OSM way/484504279 and Wikidata Q85882834 tagged on the OSM feature agree within 21 m; inside the address area 京都市 東山区,added as A00574 (attraction)
+CSV site,11000005,福西古墳7号墳及び10号墳,福西古墳7号墳及び10号墳,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000149,精大明神像,精大明神像,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000066 2000067,糺の森,糺の森,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000057,総見院,総見院,way/972811489,add as a new site; attach the CSV records to it,Verified: OSM way/972811489 and Wikidata Q1058324 tagged on the OSM feature agree within 42 m; inside the address area 京都市 北区,added as A00597 (attraction)
+CSV site,10000004,菅大臣神社,菅大臣神社,way/762386069,add as a new site; attach the CSV records to it,Verified: OSM way/762386069 and Wikidata Q17209556 tagged on the OSM feature agree within 30 m; inside the address area 京都市 下京区,added as A00590 (attraction)
+CSV site,1000213 1000214,蓮光寺,蓮光寺,node/4450008991,not added (location not verified); kept in this list,Unverified Location: found in OpenStreetMap only; no independent second source within 600 m,not added: Unverified Location (kept in this list)
+CSV site,1000194,藤森神社,藤森神社,way/368465614,add as a new site; attach the CSV records to it,Verified: OSM way/368465614 and Wikidata Q11624431 tagged on the OSM feature agree within 114 m; inside the address area 京都市 伏見区,added as A00565 (attraction)
+CSV site,11000006,蛇塚古墳,蛇塚古墳,way/198767161,add as a new site; attach the CSV records to it,Verified: OSM way/198767161 and Wikidata Q11625508 tagged on the OSM feature agree within 2 m; inside the address area 京都市 右京区,added as A00550 (attraction)
+CSV site,1000200 1000201,補陀洛寺,補陀洛寺,node/12797505688,add as a new site; attach the CSV records to it,Verified: OSM node/12797505688 and Wikidata Q124482750 tagged on the OSM feature agree within 35 m; inside the address area 京都市 左京区,added as A00529 (attraction)
+CSV site,1000143 1000144 1000145 1000146 1000147 1000148,西明寺,西明寺,node/4355966389,add as a new site; attach the CSV records to it,Verified: OSM node/4355966389 and Wikidata Q11628431 tagged on the OSM feature agree within 16 m,added as A00535 (attraction)
+CSV site,1000155,西芳寺,西芳寺,way/218470281,add as a new site; attach the CSV records to it,Verified: OSM way/218470281 and Wikidata Q1516753 tagged on the OSM feature agree within 55 m; inside the address area 京都市 西京区,added as A00551 (attraction)
+CSV site,2000031 10000009,護王神社,護王神社,way/345029419,add as a new site; attach the CSV records to it,Verified: OSM way/345029419 and Wikidata Q11632526 tagged on the OSM feature agree within 563 m; inside the address area 京都市 上京区,added as A00562 (attraction)
+CSV site,1000061 1000099 1000128,豊国神社,豊国神社,"A00065 豊国神社宝物館 (part of the site, 43 m)",add as a new site; attach the CSV records to it,Verified: OSM way/31844031 and Wikidata Q709822 tagged on the OSM feature agree within 59 m,added as A00555 (attraction)
+CSV site,2000027,貴船神社,貴船神社,,not added (location not verified); kept in this list,Unverified Location: 2 different OSM places share this name inside the address area (京都市 左京区),not added: Unverified Location (kept in this list)
+CSV site,2000024 2000025,貴船神社奥宮,貴船神社奥宮,way/343907933,not added (location not verified); kept in this list,Unverified Location: found in OpenStreetMap only; no independent second source within 600 m,not added: Unverified Location (kept in this list)
+CSV site,2000023,貴船神社奥宮相生大杉,貴船神社奥宮相生大杉,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000015,賀茂,賀茂,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000067 1000066 1000092 2000012 2000013,賀茂別雷神社(上賀茂神社),上賀茂神社 / 賀茂別雷神社 / 賀茂別雷神社(上賀茂神社),way/98106482,add as a new site; attach the CSV records to it,Verified: OSM way/98106482 and Wikidata Q700448 tagged on the OSM feature agree within 26 m,added as A00599 (attraction)
+CSV site,2000014,賀茂社の紋幹,賀茂社の紋幹,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,2000034,越畑,越畑,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000204,遍照寺,遍照寺,node/11232463268,add as a new site; attach the CSV records to it,Verified: OSM node/11232463268 and Wikidata Q11640503 tagged on the OSM feature agree within 14 m; inside the address area 京都市 右京区,added as A00525 (attraction)
+CSV site,2000069,道風神社,道風神社,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000053 1000054 1000085 1000122,醍醐寺,醍醐寺,,not added (location not verified); kept in this list,Unverified Location: 3 different OSM places share this name and the CSV gives no address to tell them apart,not added: Unverified Location (kept in this list)
+CSV site,1000055 1000123 1000124,醍醐寺三宝院,醍醐寺三宝院,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000170,金光寺,金光寺,node/12150374515,add as a new site; attach the CSV records to it,Verified: OSM node/12150374515 and Wikidata Q11646439 tagged on the OSM feature agree within 36 m; inside the address area 京都市 下京区,added as A00528 (attraction)
+CSV site,1000072 2000036 2000037,金地院,金地院,way/1144260113,not added (location not verified); kept in this list,Unverified Location: found in OpenStreetMap only; no independent second source within 600 m,not added: Unverified Location (kept in this list)
+CSV site,1000181,長講堂,長講堂,node/12150374513,add as a new site; attach the CSV records to it,Verified: OSM node/12150374513 and Wikidata Q11653663 tagged on the OSM feature agree within 15 m; inside the address area 京都市 下京区,added as A00527 (attraction)
+CSV site,2000040,雑華院,雑華院,way/1075542745,not added (location not verified); kept in this list,Unverified Location: found in OpenStreetMap only; no independent second source within 600 m,not added: Unverified Location (kept in this list)
+CSV site,1000152,雨宝院,雨宝院,way/310643755,add as a new site; attach the CSV records to it,Verified: OSM way/310643755 and Wikidata Q57338123 tagged on the OSM feature agree within 18 m; inside the address area 京都市 上京区,added as A00552 (attraction)
+CSV site,2000086 2000087,霊鑑寺,霊鑑寺,way/684545298,add as a new site; attach the CSV records to it,Verified: OSM way/684545298 and Wikidata Q122833543 tagged on the OSM feature agree within 28 m,added as A00584 (attraction)
+CSV site,2000046,青蓮院,青蓮院,way/456124860,add as a new site; attach the CSV records to it,Verified: OSM way/456124860 and Wikidata Q377386 tagged on the OSM feature agree within 25 m,added as A00573 (attraction)
+CSV site,1000084,鞍馬寺,鞍馬寺,way/1243730752,add as a new site; attach the CSV records to it,Verified: OSM way/1243730752 and Wikidata Q608668 tagged on the OSM feature agree within 25 m,added as A00547 (attraction)
+CSV site,1000108,養源院,養源院,,not added (location not verified); kept in this list,Unverified Location: 4 different OSM places share this name and the CSV gives no address to tell them apart,not added: Unverified Location (kept in this list)
+CSV site,1000044 1000045 1000046 1000047,高台寺,高台寺,"A00077 高台寺掌美術館 (part of the site, 145 m)",add as a new site; attach the CSV records to it,Verified: OSM way/759391880 and Wikidata Q2702064 tagged on the OSM feature agree within 53 m,added as A00588 (attraction)
+CSV site,1000005,高山寺,高山寺,,not added (location not verified); kept in this list,Unverified Location: 2 different OSM places share this name and the CSV gives no address to tell them apart,not added: Unverified Location (kept in this list)
+CSV site,2000091,黒田百年桜,黒田百年桜,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV record,1000001,北野天満宮　本殿、石の間、拝殿及び楽の間,,北野天満宮,building,,child of A00571 (no point of its own)
+CSV record,1000002,慈照寺（銀閣寺）　銀閣,銀閣（観音殿）,慈照寺(銀閣寺),building,京都市左京区銀閣寺町2,child of A00540 (no point of its own)
+CSV record,1000003,銀閣寺（慈照寺）　東求堂,,慈照寺(銀閣寺),building,京都市左京区銀閣寺町2,child of A00540 (no point of its own)
+CSV record,1000004,清水寺　本堂,,清水寺,object,京都市東山区清水一丁目294,child of A00560 (no point of its own)
+CSV record,1000005,高山寺　石水院（五所堂）,栂尾山　高山寺,高山寺,building,,not placed: site location unverified
+CSV record,1000006,三十三間堂（蓮華王院）南大門,,三十三間堂(蓮華王院),building,,child of A00553 (no point of its own)
+CSV record,1000007,三十三間堂（蓮華王院）築地塀,,三十三間堂(蓮華王院),building,,child of A00553 (no point of its own)
+CSV record,1000008,三十三間堂（蓮華王院）木造千手観音坐像,,三十三間堂(蓮華王院),object,,child of A00553 (no point of its own)
+CSV record,1000020,東寺（教王護国寺）　金堂,,東寺(教王護国寺),building,,child of A00564 (no point of its own)
+CSV record,1000009,三十三間堂（蓮華王院）木造千手観音立像,,三十三間堂(蓮華王院),object,,child of A00553 (no point of its own)
+CSV record,1000010,下鴨神社（賀茂御祖神社）東本殿　西本殿,,下鴨神社(賀茂御祖神社)東本殿,building,京都市左京区下鴨泉川町59,child of A00600 (no point of its own)
+CSV record,1000011,常寂光寺　塔婆（多宝塔）,,常寂光寺,building,,child of A00594 (no point of its own)
+CSV record,1000012,千本釈迦堂（大報恩寺）本堂,,千本釈迦堂(大報恩寺),building,,child of A00541 (no point of its own)
+CSV record,1000013,大徳寺　山門（三門）,,大徳寺,building,京都市北区紫野大徳寺町,child of A00596 (no point of its own)
+CSV record,1000014,大覚寺　宸殿,,大覚寺,building,,child of A00544 (no point of its own)
+CSV record,1000015,知恩院　大方丈,,知恩院,building,東山区林下町400,child of A00572 (no point of its own)
+CSV record,1000016,知恩院　小方丈,,知恩院,building,東山区林下町400,child of A00572 (no point of its own)
+CSV record,1000017,東福寺　三門,国宝　三門,東福寺,building,本町15丁目778,child of A00591 (no point of its own)
+CSV record,1000018,東福寺　東司,,東福寺,building,本町15丁目778,child of A00591 (no point of its own)
+CSV record,1000019,東福寺　浴室,,東福寺,building,本町15丁目778,child of A00591 (no point of its own)
+CSV record,1000021,東寺（教王護国寺）　五重塔,,東寺(教王護国寺),building,,child of A00564 (no point of its own)
+CSV record,1000022,東寺（教王護国寺）　講堂,,東寺(教王護国寺),building,,child of A00564 (no point of its own)
+CSV record,1000023,東寺（教王護国寺）　灌頂院,,東寺(教王護国寺),building,,child of A00564 (no point of its own)
+CSV record,1000024,南禅寺　三門,,南禅寺,building,,child of A00563 (no point of its own)
+CSV record,1000025,南禅寺　方丈,,南禅寺,building,京都市左京区南禅寺福地町,child of A00563 (no point of its own)
+CSV record,1000026,二条城　二の丸御殿唐門,,二条城,object,,child of A00579 (no point of its own)
+CSV record,1000027,仁和寺　金堂,,仁和寺,building,,child of A00598 (no point of its own)
+CSV record,1000028,仁和寺　五重塔,,仁和寺,building,,child of A00598 (no point of its own)
+CSV record,1000029,仁和寺　二王門,,仁和寺,building,,child of A00598 (no point of its own)
+CSV record,1000030,仁和寺　御影堂,,仁和寺,building,,child of A00598 (no point of its own)
+CSV record,1000031,本願寺　唐門,,本願寺,object,,not placed: site location unverified
+CSV record,1000032,本願寺　御影堂,,本願寺,building,,not placed: site location unverified
+CSV record,1000033,伏見稲荷大社　本殿,,伏見稲荷大社,object,,child of A00306 (no point of its own)
+CSV record,1000034,伏見稲荷大社　御茶屋,,伏見稲荷大社,building,,child of A00306 (no point of its own)
+CSV record,1000035,妙心寺　仏殿,,妙心寺,object,,child of A00578 (no point of its own)
+CSV record,1000036,妙心寺　法堂,,妙心寺,building,,child of A00578 (no point of its own)
+CSV record,1000037,妙心寺　三門,,妙心寺,building,,child of A00578 (no point of its own)
+CSV record,1000038,妙心寺　勅使門,,妙心寺,building,,child of A00578 (no point of its own)
+CSV record,1000039,八坂神社　西楼門,,八坂神社,building,京都市東山区祇園町北側125,child of A00559 (no point of its own)
+CSV record,1000040,八坂神社　本殿,,八坂神社,building,京都市東山区祇園町北側125,child of A00559 (no point of its own)
+CSV record,1000041,平清盛公坐像,,平清盛公坐像,object,,not placed: site location unverified
+CSV record,1000043,建仁寺　方丈,,建仁寺,building,東山区大和大路通四条下る４丁目小松町584番地,child of A00589 (no point of its own)
+CSV record,1000044,高台寺　開山堂,,高台寺,building,,child of A00588 (no point of its own)
+CSV record,1000067,賀茂別雷神社（上賀茂神社）　細殿,,賀茂別雷神社(上賀茂神社),building,,child of A00599 (no point of its own)
+CSV record,1000045,高台寺　霊屋,,高台寺,building,,child of A00588 (no point of its own)
+CSV record,1000046,高台寺　傘亭,,高台寺,building,,child of A00588 (no point of its own)
+CSV record,1000047,高台寺　時雨亭,,高台寺,building,,child of A00588 (no point of its own)
+CSV record,1000048,神護寺　梵鐘,,神護寺,object,,child of A00570 (no point of its own)
+CSV record,1000049,千本釈迦堂（大報恩寺）　木造六観音菩薩像,,千本釈迦堂(大報恩寺),object,,child of A00541 (no point of its own)
+CSV record,1000050,泉涌寺　仏殿,,泉涌寺,building,,child of A00593 (no point of its own)
+CSV record,1000051,即成院　木造阿弥陀如来及二十五菩薩坐像,,即成院,object,,child of A00534 (no point of its own)
+CSV record,1000052,大徳寺　法堂,,大徳寺,building,京都市北区紫野大徳寺町,child of A00596 (no point of its own)
+CSV record,1000053,醍醐寺　五重塔,,醍醐寺,object,,not placed: site location unverified
+CSV record,1000054,醍醐寺　金堂,,醍醐寺,object,,not placed: site location unverified
+CSV record,1000055,醍醐寺三宝院　唐門,,醍醐寺三宝院,building,,not placed: site location unverified
+CSV record,1000056,東福寺　禅堂,,東福寺,building,本町15丁目778,child of A00591 (no point of its own)
+CSV record,1000057,東寺（教王護国寺）　大師堂,,東寺(教王護国寺),object,,child of A00564 (no point of its own)
+CSV record,1000058,東寺（教王護国寺）　南大門,,東寺(教王護国寺),building,,child of A00564 (no point of its own)
+CSV record,1000059,本願寺　飛雲閣,,本願寺,building,,not placed: site location unverified
+CSV record,1000060,本願寺　北能舞台,,本願寺,building,,not placed: site location unverified
+CSV record,1000061,豊国神社　唐門,,豊国神社,building,,child of A00555 (no point of its own)
+CSV record,1000062,法金剛院　木造阿弥陀如来坐像（重文）,,法金剛院,object,花園扇野町49,child of A00526 (no point of its own)
+CSV record,1000063,松尾大社　本殿,,松尾大社,building,,child of A00533 (no point of its own)
+CSV record,1000064,安楽寿院　木造阿弥陀如来坐像,,安楽寿院,object,京都市伏見区竹田中内畑町74,child of A00545 (no point of its own)
+CSV record,1000065,愛宕念仏寺　本堂,,愛宕念仏寺,building,,not placed: site location unverified
+CSV record,1000066,賀茂別雷神社（上賀茂神社）　本殿,,賀茂別雷神社(上賀茂神社),building,,child of A00599 (no point of its own)
+CSV record,4000015,祇園夜話,,,literature,,"not a location (performing art, literature or food)"
+CSV record,1000068,京都国立博物館　旧帝国京都博物館本館,,京都国立博物館,building,,child of A00554 (no point of its own)
+CSV record,1000069,京都国立博物館　旧帝国京都博物館正門,,京都国立博物館,building,,child of A00554 (no point of its own)
+CSV record,1000070,圓徳院　紙本墨画山水図,,圓徳院,object,,child of A00567 (no point of its own)
+CSV record,1000071,清水寺　木造十一面観音立像,,清水寺,object,,child of A00560 (no point of its own)
+CSV record,1000072,金地院　茶室,,金地院,building,,not placed: site location unverified
+CSV record,1000073,広隆寺　木造弥勒菩薩半跏像（宝冠弥勒）,,広隆寺,object,,child of A00569 (no point of its own)
+CSV record,1000074,三千院　木造阿弥陀如来両脇士坐像,,三千院,object,京都市左京区大原来迎院町540,child of A00587 (no point of its own)
+CSV record,1000076,真如堂（真正極楽寺）　木造阿弥陀如来立像,,真如堂,object,浄土寺真如町82,child of A00580 (no point of its own)
+CSV record,1000077,神護寺　絹本著色伝源頼朝像,,神護寺,object,,child of A00570 (no point of its own)
+CSV record,1000078,千本釈迦堂（大報恩寺）　木造十大弟子立像,,千本釈迦堂(大報恩寺),object,,child of A00541 (no point of its own)
+CSV record,1000079,清水寺　渡海船額（絵馬）,,清水寺,object,,child of A00560 (no point of its own)
+CSV record,1000080,千本釈迦堂（大報恩寺）　木造千手観音立像,,千本釈迦堂(大報恩寺),object,,child of A00541 (no point of its own)
+CSV record,1000081,清凉寺　木造釈迦如来立像,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,1000082,大徳寺　勅使門,,大徳寺,building,京都市北区紫野大徳寺町52,child of A00596 (no point of its own)
+CSV record,1000083,大覚寺　正寝殿,,大覚寺,building,,child of A00544 (no point of its own)
+CSV record,1000084,鞍馬寺　木造毘沙門天立像,,鞍馬寺,object,,child of A00547 (no point of its own)
+CSV record,1000085,醍醐寺　清瀧宮拝殿,,醍醐寺,building,,not placed: site location unverified
+CSV record,1000086,天球院　方丈障壁画,,天球院,object,,not placed: site location unverified
+CSV record,1000087,東福寺　木造二天王立像,,東福寺,object,,child of A00591 (no point of its own)
+CSV record,1000088,東寺（教王護国寺）　木造五大明王像,,東寺(教王護国寺),object,,child of A00564 (no point of its own)
+CSV record,1000089,二条城　本丸櫓門,,二条城,building,,child of A00579 (no point of its own)
+CSV record,1000090,二条城　本丸御殿御常御殿,,二条城,building,,child of A00579 (no point of its own)
+CSV record,1000091,二尊院（本尊二尊）木造釈迦如来立像,木像阿弥陀如来立造,二尊院(本尊二尊),object,,child of A00595 (no point of its own)
+CSV record,1000092,賀茂別雷神社（上賀茂神社）　権殿,,賀茂別雷神社(上賀茂神社),building,,child of A00599 (no point of its own)
+CSV record,1000106,妙法院　庫裏,,妙法院,building,,child of A00556 (no point of its own)
+CSV record,1000093,仁和寺　遼廓亭,,仁和寺,building,,child of A00598 (no point of its own)
+CSV record,1000094,仁和寺　飛濤亭,,仁和寺,building,,child of A00598 (no point of its own)
+CSV record,1000095,本願寺 阿弥陀堂,,本願寺,building,,not placed: site location unverified
+CSV record,1000096,平安神宮　応天門（神門）,,平安神宮,building,,child of A00582 (no point of its own)
+CSV record,1000097,平安神宮　大極殿,,平安神宮,building,,child of A00582 (no point of its own)
+CSV record,1000098,法金剛院　木造厨子入十一面観音坐像,,法金剛院,object,花園扇野町49,child of A00526 (no point of its own)
+CSV record,1000099,豊国神社　紙本著色豊国大明神臨時祭礼図,,豊国神社,object,,child of A00555 (no point of its own)
+CSV record,1000100,法界寺　阿弥陀堂,,法界寺,object,,not placed: site location unverified
+CSV record,1000102,曼殊院　小書院,,曼殊院,building,,not placed: site location unverified
+CSV record,1000103,松尾大社　木造神像男神坐像,,松尾大社,object,,child of A00533 (no point of its own)
+CSV record,1000104,松尾大社　木造神像女神坐像,,松尾大社,object,,child of A00533 (no point of its own)
+CSV record,1000105,妙法院　大書院,,妙法院,building,,child of A00556 (no point of its own)
+CSV record,1000107,妙心寺　浴室,,妙心寺,building,,child of A00578 (no point of its own)
+CSV record,1000108,養源院　金地着色松図,養源院　白象図　唐獅子図杉戸絵,養源院,object,,not placed: site location unverified
+CSV record,1000109,六道珍皇寺　木造薬師如来坐像,,六道珍皇寺,object,,child of A00532 (no point of its own)
+CSV record,1000110,神護寺　絹本著色伝平重盛像,,神護寺,object,,child of A00570 (no point of its own)
+CSV record,1000111,春光院　銅鐘,,春光院,object,,child of A00542 (no point of its own)
+CSV record,1000112,千本釈迦堂（大報恩寺）　だ太鼓縁,,千本釈迦堂(大報恩寺),object,,child of A00541 (no point of its own)
+CSV record,1000113,清凉寺　木造阿弥陀如来両脇侍像,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,1000114,清凉寺　木造十大弟子立像,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,1000115,清凉寺　紙本著色融通念仏縁起,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,1000116,清凉寺　木造兜跋毘沙門天立像,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,1000117,清凉寺　木造地蔵菩薩立像,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,1000118,清凉寺　木造文殊菩薩騎獅像,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,1000119,清凉寺　普賢菩薩騎象像,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,1000120,清凉寺　木造四天王立像,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,4000016,京都人の夜景色,,,literature,,"not a location (performing art, literature or food)"
+CSV record,1000121,大覚寺　障壁画,,大覚寺,building,,child of A00544 (no point of its own)
+CSV record,1000122,醍醐寺　薬師堂,,醍醐寺,object,,not placed: site location unverified
+CSV record,1000123,醍醐寺三宝院　表書院,,醍醐寺三宝院,building,,not placed: site location unverified
+CSV record,1000124,醍醐寺三宝院　純浄観,,醍醐寺三宝院,building,,not placed: site location unverified
+CSV record,1000125,二条城　二の丸御殿遠侍及び車寄,,二条城,building,,child of A00579 (no point of its own)
+CSV record,1000126,二条城　二の丸御殿御清所,,二条城,building,,child of A00579 (no point of its own)
+CSV record,1000127,二条城　二の丸土蔵（米蔵）,,二条城,building,,child of A00579 (no point of its own)
+CSV record,1000128,豊国神社　鉄灯籠,,豊国神社,object,,child of A00555 (no point of its own)
+CSV record,1000129,曼殊院　書院附茶室（八窓軒）,,曼殊院,building,,not placed: site location unverified
+CSV record,1000130,法界寺　木造阿弥陀如来坐像,,法界寺,object,,not placed: site location unverified
+CSV record,1000131,二条城　本丸御殿台所及び雁之間,,二条城,building,,child of A00579 (no point of its own)
+CSV record,1000132,清凉寺　紙本著色釈迦堂縁起,,清凉寺,object,,child of A00585 (no point of its own)
+CSV record,1000133,妙蓮寺　収蔵庫内障壁画,,妙蓮寺,object,,not placed: site location unverified
+CSV record,1000134,智積院　国宝障壁画,,智積院,object,,child of A00557 (no point of its own)
+CSV record,1000135,大覚寺　五大明王像,,大覚寺,building,,child of A00544 (no point of its own)
+CSV record,1000136,曼殊院　大書院,,曼殊院,building,,not placed: site location unverified
+CSV record,1000137,徳林庵　地蔵菩薩像,,徳林庵,object,,not placed: site location unverified
+CSV record,1000138,徳林庵　蝉丸・人康親王供養塔,,徳林庵,building,,not placed: site location unverified
+CSV record,1000139,徳林庵　六角堂,,徳林庵,building,,not placed: site location unverified
+CSV record,1000140,徳林庵　井戸,,徳林庵,building,,not placed: site location unverified
+CSV record,1000141,徳林庵　茶所,,徳林庵,building,,not placed: site location unverified
+CSV record,1000143,西明寺　釈迦如来像,,西明寺,object,,child of A00535 (no point of its own)
+CSV record,1000144,西明寺　千手観世音菩薩像,,西明寺,object,,child of A00535 (no point of its own)
+CSV record,1000145,西明寺　愛染明王像,,西明寺,object,,child of A00535 (no point of its own)
+CSV record,1000170,金光寺　紙本著色遊行上人絵巻,,金光寺,object,下京区六条通河原町西入本塩竃町586,child of A00528 (no point of its own)
+CSV record,1000146,西明寺　本堂,,西明寺,building,,child of A00535 (no point of its own)
+CSV record,1000147,西明寺　客殿,,西明寺,building,,child of A00535 (no point of its own)
+CSV record,1000148,西明寺　表門,,西明寺,building,,child of A00535 (no point of its own)
+CSV record,1000149,精大明神像,,精大明神像,object,,not placed: site location unverified
+CSV record,1000150,愛染院　木造十一面観音立像,,愛染院,object,左京区岩倉幡枝町1035,not placed: site location unverified
+CSV record,1000151,安養寺　木造阿弥陀如来像,倒蓮華,安養寺,object,中京区新京極通蛸薬師東南角東側町511,not placed: site location unverified
+CSV record,1000152,雨宝院　木造千手観音立像,西陣聖天,雨宝院,object,上京区智恵光院通上立売上る聖天町9-3,child of A00552 (no point of its own)
+CSV record,1000153,北野天満宮　北野天神縁起絵巻,承久本,北野天満宮,object,上京区御前通今小路上る馬喰町,child of A00571 (no point of its own)
+CSV record,1000183,仁和寺　医心方,,仁和寺,object,右京区御室大内33,child of A00598 (no point of its own)
+CSV record,1000155,西芳寺　絹本著色夢窓国師像,,西芳寺,object,西京区松尾神ヶ谷町56,child of A00551 (no point of its own)
+CSV record,1000156,三福寺　地蔵菩薩像,夢見地蔵,三福寺,building,左京区仁王門通新高倉東入正往寺町463,not placed: site location unverified
+CSV record,1000158,相国寺　絹本著色十六羅漢図,十六羅漢図,相国寺,object,上京区今出川通烏丸東入相国寺門前町701,child of A00581 (no point of its own)
+CSV record,1000159,相国寺　絹本著色鳴鶴図,鳴鶴図,相国寺,object,上京区今出川通烏丸東入相国寺門前町701,child of A00581 (no point of its own)
+CSV record,1000160,相国寺　絹本墨画淡彩鳳凰図,鳳凰石竹図,相国寺,object,上京区今出川通烏丸東入相国寺門前町701,child of A00581 (no point of its own)
+CSV record,1000161,相国寺　紙本墨画竹林猿猴図,竹林猿猴図屏風,相国寺,object,上京区今出川通烏丸東入相国寺門前町701,child of A00581 (no point of its own)
+CSV record,1000169,京都国立博物館所蔵　ロダン作銅造考える人,考える人,京都国立博物館所蔵,object,東山区茶屋町527,not placed: site location unverified
+CSV record,1000162,相国寺　紙本墨画山水図,寒山行旅山水図,相国寺,object,上京区今出川通烏丸東入相国寺門前町701,child of A00581 (no point of its own)
+CSV record,1000163,相国寺　無学祖元墨蹟,与長楽寺一翁偈語,相国寺,object,上京区今出川通烏丸東入相国寺門前町701,child of A00581 (no point of its own)
+CSV record,1000164,新徳寺　地蔵菩薩像,屋根葺地蔵,新徳寺,building,中京区壬生賀陽御所町48,not placed: site location unverified
+CSV record,1000165,善想寺　　石仏阿弥陀如来,,善想寺,building,中京区六角通大宮西入三条大宮町240,not placed: site location unverified
+CSV record,1000166,善想寺　地蔵菩薩像,泥足地蔵尊　汗だし地蔵尊,善想寺,building,中京区六角通大宮西入三条大宮町240,not placed: site location unverified
+CSV record,1000168,愛宕念仏寺　木造千観内供坐像,,愛宕念仏寺,object,東山区茶屋町527,not placed: site location unverified
+CSV record,4000020,金閣寺,,,literature,,"not a location (performing art, literature or food)"
+CSV record,1000171,崇道神社　金銅小野毛人墓誌,,崇道神社,object,東山区茶屋町527,not placed: site location unverified
+CSV record,1000172,地蔵院　木造地蔵菩薩坐像,,地蔵院,object,右京区花園扇野町49,not placed: site location unverified
+CSV record,1000173,清浄華院　絹本著色阿弥陀三尊像,,清浄華院,object,東山区茶屋町527,not placed: site location unverified
+CSV record,1000174,清浄華院　紙本著色泣不動縁起,,清浄華院,object,東山区茶屋町527,not placed: site location unverified
+CSV record,1000175,真正極楽寺　絹本著色普賢菩薩像,,真如堂,object,左京区浄土寺真如町82,child of A00580 (no point of its own)
+CSV record,1000176,真正極楽寺　紙本著色真如堂縁起,,真如堂,object,左京区浄土寺真如町82,child of A00580 (no point of its own)
+CSV record,1000177,真正極楽寺　法華経,,真如堂,object,左京区浄土寺真如町82,child of A00580 (no point of its own)
+CSV record,1000178,染殿院　木造地蔵菩薩立像,染殿地蔵,染殿院,object,中京区新京極通四条上る中之町562,not placed: site location unverified
+CSV record,1000179,大興寺　木造薬師如来坐像,芝薬師,大興寺,object,左京区浄土寺真如町17番地,not placed: site location unverified
+CSV record,1000180,狸谷山不動院　不動明王像,,狸谷山不動院,building,左京区一乗寺松原町6,child of A00531 (no point of its own)
+CSV record,1000181,長講堂　木造後白河法皇像,,長講堂,object,下京区富小路通五条下る本塩竃町528,child of A00527 (no point of its own)
+CSV record,1000182,天授庵　絹本著色細川幽斎像　同夫人像,,天授庵,object,左京区南禅寺福地町,child of A00546 (no point of its own)
+CSV record,1000184,仁和寺　絹本著色孔雀明王像,,仁和寺,object,右京区御室大内33,child of A00598 (no point of its own)
+CSV record,1000185,仁和寺　黄帝内経明堂・黄帝内経太素,,仁和寺,object,右京区御室大内33,child of A00598 (no point of its own)
+CSV record,1000186,仁和寺　三十帖冊子,,仁和寺,object,右京区御室大内33,child of A00598 (no point of its own)
+CSV record,1000187,仁和寺　新修本草,,仁和寺,object,右京区御室大内33,child of A00598 (no point of its own)
+CSV record,1000188,仁和寺　宝相華蒔絵宝珠箱,,仁和寺,object,右京区御室大内33,child of A00598 (no point of its own)
+CSV record,1000189,仁和寺　木造阿弥陀如来及両脇侍像,阿弥陀三尊像,仁和寺,object,右京区御室大内33,child of A00598 (no point of its own)
+CSV record,1000191,平等寺　木造釈迦如来立像,因幡薬師,平等寺,object,下京区松原通烏丸東入因幡堂町728,child of A00539 (no point of its own)
+CSV record,1000192,平等寺　木造如意輪観音坐像,因幡薬師,平等寺,object,下京区松原通烏丸東入因幡堂町728,child of A00539 (no point of its own)
+CSV record,1000193,平等寺　木造薬師如来立像,因幡薬師,平等寺,object,下京区松原通烏丸東入因幡堂町728,child of A00539 (no point of its own)
+CSV record,4000021,虞美人草,,,literature,,"not a location (performing art, literature or food)"
+CSV record,1000194,藤森神社　紫糸威大鎧,,藤森神社,object,伏見区深草鳥居崎町609,child of A00565 (no point of its own)
+CSV record,1000195,峰定寺　木造金剛力士立像,,峰定寺,object,左京区花背原地町772,child of A00524 (no point of its own)
+CSV record,1000196,峰定寺　木造釈迦如来立像,,峰定寺,object,左京区花背原地町772,child of A00524 (no point of its own)
+CSV record,1000197,峰定寺　木造十一面千手観音坐像,,峰定寺,object,左京区花背原地町772,child of A00524 (no point of its own)
+CSV record,1000198,峰定寺　木造毘沙門天立像,北大峯,峰定寺,object,左京区花背原地町772,child of A00524 (no point of its own)
+CSV record,1000199,峰定寺　木造不動明王及二童子立像,,峰定寺,object,左京区花背原地町722,child of A00524 (no point of its own)
+CSV record,1000200,補陀洛寺　小町老衰像,小町像,補陀洛寺,building,左京区静市市原町1140,child of A00529 (no point of its own)
+CSV record,1000201,補陀洛寺　三相変図,,補陀洛寺,building,左京区静市市原町1140,child of A00529 (no point of its own)
+CSV record,1000202,佛光寺　木造聖徳太子立像,,佛光寺,object,下京区高倉通仏光寺下る新開町397,child of A00561 (no point of its own)
+CSV record,1000203,南岩倉明王院不動寺　空海作「石像不動明王」,松原不動,南岩倉明王院不動寺,building,下京区松原通麩屋町東入石不動之町675,not placed: site location unverified
+CSV record,2000027,貴船神社の桂,,貴船神社,named tree,左京区鞍馬貴船町180,not placed: site location unverified
+CSV record,2000028,桂春院のくろがねもち,,桂春院,named tree,花園妙心寺町,child of A00543 (no point of its own)
+CSV record,1000204,遍照寺　木造十一面観音立像,,遍照寺,object,右京区嵯峨広沢西裏町14,child of A00525 (no point of its own)
+CSV record,1000205,法観寺　紙本著色八坂塔絵図,,法観寺,object,東山区茶屋町527,child of A00566 (no point of its own)
+CSV record,1000206,法金剛院　木造地蔵菩薩立像,,法金剛院,object,右京区花園扇野町49,child of A00526 (no point of its own)
+CSV record,1000207,法金剛院　木造僧形文殊坐像,,法金剛院,object,右京区花園扇野町49,child of A00526 (no point of its own)
+CSV record,1000208,法輪寺　木造持国天・多聞天立像,,法輪寺<西京区>,object,西京区嵐山虚空蔵山町,child of A00536 (no point of its own)
+CSV record,1000209,曼殊院　絹本著色不動明王像,黄不動,曼殊院,object,東山区茶屋町527,not placed: site location unverified
+CSV record,1000210,曼殊院　古今和歌集,,曼殊院,object,東山区茶屋町527,not placed: site location unverified
+CSV record,1000211,妙心寺　黄鐘調の鐘,,妙心寺,building,右京区花園妙心寺町1,child of A00578 (no point of its own)
+CSV record,1000212,矢田寺　紙本著色矢田地蔵縁起,,矢田寺,object,東山区茶屋町527,not placed: site location unverified
+CSV record,1000213,蓮光寺　駒止地蔵菩薩像,駒止地蔵尊,蓮光寺,building,下京区富小路通六条下る本塩竃町534,not placed: site location unverified
+CSV record,4000017,京都まで,,,literature,,"not a location (performing art, literature or food)"
+CSV record,1000214,蓮光寺　阿弥陀如来像,負別阿弥陀,蓮光寺,building,下京区富小路通六条下る本塩竃町534,not placed: site location unverified
+CSV record,1000215,廬山寺　絹本著色普賢十羅刹女像,,廬山寺,object,上京区寺町通広小路上る北ノ辺町397,child of A00548 (no point of its own)
+CSV record,1000216,廬山寺　慈恵大師自筆遺告,,廬山寺,object,上京区寺町通広小路上る北ノ辺町397,child of A00548 (no point of its own)
+CSV record,1000217,廬山寺　木造如意輪観音半跏像,,廬山寺,object,上京区寺町通広小路上る北ノ辺町397,child of A00548 (no point of its own)
+CSV record,1000218,知恩院　濡髪大明神,,知恩院,building,東山区林下町400,child of A00572 (no point of its own)
+CSV record,1000219,神護寺　五大虚空蔵菩薩像,,神護寺,object,,child of A00570 (no point of its own)
+CSV record,1000220,神護寺　板彫弘法大師像,,神護寺,object,,child of A00570 (no point of its own)
+CSV record,2000001,嵐山・渡月橋畔の榎,,嵐山・渡月橋畔,named tree,嵯峨芝ノ馬場町,not placed: site location unverified
+CSV record,2000002,一言寺の梅,,一言寺,named tree,醍醐南里町,child of A00530 (no point of its own)
+CSV record,2000003,新日吉神宮のおがたまのき,,新日吉神宮,named tree,今熊野日吉町,not placed: site location unverified
+CSV record,2000004,今宮神社のむくろじ,,今宮神社,named tree,紫野今宮町,not placed: site location unverified
+CSV record,2000005,永観堂の岩垣紅葉,,永観堂,named tree,浄土寺永観堂町48,not placed: site location unverified
+CSV record,2000008,大原野神社の椎,,大原野神社,named tree,大原野春日町,child of A00592 (no point of its own)
+CSV record,2000009,大原野神社の樅,,大原野神社,named tree,大原野春日町,child of A00592 (no point of its own)
+CSV record,2000031,護王神社のかりん,,護王神社,named tree,烏丸通出水下る,child of A00562 (no point of its own)
+CSV record,4000018,京の小袖,,,literature,,"not a location (performing art, literature or food)"
+CSV record,2000011,御室桜,,御室桜,named tree,京都市右京区御室大内33,not placed: site location unverified
+CSV record,2000012,上賀茂神社のいちいがし,,賀茂別雷神社(上賀茂神社),named tree,上賀茂本山町,child of A00599 (no point of its own)
+CSV record,2000013,上賀茂神社の椋,,賀茂別雷神社(上賀茂神社),named tree,上賀茂本山340,child of A00599 (no point of its own)
+CSV record,2000014,賀茂社の紋幹の椎,,賀茂社の紋幹,named tree,上賀茂本山町,not placed: site location unverified
+CSV record,2000015,賀茂の枝垂桜,,賀茂,named tree,上賀茂本山,not placed: site location unverified
+CSV record,2000016,勧修寺のはいびゃくしん,,勧修寺,named tree,山科勧修寺仁王堂町,child of A00575 (no point of its own)
+CSV record,2000017,北野天満宮、梅苑の大むく,,北野天満宮,named tree,馬喰町,child of A00571 (no point of its own)
+CSV record,2000018,北野天満宮しらがしの森,,北野天満宮,named tree,馬喰町,child of A00571 (no point of its own)
+CSV record,2000019,北野天満宮の大けやき,,北野天満宮,named tree,馬喰町,child of A00571 (no point of its own)
+CSV record,2000020,北野天満宮の大椎,,北野天満宮,named tree,馬喰町,child of A00571 (no point of its own)
+CSV record,2000021,北野天満宮の双幹鹿子の木,,北野天満宮,named tree,馬喰町,child of A00571 (no point of its own)
+CSV record,2000022,北野天満宮東門の椋,,北野天満宮,named tree,馬喰町,child of A00571 (no point of its own)
+CSV record,2000023,貴船神社奥宮相生大杉,,貴船神社奥宮相生大杉,named tree,鞍馬貴船町180,not placed: site location unverified
+CSV record,2000024,貴船神社奥宮の桂,,貴船神社奥宮,named tree,鞍馬貴船町180,not placed: site location unverified
+CSV record,2000025,貴船神社奥宮の杉並木,,貴船神社奥宮,named tree,鞍馬貴船町180,not placed: site location unverified
+CSV record,2000032,御香宮のおそらく椿,,御香宮,named tree,京都市伏見区御香宮門前町174,not placed: site location unverified
+CSV record,2000033,御香宮の蘇鉄,,御香宮,named tree,京都市伏見区御香宮門前町174,not placed: site location unverified
+CSV record,2000034,越畑の相生桜,,越畑,named tree,嵯峨越畑加鍋浦82,not placed: site location unverified
+CSV record,2000035,古知谷のかえで,,古知谷,named tree,大原古知平町,not placed: site location unverified
+CSV record,2000036,金地院裏のくろがねもち,,金地院,named tree,南禅寺福地町,not placed: site location unverified
+CSV record,2000037,金地院の椎,,金地院,named tree,南禅寺福地町,not placed: site location unverified
+CSV record,2000038,嵯峨・兒神社のつぶらしい,,嵯峨・兒神社,named tree,嵯峨釣殿町,not placed: site location unverified
+CSV record,2000039,嵯峨・曇華院の日光,,嵯峨・曇華院,named tree,嵯峨北堀町25,not placed: site location unverified
+CSV record,2000040,雑華院の老桧,,雑華院,named tree,花園妙心寺町55,not placed: site location unverified
+CSV record,2000041,三宝院の枝垂桜,,三宝院,named tree,醍醐伽藍町,child of A00568 (no point of its own)
+CSV record,2000042,慈照寺（銀閣寺）の椿垣,銀閣寺垣,慈照寺(銀閣寺),named tree,京都市左京区銀閣寺町2,child of A00540 (no point of its own)
+CSV record,2000055,善峯寺の遊龍の松,,善峯寺の遊龍,named tree,京都市西京区大原野小塩町1372,not placed: site location unverified
+CSV record,2000056,千本釈迦堂のくろがねもち,,千本釈迦堂(大報恩寺),named tree,溝前町,child of A00541 (no point of its own)
+CSV record,2000043,慈照寺の千代の槙,,慈照寺(銀閣寺),named tree,京都市左京区銀閣寺町2,child of A00540 (no point of its own)
+CSV record,2000044,地蔵院（椿寺）五色八重散椿,,地蔵院,named tree,大将軍西町41番地,not placed: site location unverified
+CSV record,2000045,十輪寺の大樟,業平桜,十輪寺,named tree,大原野小塩町,child of A00538 (no point of its own)
+CSV record,2000046,青蓮院の大楠,,青蓮院,named tree,粟田口三条坊町９,child of A00573 (no point of its own)
+CSV record,2000047,白峯神宮の小賀玉の木,,白峯神宮の小賀玉,named tree,今出川通堀川東入飛鳥井町,not placed: site location unverified
+CSV record,2000049,真如堂の大しゃしゃんぽ,,真如堂,named tree,京都市左京区浄土寺真如町82,child of A00580 (no point of its own)
+CSV record,2000050,真如堂の百日紅,,真如堂,named tree,京都市左京区浄土寺真如町82,child of A00580 (no point of its own)
+CSV record,2000051,真如堂の立皮桜,,真如堂,named tree,京都市左京区浄土寺真如町82,child of A00580 (no point of its own)
+CSV record,2000052,真如堂の花の木,,真如堂,named tree,京都市左京区浄土寺真如町82,child of A00580 (no point of its own)
+CSV record,2000053,真如堂の菩提樹,,真如堂,named tree,浄土寺真如町82,child of A00580 (no point of its own)
+CSV record,2000089,水火天満宮　菅公影向松,,水火天満宮,named tree,上京区堀川通上御霊前上る扇町722-10,child of A00586 (no point of its own)
+CSV record,4000019,虚鈴,,,literature,,"not a location (performing art, literature or food)"
+CSV record,2000057,総見院の胡蝶佗助,,総見院,named tree,京都市北区紫野大徳寺町59,child of A00597 (no point of its own)
+CSV record,2000058,疏水岸の桜,,疏水岸,named tree,山科四宮桝山町,not placed: site location unverified
+CSV record,2000062,大徳寺の柏槙,,大徳寺,named tree,京都市北区紫野大徳寺町,child of A00596 (no point of its own)
+CSV record,2000063,対龍山荘のはぜのき,,対龍山荘のはぜ,named tree,南禅寺福池町,not placed: site location unverified
+CSV record,2000066,糺の森の椎,,糺の森,named tree,下鴨宮崎町,not placed: site location unverified
+CSV record,2000067,糺の森の椋,,糺の森,named tree,下鴨宮崎町,not placed: site location unverified
+CSV record,2000068,知恩院参道のむくろじ,,知恩院,named tree,東山区林下町400,child of A00572 (no point of its own)
+CSV record,2000069,道風神社の榊,,道風神社,named tree,京都市北区杉阪道風町１,not placed: site location unverified
+CSV record,2000070,東北院のさざんか,,東北院,named tree,浄土寺真如町,not placed: site location unverified
+CSV record,2000071,東北院の軒端の梅,,東北院の軒端,named tree,浄土寺真如町,not placed: site location unverified
+CSV record,2000073,南禅寺の白檀,,南禅寺,named tree,南禅寺福地町,child of A00563 (no point of its own)
+CSV record,2000074,本願寺の大銀杏,,本願寺,named tree,堀川花屋町下る,not placed: site location unverified
+CSV record,2000075,平岡八幡宮の椎,平岡八幡宮の椿,平岡八幡宮,named tree,梅ケ畑宮ノ口町,not placed: site location unverified
+CSV record,2000090,白山神社のツクバネガシ,,白山神社,named tree,,not placed: site location unverified
+CSV record,2000076,平野神社の草花と樹木,平野神社紫式部,平野神社,named tree,平野宮本町,not placed: site location unverified
+CSV record,2000077,宝鏡寺の熊谷と月光と村娘,,宝鏡寺,named tree,京都市上京区寺之内通堀川東入百々町547,child of A00537 (no point of its own)
+CSV record,2000078,宝泉院の五葉松,,宝泉院,named tree,大原勝林院町187,child of A00577 (no point of its own)
+CSV record,2000079,法然院、北門の楓,,法然院,named tree,鹿ケ谷,child of A00583 (no point of its own)
+CSV record,2000080,法然院の楓,,法然院,named tree,鹿ケ谷,child of A00583 (no point of its own)
+CSV record,2000081,法然院の散椿,,法然院,named tree,鹿ケ谷,child of A00583 (no point of its own)
+CSV record,2000082,法然院の椋,,法然院,named tree,鹿ケ谷,child of A00583 (no point of its own)
+CSV record,2000084,妙蓮寺の妙蓮寺椿,,妙蓮寺,named tree,寺之内大宮東妙蓮寺前町875,not placed: site location unverified
+CSV record,2000085,由岐神社の大杉,,由岐神社,named tree,鞍馬本町,child of A00558 (no point of its own)
+CSV record,2000086,霊鑑寺の紅梅,,霊鑑寺,named tree,鹿ケ谷御所の段町,child of A00584 (no point of its own)
+CSV record,2000087,霊鑑寺の日光椿,,霊鑑寺,named tree,鹿ケ谷御所の段町,child of A00584 (no point of its own)
+CSV record,2000088,北野天満宮　影向松,,北野天満宮,named tree,上京区御前通今小路上る馬喰町,child of A00571 (no point of its own)
+CSV record,2000091,黒田百年桜,,黒田百年桜,named tree,,not placed: site location unverified
+CSV record,2000092,片波の伏条台杉,,片波,named tree,,not placed: site location unverified
+CSV record,3000001,いけばな,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000003,大原女,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000004,雅楽,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000005,歌舞伎発祥の地,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000008,祇園囃子,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000009,狂言,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000010,京舞,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000011,蹴鞠,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000013,茶道,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,4000014,祇王寺日記,,,literature,,"not a location (performing art, literature or food)"
+CSV record,3000014,島原の太夫,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000016,念仏狂言,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000017,能,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000018,舞妓,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,3000019,六斎念仏,,,performing art,,"not a location (performing art, literature or food)"
+CSV record,4000001,銀閣寺行,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000002,五番町夕霧楼,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000003,葵の風,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000004,安土往還記,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000005,安土セミナリオ,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000006,姉小路暗殺,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000007,雨にぬれた振袖,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000008,ある心の風景,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000009,暗夜行路,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000010,応天門始末,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000011,おぼろ夜,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000012,顔,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000013,かげろふの日記,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000022,暗い絵,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000023,黒い眼と茶色の目,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000024,黒髪,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000025,黒髪,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000026,化粧,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000027,古都,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000028,古都憂愁,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000029,寂野,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000030,時雨をたづねて,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000031,しずかな人　しずかな部分,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000032,室内,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000033,女徳,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000034,新派和歌講義,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000035,それでも私は行く,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000036,高瀬舟,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000037,滝に誘う女,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000038,乳の匂ひ,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000039,月と狂言師,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000040,でんとんしゃん,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000041,鳥辺山心中,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000042,暖簾,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000043,春の絵巻,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000044,比叡おろし,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000045,秀吉と利休,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000046,比良のシャクナゲ,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000047,不機嫌な恋人,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000048,螢,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000049,身投げ救助業,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000050,壬生狂言の夜,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000051,山科の記憶,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000052,ゆきてかへらぬ,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000053,夢之華,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000054,夜の河,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000055,羅生門,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000056,檸檬,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000057,六条執念,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000058,私の履歴書,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000059,小倉百人一首,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000060,蜻蛉日記,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000061,帰郷,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000062,源氏物語,,,literature,,"not a location (performing art, literature or food)"
+CSV record,5000004,京すまし,,,food,,"not a location (performing art, literature or food)"
+CSV record,4000063,古今和歌集,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000064,今昔物語集,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000065,嵯峨日記,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000066,更級日記,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000067,徒然草,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000068,平家物語,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000069,方丈記,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000070,枕草子,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000071,みだれ髪,,,literature,,"not a location (performing art, literature or food)"
+CSV record,4000072,明月記,,,literature,,"not a location (performing art, literature or food)"
+CSV record,5000001,懐石料理,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000002,賀茂茄子,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000003,木の芽煮,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000005,京野菜,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000006,京湯葉,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000007,京料理,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000008,くずきり,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000009,鯖寿司,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000010,七味,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000011,紫葉漬,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000012,じゅんさい,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000013,精進料理,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000014,すぐき漬,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000015,千枚漬,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000016,タケノコ料理,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000017,にしんそば,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000018,ハモ料理,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000019,普茶料理,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000020,マツタケ料理,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000021,壬生菜,,,food,,"not a location (performing art, literature or food)"
+CSV record,6000016,大枝,,,place name (area),,"area name, not a point POI"
+CSV record,5000022,有職料理,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000023,湯豆腐,,,food,,"not a location (performing art, literature or food)"
+CSV record,5000024,京麩,,,food,,"not a location (performing art, literature or food)"
+CSV record,6000001,化野,,,place name (area),,"area name, not a point POI"
+CSV record,6000002,嵐山,,,place name (area),,"area name, not a point POI"
+CSV record,6000003,粟田口,,,place name (area),,"area name, not a point POI"
+CSV record,6000004,出雲路,,,place name (area),,"area name, not a point POI"
+CSV record,6000005,一乗寺,,,place name (area),,"area name, not a point POI"
+CSV record,6000006,市原,,,place name (area),,"area name, not a point POI"
+CSV record,6000007,今熊野,,,place name (area),,"area name, not a point POI"
+CSV record,6000008,岩倉,,,place name (area),,"area name, not a point POI"
+CSV record,6000009,太秦,,,place name (area),,"area name, not a point POI"
+CSV record,6000010,宇多野,,,place name (area),,"area name, not a point POI"
+CSV record,6000011,梅ケ畑,,,place name (area),,"area name, not a point POI"
+CSV record,6000012,梅津,,,place name (area),,"area name, not a point POI"
+CSV record,6000013,円町,,,place name (area),,"area name, not a point POI"
+CSV record,6000014,追分,,,place name (area),,"area name, not a point POI"
+CSV record,6000017,大原,,,place name (area),,"area name, not a point POI"
+CSV record,6000018,大原口,,,place name (area),,"area name, not a point POI"
+CSV record,6000019,大原野,,,place name (area),,"area name, not a point POI"
+CSV record,6000020,小野,,,place name (area),,"area name, not a point POI"
+CSV record,6000021,御室,,,place name (area),,"area name, not a point POI"
+CSV record,6000022,帷子の辻,,,place name (area),,"area name, not a point POI"
+CSV record,6000023,桂,,,place name (area),,"area name, not a point POI"
+CSV record,6000024,上七軒,,,place name (area),,"area name, not a point POI"
+CSV record,6000025,上終町,,,place name (area),,"area name, not a point POI"
+CSV record,6000026,唐橋,,,place name (area),,"area name, not a point POI"
+CSV record,6000027,祇園,,,place name (area),,"area name, not a point POI"
+CSV record,6000028,祇園新橋,,,place name (area),,"area name, not a point POI"
+CSV record,6000029,北白川,,,place name (area),,"area name, not a point POI"
+CSV record,6000030,北野,,,place name (area),,"area name, not a point POI"
+CSV record,6000031,衣笠,,,place name (area),,"area name, not a point POI"
+CSV record,6000032,木野,,,place name (area),,"area name, not a point POI"
+CSV record,6000033,貴船,,,place name (area),,"area name, not a point POI"
+CSV record,6000034,京橋,,,place name (area),,"area name, not a point POI"
+CSV record,6000035,清滝,,,place name (area),,"area name, not a point POI"
+CSV record,6000036,雲ケ畑,,,place name (area),,"area name, not a point POI"
+CSV record,6000037,鞍馬口,,,place name (area),,"area name, not a point POI"
+CSV record,6000038,栗栖野,,,place name (area),,"area name, not a point POI"
+CSV record,6000039,蹴上,,,place name (area),,"area name, not a point POI"
+CSV record,6000040,玄琢,,,place name (area),,"area name, not a point POI"
+CSV record,6000041,荒神口,,,place name (area),,"area name, not a point POI"
+CSV record,6000042,五条坂,,,place name (area),,"area name, not a point POI; dashboard records with the same name: A00230"
+CSV record,6000043,西院,,,place name (area),,"area name, not a point POI"
+CSV record,6000044,嵯峨鳥居本,,,place name (area),,"area name, not a point POI; dashboard records with the same name: A00237"
+CSV record,6000045,嵯峨野,,,place name (area),,"area name, not a point POI"
+CSV record,6000046,猿ヶ辻,,,place name (area),,"area name, not a point POI"
+CSV record,6000047,三年坂,,,place name (area),,"area name, not a point POI"
+CSV record,6000048,鹿ケ谷,,,place name (area),,"area name, not a point POI"
+CSV record,6000049,四条大宮,,,place name (area),,"area name, not a point POI"
+CSV record,6000050,四条河原町,,,place name (area),,"area name, not a point POI"
+CSV record,6000051,静原,,,place name (area),,"area name, not a point POI"
+CSV record,6000052,四宮,,,place name (area),,"area name, not a point POI"
+CSV record,6000053,島原,,,place name (area),,"area name, not a point POI"
+CSV record,6000054,下河原,,,place name (area),,"area name, not a point POI"
+CSV record,6000055,修学院,,,place name (area),,"area name, not a point POI"
+CSV record,6000056,聚楽廻,,,place name (area),,"area name, not a point POI"
+CSV record,6000057,白川口,,,place name (area),,"area name, not a point POI"
+CSV record,6000058,杉坂,,,place name (area),,"area name, not a point POI"
+CSV record,6000059,滑石越,,,place name (area),,"area name, not a point POI"
+CSV record,6000060,墨染,,,place name (area),,"area name, not a point POI"
+CSV record,6000061,清蔵口,,,place name (area),,"area name, not a point POI"
+CSV record,6000062,大将軍,,,place name (area),,"area name, not a point POI"
+CSV record,6000063,高雄,,,place name (area),,"area name, not a point POI"
+CSV record,6000064,宝ヶ池,,,place name (area),,"area name, not a point POI"
+CSV record,6000065,田中,,,place name (area),,"area name, not a point POI"
+CSV record,6000066,丹波口,,,place name (area),,"area name, not a point POI"
+CSV record,6000067,丹波橋,,,place name (area),,"area name, not a point POI"
+CSV record,6000068,中書島,,,place name (area),,"area name, not a point POI"
+CSV record,6000069,出町,,,place name (area),,"area name, not a point POI"
+CSV record,6000070,東寺口,,,place name (area),,"area name, not a point POI"
+CSV record,6000071,栂尾,,,place name (area),,"area name, not a point POI"
+CSV record,6000072,常盤,,,place name (area),,"area name, not a point POI"
+CSV record,6000073,鳥辺野,,,place name (area),,"area name, not a point POI"
+CSV record,6000074,中川,,,place name (area),,"area name, not a point POI"
+CSV record,6000075,長坂口,,,place name (area),,"area name, not a point POI"
+CSV record,6000076,椥辻,,,place name (area),,"area name, not a point POI"
+CSV record,6000077,鳴滝,,,place name (area),,"area name, not a point POI"
+CSV record,6000078,西京極,,,place name (area),,"area name, not a point POI"
+CSV record,6000079,西陣,,,place name (area),,"area name, not a point POI"
+CSV record,6000080,花園,,,place name (area),,"area name, not a point POI"
+CSV record,6000081,原谷,,,place name (area),,"area name, not a point POI"
+CSV record,6000082,氷室,,,place name (area),,"area name, not a point POI"
+CSV record,6000083,百万遍,,,place name (area),,"area name, not a point POI"
+CSV record,6000084,深草,,,place name (area),,"area name, not a point POI"
+CSV record,6000085,福王子,,,place name (area),,"area name, not a point POI"
+CSV record,6000086,藤森,,,place name (area),,"area name, not a point POI"
+CSV record,6000087,伏見,,,place name (area),,"area name, not a point POI"
+CSV record,6000088,先斗町,,,place name (area),,"area name, not a point POI; dashboard records with the same name: A00138"
+CSV record,6000089,槙尾,,,place name (area),,"area name, not a point POI"
+CSV record,6000090,松ヶ崎,,,place name (area),,"area name, not a point POI"
+CSV record,6000091,松室,,,place name (area),,"area name, not a point POI"
+CSV record,6000092,御陵,,,place name (area),,"area name, not a point POI"
+CSV record,6000093,水尾,,,place name (area),,"area name, not a point POI"
+CSV record,6000094,壬生,,,place name (area),,"area name, not a point POI"
+CSV record,6000095,宮川町,,,place name (area),,"area name, not a point POI"
+CSV record,6000096,向島,,,place name (area),,"area name, not a point POI"
+CSV record,6000097,紫野,,,place name (area),,"area name, not a point POI"
+CSV record,6000098,桃山,,,place name (area),,"area name, not a point POI"
+CSV record,6000099,八坂,,,place name (area),,"area name, not a point POI"
+CSV record,6000100,八瀬,,,place name (area),,"area name, not a point POI"
+CSV record,6000101,山越,,,place name (area),,"area name, not a point POI"
+CSV record,6000102,山ノ内,,,place name (area),,"area name, not a point POI"
+CSV record,6000103,横大路,,,place name (area),,"area name, not a point POI"
+CSV record,6000104,淀,,,place name (area),,"area name, not a point POI"
+CSV record,6000105,新京極,,,place name (area),,"area name, not a point POI"
+CSV record,6000106,二年坂,,,place name (area),,"area name, not a point POI"
+CSV record,7000001,愛宕山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000002,阿弥陀ヶ峰,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000003,有栖川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000004,粟田山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000005,稲荷山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000006,牛尾山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000007,宇治川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000008,瓜生山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000009,江文峠,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000010,老ノ坂,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000011,名勝　大沢池,,,mountain or river,右京区嵯峨大沢町４番地,"natural feature, outside the dashboard's categories"
+CSV record,7000012,大原御香水,,,mountain or river,左京区大原上野町,"natural feature, outside the dashboard's categories"
+CSV record,7000014,音無の滝,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000015,音羽川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000016,音羽の滝,,,mountain or river,東山区清水1丁目,"natural feature, outside the dashboard's categories"
+CSV record,7000017,音羽山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000018,音戸山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000019,華頂山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000020,桂川,,,mountain or river,,"natural feature, outside the dashboard's categories; related dashboard records: A00170"
+CSV record,7000021,鉄輪の井戸,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000022,紙屋川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000023,亀の井,,,mountain or river,西京区嵐山宮町,"natural feature, outside the dashboard's categories"
+CSV record,7000024,鴨川（賀茂川）,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000025,木津川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000026,衣笠山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000027,貴船山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000028,京見峠,,,mountain or river,北区鷹峯堂庭町,"natural feature, outside the dashboard's categories"
+CSV record,7000029,雲母坂,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000030,空也の滝,,,mountain or river,右京区嵯峨愛宕町,"natural feature, outside the dashboard's categories"
+CSV record,7000031,九条山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000032,鞍馬山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000033,小町化粧水,,,mountain or river,山科区小野随心院内,"natural feature, outside the dashboard's categories"
+CSV record,7000034,金毘羅山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000035,桟敷岳,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000036,祐の井,,,mountain or river,上京区京都御苑内,"natural feature, outside the dashboard's categories"
+CSV record,7000037,菖蒲谷池,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000038,白川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000039,姿見の井,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000040,染井の水,,,mountain or river,上京区寺町通広小路上ル,"natural feature, outside the dashboard's categories"
+CSV record,7000041,醍醐水,,,mountain or river,伏見区醍醐東大路町,"natural feature, outside the dashboard's categories"
+CSV record,7000042,大日山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000043,高雄山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000044,高瀬川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000045,高野川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000046,糺の森,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000047,天王山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000048,七瀬川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000049,雙ヶ岡,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000050,如意ヶ嶽,大文字山,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000051,比叡山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000052,東山三十六峰,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000053,広沢池,,,mountain or river,右京区嵯峨広沢町,"natural feature, outside the dashboard's categories"
+CSV record,7000054,伏見の御香水,,,mountain or river,伏見区御香宮門前町,"natural feature, outside the dashboard's categories"
+CSV record,7000055,船岡山,,,mountain or river,北区紫野北舟岡町,"natural feature, outside the dashboard's categories"
+CSV record,7000056,遍照寺山,,,mountain or river,右京区北嵯峨朝原山町,"natural feature, outside the dashboard's categories"
+CSV record,7000057,堀川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000058,ポンポン山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000059,御手洗川,明神川,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000060,深泥池,,,mountain or river,北区上賀茂深泥池町,"natural feature, outside the dashboard's categories"
+CSV record,7000061,皆子山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000062,明神川,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000063,吉田山,,,mountain or river,左京区吉田神楽岡町,"natural feature, outside the dashboard's categories"
+CSV record,7000064,知恩院　紫雲水,,,mountain or river,東山区林下町400,"natural feature, outside the dashboard's categories"
+CSV record,7000065,八丁・片波源流域,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000066,滝又滝,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000067,栗尾峠の展望,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000068,魚ケ渕のつり橋と桜,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000069,菩提樹の道とゼミナールハウスからの眺望,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000070,宇津峡,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,7000071,雲取山,,,mountain or river,,"natural feature, outside the dashboard's categories"
+CSV record,8000001,嵐山通船,,,townhouse term or local history,南乗船場・京都市西京区嵐山山中町/北乗船場・京都市右京区嵯峨天竜寺芒ノ馬場町,"possible place; not located (no coordinates, single source)"
+CSV record,8000002,犬矢来,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000003,うだつ,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000004,うなぎの寝床,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000006,かま風呂,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000028,ばったり床几,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000007,京都定期観光バス,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000008,京の夏の旅,,,townhouse term or local history,京都市左京区岡崎最勝寺町13　京都会館内,"possible place; not located (no coordinates, single source)"
+CSV record,8000009,京の七口,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000010,京の冬の旅,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000011,車石,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000012,国際文化観光都市,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000013,こっぽり,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000014,古都保存法,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000015,西国三十三カ所札所,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000016,桟瓦,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000017,七野,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000030,花札,かるた,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,10000008,清水寺　狛犬,,清水寺,guardian figure,東山区清水1丁目294,child of A00560 (no point of its own)
+CSV record,8000018,姉妹都市,,,townhouse term or local history,京都市中京区寺町通御池上る上本能寺前町488,"possible place; not located (no coordinates, single source)"
+CSV record,8000019,白川女,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000020,図子,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000021,世界文化自由都市宣言,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000022,知恩院七不思議,,,townhouse term or local history,東山区林下町400,"possible place; not located (no coordinates, single source)"
+CSV record,8000023,辻,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000024,出水七不思議,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000025,電気鉄道発祥の地,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000026,嵯峨野トロッコ列車,嵯峨野観光鉄道株式会社,,townhouse term or local history,京都市右京区嵯峨天龍寺車道町,"possible place; not located (no coordinates, single source)"
+CSV record,8000031,叡山ケーブル,,,townhouse term or local history,上高野東山12,"possible place; not located (no coordinates, single source)"
+CSV record,8000032,比叡山内シャトルバス,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000033,叡山ロープウェイ,,,townhouse term or local history,八瀬野野瀬町209,"possible place; not located (no coordinates, single source)"
+CSV record,8000035,風致地区,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000036,平安京,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000037,平安京大内裏,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000038,紅殻格子,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000039,保津川下り,,,townhouse term or local history,亀岡市保津町下中島１,"possible place; not located (no coordinates, single source)"
+CSV record,8000040,丸竹夷,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,10000007,北野天満宮　神使,,北野天満宮,guardian figure,上京区御前通今小路上る馬喰町,child of A00571 (no point of its own)
+CSV record,8000041,京都非公開文化財特別公開,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000043,むくり屋根,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000044,虫篭窓,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000047,洛中洛外図,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000050,路地,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000051,登窯,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000052,ポルタ,,,townhouse term or local history,下京区烏丸通塩小路下ル,"possible place; not located (no coordinates, single source)"
+CSV record,8000053,京都サンガF.C.,,,townhouse term or local history,京都府城陽市久世上大谷89-1,"possible place; not located (no coordinates, single source)"
+CSV record,8000054,京都市交響楽団,,,townhouse term or local history,京都市北区出雲路立本町103,"possible place; not located (no coordinates, single source)"
+CSV record,8000055,桜情報,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000056,紅葉情報,,,townhouse term or local history,,"local history or townhouse term, not a POI"
+CSV record,8000057,大原温泉,,,townhouse term or local history,左京区大原草生町18,"possible place; not located (no coordinates, single source)"
+CSV record,8000058,嵐山温泉,,,townhouse term or local history,西京区嵐山上河原町1番2,"possible place; not located (no coordinates, single source)"
+CSV record,10000001,愛宕社＜大豊神社＞　狛鳶,,愛宕社<大豊神社>,guardian figure,左京区鹿ケ谷宮ノ前町1,not placed: site location unverified
+CSV record,10000002,稲荷社＜大豊神社＞　狛きつね,,愛宕社<大豊神社>,guardian figure,左京区鹿ケ谷宮ノ前町1,not placed: site location unverified
+CSV record,10000003,新日吉神宮　狛猿,新日吉神宮,新日吉神宮,guardian figure,東山区妙法院前側町451-1,not placed: site location unverified
+CSV record,10000004,菅大臣神社　狛犬,,菅大臣神社,guardian figure,下京区仏光寺通新町西入,child of A00590 (no point of its own)
+CSV record,10000005,北野天満宮　狛犬　その一,,北野天満宮,guardian figure,上京区御前通今小路上る馬喰町,child of A00571 (no point of its own)
+CSV record,10000006,北野天満宮　狛犬　その二,,北野天満宮,guardian figure,上京区御前通今小路上る馬喰町,child of A00571 (no point of its own)
+CSV record,10000009,護王神社　猪,,護王神社,guardian figure,上京区烏丸通下長者町下る桜鶴円町,child of A00562 (no point of its own)
+CSV record,10000010,禅居庵　摩利支天堂,,禅居庵,guardian figure,東山区大和大路通四条下る4丁目小松町146,child of A00574 (no point of its own)
+CSV record,10000011,大国社＜大豊神社＞　狛ねずみ,,愛宕社<大豊神社>,guardian figure,左京区鹿ケ谷宮ノ前町1,not placed: site location unverified
+CSV record,10000012,日吉社＜大豊神社＞　狛猿,,愛宕社<大豊神社>,guardian figure,左京区鹿ケ谷宮ノ前町1,not placed: site location unverified
+CSV record,10000013,伏見稲荷大社　眷属像,,伏見稲荷大社,guardian figure,伏見区深草薮之内町68,child of A00306 (no point of its own)
+CSV record,10000014,法輪寺＜西京区＞　牛,,法輪寺<西京区>,guardian figure,西京区嵐山虚空蔵山町16,child of A00536 (no point of its own)
+CSV record,10000015,法輪寺＜西京区＞　虎,,法輪寺<西京区>,guardian figure,西京区嵐山虚空蔵山町16,child of A00536 (no point of its own)
+CSV record,10000016,三宅八幡宮　鳩,,三宅八幡宮,guardian figure,左京区上高野三宅町22,child of A00576 (no point of its own)
+CSV record,10000017,安井金比羅宮　狛犬,,安井金比羅宮,guardian figure,東山区東大路通松原上る下弁天町70,child of A00549 (no point of its own)
+CSV record,10000018,大原野神社　神鹿,,大原野神社,guardian figure,西京区大原野南春日町1152,child of A00592 (no point of its own)
+CSV record,11000001,御堂ヶ池1号墳,,御堂ヶ池1号墳,burial mound,右京区鳴滝音戸山町12-1,not placed: site location unverified
+CSV record,11000002,甲塚古墳,甲塚古墳,甲塚古墳,burial mound,右京区嵯峨甲塚町18-2,not placed: site location unverified
+CSV record,11000003,嵯峨七ッ塚古墳,,嵯峨七ッ塚古墳,burial mound,右京区北嵯峨洞ノ内町付近,not placed: site location unverified
+CSV record,11000004,天皇の杜古墳,,天皇,burial mound,西京区御陵塚ノ越町,not placed: site location unverified
+CSV record,11000005,福西古墳7号墳及び10号墳,,福西古墳7号墳及び10号墳,burial mound,西京区大枝北福西町4-2,not placed: site location unverified
+CSV record,11000006,蛇塚古墳,,蛇塚古墳,burial mound,右京区太秦面影町,child of A00550 (no point of its own)
+CSV record,7000013,小倉山,,,mountain or river,,"natural feature, outside the dashboard's categories; related dashboard records: A00392"
+dashboard record,A00296,絵馬展示資料館,osm node 6578053381,A00297,A Confirmed Duplicate: merged,"Two OSM museum nodes 3 m apart, added by the same edit on 2019-06-29 (nodes 6578053381 and 6578080296); the second carries operator=三宅八幡神社. One museum exists there.",merged into A00297 (kept in data/raw)
+dashboard record,A00223,Best Breakfast Point,osm node 5502313425,A00222,A Confirmed Duplicate: merged,"Four viewpoint nodes within 7 m, all added on 2018-03-25 in two batches (5502313424-25 and 5502354121/5502354221); names 'Best Breakfast Point' (x2) and 'Breakfast Point', English 'Best Breakfast Point' and the misspelling 'Beat Breakfast Point'. The same viewpoint entered twice.",merged into A00222 (kept in data/raw)
+dashboard record,A00224,Breakfast Point,osm node 5502354121,A00222,A Confirmed Duplicate: merged,"Four viewpoint nodes within 7 m, all added on 2018-03-25 in two batches (5502313424-25 and 5502354121/5502354221); names 'Best Breakfast Point' (x2) and 'Breakfast Point', English 'Best Breakfast Point' and the misspelling 'Beat Breakfast Point'. The same viewpoint entered twice.",merged into A00222 (kept in data/raw)
+dashboard record,A00225,Best Breakfast Point,osm node 5502354221,A00222,A Confirmed Duplicate: merged,"Four viewpoint nodes within 7 m, all added on 2018-03-25 in two batches (5502313424-25 and 5502354121/5502354221); names 'Best Breakfast Point' (x2) and 'Breakfast Point', English 'Best Breakfast Point' and the misspelling 'Beat Breakfast Point'. The same viewpoint entered twice.",merged into A00222 (kept in data/raw)
+dashboard record,A00459,黄桜記念館,osm node 12458508640,A00076,A Confirmed Duplicate: merged,"Two OSM museum nodes 14 m apart with the same name: the older one (2022, operator カッパカントリー, brewery=yes) and one added on 2024-12-28 with no other tags. One memorial hall exists at Kizakura Kappa Country.",merged into A00076 (kept in data/raw)
+dashboard records,A00085 A00360,おもかる石,,,B Possible Duplicate: kept,"1 m apart, same tags. At Fushimi Inari's Okusha Hohaisho there is a pair of these stone lanterns (left and right), so these may be the two stones. Kept both; needs a site check.","kept, flagged on the card"
+dashboard records,A00142 A00231,石塀小路,,,B Possible Duplicate: kept,"One lane, two points 134 m apart (2017 and 2018 edits). Probably the same lane marked twice, at different spots. Kept both; needs a decision on which point represents the lane.","kept, flagged on the card"
+dashboard records,A00021 A00370,保津峡展望台,,,B Possible Duplicate: kept,"Same name, 341 m apart. Could be two different viewpoints over the gorge. Kept both.","kept, flagged on the card"
+dashboard records,A00177 A00280 A00332 A00281,股のぞき台 (傘松公園),,,"C Related POI: kept, grouped","A row of separate 'look between your legs' platforms at Kasamatsu Park; each is a real platform. Kept, grouped.","kept, group shown on the card"
+dashboard records,A00283 A00284 A00285 A00287 A00288 A00289 A00290,股のぞき台 (天橋立ビューランド),,,"C Related POI: kept, grouped","Several separate platforms at Amanohashidate View Land within about 50 m, mapped in one edit on 2019-05-02. Kept, grouped.","kept, group shown on the card"
+dashboard records,A00455 A00515 A00186,宇治橋,,,"C Related POI: kept, grouped",The Uji Bridge and its 三の間 (the old and the present one). Different features of the same bridge.,"kept, group shown on the card"
+dashboard records,A00258 A00238,京都御所,,,"C Related POI: kept, grouped",The palace and its entrance.,"kept, group shown on the card"
+dashboard records,A00078 A00488,西から見た二条城東南隅櫓の眺め,,,D Distinct POI,Two different viewpoints 387 m apart: their English names describe different views (A00078: from the ruins of the donjon; A00488: the southeast corner turret from the west). A00078's Japanese name looks copied from A00488's; it is left as the source has it and flagged here.,kept
+dashboard records,A00478 A00479,KYOTO SAMURAI NINJA MUSEUM,,,D Distinct POI,Different addresses (堀之上町 109 and 東大文字町 292-4): two premises.,kept
+dashboard record,A00065,豊国神社宝物館,,A00555,C Related POI: part of an added site,"inside the site (within 700 m, name contains the site name)",child of A00555
+dashboard record,A00077,高台寺掌美術館,,A00588,C Related POI: part of an added site,"inside the site (within 700 m, name contains the site name)",child of A00588
+dashboard record,A00078,西から見た二条城東南隅櫓の眺め,,A00579,C Related POI: part of an added site,"inside the site (within 700 m, name contains the site name)",child of A00579
+dashboard record,A00487,南東から見た二条城東南隅櫓の眺め,,A00579,C Related POI: part of an added site,"inside the site (within 700 m, name contains the site name)",child of A00579
+dashboard record,A00488,西から見た二条城東南隅櫓の眺め,,A00579,C Related POI: part of an added site,"inside the site (within 700 m, name contains the site name)",child of A00579
+dashboard record,A00490,北東から見た二条城本丸の城壁と内堀の眺望,,A00579,C Related POI: part of an added site,"inside the site (within 700 m, name contains the site name)",child of A00579

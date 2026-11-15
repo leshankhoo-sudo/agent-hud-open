@@ -18,6 +18,11 @@ Two ways, both stricter than a name search:
      never logos or drawings.
      A link of the record's own node replaces an earlier "related place" photo, never an exact one.
 
+  A2. Sites added by the POI audit  (match: site-wikidata)
+     Records added from DSIGHT_1.csv (scripts/poi_reconcile.py) carry the Wikidata item that, with
+     OpenStreetMap, confirmed their location. Their photo is that item's image (P18), under the same
+     rules as A (item within 1 km, JPEG/PNG only).
+
   B. Commons photos taken right there  (match: commons-near)
      Only records with a name and still no photo. Commons files whose own coordinates are within
      150 m of the point, and whose file name or one of whose categories contains the record's full
@@ -145,7 +150,9 @@ def main():
     linked = []
     for f in A:
         p = f["properties"]
-        n = nodes.get(p["osm_id"])
+        if p.get("osm_element") and not p["osm_element"].startswith("node/"):
+            continue   # an added site: its OSM feature is a way or relation, handled in A2
+        n = nodes.get(p["osm_id"]) if not p.get("dsight_ids") else None
         if not n or "missing" in n:
             continue
         if dist(f["geometry"]["coordinates"], (n["lon"], n["lat"])) > 30 or (n["tags"].get("name") or "") != (p["name"] or ""):
@@ -162,7 +169,8 @@ def main():
             time.sleep(0.5)
         if re.match(r"^Q\d+$", q):
             qid_of[f["properties"]["id"]] = q
-    ents = wd_entities(qid_of.values())
+    site_q = {f["properties"]["id"]: f["properties"]["wikidata"] for f in A if f["properties"].get("dsight_ids") and f["properties"].get("wikidata") and f["properties"]["id"] not in have}
+    ents = wd_entities(list(qid_of.values()) + list(site_q.values()))
     for f, t in linked:
         p, pt = f["properties"], f["geometry"]["coordinates"]
         old = have.get(p["id"])
@@ -201,6 +209,21 @@ def main():
         else:
             notes.append((p["id"], f"OSM links ({', '.join(k for k in ('wikidata', 'wikipedia', 'image', 'wikimedia_commons') if k in t)}) lead to no usable photo"))
     print("A. records whose own node links somewhere:", len(linked), "| new or upgraded photos:", len(pick), flush=True)
+    na2 = 0
+    for f in A:
+        p = f["properties"]
+        q = site_q.get(p["id"])
+        e = ents.get(q) if q else None
+        if not e:
+            continue
+        d = dist(f["geometry"]["coordinates"], e["coord"]) if e["coord"] else None
+        photo18 = next((x for x in e["p18"] if re.search(r"\.(jpe?g|png)$", x, re.I)), None)
+        if d is None or d > LINK_MAX or not photo18:
+            notes.append((p["id"], f"added site: Wikidata {q} gives no usable photo" + (f" ({round(d)} m away)" if d and d > LINK_MAX else "")))
+            continue
+        pick[p["id"]] = {"match": "site-wikidata", "file": "File:" + photo18, "wikidata": q, "matched_label": e["label"], "distance_m": round(d)}
+        na2 += 1
+    print("A2. added sites with a photo of their Wikidata item:", na2, flush=True)
 
     # ---------- B. Commons photos taken within 150 m whose file name or category names the place ----------
     names = Counter(norm(f["properties"]["name"]) for f in A if (f["properties"]["name"] or "").strip())
@@ -275,7 +298,7 @@ def main():
         print("dry run:", len(added), "would be added;", len(skipped), "skipped")
         return
     have.update(added)
-    kinds = ("wikidata-exact", "wikidata-related", "commons-geo", "osm-wikidata", "osm-image", "osm-commons", "commons-near")
+    kinds = ("wikidata-exact", "wikidata-related", "commons-geo", "osm-wikidata", "osm-image", "osm-commons", "commons-near", "site-wikidata")
     named = sum(1 for f in A if (f["properties"]["name"] or "").strip())
     doc.update({
         "source": "Wikidata (P18), Wikimedia Commons and the records' own OpenStreetMap links",

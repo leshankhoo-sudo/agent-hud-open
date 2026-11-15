@@ -1,7 +1,7 @@
 // Interface for Analysis 2 (walking-network accessibility).
 //
 // The dashboard reads public/data/walking_routes_prefecture.geojson, written by
-// scripts/walking_prefecture.py for all 523 attraction records in Kyoto Prefecture.
+// scripts/walking_prefecture.py for every attraction record on the map (595 after the POI audit).
 // (The earlier Gion–Kiyomizu pilot, walking_routes.geojson, stays in the repository
 // for reference; it is no longer loaded.) Shape (see docs/DATA_INTERFACES.md):
 //

@@ -10,14 +10,17 @@
   "walking_routes.geojson": "match"
  },
  "attractions": {
-  "records": 523,
+  "records": 595,
   "by_category": {
-   "attraction": 156,
-   "viewpoint": 246,
-   "museum": 102,
-   "castle": 19
+   "attraction": 231,
+   "viewpoint": 243,
+   "museum": 101,
+   "castle": 20
   },
-  "unnamed": 218
+  "unnamed": 218,
+  "raw_records": 523,
+  "merged_duplicates": 5,
+  "added_from_dsight": 77
  },
  "transport": {
   "records": 5479,

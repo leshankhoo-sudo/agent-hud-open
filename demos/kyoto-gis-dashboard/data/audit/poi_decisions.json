@@ -1,0 +1,30 @@
+{
+ "about": "Reviewed decisions for the POI audit (2026-11-15). scripts/audit_poi.py proposes, a person decides here, scripts/poi_reconcile.py applies. Nothing is deleted from data/raw: a merged record stays there and in data/audit, and is only left out of the map layer, with merged_into pointing at the record that keeps it.",
+ "duplicates": [
+  {"class": "A", "keep": "A00297", "merge": ["A00296"], "name": "絵馬展示資料館",
+   "evidence": "Two OSM museum nodes 3 m apart, added by the same edit on 2019-06-29 (nodes 6578053381 and 6578080296); the second carries operator=三宅八幡神社. One museum exists there.",
+   "keep_reason": "keeps the node with the operator tag"},
+  {"class": "A", "keep": "A00222", "merge": ["A00223", "A00224", "A00225"], "name": "Best Breakfast Point",
+   "evidence": "Four viewpoint nodes within 7 m, all added on 2018-03-25 in two batches (5502313424-25 and 5502354121/5502354221); names 'Best Breakfast Point' (x2) and 'Breakfast Point', English 'Best Breakfast Point' and the misspelling 'Beat Breakfast Point'. The same viewpoint entered twice.",
+   "keep_reason": "keeps the first node, whose name is the one used most"},
+  {"class": "A", "keep": "A00076", "merge": ["A00459"], "name": "黄桜記念館",
+   "evidence": "Two OSM museum nodes 14 m apart with the same name: the older one (2022, operator カッパカントリー, brewery=yes) and one added on 2024-12-28 with no other tags. One memorial hall exists at Kizakura Kappa Country.",
+   "keep_reason": "keeps the older node with more tags"}
+ ],
+ "possible_duplicates": [
+  {"class": "B", "ids": ["A00085", "A00360"], "name": "おもかる石", "note": "1 m apart, same tags. At Fushimi Inari's Okusha Hohaisho there is a pair of these stone lanterns (left and right), so these may be the two stones. Kept both; needs a site check."},
+  {"class": "B", "ids": ["A00142", "A00231"], "name": "石塀小路", "note": "One lane, two points 134 m apart (2017 and 2018 edits). Probably the same lane marked twice, at different spots. Kept both; needs a decision on which point represents the lane."},
+  {"class": "B", "ids": ["A00021", "A00370"], "name": "保津峡展望台", "note": "Same name, 341 m apart. Could be two different viewpoints over the gorge. Kept both."}
+ ],
+ "related_groups": [
+  {"class": "C", "name": "股のぞき台 (傘松公園)", "ids": ["A00177", "A00280", "A00332", "A00281"], "note": "A row of separate 'look between your legs' platforms at Kasamatsu Park; each is a real platform. Kept, grouped."},
+  {"class": "C", "name": "股のぞき台 (天橋立ビューランド)", "ids": ["A00283", "A00284", "A00285", "A00287", "A00288", "A00289", "A00290"], "note": "Several separate platforms at Amanohashidate View Land within about 50 m, mapped in one edit on 2019-05-02. Kept, grouped."},
+  {"class": "C", "name": "宇治橋", "ids": ["A00455", "A00515", "A00186"], "note": "The Uji Bridge and its 三の間 (the old and the present one). Different features of the same bridge."},
+  {"class": "C", "name": "京都御所", "ids": ["A00258", "A00238"], "note": "The palace and its entrance."}
+ ],
+ "distinct": [
+  {"class": "D", "ids": ["A00078", "A00488"], "name": "西から見た二条城東南隅櫓の眺め", "note": "Two different viewpoints 387 m apart: their English names describe different views (A00078: from the ruins of the donjon; A00488: the southeast corner turret from the west). A00078's Japanese name looks copied from A00488's; it is left as the source has it and flagged here."},
+  {"class": "D", "ids": ["A00478", "A00479"], "name": "KYOTO SAMURAI NINJA MUSEUM", "note": "Different addresses (堀之上町 109 and 東大文字町 292-4): two premises."}
+ ],
+ "dashboard_records_inside_new_sites": "Filled in by scripts/poi_reconcile.py from data/audit/poi_audit.json: dashboard records that are part of a CSV site (for example the Nijo Castle viewpoints) get parent_id."
+}

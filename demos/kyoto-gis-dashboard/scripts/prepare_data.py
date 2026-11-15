@@ -61,8 +61,20 @@ def main():
 
     # Unchanged copies. walking_routes.geojson is only copied while no computed result
     # exists, so running this script again never erases scripts/walking_pilot.py output.
-    for name in ("attractions.geojson", "transport.geojson", "sample_journeys.json"):
+    for name in ("transport.geojson", "sample_journeys.json"):
         shutil.copyfile(os.path.join(RAW, name), os.path.join(OUT, name))
+    # Attractions: the raw records with the reviewed POI audit applied (confirmed duplicates merged,
+    # verified DSIGHT_1.csv sites added); see scripts/poi_reconcile.py. Without the audit files the
+    # raw records are copied unchanged, as before.
+    if os.path.exists(os.path.join(ROOT, "data", "audit", "dsight_sites.geojson")):
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import poi_reconcile
+        attractions, relations, _ = poi_reconcile.build()
+        json.dump(attractions, open(os.path.join(OUT, "attractions.geojson"), "w", encoding="utf-8"), ensure_ascii=False)
+        json.dump(relations, open(os.path.join(OUT, "poi_relations.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=0)
+        print("Attractions: run scripts/poi_reconcile.py afterwards to add the English names of added sites to names_en.json", file=sys.stderr)
+    else:
+        shutil.copyfile(os.path.join(RAW, "attractions.geojson"), os.path.join(OUT, "attractions.geojson"))
     wpath = os.path.join(OUT, "walking_routes.geojson")
     try:
         existing = json.load(open(wpath, encoding="utf-8")).get("status")

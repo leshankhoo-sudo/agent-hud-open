@@ -610,6 +610,8 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
 .st.nc { background: none; border: 1.5px dashed var(--mute); }
 .st.cut { background: none; border: 2px solid var(--bad); }
 .inside { display: block; }
+.site-parts > span { display: block; line-height: 1.5; }
+.site-parts > small { display: block; margin-top: 3px; }
 .terms span { display: inline-block; margin: 0 10px 2px 0; }
 .terms b { font-weight: 600; margin-right: 3px; }
 .terms small, .kv dd > small.muted { display: block; }

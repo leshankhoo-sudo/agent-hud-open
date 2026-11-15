@@ -36,6 +36,7 @@ const FILES = {
   explore: 'explore_places.json',
   bus: 'bus/index.json',
   context: 'attraction_context.json',
+  relations: 'poi_relations.json',
 };
 
 // Each file is loaded on its own so one failure is reported without hiding the others.
@@ -135,9 +136,16 @@ export function filterTransport(features, types, query = '') {
   const q = query.trim().toLowerCase();
   return features.filter((f) => types.includes(f.properties.transport_type) && (!q || matches(f, q)));
 }
+// 'Nanzen-ji', 'nanzenji' and 'Nanzen ji' all find 南禅寺: Latin letters are also compared without
+// hyphens, spaces and accents. search_text holds a site's other names (aliases from DSIGHT_1.csv).
+export const foldLatin = (s) => (s || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 function matches(f, q) {
   const p = f.properties;
-  return (p.name || '').toLowerCase().includes(q) || (p.display_name || '').toLowerCase().includes(q) || (p.name_en || '').toLowerCase().includes(q) || p.id.toLowerCase() === q || p.osm_id === q;
+  if ((p.name || '').toLowerCase().includes(q) || (p.display_name || '').toLowerCase().includes(q) || (p.name_en || '').toLowerCase().includes(q) || p.id.toLowerCase() === q || p.osm_id === q) return true;
+  if ((p.search_text || '').toLowerCase().includes(q)) return true;
+  if ((p.merged_ids || []).some((x) => x.toLowerCase() === q)) return true;   // a merged duplicate's ID opens the record that keeps it
+  const qf = foldLatin(q);
+  return qf.length >= 3 && /^[\x00-\x7f]+$/.test(q) && (foldLatin(p.name_en).includes(qf) || foldLatin(p.search_text).includes(qf));
 }
 
 // Published tourism count for the municipality a point falls in. These are municipal totals
