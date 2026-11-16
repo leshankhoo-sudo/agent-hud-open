@@ -16,6 +16,7 @@ import Seam from './Seam.jsx';
 import Pager from './Pager.jsx';
 import Bento, { Tile, resetBento } from './Bento.jsx';
 import Koi from './Koi.jsx';
+import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
@@ -442,6 +443,8 @@ export default function App() {
     addEventListener('pointerdown', down, true);
     return () => removeEventListener('pointerdown', down, true);
   }, []);
+  // Soft pointer-following light in the glass cards of the panel (dark theme).
+  useEffect(() => installGlassGlow(), []);
   // Cursor spotlight on the side cards.
   useEffect(() => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -648,7 +651,7 @@ export default function App() {
             <label className="switch pts" title="Hide the attraction points and symbols; density layers stay on">
                           <input type="checkbox" checked={pointsOn} onChange={() => setPointsOn(!pointsOn)} /><i aria-hidden="true" /><span>Points on map</span>
                         </label>
-                        {!pointsOn && <p className="xs muted pts-off">Points hidden. Density layers, search and selection still work.</p>}
+                        {!pointsOn && <p className="xs muted pts-off">Points hidden. Search and density still work.</p>}
           </section>
           {d.geography && (
             <section className={'card fold' + (layersOpen ? ' open' : '')}>
@@ -1101,7 +1104,7 @@ function RouteCard({ sel, origin, res, mode, picking, locErr, onMode, onPick, on
         <li className="s"><i aria-hidden="true" /><span className="k">From</span>{origin ? <b lang="ja">{origin.label}</b> : <span className="muted">No start chosen</span>}</li>
         <li className="e"><i aria-hidden="true" /><span className="k">To</span><b lang="ja">{isStart ? '—' : sel.label}</b></li>
       </ol>
-      {!origin && <p className="xs">Choose where the route starts. Nothing is drawn until you do.</p>}
+      {!origin && <p className="xs">Choose a start to draw the route.</p>}
       {isStart && <p className="xs">This place is the start. Select a destination on the map or in Explore.</p>}
       {res?.status === 'loading' && <p className="xs rt-load"><span className="spin" aria-hidden="true" />Getting the route from {ROUTE_SERVICE.host}…</p>}
       {res?.status === 'error' && (

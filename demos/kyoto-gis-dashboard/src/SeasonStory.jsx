@@ -334,7 +334,7 @@ export default function SeasonStory({ season = 'autumn', autoSeason = 'autumn', 
         <header className="story-head">
           <p className="story-kicker"><span lang="ja">京都の四季</span> · Four seasons</p>
           <h2 id="story-title">Kyoto through the seasons</h2>
-          <p className="story-now">Now in Kyoto: <b>{now.en}</b> · <span lang="ja">{now.kigo}</span> {now.kigoR}, {now.kigoEn}</p>
+          <p className="story-now">Now in Kyoto: <b>{now.en}</b> · <span lang="ja">{now.kigo}</span></p>
         </header>
         <div className="scards">
           {SEASON_ORDER.map((k) => {
@@ -345,7 +345,7 @@ export default function SeasonStory({ season = 'autumn', autoSeason = 'autumn', 
                 {fallback && <img src={`${base}season/${k}.webp`} alt="" />}
                 <canvas ref={(el) => { canv.current[k] = el; }} aria-hidden="true" />
                 {k === autoSeason && <span className="scard-now">Now in Kyoto</span>}
-                <figcaption><b lang="ja">{sc.ja}</b><span>{sc.en}</span><em><span lang="ja">{sc.kigo}</span> {sc.kigoR}</em></figcaption>
+                <figcaption><b lang="ja">{sc.ja}</b><span>{sc.en}</span><em lang="ja">{sc.kigo}</em></figcaption>
                 <button type="button" className="scard-pick" onClick={() => onPick?.(k)} aria-pressed={k === season} aria-label={`Use the ${sc.en.toLowerCase()} theme`} />
               </figure>
             );

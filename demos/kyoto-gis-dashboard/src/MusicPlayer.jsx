@@ -390,7 +390,7 @@ export default function MusicPlayer() {
   const playing = state === 'playing';
   const label = state === 'error' ? 'Music could not be loaded. Press to try again.' : playing ? 'Pause background music' : state === 'loading' ? 'Loading music…' : 'Play background music';
   const pct = Math.round(vol * 100);
-  const cap = state === 'error' ? 'Music unavailable · press to retry' : state === 'loading' ? 'Loading · Kyoto, Slowly' : playing ? `Kyoto, Slowly · ${pct}% · ${chapterOf(vol)}` : 'Slide the glass to play · 紅葉の小さな奇跡';
+  const cap = state === 'error' ? 'Music unavailable · press to retry' : state === 'loading' ? 'Loading music' : playing ? `${chapterOf(vol)} · ${pct}%` : 'Slide to play';
   const onRange = (e) => { setVol(Number(e.target.value)); if (Number(e.target.value) > 0.02) play(); };
   return (
     <div ref={box} className={'music koto' + (playing ? ' playing' : '') + (state === 'loading' ? ' loading' : '') + (state === 'error' ? ' error' : '')} role="group" aria-label="Background music: Kyoto, Slowly (original piano piece). The volume also moves a little story in the window.">

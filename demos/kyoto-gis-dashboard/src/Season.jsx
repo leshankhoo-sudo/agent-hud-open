@@ -22,7 +22,7 @@ export function SeasonBadge({ auto, mode, onMode, info: seasonRef }) {
     <details className="season-badge" ref={box}>
       <summary aria-label={`Season theme: ${s.en}${mode === 'auto' ? ' (Kyoto date)' : ' (chosen)'}`}>
         <span className="s-ja" lang="ja" aria-hidden="true">{s.ja}</span>
-        <span className="s-txt"><b>{mode === 'auto' ? `${s.en} in Kyoto` : `${s.en} theme`}</b>{hl && <small><span lang="ja">{hl.ja}</span> {hl.romaji}</small>}</span>
+        <span className="s-txt"><b>{mode === 'auto' ? `${s.en} in Kyoto` : `${s.en} theme`}</b>{hl && <small><span lang="ja">{hl.ja}</span></small>}</span>
       </summary>
       <div className="season-pop" role="group" aria-label="Season theme">
         <p className="xs"><b>Kyoto today:</b> {mdLabel(auto.md)} (Japan time). Season by the JMA calendar: <b>{cal.en}</b> <span lang="ja">{cal.ja}</span> ({cal.romaji}).</p>

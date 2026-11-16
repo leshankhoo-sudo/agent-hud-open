@@ -350,7 +350,7 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
 .stop-tag.on i { opacity: 1; transform: none; filter: none; box-shadow: 0 0 14px var(--walk-bus); animation: stopFlash 0.9s ease-out; }
 .stop-tag.rail.on i { box-shadow: 0 0 14px var(--walk-rail); }
 .stop-tag.on div { opacity: 1; transform: none; filter: none; pointer-events: auto; }
-.stop-tag.far div { opacity: 0.55; transform: none; filter: grayscale(0.8); }
+.stop-tag.far div { opacity: 0.82; transform: none; filter: grayscale(0.5); }
 .stop-tag.compact div { padding: 4px 8px; }
 .stop-tag.compact.far div { opacity: 0; }
 .stop-tag.compact em { display: none; }
@@ -1764,13 +1764,98 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
 .koi-layer { position: sticky; top: 0; height: 0; z-index: 0; margin: 0 -12px; pointer-events: none; }
 .right.panel > .koi-layer { min-width: 0; }
 .koi-layer canvas { position: absolute; left: 0; top: 0; display: block; }
-.right.panel > .left, .right.panel > .place { position: relative; z-index: 1; }
+.right.panel > .left, .right.panel > .place, :root[data-theme='light'] .right.panel > .left, :root:not([data-theme='light']) #dashboard .right.panel > .left { position: relative; z-index: 1; background: none; box-shadow: none; }   /* no fill of their own: the pond shows between and through the cards */
 /* text outside the cards keeps its contrast when a koi passes under it */
 .explore-foot .link { text-shadow: 0 0 3px var(--bg), 0 0 6px var(--bg), 0 0 10px var(--bg); }
 :root:not([data-theme='light']) #dashboard .right.panel .card { background: linear-gradient(155deg, rgba(237, 243, 245, .05) 0%, rgba(237, 243, 245, 0) 45%), rgba(25, 31, 35, .88); }
 :root[data-theme='light'] #dashboard .right.panel .card { background: linear-gradient(180deg, rgba(255, 253, 248, .9), rgba(249, 244, 234, .9)); }
 :root #dashboard .right.panel .card.detail { background-color: var(--panel-solid); }
 
+
+/* =====================================================================
+   Liquid glass, dark theme only. The panel cards are frosted glass over the koi pond: only what is BEHIND
+   a card is blurred (backdrop-filter), so a koi's colour, outline and movement still read through it while
+   text, numbers, icons and controls stay sharp. The tint and the dimming of the backdrop keep the text's
+   contrast. A fine highlight runs along the top edge. The light theme is unchanged.
+   ===================================================================== */
+:root:not([data-theme='light']) #dashboard .right.panel .card,
+:root:not([data-theme='light']) #dashboard .right.panel .card.detail {
+  --shadow: inset 0 0 0 1px rgba(237, 243, 245, .075), inset 0 1px 0 rgba(255, 255, 255, .17), inset 0 -1px 0 rgba(0, 0, 0, .28), 0 10px 28px rgba(0, 0, 0, .3);
+  background: linear-gradient(155deg, rgba(237, 243, 245, .085) 0%, rgba(237, 243, 245, .02) 36%, rgba(237, 243, 245, 0) 60%), rgba(20, 27, 32, .54);
+  --ink-2: #b3c0c6; --mute: #9aa8ae;   /* grey text one step lighter on glass, so it keeps its contrast when a koi passes under it */
+  -webkit-backdrop-filter: blur(11px) saturate(1.7) brightness(.66); backdrop-filter: blur(11px) saturate(1.7) brightness(.66);
+  box-shadow: var(--shadow);
+}
+/* cards inside a card are not glass again */
+:root:not([data-theme='light']) #dashboard .right.panel .card .card { background: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
+:root:not([data-theme='light']) #dashboard .phead { background: rgba(16, 20, 22, .74); -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3); box-shadow: inset 0 -1px 0 rgba(237, 243, 245, .05); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root:not([data-theme='light']) #dashboard .right.panel .card { background: rgba(25, 31, 35, .9); }
+  :root:not([data-theme='light']) #dashboard .phead { background: var(--bg); }
+}
+
+/* Soft light in the glass (dark theme only; lib/glassGlow.js moves it). Two faint glows, blue and teal, rest in opposite
+   corners of every card and drift very slowly. Near the pointer the first moves toward it and spreads, the
+   second moves a little away, and the edge beside the pointer lights up; afterwards they ease back. Nothing flashes or shakes. */
+@property --flow { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+:root:not([data-theme='light']) #dashboard .right.panel .card::after {
+  opacity: 1; transition: none;
+  /* blue haze from the top left, teal from the bottom right; --flow drifts them slowly, the pointer adds an offset */
+  background:
+    radial-gradient(calc(230px + var(--gp, 0) * 130px) circle at calc(16% + sin(var(--flow)) * 9% + var(--gdx, 0px)) calc(2% + cos(var(--flow)) * 12% + var(--gdy, 0px)), rgb(92 156 204 / calc(.2 + var(--gp, 0) * .06)), transparent 72%),
+    radial-gradient(calc(200px + var(--gp, 0) * 90px) circle at calc(90% - sin(var(--flow)) * 9% + var(--hdx, 0px)) calc(100% + cos(var(--flow)) * 10% + var(--hdy, 0px)), rgb(96 200 206 / calc(.12 + var(--gp, 0) * .03)), transparent 72%),
+    radial-gradient(190px circle at calc(58% + cos(var(--flow)) * 22%) calc(55% + sin(var(--flow)) * 30%), rgb(84 196 170 / .06), transparent 72%);
+  animation: glassFlow 24s linear infinite; animation-delay: var(--loop-delay, 0s);
+}
+@keyframes glassFlow { to { --flow: 360deg; } }
+@media (prefers-reduced-motion: reduce) { :root:not([data-theme='light']) #dashboard .right.panel .card::after { animation: none; } }
+:root:not([data-theme='light']) #dashboard .right.panel .card::before {
+  background:
+    radial-gradient(240px circle at var(--px, 50%) var(--py, 50%), rgb(214 244 245 / calc(var(--gp, 0) * .75)), transparent 70%),
+    conic-gradient(from var(--ang), transparent 0deg, transparent 210deg, var(--loop-a, rgba(121, 215, 218, .5)) 300deg, var(--loop-b, rgba(237, 250, 250, .85)) 336deg, transparent 360deg);
+}
+:root:not([data-theme='light']) #dashboard .right.panel .card .card::after, :root:not([data-theme='light']) #dashboard .right.panel .card .card::before { display: none; }
+@media (hover: none) { :root:not([data-theme='light']) #dashboard .right.panel .card::after { display: block; } }
+
+/* Mist over the water (dark theme only): three wide, faint patches of blue, teal and indigo that drift slowly
+   round, as in the reference motion. It is part of the background layer: under every card, no pointer events. */
+.koi-mist { position: absolute; left: 0; top: 0; z-index: 2; display: none; pointer-events: none; }
+:root:not([data-theme='light']) .koi-mist {
+  display: block;
+  background:
+    radial-gradient(62% 44% at calc(18% + sin(var(--flow)) * 14%) calc(98% + cos(var(--flow)) * 9%), rgb(58 122 204 / .2), transparent 72%),
+    radial-gradient(56% 40% at calc(86% - sin(var(--flow)) * 13%) calc(10% + cos(var(--flow)) * 10%), rgb(66 204 190 / .13), transparent 72%),
+    radial-gradient(48% 34% at calc(58% + cos(var(--flow)) * 20%) calc(56% + sin(var(--flow)) * 16%), rgb(96 112 204 / .09), transparent 74%);
+  animation: glassFlow 46s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { :root:not([data-theme='light']) .koi-mist { animation: none; } }
+
+/* ripples from thrown fish food: same background layer as the pond */
+.koi-layer canvas.koi-ripples { z-index: 1; }
+
+/* A few small motions: a press on a control gives a little, an opened fold's content settles in, and a
+   switched panel tab slides up a few pixels (no fade, so the glass keeps its backdrop). */
+.right.panel button:not(.tile-grip):not(.fold-h):active { transform: scale(.965); }
+.right.panel .fold-h h3 { transition: transform .16s var(--ez); }
+.right.panel .fold-h:active h3 { transform: translateX(2px); }
+.right.panel .fold.open > :not(.fold-h) { animation: foldIn .34s var(--ez) both; }
+@keyframes foldIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+#explore-panel:not([hidden]), #place-panel:not([hidden]) { animation: tabIn .3s var(--ez) both; }
+@keyframes tabIn { from { transform: translateY(7px); } to { transform: none; } }
+.right.panel .st-on { animation: pillIn .3s var(--ez) both; }
+@keyframes pillIn { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .right.panel button:not(.tile-grip):not(.fold-h):active, .right.panel .fold-h:active h3 { transform: none; }
+  .right.panel .fold.open > :not(.fold-h), #explore-panel:not([hidden]), #place-panel:not([hidden]), .right.panel .st-on { animation: none; }
+}
+
+
+/* Readability pass: the numbers that are data (counts per category and stop type) and the study-area labels
+   are one step stronger than helper text; the map callout shows the whole name instead of one character. */
+.panel .chk .n { color: var(--ink-2); }
+.study .sa-h h3, .sa-a span, .sa-types { color: var(--ink-2); }
+.sa-a b { color: var(--ink-strong); }
+.sel-card:not(.has-photo) { width: max-content; max-width: 260px; }
 
 /* phone: map on top, the panel as a bottom sheet that can be closed (after the split rules above) */
 @media (max-width: 760px) {

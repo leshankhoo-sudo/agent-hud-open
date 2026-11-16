@@ -187,7 +187,7 @@ await page.waitForTimeout(900);
 const d1 = await dome();
 check('music: the room opens under the pointer; dragging the glass dome raises the volume and starts the music', d0.w > 250 && !/playing/.test(d0.cls) && d1.vol > d0.vol + 0.2 && d1.vol > 0.85 && d1.x > d0.x + 40 && mp3Requests === 1, JSON.stringify({ w: d0.w, v0: d0.vol, v1: d1.vol }));
 const lit = await page.evaluate(() => { const c = document.querySelector('.koto-cv'), g = c.getContext('2d'); const k = c.width / 280; const px = g.getImageData(Math.round(123 * k), Math.round(54 * k), 1, 1).data; return { w: c.width, rgb: [px[0], px[1], px[2]], cap: document.querySelector('.koto-cap').textContent }; });
-check('music: the volume moves the story; near the top it is at the miracle or the serenity chapter, and the caption names it', /Kyoto, Slowly · \d+% · 0[67] /.test(lit.cap) && lit.w > 280, lit.cap);
+check('music: the volume moves the story; near the top it is at the miracle or the serenity chapter, and the caption names it', /^0[67] .+ · \d+%$/.test(lit.cap) && lit.w > 280, lit.cap);
 // tapping something in the room (here the wind bell, clear of the lens at this volume) makes it react and does not touch the volume or the music
 const tapB = await dome();
 await page.locator('.music').hover(); await page.waitForTimeout(700);
@@ -219,7 +219,7 @@ await page.keyboard.press('Enter');
 await page.waitForFunction(() => !/playing/.test(document.querySelector('.music').className), null, { timeout: 5000 });
 await page.waitForTimeout(2600);
 const pausedCap = await page.locator('.koto-cap').textContent();
-check('music: pausing from the keyboard stops it; the story stays where the volume is', /Slide the glass to play/.test(pausedCap) && Math.abs((await dome()).vol - d2.vol) < 0.001, pausedCap);
+check('music: pausing from the keyboard stops it; the story stays where the volume is', /Slide to play/.test(pausedCap) && Math.abs((await dome()).vol - d2.vol) < 0.001, pausedCap);
 await page.screenshot({ path: `${out}/00d-music.png` });
 await page.evaluate(() => document.activeElement?.blur());
 await page.mouse.move(400, 500);
@@ -653,7 +653,7 @@ await rp.waitForTimeout(4000);
 const y_lay = () => rp.evaluate(() => { const m = window.__kyotoMap; const c = document.querySelector('.center').getBoundingClientRect(); const r = document.querySelector('aside.right').getBoundingClientRect(); return { map: Math.round(c.width), panel: Math.round(r.width), canvas: Math.round(m.getCanvas().getBoundingClientRect().width), center: m.getCenter().toArray().map((v) => +v.toFixed(5)).join(), z: +m.getZoom().toFixed(3) }; });
 const y_l0 = await y_lay();
 const y_darkBg = await rp.evaluate(() => [getComputedStyle(document.getElementById('dashboard')).backgroundColor, getComputedStyle(document.querySelector('.right .card')).backgroundColor, getComputedStyle(document.querySelector('.right .card')).boxShadow.includes('rgba(121, 215, 218')]);
-check('dark theme: charcoal page (#101416) and slightly lighter cards (#191F23), cards do not glow', y_darkBg[0] === 'rgb(16, 20, 22)' && /^rgba?\(25, 31, 35(, 0\.(8[5-9]|9\d*))?\)$/.test(y_darkBg[1]) && !y_darkBg[2], JSON.stringify(y_darkBg));
+check('dark theme: charcoal page (#101416) and glass cards in a slightly lighter charcoal tint, cards do not glow', y_darkBg[0] === 'rgb(16, 20, 22)' && /^rgba\(20, 27, 32, 0\.5\d*\)$/.test(y_darkBg[1]) && !y_darkBg[2], JSON.stringify(y_darkBg));
 check('layout: map and one information panel side by side (no left sidebar); canvas matches the map width', y_l0.map > 780 && y_l0.panel >= 360 && Math.abs(y_l0.canvas - y_l0.map) <= 2 && !(await rp.locator('aside.left').count()), JSON.stringify(y_l0));
 const y_sb = await rp.locator('.splitter').boundingBox();
 await rp.mouse.move(y_sb.x + 6, y_sb.y + y_sb.height * 0.7);
@@ -710,7 +710,7 @@ await exploreTab(rp); await rp.locator('#q').fill('A00265'); await rp.locator('.
 await rp.waitForTimeout(1500);
 const y_rc0 = await rp.locator('.route-card').innerText();
 const y_r0 = await rp.evaluate(() => window.__kyotoMap.querySourceFeatures('route').length);
-check('route: with no start chosen the card asks for one and nothing is drawn', y_rc0.includes('No start chosen') && y_rc0.includes('Nothing is drawn') && y_r0 === 0, y_rc0.replace(/\n/g, ' / ').slice(0, 120));
+check('route: with no start chosen the card asks for one and nothing is drawn', y_rc0.includes('No start chosen') && y_rc0.includes('Choose a start') && y_r0 === 0, y_rc0.replace(/\n/g, ' / ').slice(0, 120));
 await rp.getByRole('button', { name: 'Pick start on map' }).click();
 check('route: picking mode shows a prompt on the map', await rp.locator('.pick-bar').isVisible());
 await rp.keyboard.press('Escape');
@@ -810,6 +810,26 @@ const bCols = await rp.evaluate(() => getComputedStyle(document.querySelector('#
 check('bento: uneven grid — two columns in the default panel, wide tiles span both', bCols === 2 && (await rp.evaluate(() => getComputedStyle(document.querySelector('[data-tile="analysis"]')).gridColumnStart)) === 'span 2', String(bCols));
 const koi = await rp.evaluate(() => { const c = document.querySelector('.koi-layer canvas'); const l = document.querySelector('.koi-layer'); const card = document.querySelector('#explore-panel .card'); return { ok: !!c && c.width > 100, pe: getComputedStyle(l).pointerEvents, op: +getComputedStyle(c).opacity, under: +getComputedStyle(l).zIndex < +getComputedStyle(document.querySelector('#explore-panel')).zIndex, engine: !!window.AsciiKoi, fish: window.__koi ? window.__koi.fish.filter((f) => f.seen > 0).length : 0 }; });
 check('koi pond: drawn behind the panel cards, several small koi, takes no clicks', koi.ok && koi.engine && koi.pe === 'none' && koi.fish >= 6 && koi.under, JSON.stringify(koi));
+// liquid glass (dark only), pointer glow and feeding ripples
+await rp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+const glass = await rp.evaluate(() => { const c = document.querySelector('#explore-panel .card'), s = getComputedStyle(c), l = getComputedStyle(document.querySelector('#explore-panel')); return { bf: s.backdropFilter || s.webkitBackdropFilter, bg: s.backgroundColor, fill: l.backgroundColor, theme: document.documentElement.dataset.theme || 'dark' }; });
+check('glass: dark panel cards blur only their backdrop and the pond is not covered', glass.theme === 'light' || (/blur\(/.test(glass.bf) && /rgba\(.*0\.5\d*\)/.test(glass.bg) && glass.fill === 'rgba(0, 0, 0, 0)'), JSON.stringify(glass));
+if (glass.theme !== 'light') {
+  const gb = await rp.locator('[data-tile="cats"] .card').boundingBox();
+  await rp.mouse.move(gb.x + gb.width / 2, gb.y + gb.height / 2, { steps: 8 });
+  await rp.waitForFunction(() => +document.querySelector('[data-tile="cats"] .card').style.getPropertyValue('--gp') > 0.3, null, { timeout: 8000 }).catch(() => {});
+  const gpOn = await rp.evaluate(() => +document.querySelector('[data-tile="cats"] .card').style.getPropertyValue('--gp'));
+  await rp.mouse.move(200, 400, { steps: 4 });
+  await rp.waitForFunction(() => !document.querySelector('[data-tile="cats"] .card').style.getPropertyValue('--gp'), null, { timeout: 20000 }).catch(() => {});
+  const gpOff = await rp.evaluate(() => document.querySelector('[data-tile="cats"] .card').style.getPropertyValue('--gp'));
+  check('glass: the card light answers to the pointer and settles back afterwards', gpOn > 0.3 && gpOff === '', `${gpOn} -> "${gpOff}"`);
+}
+const fa = await rp.locator('aside.right').boundingBox();
+await rp.mouse.click(fa.x + 5, fa.y + fa.height - 60); await rp.waitForTimeout(150); await rp.mouse.click(fa.x + 5, fa.y + fa.height - 140);
+const rip1 = await rp.evaluate(() => window.__koiRipples());
+await rp.waitForFunction(() => window.__koiRipples() === 0, null, { timeout: 15000 }).catch(() => {});
+const rip2 = await rp.evaluate(() => ({ n: window.__koiRipples(), pe: getComputedStyle(document.querySelector('.koi-ripples')).pointerEvents, z: +getComputedStyle(document.querySelector('.koi-layer')).zIndex < +getComputedStyle(document.querySelector('#explore-panel')).zIndex }));
+check('koi pond: thrown food sends ripples that overlap, fade away and stay under the cards', rip1 === 6 && rip2.n === 0 && rip2.pe === 'none' && rip2.z, `${rip1} ${JSON.stringify(rip2)}`);
 check('no page errors on the layout / route page', rpErr.length === 0, rpErr.join(' | '));
 await rp.close();
 
