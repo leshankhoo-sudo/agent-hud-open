@@ -690,11 +690,14 @@ check('study area: 26 municipalities covered (15 cities, 10 towns, 1 village), a
 await rp.getByRole('button', { name: 'Show coverage' }).click();
 await rp.waitForTimeout(700);
 const y_cg1 = await rp.evaluate(() => JSON.stringify(window.__kyotoMap.getPaintProperty('cov-line', 'line-gradient')));
-await rp.waitForTimeout(2600);
-const y_cov = await rp.evaluate(() => { const m = window.__kyotoMap; return { vis: m.getLayoutProperty('cov-line', 'visibility'), g: JSON.stringify(m.getPaintProperty('cov-line', 'line-gradient')), n: m.querySourceFeatures('coverage').length, multi: m.querySourceFeatures('coverage').every((f) => f.geometry.type === 'LineString'), study: m.getPaintProperty('outline-line', 'line-color'), admin: m.getPaintProperty('cov-line', 'line-gradient') }; });
-check('Show coverage: municipal boundaries are drawn progressively (step on line-progress), then held static', y_cov.vis === 'visible' && y_cg1.includes('step') && !y_cov.g.includes('step') && y_cov.n > 20, JSON.stringify({ y_cg1: y_cg1.slice(0, 60), g: y_cov.g.slice(0, 60), n: y_cov.n }));
+await rp.waitForTimeout(4600);
+const y_cov = await rp.evaluate(() => { const m = window.__kyotoMap; return { vis: m.getLayoutProperty('cov-line', 'visibility'), g: JSON.stringify(m.getPaintProperty('cov-line', 'line-gradient') || null), col: m.getPaintProperty('cov-line', 'line-color'), n: m.querySourceFeatures('coverage').length, multi: m.querySourceFeatures('coverage').every((f) => f.geometry.type === 'LineString'), study: m.getPaintProperty('outline-line', 'line-color'), admin: m.getPaintProperty('cov-line', 'line-color') }; });
+check('Show coverage: municipal boundaries are drawn progressively (step on line-progress), then held static', y_cov.vis === 'visible' && y_cg1.includes('step') && y_cov.g === 'null' && /f2f6f7/i.test(y_cov.col) && y_cov.n > 20, JSON.stringify({ y_cg1: y_cg1.slice(0, 60), g: y_cov.g.slice(0, 60), n: y_cov.n }));
 check('study area boundary (teal accent) and municipal boundaries (white) differ', /79d7da/i.test(y_cov.study) && /f2f6f7/i.test(JSON.stringify(y_cov.admin)), JSON.stringify({ study: y_cov.study }));
 await rp.screenshot({ path: `${out}/27-coverage-dark.png` });
+await rp.locator('.theme-toggle').first().click(); await rp.waitForTimeout(2500);
+check('theme switch recolours the finished municipal boundary (plain line colour, not a cached gradient)', (await rp.evaluate(() => window.__kyotoMap.getPaintProperty('cov-line', 'line-color'))) === '#2f2924' && !(await rp.evaluate(() => window.__kyotoMap.getPaintProperty('cov-line', 'line-gradient'))));
+await rp.locator('.theme-toggle').first().click(); await rp.waitForTimeout(2500);
 await rp.getByRole('button', { name: 'Hide coverage' }).click();
 check('Hide coverage hides the layers', (await rp.evaluate(() => window.__kyotoMap.getLayoutProperty('cov-line', 'visibility'))) === 'none');
 
@@ -716,9 +719,9 @@ const y_routeReqs = [];
 rp.on('request', (r) => { if (r.url().includes('routing.openstreetmap.de')) y_routeReqs.push(r.url()); });
 await exploreTab(rp); await rp.locator('#q').fill('A00560'); await rp.locator('.results button').first().click();
 await rp.waitForFunction(() => /Route distance|routing service|could not/i.test(document.querySelector('.route-card')?.innerText || ''), null, { timeout: 25000 });
-await rp.waitForTimeout(3500);
+await rp.waitForTimeout(8500);
 const y_rc1 = await rp.locator('.route-card').innerText();
-const y_rmap = await rp.evaluate(() => { const m = window.__kyotoMap; const f = m.querySourceFeatures('route')[0]; return { n: f?.geometry.coordinates.length || (f ? 1 : 0), ends: [...new Set(m.querySourceFeatures('route-ends').map((x) => x.properties.kind))].sort().join(), tag: document.querySelector('.route-tag')?.innerText.replace(/\n/g, ' '), g: JSON.stringify(m.getPaintProperty('route-line', 'line-gradient')).includes('step'), pitch: m.getPitch(), callout: !!document.querySelector('.sel-callout') }; });
+const y_rmap = await rp.evaluate(() => { const m = window.__kyotoMap; const f = m.querySourceFeatures('route')[0]; return { n: f?.geometry.coordinates.length || (f ? 1 : 0), ends: [...new Set(m.querySourceFeatures('route-ends').map((x) => x.properties.kind))].sort().join(), tag: document.querySelector('.route-tag')?.innerText.replace(/\n/g, ' '), g: JSON.stringify(m.getPaintProperty('route-line', 'line-gradient') || null).includes('step'), col: m.getPaintProperty('route-line', 'line-color'), pitch: m.getPitch(), callout: !!document.querySelector('.sel-callout') }; });
 const y_live = y_rc1.includes('Route distance');
 check('route: real service result — start and end named, mode, estimated travel time and route distance from the service, line drawn with both ends and a time tag', y_live ? (y_rc1.includes('京都') && y_rc1.includes('清水寺') && /\d+ min/.test(y_rc1) && /\d[\d.]* (km|m)/.test(y_rc1) && y_rc1.includes('Not a live ETA') && y_rmap.n > 10 && y_rmap.ends === 'end,start' && /min/.test(y_rmap.tag || '') && !y_rmap.g) : y_rc1.includes('No route is drawn'), JSON.stringify({ y_live, y_rmap, y_rc1: y_rc1.replace(/\n/g, ' / ').slice(0, 260), reqs: y_routeReqs.length }));
 check('route: plain view stays top-down; no photo callout covers the route', y_rmap.pitch === 0 && !y_rmap.callout, JSON.stringify(y_rmap));
@@ -750,7 +753,7 @@ check('rapid clicks: the older, slower request is dropped; the card and the map 
 // cinematic: real tilt (MapLibre pitch), remembered; Top-down returns to 2D
 await rp.locator('.map-tools .cine').click();
 await exploreTab(rp); await rp.locator('#q').fill('A00182'); await rp.locator('.results button').first().click();
-await rp.waitForTimeout(5500);
+await rp.waitForTimeout(7000);
 const y_cine = await rp.evaluate(() => ({ pitch: window.__kyotoMap.getPitch(), bearing: window.__kyotoMap.getBearing(), saved: localStorage.getItem('kyoto-gis-cinematic') }));
 check('Cinematic view: the camera tilts after framing the route (real pitch, no CSS transform); the choice is remembered', y_cine.pitch > 30 && y_cine.saved === '1', JSON.stringify(y_cine));
 await rp.screenshot({ path: `${out}/29-cinematic.png` });

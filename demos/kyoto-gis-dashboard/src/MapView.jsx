@@ -239,12 +239,12 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
         if (token !== C.token || drawing) return;
         drawing = true;
         if (reduce) return finish();
-        const dur = Math.max(900, Math.min(2400, cum[cum.length - 1] / 6));   // about 6 m of route per ms, within 0.9–2.4 s
+        const dur = Math.max(2600, Math.min(6000, cum[cum.length - 1] * 1.4));   // calm pace: about 0.7 m of route per ms, within 2.6–6 s
         const t0 = performance.now();
         const frame = (now) => {
           if (token !== C.token) return;
           const k = Math.max(0, Math.min(1, (now - t0) / dur));
-          const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+          const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;   // ease in and out (cubic)
           setRouteProgress(map, themeOf(latest.current.theme), e);
           const [a] = cut(route.coords, cum, e);
           if (a) map.getSource('route-head')?.setData({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: a[a.length - 1] } });
@@ -277,7 +277,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       const start = () => {
         if (token !== K.token) return;
         if (reduce) { setCoverageProgress(map, themeOf(latest.current.theme), 1); return; }
-        const t0 = performance.now(), dur = 2200;
+        const t0 = performance.now(), dur = 3400;
         const frame = (now) => {
           if (token !== K.token) return;
           const k = Math.max(0, Math.min(1, (now - t0) / dur));
@@ -292,7 +292,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       const v = map.getBounds();
       const inView = bb && v.getWest() <= bb[0] && v.getSouth() <= bb[1] && v.getEast() >= bb[2] && v.getNorth() >= bb[3];
       if (bb && !inView) {
-        map.fitBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: 30, pitch: 0, bearing: 0, duration: reduce ? 0 : 1100, essential: true });
+        map.fitBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: 30, pitch: 0, bearing: 0, duration: reduce ? 0 : 1600, essential: true });
         if (reduce) start(); else map.once('moveend', start);
       } else start();
     };
@@ -949,17 +949,30 @@ let routeP = 1, covP = 1;
 const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
 // visible up to p of each line's own length (line-progress runs 0..1 along every feature)
 const grown = (col, p) => (p >= 1 ? ['interpolate', ['linear'], ['line-progress'], 0, col, 1, col] : ['step', ['line-progress'], col, Math.max(p, 1e-6), 'rgba(0,0,0,0)']);
+// While a line grows it is drawn with a line-gradient cut at p. Once complete it switches to a plain line
+// colour: a later theme change then recolours every tile at once (a changed gradient was only picked up
+// by some tiles).
+function drawn(map, id, col, op, p) {
+  if (p >= 1) {
+    map.setPaintProperty(id, 'line-gradient', undefined);
+    map.setPaintProperty(id, 'line-color', col);
+    map.setPaintProperty(id, 'line-opacity', op);
+  } else {
+    map.setPaintProperty(id, 'line-opacity', 1);
+    map.setPaintProperty(id, 'line-gradient', grown(op < 1 ? rgba(col, op) : col, p));
+  }
+}
 function setRouteProgress(map, T, p) {
   routeP = p;
   if (!map.getLayer('route-line')) return;
-  map.setPaintProperty('route-line', 'line-gradient', grown(T.route.core, p));
-  map.setPaintProperty('route-glow', 'line-gradient', grown(rgba(T.route.glow, 0.32), p));
+  drawn(map, 'route-line', T.route.core, 1, p);
+  drawn(map, 'route-glow', T.route.glow, 0.32, p);
 }
 function setCoverageProgress(map, T, p) {
   covP = p;
   if (!map.getLayer('cov-line')) return;
-  map.setPaintProperty('cov-line', 'line-gradient', grown(T.coverage.line, p));
-  map.setPaintProperty('cov-glow', 'line-gradient', grown(rgba(T.coverage.glow, T.coverage.glowOp), p));
+  drawn(map, 'cov-line', T.coverage.line, 1, p);
+  drawn(map, 'cov-glow', T.coverage.glow, T.coverage.glowOp, p);
   if (map.getLayer('cov-fill')) map.setPaintProperty('cov-fill', 'fill-opacity', T.coverage.fillOp * p);
 }
 // Endpoints pulse twice, gently, then stay still.
@@ -968,7 +981,7 @@ function pulseEnds(map, reduce, alive) {
   const t0 = performance.now();
   const f = (now) => {
     if (!alive() || !map.getLayer('route-pulse')) return;
-    const k = (now - t0) / 1400;
+    const k = (now - t0) / 2000;
     if (k >= 2) { map.setPaintProperty('route-pulse', 'circle-stroke-opacity', 0); return; }
     const q = k % 1;
     map.setPaintProperty('route-pulse', 'circle-radius', 6 + 14 * q);
@@ -997,10 +1010,10 @@ async function routeCamera(map, coords, cinematic, reduce, pad, alive) {
   const cam = map.cameraForBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: P, bearing: 0, maxZoom: 16.5 });
   if (!cam) return;
   const d = reduce ? 0 : 1;
-  map.flyTo({ center: cam.center, zoom: cam.zoom, pitch: 0, bearing: 0, duration: 1100 * d, essential: true });
+  map.flyTo({ center: cam.center, zoom: cam.zoom, pitch: 0, bearing: 0, duration: 1800 * d, curve: 1.2, essential: true });
   if (!(await wait(map, alive))) return;
   if (!cinematic) return;
-  map.easeTo({ pitch: 45, zoom: cam.zoom - 0.15, duration: 850 * d, essential: true });
+  map.easeTo({ pitch: 45, zoom: cam.zoom - 0.15, duration: 1500 * d, easing: (t) => 1 - Math.pow(1 - t, 3), essential: true });
   if (!(await wait(map, alive))) return;
   // tilting makes the far side smaller and the near side larger: back off until every point fits
   for (let i = 0; i < 4; i++) {
@@ -1008,7 +1021,7 @@ async function routeCamera(map, coords, cinematic, reduce, pad, alive) {
     const step = Math.max(1, Math.floor(coords.length / 300));
     const out = coords.some(([x, y], k) => { if (k % step && k !== coords.length - 1) return false; const p = map.project([x, y]); return p.x < P.left * 0.6 || p.x > W - P.right * 0.6 || p.y < P.top * 0.6 || p.y > H - P.bottom * 0.6; });
     if (!out) break;
-    map.easeTo({ zoom: map.getZoom() - 0.35, duration: 350 * d, essential: true });
+    map.easeTo({ zoom: map.getZoom() - 0.35, duration: 600 * d, essential: true });
     if (!(await wait(map, alive))) return;
   }
 }
