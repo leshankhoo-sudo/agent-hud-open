@@ -1361,6 +1361,7 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
   .story-credit { position: static; text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) { .scard, .scard-now::before { transition: none; animation: none; } }
+.status .btn .short { display: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 /* ---------- section edges: the opening pages end in their own dark; the joins themselves are in depth.css ---------- */
@@ -1613,4 +1614,17 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
   .app.no-right .right.panel { display: none; }
   .ptabs { border-radius: 16px 16px 0 0; }
   .pick-bar { top: auto; bottom: 90px; width: calc(100% - 24px); }
+  /* compact top bar: one line for the menu and title, one line of short buttons */
+  .top { row-gap: 6px; padding-top: 6px; padding-bottom: 6px; }
+  .brand { flex: 1 1 0; min-width: 0; }
+  .brand > div { min-width: 0; }
+  .brand h1 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav-btn { min-height: 36px; padding: 6px 10px; }
+  .status .btn { min-height: 34px; padding: 4px 6px; font-size: 12.5px; white-space: nowrap; }
+  .status .btn .full { display: none; }
+  .status .btn .short { display: inline; }
+  .app.no-right .edge-btn.r { bottom: 100px; }   /* clear of the map attribution */
+  .status .btn.lang-order { font-size: 0; gap: 0; flex: 0 0 auto; padding: 4px 8px; }
+  .status .btn.lang-order span { font-size: 10px; }
+  .brand h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }   /* the title stays for screen readers; the intro page shows it in full */
 }

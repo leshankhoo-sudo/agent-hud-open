@@ -403,7 +403,7 @@ export default function App() {
   const topDown = () => mapRef.current?.easeTo({ pitch: 0, bearing: 0, duration: reduceMotion() ? 0 : 600 });
   // the callout swatch follows the theme without re-running the camera move
   const routing = !!(origin && sel && origin.id !== sel.id);
-  const selForMap = useMemo(() => (sel ? { ...sel, color: pointColor(byId.get(sel.id)?.f.properties || {}, theme), ...(routing ? { label: null, fly: false } : {}) } : null), [sel, byId, routing]); // eslint-disable-line react-hooks/exhaustive-deps
+  const selForMap = useMemo(() => (sel ? { ...sel, color: pointColor(byId.get(sel.id)?.f.properties || {}, theme), ...(routing ? { label: null, fly: false } : {}), ...(rightOpen && ptab === 'place' && !isPhone() ? { photo: null } : {}) } : null), [sel, byId, routing, rightOpen, ptab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Press feedback from the Smart Build chapter: sink on press, squash and spring back on release.
   useEffect(() => {
@@ -554,9 +554,9 @@ export default function App() {
         <nav className="status" aria-label="Panels">
           {failed.length > 0 && <Chip label={`${failed.length} data file(s) failed to load`} />}
           <button className={'btn ghost lang-order' + (enFirst ? ' on' : '')} type="button" onClick={toggleEnFirst} aria-pressed={enFirst} title="Name order: English first, Japanese in brackets"><span aria-hidden="true">{enFirst ? 'EN' : '日'}</span>English first</button>
-          <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'journeys' ? null : 'journeys')} aria-expanded={sheet === 'journeys'}>Journeys & Fares</button>
-          <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'sources' ? null : 'sources')} aria-expanded={sheet === 'sources'}>Data & Sources</button>
-          {d?.records && <button className="btn ghost" type="button" onClick={() => { setRecFocus(null); setSheet(sheet === 'records' ? null : 'records'); }} aria-expanded={sheet === 'records'}>Kyoto City Records</button>}
+          <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'journeys' ? null : 'journeys')} aria-expanded={sheet === 'journeys'}><span className="full">Journeys & Fares</span><span className="short" aria-hidden="true">Fares</span></button>
+          <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'sources' ? null : 'sources')} aria-expanded={sheet === 'sources'}><span className="full">Data & Sources</span><span className="short" aria-hidden="true">Sources</span></button>
+          {d?.records && <button className="btn ghost" type="button" onClick={() => { setRecFocus(null); setSheet(sheet === 'records' ? null : 'records'); }} aria-expanded={sheet === 'records'}><span className="full">Kyoto City Records</span><span className="short" aria-hidden="true">Records</span></button>}
         </nav>
       </header>
 

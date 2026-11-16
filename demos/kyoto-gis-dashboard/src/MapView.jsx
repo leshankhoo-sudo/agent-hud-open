@@ -544,6 +544,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
   }, [busHighlight]);
 
   // Selection marker and camera move.
+  const lastSel = useRef(null);
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -555,7 +556,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
     const selF = selected?.layer === 'attraction' ? ['==', ['get', 'id'], selected.id] : NONE;
     const setSel = () => { for (const l of ['lm-sel', 'lm-sel-glow']) if (map.getLayer(l)) map.setFilter(l, selF); };
     if (map.getLayer('lm-sel')) setSel(); else map.once('idle', setSel);
-    if (!selected) return;
+    if (!selected) { lastSel.current = null; return; }
     const node = document.createElement('div');
     node.className = 'sel-marker' + (selected.layer === 'transport' ? ' is-stop' : '');
     node.innerHTML = '<i></i><i></i><b></b>';
@@ -597,6 +598,10 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       c.append(document.createElement('s'), t);
       callout.current = new maplibregl.Marker({ element: c, anchor: 'bottom-left', offset: [6, -6] }).setLngLat(selected.coords).addTo(map);
     }
+    // the same place shown again (theme, panel, route state): no new camera move
+    const isNew = lastSel.current !== selected.id;
+    lastSel.current = selected.id;
+    if (!isNew) return;
     const z = Math.max(map.getZoom(), 13.5);
     if (selected.fly !== false && map.getPitch() > 0) { map.flyTo({ center: selected.coords, zoom: z, pitch: 0, bearing: 0, duration: prefersReducedMotion() ? 0 : 1100, essential: true }); return; }
     if (selected.fly !== false) map.flyTo({ center: selected.coords, zoom: z, duration: prefersReducedMotion() ? 0 : 1100, essential: true, offset: [0, innerWidth <= 760 ? -map.getContainer().clientHeight * 0.27 : 0] }); // on phones the details sheet covers the lower map
