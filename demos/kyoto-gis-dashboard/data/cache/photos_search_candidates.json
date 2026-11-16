@@ -1,0 +1,137 @@
+{
+ "found": {
+  "A00041": {
+   "match": "commons-search",
+   "file": "File:何必館・京都現代美術館 (55090798989).jpg",
+   "wikidata": null,
+   "matched_text": "何必館・京都現代美術館",
+   "matched_label": null,
+   "distance_m": 59
+  },
+  "A00123": {
+   "match": "commons-search",
+   "file": "File:二条城本丸御殿の工事の様子 04.jpg",
+   "wikidata": null,
+   "matched_text": "本丸御殿",
+   "matched_label": null,
+   "distance_m": 11
+  },
+  "A00138": {
+   "match": "commons-search",
+   "file": "File:JP 日本 Japan 京都 Kyoto tourism 先斗町 Pontocho 美食巷 food street 1157am June 2026 N13P 111.jpg",
+   "wikidata": null,
+   "matched_text": "先斗町",
+   "matched_label": null,
+   "distance_m": 23
+  },
+  "A00227": {
+   "match": "commons-search",
+   "file": "File:宮川町歌舞練場 - 内部.jpg",
+   "wikidata": null,
+   "matched_text": "Miyagawa",
+   "matched_label": "Category:Miyagawacho",
+   "distance_m": 13
+  },
+  "A00299": {
+   "match": "commons-search",
+   "file": "File:清滝トンネル - panoramio.jpg",
+   "wikidata": null,
+   "matched_text": "清滝トンネル",
+   "matched_label": null,
+   "distance_m": 209
+  }
+ },
+ "added": {
+  "A00041": {
+   "match": "commons-search",
+   "file": "File:何必館・京都現代美術館 (55090798989).jpg",
+   "wikidata": null,
+   "matched_text": "何必館・京都現代美術館",
+   "matched_label": null,
+   "distance_m": 59,
+   "src": "photos/A00041.jpg",
+   "title": "何必館・京都現代美術館 (55090798989).jpg",
+   "artist": "nagi usano from Tokyo, Japan",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E4%BD%95%E5%BF%85%E9%A4%A8%E3%83%BB%E4%BA%AC%E9%83%BD%E7%8F%BE%E4%BB%A3%E7%BE%8E%E8%A1%93%E9%A4%A8_(55090798989).jpg",
+   "date": "2023-01-09",
+   "description": "三菱エレベータ",
+   "width": 720,
+   "height": 1080
+  },
+  "A00123": {
+   "match": "commons-search",
+   "file": "File:二条城本丸御殿の工事の様子 04.jpg",
+   "wikidata": null,
+   "matched_text": "本丸御殿",
+   "matched_label": null,
+   "distance_m": 11,
+   "src": "photos/A00123.jpg",
+   "title": "二条城本丸御殿の工事の様子 04.jpg",
+   "artist": "経済特区",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E4%BA%8C%E6%9D%A1%E5%9F%8E%E6%9C%AC%E4%B8%B8%E5%BE%A1%E6%AE%BF%E3%81%AE%E5%B7%A5%E4%BA%8B%E3%81%AE%E6%A7%98%E5%AD%90_04.jpg",
+   "date": "Taken on 2",
+   "description": "二条城本丸御殿の工事の様子の画像",
+   "width": 720,
+   "height": 405
+  },
+  "A00138": {
+   "match": "commons-search",
+   "file": "File:JP 日本 Japan 京都 Kyoto tourism 先斗町 Pontocho 美食巷 food street 1157am June 2026 N13P 111.jpg",
+   "wikidata": null,
+   "matched_text": "先斗町",
+   "matched_label": null,
+   "distance_m": 23,
+   "src": "photos/A00138.jpg",
+   "title": "JP 日本 Japan 京都 Kyoto tourism 先斗町 Pontocho 美食巷 food street 1157am June 2026 N13P 111.jpg",
+   "artist": "HAGAT hOMSZE",
+   "license": "CC0",
+   "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "page": "https://commons.wikimedia.org/wiki/File:JP_%E6%97%A5%E6%9C%AC_Japan_%E4%BA%AC%E9%83%BD_Kyoto_tourism_%E5%85%88%E6%96%97%E7%94%BA_Pontocho_%E7%BE%8E%E9%A3%9F%E5%B7%B7_food_street_1157am_June_2026_N13P_111.jpg",
+   "date": "24 June 20",
+   "description": "JP 日本 Japan 京都 Kyoto tourism 先斗町 Pontocho 美食巷 food street in June 2026",
+   "width": 720,
+   "height": 540
+  },
+  "A00227": {
+   "match": "commons-search",
+   "file": "File:宮川町歌舞練場 - 内部.jpg",
+   "wikidata": null,
+   "matched_text": "Miyagawa",
+   "matched_label": "Category:Miyagawacho",
+   "distance_m": 13,
+   "src": "photos/A00227.jpg",
+   "title": "宮川町歌舞練場 - 内部.jpg",
+   "artist": "Kokoron78",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E5%AE%AE%E5%B7%9D%E7%94%BA%E6%AD%8C%E8%88%9E%E7%B7%B4%E5%A0%B4_-_%E5%86%85%E9%83%A8.jpg",
+   "date": "2017-04-13",
+   "description": "宮川町歌舞練場 - 内部",
+   "width": 720,
+   "height": 540
+  },
+  "A00299": {
+   "match": "commons-search",
+   "file": "File:清滝トンネル - panoramio.jpg",
+   "wikidata": null,
+   "matched_text": "清滝トンネル",
+   "matched_label": null,
+   "distance_m": 209,
+   "src": "photos/A00299.jpg",
+   "title": "清滝トンネル - panoramio.jpg",
+   "artist": "kajikawa",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E6%B8%85%E6%BB%9D%E3%83%88%E3%83%B3%E3%83%8D%E3%83%AB_-_panoramio.jpg",
+   "date": "8 Septembe",
+   "description": "清滝トンネル",
+   "width": 720,
+   "height": 540
+  }
+ },
+ "skipped": []
+}

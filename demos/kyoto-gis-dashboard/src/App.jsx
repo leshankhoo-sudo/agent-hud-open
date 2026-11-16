@@ -1028,8 +1028,10 @@ const MATCH_TEXT = {
   'commons-near': (p) => `Commons photo taken ${p.distance_m} m from this point whose ${p.matched_label ? `category (${p.matched_label.slice(9)})` : 'file name'} names this place`,
   // a site added by the POI audit: the Wikidata item that, with OpenStreetMap, confirmed where it is
   'site-wikidata': (p) => `Photo of Wikidata ${p.wikidata}${p.matched_label ? ` (${p.matched_label})` : ''}, the item that confirmed this site's location with OpenStreetMap`,
+  // Commons search: the file names the place (title or category) AND was taken near the point
+  'commons-search': (p) => `Commons photo taken ${p.distance_m} m from this point whose ${p.matched_label ? `category (${p.matched_label.slice(9)})` : 'file name'} names this place ("${p.matched_text}")`,
 };
-const BADGE = { 'wikidata-related': 'Related place', 'commons-geo': 'Nearby photo', 'commons-near': 'Nearby photo', 'osm-wikidata': 'Linked in OSM', 'osm-image': 'Linked in OSM', 'osm-commons': 'Linked in OSM' };
+const BADGE = { 'wikidata-related': 'Related place', 'commons-geo': 'Nearby photo', 'commons-near': 'Nearby photo', 'osm-wikidata': 'Linked in OSM', 'osm-image': 'Linked in OSM', 'osm-commons': 'Linked in OSM', 'commons-search': 'Nearby photo' };
 
 // Top of the details panel: reliable photo (if any), name, category and where it is.
 // Study area summary: how many municipalities the study area covers, from a polygon intersection made by

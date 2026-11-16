@@ -22,8 +22,8 @@ test('record counts match data_inventory.json (the raw package; the map layer is
 });
 
 test('filter counts', () => {
-  // 523 raw records - 5 merged duplicates + 120 sites added from DSIGHT_1.csv (see data/audit)
-  assert.equal(filterAttractions(A, ['attraction', 'viewpoint', 'museum', 'castle', 'temple', 'shrine', 'garden']).length, 638);
+  // 523 raw records - 5 merged duplicates + 121 sites added from DSIGHT_1.csv (see data/audit)
+  assert.equal(filterAttractions(A, ['attraction', 'viewpoint', 'museum', 'castle', 'temple', 'shrine', 'garden']).length, 639);
   assert.equal(filterAttractions(A, ['museum']).length, 101);
   assert.equal(filterAttractions(A, ['castle', 'museum']).length, 121);
   assert.equal(filterAttractions(A, []).length, 0);
@@ -36,7 +36,7 @@ test('filter counts', () => {
 });
 
 test('IDs are kept and unique, coordinates are [lon, lat] inside Kyoto Prefecture bounds', () => {
-  assert.equal(new Set(A.map((f) => f.properties.id)).size, 638);
+  assert.equal(new Set(A.map((f) => f.properties.id)).size, 639);
   assert.equal(new Set(T.map((f) => f.properties.id)).size, 5479);
   for (const f of [...A, ...T]) {
     const [lon, lat] = f.geometry.coordinates;
@@ -61,7 +61,7 @@ test('KDE output is documented and consistent', () => {
   assert.equal(meta.search_radius_m, 2000);
   assert.equal(meta.cell_size_m, 500);
   assert.match(meta.crs, /6674/);
-  assert.ok(Math.abs(meta.check_sum_density_x_cell_area - 638) < 48);
+  assert.ok(Math.abs(meta.check_sum_density_x_cell_area - 639) < 48);
   const kde = J('analysis/density_kde.geojson');
   assert.equal(kde.features.length, meta.cells_written);
 });
@@ -119,7 +119,7 @@ test('walking pilot results: 19 records, bus and rail separate, no zero or strai
   assert.equal(cov.within + cov.beyond + cov.noRoute + cov.notComputed, 19);
 });
 
-test('walking prefecture: all 638 records, reasons kept apart, pilot rows reproduced, no straight-line substitutes', () => {
+test('walking prefecture: all 639 records, reasons kept apart, pilot rows reproduced, no straight-line substitutes', () => {
   const w = J('walking_routes_prefecture.geojson');
   const a = walkingAvailability(w);
   assert.equal(a.available, true);
@@ -252,7 +252,8 @@ test('photos: real files, free licences, credits; name matches only for named re
     assert.ok(!/\b(NC|ND)\b/.test(p.license));
     assert.ok(p.artist && p.page.startsWith('https://commons.wikimedia.org/'));
     assert.ok(p.distance_m == null ? p.match.startsWith('osm-') : p.distance_m <= (['osm-wikidata', 'site-wikidata'].includes(p.match) ? 1000 : p.match === 'commons-near' ? 150 : 300));
-    assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo', 'osm-wikidata', 'osm-image', 'osm-commons', 'commons-near', 'site-wikidata'].includes(p.match));
+    assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo', 'osm-wikidata', 'osm-image', 'osm-commons', 'commons-near', 'site-wikidata', 'commons-search'].includes(p.match));
+    if (p.match === 'commons-search') assert.ok(p.matched_text && p.distance_m <= 300, id);   // names the place AND was taken near it
     if (p.match === 'site-wikidata') assert.equal(byId[id].wikidata, p.wikidata);
   }
 });
@@ -444,14 +445,14 @@ test('POI audit: raw records untouched; confirmed duplicates merged with a point
   }
   assert.deepEqual(Object.keys(rel.merged).sort(), ['A00223', 'A00224', 'A00225', 'A00296', 'A00459']);
   const added = A.filter((f) => f.properties.dsight_ids);
-  assert.equal(added.length, 120);
+  assert.equal(added.length, 121);
   for (const f of added) {
     const p = f.properties;
     assert.match(p.id, /^A\d{5}$/);
     assert.ok(Number(p.id.slice(1)) > 523, p.id);
     // two sources agree (OSM, Wikidata, the official address placed by GSI), or a reviewed match that quotes
     // the official description, or the official address itself at block level
-    assert.match(p.location_evidence, /agree within \d+ m|^Reviewed: the DSIGHT_1\.csv description|placed at its official Kyoto City address, which the GSI address search finds at block level/);
+    assert.match(p.location_evidence, /agree within \d+ m|^Reviewed: the DSIGHT_1\.csv description|^Reviewed: the official Kyoto City address of \d+ is .* lies |placed at its official Kyoto City address, which the GSI address search finds at block level/);
     if (p.wikidata) assert.match(p.wikidata, /^Q\d+$/);
     assert.ok(p.osm_element || p.wikidata || /official Kyoto City address/.test(p.location_evidence), p.id);
     assert.ok(pm.points[p.id], `${p.id} outside the N03 polygons`);
@@ -533,7 +534,7 @@ test('landmark symbols: 15 iconic records exist, levels come from data fields, e
   const data = { attractions: { features: structuredClone(A) }, photos: J('photos.json') };
   applyLandmarks(data);
   const F = data.attractions.features;
-  assert.equal(F.length, 638);                                   // nothing is dropped
+  assert.equal(F.length, 639);                                   // nothing is dropped
   const byId = new Map(F.map((f) => [f.properties.id, f.properties]));
   assert.equal(Object.keys(ICONIC).length, 15);
   assert.equal(new Set(Object.values(ICONIC).map((v) => v.icon)).size, 15);

@@ -1727,16 +1727,33 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
   opacity: 0; transition: opacity .35s var(--ez);
 }
 :root #dashboard .right.panel .card::before {
-  display: block; content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; padding: 1px;
-  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), var(--spot-edge, rgba(121, 215, 218, .6)), transparent 62%);
+  display: block; content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; padding: 1.2px;
+  background: conic-gradient(from var(--ang), transparent 0deg, transparent 210deg, var(--loop-a, rgba(121, 215, 218, .5)) 300deg, var(--loop-b, rgba(237, 250, 250, .85)) 336deg, transparent 360deg);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  opacity: 0; transition: opacity .35s var(--ez);
+  opacity: var(--loop-op, .55); animation: spinAng 9s linear infinite; animation-delay: var(--loop-delay, 0s);
 }
-:root #dashboard .right.panel .card:hover::after, :root #dashboard .right.panel .card:hover::before { opacity: 1; }
+:root #dashboard .right.panel .card:hover::after { opacity: 1; }
+:root #dashboard .right.panel .card:hover::before { opacity: 1; }
 :root:not([data-theme='light']) #dashboard .right.panel .card { background: linear-gradient(155deg, rgba(237, 243, 245, .05) 0%, rgba(237, 243, 245, 0) 45%), var(--panel-solid); }
 :root[data-theme='light'] #dashboard .right.panel .card { --spot: rgba(180, 84, 58, .09); --spot-edge: rgba(180, 84, 58, .45); }
-@media (hover: none) { :root #dashboard .right.panel .card::after, :root #dashboard .right.panel .card::before { display: none; } }
+@media (hover: none) { :root #dashboard .right.panel .card::after { display: none; } }
+
+/* the looping edge light starts at a different point on each card, so they never move in step */
+#dashboard .bento .tile:nth-child(2n) .card { --loop-delay: -3s; }
+#dashboard .bento .tile:nth-child(3n) .card { --loop-delay: -6s; }
+#dashboard .tcol > .card:nth-child(2) { --loop-delay: -4.5s; }
+#dashboard .tcol > .card:nth-child(3) { --loop-delay: -7.5s; }
+/* the selected place keeps the original stronger light, a little faster, with its breathing backlight */
+:root #dashboard .right.panel .card.detail { --loop-op: 1; overflow: clip; animation: placeGlow 3.6s ease-in-out infinite; }
+:root #dashboard .right.panel .card.detail::before { animation-duration: 7s; padding: 1.5px; }
+@keyframes placeGlow { 0%, 100% { box-shadow: var(--shadow), 0 14px 34px -14px var(--loop-a, rgba(121, 215, 218, .55)); } 50% { box-shadow: var(--shadow), 0 10px 26px -16px var(--loop-a, rgba(121, 215, 218, .25)); } }
+:root[data-theme='light'] #dashboard .right.panel .card { --loop-a: rgba(180, 84, 58, .45); --loop-b: rgba(222, 120, 80, .8); }
+/* the top bar's light sweep, in the accent colour on the dark theme */
+:root:not([data-theme='light']) #dashboard .top::before { display: block; background-image: linear-gradient(90deg, transparent 0%, rgba(121, 215, 218, 0) 40%, #9fe2e4 50%, rgba(121, 215, 218, 0) 60%, transparent 100%); }
+@media (prefers-reduced-motion: reduce) {
+  :root #dashboard .right.panel .card::before, :root #dashboard .right.panel .card.detail { animation: none; }
+}
 
 /* phone: map on top, the panel as a bottom sheet that can be closed (after the split rules above) */
 @media (max-width: 760px) {

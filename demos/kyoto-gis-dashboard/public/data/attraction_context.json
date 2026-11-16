@@ -1,6 +1,6 @@
 {
 "meta": {
-"built_at": "2026-11-15T15:13:17+00:00",
+"built_at": "2026-11-16T09:25:20+00:00",
 "scope": "attraction records with an empty OSM name",
 "sources": {
 "same_record_tags": "data/cache/osm_elements.json (OSM element tags, fetched with fetch_names_en.py)",

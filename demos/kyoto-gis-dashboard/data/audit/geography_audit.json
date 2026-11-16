@@ -6,7 +6,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000001",
@@ -15,7 +15,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (Wikidata)"
  },
  {
   "csv_id": "6000002",
@@ -23,8 +23,10 @@
   "kana": "あらしやま",
   "series": "6",
   "kind": "area",
-  "result": "not placed",
-  "reason": "only one source (Wikidata)"
+  "result": "placed",
+  "osm": null,
+  "evidence": "Wikidata Q2859566 (嵐山) and GSI: the towns of 京都市西京区 beginning with 嵐山 (22, e.g. 京都府京都市西京区嵐山宮ノ前町) agree within 1393 m",
+  "point_is": "feature point"
  },
  {
   "csv_id": "6000003",
@@ -33,7 +35,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000004",
@@ -77,8 +79,10 @@
   "kana": "いわくら",
   "series": "6",
   "kind": "area",
-  "result": "not placed",
-  "reason": "only one source (Wikidata)"
+  "result": "placed",
+  "osm": null,
+  "evidence": "Wikidata Q11474132 (岩倉) and GSI: the towns of 京都市左京区 beginning with 岩倉 (30, e.g. 京都府京都市左京区岩倉三笠町) agree within 1389 m",
+  "point_is": "feature point"
  },
  {
   "csv_id": "6000009",
@@ -86,8 +90,10 @@
   "kana": "うずまさ",
   "series": "6",
   "kind": "area",
-  "result": "not placed",
-  "reason": "only one source (Wikidata)"
+  "result": "placed",
+  "osm": null,
+  "evidence": "Wikidata Q11444482 (太秦) and GSI: the towns of 京都市右京区 beginning with 太秦 (30, e.g. 京都府京都市右京区太秦一ノ井町) agree within 934 m",
+  "point_is": "feature point"
  },
  {
   "csv_id": "6000010",
@@ -96,7 +102,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000011",
@@ -104,8 +110,10 @@
   "kana": "うめがはた",
   "series": "6",
   "kind": "area",
-  "result": "not placed",
-  "reason": "only one source (OSM)"
+  "result": "placed",
+  "osm": "node/7424123339",
+  "evidence": "OSM node/7424123339 and GSI: the towns of 京都市右京区 beginning with 梅ケ畑 (30, e.g. 京都府京都市右京区梅ケ畑引地町) agree within 1188 m",
+  "point_is": "OSM feature (vertex nearest its middle for a line or area)"
  },
  {
   "csv_id": "6000012",
@@ -114,7 +122,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000013",
@@ -161,7 +169,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000020",
@@ -170,7 +178,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "only one source (OSM)"
+  "reason": "the sources do not agree within 2000 m"
  },
  {
   "csv_id": "6000021",
@@ -179,7 +187,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000022",
@@ -197,7 +205,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000024",
@@ -232,8 +240,10 @@
   "kana": "ぎおん",
   "series": "6",
   "kind": "area",
-  "result": "not placed",
-  "reason": "only one source (Wikidata)"
+  "result": "placed",
+  "osm": null,
+  "evidence": "Wikidata Q926312 (祇園) and GSI: the towns of 京都市東山区 beginning with 祇園 (2, e.g. 京都府京都市東山区祇園町南側) agree within 158 m",
+  "point_is": "feature point"
  },
  {
   "csv_id": "6000028",
@@ -270,8 +280,10 @@
   "kana": "きぬがさ",
   "series": "6",
   "kind": "area",
-  "result": "not placed",
-  "reason": "only one source (Wikidata)"
+  "result": "placed",
+  "osm": null,
+  "evidence": "Wikidata Q11626387 (衣笠) and GSI: the towns of 京都市北区 beginning with 衣笠 (23, e.g. 京都府京都市北区衣笠衣笠山町) agree within 280 m",
+  "point_is": "feature point"
  },
  {
   "csv_id": "6000032",
@@ -338,7 +350,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000039",
@@ -383,8 +395,11 @@
   "kana": "さいいん",
   "series": "6",
   "kind": "area",
+  "rejected": [
+   "Q11560342 is 淳和院, the Junna-in palace site also called 西院, which gave the district its name; it is not the district"
+  ],
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000044",
@@ -392,8 +407,9 @@
   "kana": "さがとりいもと",
   "series": "6",
   "kind": "area",
-  "result": "not placed",
-  "reason": "only one source (Wikidata)"
+  "result": "same place as an attraction on the map",
+  "parent_id": "A00237",
+  "evidence": "Wikidata Q11054653 (嵯峨鳥居本) and GSI: the towns of 京都市右京区 beginning with 嵯峨鳥居本 (9, e.g. 京都府京都市右京区嵯峨鳥居本一華表町) agree within 74 m"
  },
  {
   "csv_id": "6000045",
@@ -401,8 +417,10 @@
   "kana": "さがの",
   "series": "6",
   "kind": "area",
-  "result": "not placed",
-  "reason": "only one source (Wikidata)"
+  "result": "placed",
+  "osm": null,
+  "evidence": "Wikidata Q11477322 (嵯峨野) and GSI: the towns of 京都市右京区 beginning with 嵯峨野 (18, e.g. 京都府京都市右京区嵯峨野千代ノ道町) agree within 1980 m",
+  "point_is": "feature point"
  },
  {
   "csv_id": "6000046",
@@ -431,7 +449,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000049",
@@ -458,7 +476,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (OSM)"
  },
  {
   "csv_id": "6000052",
@@ -503,7 +521,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000057",
@@ -557,7 +575,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000063",
@@ -575,7 +593,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (Wikidata)"
  },
  {
   "csv_id": "6000065",
@@ -584,7 +602,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "only one source (OSM)"
+  "reason": "the sources do not agree within 2000 m"
  },
  {
   "csv_id": "6000066",
@@ -647,7 +665,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000073",
@@ -685,7 +703,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000077",
@@ -694,7 +712,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000078",
@@ -703,7 +721,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000079",
@@ -720,8 +738,10 @@
   "kana": "はなぞの",
   "series": "6",
   "kind": "area",
-  "result": "not placed",
-  "reason": "only one source (Wikidata)"
+  "result": "placed",
+  "osm": null,
+  "evidence": "Wikidata Q11615184 (花園) and GSI: the towns of 京都市右京区 beginning with 花園 (28, e.g. 京都府京都市右京区花園一条田町) agree within 419 m",
+  "point_is": "feature point"
  },
  {
   "csv_id": "6000081",
@@ -748,7 +768,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (Wikidata)"
  },
  {
   "csv_id": "6000084",
@@ -757,7 +777,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000085",
@@ -820,7 +840,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000092",
@@ -829,7 +849,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000093",
@@ -847,7 +867,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000095",
@@ -874,7 +894,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000098",
@@ -883,7 +903,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000099",
@@ -912,7 +932,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000102",
@@ -921,7 +941,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000103",
@@ -930,7 +950,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000104",
@@ -939,7 +959,7 @@
   "series": "6",
   "kind": "area",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (GSI)"
  },
  {
   "csv_id": "6000105",
@@ -1419,7 +1439,7 @@
   "series": "7",
   "kind": "hill",
   "result": "not placed",
-  "reason": "no OSM feature, Wikidata item or GSI place with this name"
+  "reason": "only one source (Wikidata)"
  },
  {
   "csv_id": "7000050",

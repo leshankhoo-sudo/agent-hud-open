@@ -5,7 +5,7 @@ Run from the project folder:  python3 scripts/fetch_osm_geography.py [data/raw/d
 Needs network access to overpass-api.de.
 
 Every element inside Kyoto Prefecture whose name (or name:ja / alt_name) is exactly one of the names
-is read with its geometry: a point for nodes, all vertices for ways and relations (so a river or a
+(also old_name, official_name, loc_name, short_name) is read with its geometry: a point for nodes, all vertices for ways and relations (so a river or a
 street can be labelled ON the line, not at the centre of its bounding box).
 Output: data/cache/osm_geography_kyoto.json
 """
@@ -46,6 +46,10 @@ area["boundary"="administrative"]["admin_level"="4"]["name"="京都府"]->.kyoto
   nwr["name"~"{rx}"](area.kyoto);
   nwr["name:ja"~"{rx}"](area.kyoto);
   nwr["alt_name"~"{rx}"](area.kyoto);
+  nwr["old_name"~"{rx}"](area.kyoto);
+  nwr["official_name"~"{rx}"](area.kyoto);
+  nwr["loc_name"~"{rx}"](area.kyoto);
+  nwr["short_name"~"{rx}"](area.kyoto);
 );
 out geom tags;"""
     data = urllib.parse.urlencode({"data": q}).encode()

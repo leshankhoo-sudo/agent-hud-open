@@ -111,6 +111,10 @@ WARDS = ["北区", "上京区", "左京区", "中京区", "東山区", "下京�
 
 
 CACHED = "--cached" in sys.argv
+# Wikidata items found through an alias that are a different thing from the record, checked by hand
+REJECT_WD = {
+    ("西院", "Q11560342"): "Q11560342 is 淳和院, the Junna-in palace site also called 西院, which gave the district its name; it is not the district",
+}
 
 
 def http_json(url, tries=3):
@@ -157,6 +161,8 @@ def wikidata_search(names):
         cache[n] = None if res is None else [{"q": x["id"], "label": x.get("label"), "match": (x.get("match") or {}).get("text")} for x in res.get("search", [])
                                              if norm((x.get("match") or {}).get("text") or "") == norm(n)]
         time.sleep(1.0)
+        json.dump(cache, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=0)   # saved after every search, so a stop loses nothing
+        print("  Wikidata search:", n, "->", "failed" if cache[n] is None else len(cache[n]), flush=True)
     json.dump(cache, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=0)   # keep the searches even if the next step stops
 
     def get(url):
@@ -208,7 +214,7 @@ def main():
     manual_parent = {r: m for m in dec.get("manual_geo_parents", []) for r in m["records"]}
     by_name = {}
     for e in geo:
-        for k in ("name", "name:ja", "alt_name"):
+        for k in ("name", "name:ja", "alt_name", "old_name", "official_name", "loc_name", "short_name"):
             for v in (e["tags"].get(k) or "").split(";"):
                 if v:
                     by_name.setdefault(norm(v), []).append(e)
@@ -241,6 +247,9 @@ def main():
             for w in wd.get(norm(n), []):
                 wdi[(w["q"], tuple(w["xy"]))] = (f"Wikidata {w['q']} ({w['ja']})", tuple(w["xy"]))   # an item may have several coordinates (a river's source and mouth)
             for w in wds.get(n) or []:
+                if (n0.strip(), w["q"]) in REJECT_WD:
+                    res.setdefault("rejected", []).append(REJECT_WD[(n0.strip(), w["q"])])
+                    continue
                 if inbox(w.get("xy")):
                     if not any(k[0] == w["q"] for k in wdi):
                         wdi[(w["q"], tuple(w["xy"]))] = (f"Wikidata {w['q']} ({w['label']}; matched '{w['match']}')", tuple(w["xy"]))

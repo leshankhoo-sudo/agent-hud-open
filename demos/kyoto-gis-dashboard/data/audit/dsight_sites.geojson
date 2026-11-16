@@ -2295,6 +2295,39 @@
    "geometry": {
     "type": "Point",
     "coordinates": [
+     135.7670556,
+     35.0039595
+    ]
+   },
+   "properties": {
+    "site": "染殿院",
+    "aliases": [
+     "染殿院"
+    ],
+    "ref": "way/205748725",
+    "osm": "way/205748725",
+    "osm_name": "染殿地蔵院",
+    "wikidata": null,
+    "name_en": null,
+    "name_en_source": null,
+    "osm_tags": {
+     "amenity": "place_of_worship",
+     "religion": "buddhist",
+     "building": "yes"
+    },
+    "point_is": "site centre (polygon centre)",
+    "muni": "京都市 下京区",
+    "dsight_ids": [
+     "1000178"
+    ],
+    "location_evidence": "Reviewed: the official Kyoto City address of 1000178 is 中京区新京極通四条上る (on Shinkyōgoku Street, just north of Shijō) and its description calls it the Shaka-dō of 四条京極; way/205748725 染殿地蔵院 (the temple's common name, 染殿地蔵) lies on Shinkyōgoku 29 m north of the Shijō–Shinkyōgoku corner (OSM node 434344398). The GSI address search is not used: it resolves 中之町 to another town of the same name"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
      135.8019778,
      35.0411881
     ]

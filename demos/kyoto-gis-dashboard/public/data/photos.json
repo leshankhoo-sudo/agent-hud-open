@@ -7,11 +7,12 @@
   "named_records_only": false,
   "unnamed_records": "only through a link on the record's own OSM node",
   "osm_link_max_distance_m": 1000.0,
-  "commons_near_m": 150.0
+  "commons_near_m": 150.0,
+  "commons_search_m": 300
  },
  "wikidata_source": "live query",
- "named_records": 420,
- "with_photo": 168,
+ "named_records": 421,
+ "with_photo": 169,
  "commons_search": "skipped (--no-commons-search)",
  "by_match": {
   "wikidata-exact": 32,
@@ -21,7 +22,8 @@
   "osm-image": 0,
   "osm-commons": 1,
   "commons-near": 5,
-  "site-wikidata": 100
+  "site-wikidata": 100,
+  "commons-search": 1
  },
  "skipped": [
   {
@@ -2939,11 +2941,29 @@
    "description": "平岡八幡宮 神殿",
    "width": 720,
    "height": 540
+  },
+  "A00299": {
+   "match": "commons-search",
+   "file": "File:清滝トンネル - panoramio.jpg",
+   "wikidata": null,
+   "matched_text": "清滝トンネル",
+   "matched_label": null,
+   "distance_m": 209,
+   "src": "photos/A00299.jpg",
+   "title": "清滝トンネル - panoramio.jpg",
+   "artist": "kajikawa",
+   "license": "CC BY 3.0",
+   "license_url": "https://creativecommons.org/licenses/by/3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:%E6%B8%85%E6%BB%9D%E3%83%88%E3%83%B3%E3%83%8D%E3%83%AB_-_panoramio.jpg",
+   "date": "8 Septembe",
+   "description": "清滝トンネル",
+   "width": 720,
+   "height": 540
   }
  },
  "linked_retrieved_at": "2026-11-15T15:13:47Z",
- "with_photo_named": 165,
- "records": 638,
+ "with_photo_named": 166,
+ "records": 639,
  "linked_notes": [
   {
    "id": "A00026",
@@ -3012,6 +3032,25 @@
   {
    "id": "A00529",
    "note": "added site: Wikidata Q124482750 gives no usable photo"
+  }
+ ],
+ "search_retrieved_at": "2026-11-16T09:49:56Z",
+ "search_notes": [
+  {
+   "id": "A00041",
+   "note": "Commons photo File:何必館・京都現代美術館 (55090798989).jpg turned down: shows a lift button panel inside the building"
+  },
+  {
+   "id": "A00123",
+   "note": "Commons photo File:二条城本丸御殿の工事の様子 04.jpg turned down: shows a construction site and scaffolding"
+  },
+  {
+   "id": "A00138",
+   "note": "Commons photo File:JP 日本 Japan 京都 Kyoto tourism 先斗町 Pontocho 美食巷 food street 1157am June 2026 N13P 111.jpg turned down: shows the entrance of one restaurant, not the street"
+  },
+  {
+   "id": "A00227",
+   "note": "Commons photo File:宮川町歌舞練場 - 内部.jpg turned down: shows the inside of one building, not the district"
   }
  ]
 }

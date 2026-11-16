@@ -1682,6 +1682,17 @@
 }
 ]
 },
+"A00644": {
+"children": [],
+"dsight": [
+{
+"csv_id": "1000178",
+"name": "染殿院　木造地蔵菩薩立像",
+"part": "木造地蔵菩薩立像",
+"kind": "object"
+}
+]
+},
 "A00531": {
 "children": [],
 "dsight": [
@@ -2569,10 +2580,10 @@
 "townhouse term or local history": 49
 },
 "sites": 131,
-"sites_verified": 120,
+"sites_verified": 121,
 "sites_already_on_map": 1,
-"sites_to_add": 120,
-"sites_unverified": 10
+"sites_to_add": 121,
+"sites_unverified": 9
 },
 "location_check": {
 "raw": "OpenStreetMap point of the original package; the node was read again from OSM on 2026-11-15 and is at the same position (within 30 m) with the same name, inside the N03 municipality polygon. One source: not independently confirmed",

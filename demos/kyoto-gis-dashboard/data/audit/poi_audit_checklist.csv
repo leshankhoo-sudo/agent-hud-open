@@ -75,7 +75,7 @@ CSV site,2000070 2000071,東北院,東北院,,add as a new site; attach the CSV 
 CSV site,1000020 1000021 1000022 1000023 1000057 1000058 1000088,東寺(教王護国寺),教王護国寺 / 東寺 / 東寺(教王護国寺),way/359896810,add as a new site; attach the CSV records to it,Verified: OSM way/359896810 and Wikidata Q1046403 tagged on the OSM feature agree within 70 m,added as A00564 (temple)
 CSV site,1000017 1000018 1000019 1000056 1000087,東福寺,東福寺,way/768987591,add as a new site; attach the CSV records to it,Verified: OSM way/768987591 and Wikidata Q2166743 tagged on the OSM feature agree within 218 m; the official address (GSI: 京都府京都市東山区本町十五丁目) is 207 m away,added as A00591 (temple)
 CSV site,1000063 1000103 1000104,松尾大社,松尾大社,node/1741489390,add as a new site; attach the CSV records to it,Verified: OSM node/1741489390 and Wikidata Q710302 tagged on the OSM feature agree within 35 m,added as A00533 (shrine)
-CSV site,1000178,染殿院,染殿院,,not added (location not verified); kept in this list,Unverified Location: no OpenStreetMap place with this name in Kyoto Prefecture,not added: Unverified Location (kept in this list)
+CSV site,1000178,染殿院,染殿院,way/205748725,add as a new site; attach the CSV records to it,"Verified: Reviewed: the official Kyoto City address of 1000178 is 中京区新京極通四条上る (on Shinkyōgoku Street, just north of Shijō) and its description calls it the Shaka-dō of 四条京極; way/205748725 染殿地蔵院 (the temple's common name, 染殿地蔵) lies on Shinkyōgoku 29 m north of the Shijō–Shinkyōgoku corner (OSM node 434344398). The GSI address search is not used: it resolves 中之町 to another town of the same name",added as A00644 (temple)
 CSV site,2000028,桂春院,桂春院,way/1075792952,add as a new site; attach the CSV records to it,Verified: OSM way/1075792952 and Wikidata Q11536768 tagged on the OSM feature agree within 10 m; the official address (GSI: 京都府京都市右京区花園妙心寺町) is 220 m away,added as A00543 (temple)
 CSV site,2000089,水火天満宮,水火天満宮,way/736954820,add as a new site; attach the CSV records to it,Verified: OSM way/736954820 and Wikidata Q11548940 tagged on the OSM feature agree within 3 m; the official address (GSI: 京都府京都市上京区扇町７２２番地) is 54 m away,added as A00586 (shrine)
 CSV site,2000005,永観堂,永観堂,way/859305371,add as a new site; attach the CSV records to it,"Verified: Reviewed: the DSIGHT_1.csv description (Kyoto City) says 2000005 is behind 禅林寺 御影堂, 浄土寺永観堂町48; way/859305371 is 永観堂 禅林寺 (Q2380134); Wikidata Q2380134 is 56 m from it",added as A00636 (temple)
@@ -304,7 +304,7 @@ CSV record,1000174,清浄華院　紙本著色泣不動縁起,,清浄華院,obje
 CSV record,1000175,真正極楽寺　絹本著色普賢菩薩像,,真如堂,object,左京区浄土寺真如町82,child of A00580 (no point of its own)
 CSV record,1000176,真正極楽寺　紙本著色真如堂縁起,,真如堂,object,左京区浄土寺真如町82,child of A00580 (no point of its own)
 CSV record,1000177,真正極楽寺　法華経,,真如堂,object,左京区浄土寺真如町82,child of A00580 (no point of its own)
-CSV record,1000178,染殿院　木造地蔵菩薩立像,染殿地蔵,染殿院,object,中京区新京極通四条上る中之町562,not placed: site location unverified
+CSV record,1000178,染殿院　木造地蔵菩薩立像,染殿地蔵,染殿院,object,中京区新京極通四条上る中之町562,child of A00644 (no point of its own)
 CSV record,1000179,大興寺　木造薬師如来坐像,芝薬師,大興寺,object,左京区浄土寺真如町17番地,not placed: site location unverified
 CSV record,1000180,狸谷山不動院　不動明王像,,狸谷山不動院,building,左京区一乗寺松原町6,child of A00531 (no point of its own)
 CSV record,1000181,長講堂　木造後白河法皇像,,長講堂,object,下京区富小路通五条下る本塩竃町528,child of A00527 (no point of its own)

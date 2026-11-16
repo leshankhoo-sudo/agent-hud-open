@@ -14,10 +14,10 @@
     "townhouse term or local history": 49
    },
    "sites": 131,
-   "sites_verified": 120,
+   "sites_verified": 121,
    "sites_already_on_map": 1,
-   "sites_to_add": 120,
-   "sites_unverified": 10
+   "sites_to_add": 121,
+   "sites_unverified": 9
   },
   "dashboard": {
    "records": 523,
@@ -3462,16 +3462,28 @@
     "中京区新京極通四条上る中之町562"
    ],
    "column7": [],
-   "osm_candidates": 0,
-   "address_point": {
-    "lon": 135.754196,
-    "lat": 35.016777,
-    "gsi_title": "京都府京都市中京区中之町"
+   "osm": "way/205748725",
+   "osm_name": "染殿地蔵院",
+   "xy": [
+    135.7670556,
+    35.0039595
+   ],
+   "muni": "京都市 下京区",
+   "wikidata": null,
+   "name_en": null,
+   "name_en_source": null,
+   "osm_tags": {
+    "amenity": "place_of_worship",
+    "religion": "buddhist",
+    "building": "yes"
    },
-   "status": "Unverified Location",
-   "reason": "no OpenStreetMap place with this name in Kyoto Prefecture",
+   "point_is": "site centre (polygon centre)",
+   "status": "Verified",
+   "reviewed": true,
+   "reason": "Reviewed: the official Kyoto City address of 1000178 is 中京区新京極通四条上る (on Shinkyōgoku Street, just north of Shijō) and its description calls it the Shaka-dō of 四条京極; way/205748725 染殿地蔵院 (the temple's common name, 染殿地蔵) lies on Shinkyōgoku 29 m north of the Shijō–Shinkyōgoku corner (OSM node 434344398). The GSI address search is not used: it resolves 中之町 to another town of the same name",
+   "ref": "way/205748725",
    "dashboard": [],
-   "action": "not added (location not verified); kept in this list"
+   "action": "add as a new site; attach the CSV records to it"
   },
   {
    "key": "r1000179",
@@ -8948,7 +8960,7 @@
    "part": "木造地蔵菩薩立像",
    "site_key": "r1000178",
    "site": "染殿院",
-   "result": "not placed: site location unverified"
+   "result": "related POI of new site 染殿院"
   },
   {
    "csv_id": "1000179",

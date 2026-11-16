@@ -210,6 +210,11 @@
    "site": "嵯峨七ッ塚古墳",
    "ref": "node/5510899066",
    "evidence": "the DSIGHT_1.csv description (Kyoto City) says 11000003 lies in the fields east of Ōsawa Pond, 右京区北嵯峨洞ノ内町付近; node/5510899066 七ツ塚古墳 lies there"
+  },
+  {
+   "site": "染殿院",
+   "ref": "way/205748725",
+   "evidence": "the official Kyoto City address of 1000178 is 中京区新京極通四条上る (on Shinkyōgoku Street, just north of Shijō) and its description calls it the Shaka-dō of 四条京極; way/205748725 染殿地蔵院 (the temple's common name, 染殿地蔵) lies on Shinkyōgoku 29 m north of the Shijō–Shinkyōgoku corner (OSM node 434344398). The GSI address search is not used: it resolves 中之町 to another town of the same name"
   }
  ],
  "manual_parents": [
