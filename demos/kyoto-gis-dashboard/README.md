@@ -488,3 +488,4 @@ kyoto-gis-dashboard/
 - **文字精简**：音乐控件的说明改为 `Slide to play` 和「章节 · 音量」；季节标签只保留日文季语（去掉罗马字和英文解释）；路线提示缩短为 `Choose a start to draw the route.`
 - **对比度**：分类和站点的数量、研究范围的标签加深一档；地图上"最近站点"标签不再半透明；地图标注能显示完整名称（原来只显示一个字）。
 - **文件清理**：检查过源码和 `public/`，没有未被引用的文件；`data/raw`、`data/cache`、`data/audit` 是数据核实的依据，全部保留。
+- Windows ZIP：`Kyoto-GIS-Dashboard-Windows-2026-11-17a.zip`（702 个文件，76.5 MB），解压后用自带启动服务器跑浏览器测试 155/155 通过。在线预览链接更新到第 28 版。
