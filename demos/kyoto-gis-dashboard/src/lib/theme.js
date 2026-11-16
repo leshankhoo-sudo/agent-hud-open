@@ -10,10 +10,10 @@ export const MAP_THEME = {
     // ordinary attraction dots: a white core, the category shows in the ring (light theme keeps filled dots)
     ptCore: '#eef4f6',
     // study area (Kyoto Prefecture): the accent colour, solid, with the slow breathing glow
-    outline: { line: '#79d7da', glow: '#3fa7ab', fill: '#2c6d70' },
+    outline: { line: '#79d7da', glow: '#3fa7ab', fill: '#2c6d70', glowW: 8, glowOp: 0.3, breathe: 0.08 },
     muni: '#7d8b92', pilot: '#e0b35c',
     // municipal boundaries drawn by "Show coverage": thin white line, faint white glow
-    coverage: { line: '#f2f6f7', glow: '#ffffff', glowOp: 0.22, fill: '#ffffff', fillOp: 0.035 },
+    coverage: { line: '#f2f6f7', glow: '#ffffff', glowOp: 0.16, fill: '#ffffff', fillOp: 0.03 },
     // point-to-point route: bright thin core, wide faint glow
     route: { core: '#e6fbfb', glow: '#79d7da', start: '#79d7da', end: '#f2f6f7' },
     walk: { bus: '#6fd3ff', rail: '#f2c86b' },
@@ -37,7 +37,7 @@ export const MAP_THEME = {
     transit: { bus: '#4a6db0', rail: '#4d4038', tram: '#d2447c' },
     stroke: '#fffaf1',
     ptCore: null,
-    outline: { line: '#8a5f45', glow: '#c98a5e', fill: '#c9a27c' },
+    outline: { line: '#8a5f45', glow: '#c98a5e', fill: '#c9a27c', glowW: 14, glowOp: 0.42, breathe: 0.16 },
     muni: '#9c8873', pilot: '#a8721a',
     // municipal boundaries in the light theme: dark ink line, no glow (the study area keeps its brown)
     coverage: { line: '#2f2924', glow: '#2f2924', glowOp: 0.08, fill: '#5a4f45', fillOp: 0.04 },

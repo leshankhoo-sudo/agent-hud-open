@@ -13,7 +13,9 @@ const proxy = process.env.HTTPS_PROXY ? { server: process.env.HTTPS_PROXY, bypas
 // PW_CHANNEL=msedge runs Microsoft Edge, which can decode the H.264 opening video (Playwright's own Chromium cannot).
 const browser = await chromium.launch({ proxy, channel: process.env.PW_CHANNEL || undefined, args: ['--use-gl=swiftshader', '--ignore-gpu-blocklist'] });
 // the panel shows Explore or Place; search, filters and analysis live in Explore
-const placeTab = async (pg) => { const t = pg.locator('#ptab-place'); if (await t.isVisible() && (await t.getAttribute('aria-selected')) !== 'true') await t.click(); };
+const placeTab = async (pg) => { const t = pg.locator('#ptab-place'); if (await t.isVisible() && (await t.getAttribute('aria-selected')) !== 'true') await t.click(); await openFold(pg, 'More about this place'); };
+// closed folds (Analysis, Additional layers, More about this place) are opened before their contents are used
+const openFold = async (pg, title) => { const h = pg.locator('.fold-h', { has: pg.locator('h3', { hasText: title }) }).first(); if (await h.isVisible() && (await h.getAttribute('aria-expanded')) !== 'true') await h.click(); };
 const exploreTab = async (pg) => { const t = pg.locator('#ptab-explore'); if (await t.isVisible() && (await t.getAttribute('aria-selected')) !== 'true') await t.click(); };
 const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  — ' + detail : ''}`); };
@@ -281,7 +283,7 @@ await exploreTab(page); await page.getByLabel('Viewpoint').check();
 await exploreTab(page); await page.getByLabel('Bus').check();
 
 // 4. density modes (the analysis panels are closed until opened)
-await exploreTab(page); await page.locator('.entry', { hasText: 'Attraction Density' }).click();
+await exploreTab(page); await openFold(page, 'Analysis'); await page.locator('.entry', { hasText: 'Attraction Density' }).click();
 await page.getByRole('radio', { name: 'KDE result' }).click();
 await page.waitForTimeout(1200);
 const kdeVis = await page.evaluate(() => window.__kyotoMap.getLayoutProperty('kde-fill', 'visibility'));
@@ -299,7 +301,7 @@ await page.waitForTimeout(1800);
 await placeTab(page); await page.getByRole('tab', { name: 'Walking Routes' }).click();
 const walkText = await page.locator('.walk').innerText();
 check('Kinkaku-ji (outside the old pilot) now shows network walking distances', /\d+ m · ≈[\d.]+ min walk/.test(walkText) && !walkText.includes('Pilot result'), walkText.replace(/\n/g, ' / ').slice(0, 200));
-check('walking entry shows the prefecture record count', (await exploreTab(page), await page.locator('#explore-panel').innerText()).includes('638 records'));
+check('walking entry shows the prefecture record count', (await exploreTab(page), await openFold(page, 'Analysis'), await page.locator('#explore-panel').innerText()).includes('638 records'));
 await placeTab(page); await page.getByRole('tab', { name: 'Overview' }).click();
 await page.locator('.tech summary').click();
 const ovText = await page.locator('#pane-overview').innerText();
@@ -331,7 +333,7 @@ check('the ID of a merged duplicate finds the record that keeps it', (await page
 await exploreTab(page); await page.locator('#q').fill('');
 const leftText = await page.locator('#explore-panel').innerText();
 check('filters list Temple and Shrine with counts; Nanzen-ji is a temple', /Temple\s*\d{2,}/.test(leftText) && /Shrine\s*\d{2,}/.test(leftText) && nz.includes('Temple'), leftText.replace(/\n/g, ' ').slice(0, 200));
-await page.getByRole('button', { name: 'Kyoto City Records' }).click();
+await page.locator('.status').getByRole('button', { name: 'Data & Sources' }).click(); await page.getByRole('button', { name: 'Open the record library' }).click();
 await page.waitForSelector('.rec-list li');
 const lib0 = await page.locator('.sheet').innerText();
 await page.locator('.rec-q').fill('三門');
@@ -339,11 +341,11 @@ await page.waitForTimeout(300);
 const libHit = await page.locator('.rec-list').innerText();
 check('record library: all 648 Kyoto City records with source and licence; search finds 南禅寺 三門 as part of a site', lib0.includes('All 648') && lib0.includes('CC BY 4.0') && lib0.includes('Not placed') && libHit.includes('南禅寺') && libHit.includes('Part of a site'), libHit.replace(/\n/g, ' ').slice(0, 160));
 await page.keyboard.press('Escape');
-await exploreTab(page); await page.locator('#explore-panel label.chk', { hasText: 'Places and landscape' }).locator('input').check();
+await exploreTab(page); await openFold(page, 'Additional layers'); await page.locator('#explore-panel label.chk', { hasText: 'Places and landscape' }).locator('input').check();
 await page.waitForTimeout(600);
 const geoVis = await page.evaluate(() => ({ vis: window.__kyotoMap.getLayoutProperty('geo-pt', 'visibility'), n: window.__kyotoMap.getSource('geography')._data.features.length, lines: window.__kyotoMap.getSource('geography')._data.features.filter((f) => f.geometry.type === 'LineString').length }));
 check('places and landscape layer switches on: points and river lines from the Kyoto City records', geoVis.vis === 'visible' && geoVis.n >= 30 && geoVis.lines >= 5, JSON.stringify(geoVis));
-await exploreTab(page); await page.locator('#explore-panel label.chk', { hasText: 'Places and landscape' }).locator('input').uncheck();
+await exploreTab(page); await openFold(page, 'Additional layers'); await page.locator('#explore-panel label.chk', { hasText: 'Places and landscape' }).locator('input').uncheck();
 // back to Kinkaku-ji for the weather checks below
 await exploreTab(page); await page.locator('#q').fill('A00265');
 await page.locator('.results button').first().click();
@@ -407,7 +409,7 @@ await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
 const zt = await page.locator('.walk').innerText();
 check('A00453 and its station share a street point: shown as "Next to this place", not as 0 m', zt.includes('Next to this place') && !/\b0 m\b/.test(zt), zt.replace(/\n/g, ' / ').slice(0, 220));
-await exploreTab(page); await page.locator('.entry', { hasText: 'Walking Access' }).click();
+await exploreTab(page); await openFold(page, 'Analysis'); await page.locator('.entry', { hasText: 'Walking Access' }).click();
 const cov = await page.locator('.cov').innerText();
 check('coverage counts named + OSM-tagged records by default (472 = 420 named + 52 OSM-tagged), five states listed', cov.includes('of 472 records') && cov.includes('within 3 km on foot') && cov.includes('Not connected to the street network'), cov.replace(/\n/g, ' / '));
 await page.getByRole('button', { name: /^Unverified/ }).click();
@@ -423,7 +425,7 @@ await page.getByRole('button', { name: 'Hide routes on map' }).click();
 // 8. journeys panel
 // 7b2. bus routes (Kyoto City Bus): pick a route, the line grows along the supplied geometry and stops light up in order
 await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: 0 }));
-await exploreTab(page); await page.locator('.entry', { hasText: 'Bus Routes' }).click();
+await exploreTab(page); await openFold(page, 'Analysis'); await page.locator('.entry', { hasText: 'Bus Routes' }).click();
 const busKey = await page.evaluate(() => [...document.querySelectorAll('#bus-route option')].find((o) => o.textContent.startsWith('206 ')).value);
 await page.locator('#bus-route').selectOption(busKey);
 await page.waitForFunction(() => document.querySelectorAll('.bus-stop.passed').length >= 3, null, { timeout: 20000 });
@@ -458,7 +460,7 @@ await exploreTab(page); await page.locator('#q').fill('A00230');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(2200);
 await placeTab(page); await page.getByRole('tab', { name: 'Walking Routes' }).click();
-await exploreTab(page); await page.locator('.entry', { hasText: 'Bus Routes' }).click();
+await exploreTab(page); await openFold(page, 'Analysis'); await page.locator('.entry', { hasText: 'Bus Routes' }).click();
 
 // 7c. theme switch keeps the place, tab, filters, routes and camera; petals appear and are removed
 const before = await page.evaluate(() => { const m = window.__kyotoMap; return { theme: document.documentElement.dataset.theme, z: m.getZoom().toFixed(3), c: m.getCenter().toArray().map((v) => v.toFixed(5)).join(), routes: m.getSource('walk')._data.features.length, name: document.querySelector('.detail h2').innerText, tab: document.querySelector('.tabs .on').innerText }; });
@@ -641,7 +643,7 @@ await lp.close();
 // 8y. layout, study area coverage, routes and the dark theme
 const rp = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 const rpErr = []; rp.on('pageerror', (e) => rpErr.push(e.message));
-await rp.addInitScript(() => { try { localStorage.setItem('kyoto-gis-theme', 'dark'); if (!sessionStorage.getItem('fresh')) { sessionStorage.setItem('fresh', '1'); localStorage.removeItem('kyoto-gis-panel'); localStorage.removeItem('kyoto-gis-cinematic'); } } catch { /* */ } });
+await rp.addInitScript(() => { try { localStorage.setItem('kyoto-gis-theme', 'dark'); if (!sessionStorage.getItem('fresh')) { sessionStorage.setItem('fresh', '1'); localStorage.removeItem('kyoto-gis-panel-v2'); localStorage.removeItem('kyoto-gis-cinematic'); } } catch { /* */ } });
 await rp.goto(url);
 await rp.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.getLayer('route-line') && window.__kyotoMap.loaded(), null, { timeout: 30000 });
 await rp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
@@ -650,7 +652,7 @@ const y_lay = () => rp.evaluate(() => { const m = window.__kyotoMap; const c = d
 const y_l0 = await y_lay();
 const y_darkBg = await rp.evaluate(() => [getComputedStyle(document.getElementById('dashboard')).backgroundColor, getComputedStyle(document.querySelector('.right .card')).backgroundColor, getComputedStyle(document.querySelector('.right .card')).boxShadow.includes('rgba(121, 215, 218')]);
 check('dark theme: charcoal page (#101416) and slightly lighter cards (#191F23), cards do not glow', y_darkBg[0] === 'rgb(16, 20, 22)' && y_darkBg[1] === 'rgb(25, 31, 35)' && !y_darkBg[2], JSON.stringify(y_darkBg));
-check('layout: map and one information panel side by side (no left sidebar); canvas matches the map width', y_l0.map > 780 && y_l0.panel >= 300 && Math.abs(y_l0.canvas - y_l0.map) <= 2 && !(await rp.locator('aside.left').count()), JSON.stringify(y_l0));
+check('layout: map and one information panel side by side (no left sidebar); canvas matches the map width', y_l0.map > 780 && y_l0.panel >= 360 && Math.abs(y_l0.canvas - y_l0.map) <= 2 && !(await rp.locator('aside.left').count()), JSON.stringify(y_l0));
 const y_sb = await rp.locator('.splitter').boundingBox();
 await rp.mouse.move(y_sb.x + 6, y_sb.y + y_sb.height * 0.7);
 await rp.mouse.down();
@@ -669,7 +671,7 @@ await rp.locator('.splitter').focus();
 await rp.keyboard.press('ArrowRight'); await rp.keyboard.press('ArrowRight');
 const y_lk = await y_lay();
 check('splitter keyboard: arrow keys resize; it is a focusable separator with a value', y_lk.panel < y_lmin.panel && (await rp.locator('.splitter').getAttribute('role')) === 'separator' && Number(await rp.locator('.splitter').getAttribute('aria-valuenow')) > 0, JSON.stringify(y_lk));
-const y_saved = await rp.evaluate(() => localStorage.getItem('kyoto-gis-panel'));
+const y_saved = await rp.evaluate(() => localStorage.getItem('kyoto-gis-panel-v2'));
 await rp.reload();
 await rp.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.loaded(), null, { timeout: 30000 });
 await rp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
@@ -682,7 +684,7 @@ await rp.getByRole('button', { name: 'Show the panel' }).first().click(); await 
 const y_lo = await y_lay();
 await rp.getByRole('button', { name: 'Reset the layout' }).click(); await rp.waitForTimeout(900);
 const y_ld = await y_lay();
-check('expand map / show panel / reset: map takes the width, panel comes back, default split restored', y_lc.panel === 0 && y_lc.map > 1400 && Math.abs(y_lc.canvas - y_lc.map) <= 2 && y_lo.panel === y_lr.panel && Math.abs(y_ld.panel - 605) <= 2, JSON.stringify({ y_lc, y_lo, y_ld }));
+check('expand map / show panel / reset: map takes the width, panel comes back, default split restored', y_lc.panel === 0 && y_lc.map > 1400 && Math.abs(y_lc.canvas - y_lc.map) <= 2 && y_lo.panel === y_lr.panel && Math.abs(y_ld.panel - 504) <= 2, JSON.stringify({ y_lc, y_lo, y_ld }));
 
 // study area coverage
 const y_saText = await rp.locator('.study').innerText();
@@ -768,11 +770,12 @@ check('Clear start removes the route', (await rp.evaluate(() => window.__kyotoMa
 // points off: the density layer stays
 await exploreTab(rp);
 await rp.locator('label.switch', { hasText: 'Points' }).click();
-await rp.locator('.entry', { hasText: 'Attraction Density' }).click();
+await openFold(rp, 'Analysis'); await rp.locator('.entry', { hasText: 'Attraction Density' }).click();
 await rp.getByRole('radio', { name: 'KDE result' }).click();
 await rp.waitForTimeout(1200);
 const y_pts = await rp.evaluate(() => { const m = window.__kyotoMap; return { pt: m.getLayoutProperty('attractions-pt', 'visibility'), sym: m.getLayoutProperty('lm-iconic', 'visibility'), kde: m.getLayoutProperty('kde-fill', 'visibility'), cells: m.queryRenderedFeatures({ layers: ['kde-fill'] }).length }; });
 check('Points switch off: attraction points and symbols hidden, KDE density still shown', y_pts.pt === 'none' && y_pts.sym === 'none' && y_pts.kde === 'visible' && y_pts.cells > 0, JSON.stringify(y_pts));
+check('Analysis fold shows the active tool on its header', (await rp.locator('.analysis .fold-s').innerText()).includes('KDE on'));
 await rp.getByRole('radio', { name: 'Off' }).click();
 await rp.locator('label.switch', { hasText: 'Points' }).click();
 // dark map symbols: white core with a category ring; transit icons repainted per theme
@@ -781,8 +784,11 @@ check('dark map: ordinary attraction dots have a white core and a category-colou
 // bento: drag a tile by its grip onto another; the others glide, it snaps into the slot, the order is kept
 await exploreTab(rp);
 const bOrder = () => rp.evaluate(() => [...document.querySelectorAll('#explore-panel .tile')].map((t) => t.dataset.tile).join());
+await rp.evaluate(() => { document.querySelector('aside.right').scrollTop = 0; }); await rp.waitForTimeout(200);
 const bo0 = await bOrder();
+await rp.locator('[data-tile="study"] .tile-grip').hover(); await rp.waitForTimeout(300);
 const bg = await rp.locator('[data-tile="study"] .tile-grip').boundingBox();
+const bHit = await rp.evaluate(([x, y]) => { const e = document.elementFromPoint(x, y); return (e.closest('.tile-grip') ? 'grip' : '') + ' ' + (e.className?.baseVal ?? e.className) + ' ' + Math.round(document.getElementById('dashboard').getBoundingClientRect().top); }, [bg.x + 5, bg.y + 8]);
 const bt = await rp.locator('[data-tile="transit"]').boundingBox();
 await rp.mouse.move(bg.x + 5, bg.y + 8); await rp.mouse.down();
 let bGlide = false;
@@ -793,11 +799,11 @@ for (let i = 1; i <= 20; i++) {
 const bFollow = await rp.evaluate(() => document.querySelector('[data-tile="study"]').style.transform);
 await rp.waitForTimeout(300); await rp.mouse.up(); await rp.waitForTimeout(500);
 const bo1 = await bOrder();
-check('bento: dragged tile follows the pointer, the others glide aside, on release it takes the new slot and keeps no offset', bo1 !== bo0 && bo1.split(',').indexOf('study') > bo0.split(',').indexOf('study') && bGlide && /translate/.test(bFollow) && !(await rp.evaluate(() => document.querySelector('[data-tile="study"]').style.transform)), JSON.stringify({ bo0, bo1, bGlide }));
-await rp.locator('[data-tile="cats"] .tile-grip').focus(); await rp.keyboard.press('ArrowUp'); await rp.waitForTimeout(400);
+check('bento: dragged tile follows the pointer, the others glide aside, on release it takes the new slot and keeps no offset', bo1 !== bo0 && bo1.split(',').indexOf('study') > bo0.split(',').indexOf('study') && bGlide && /translate/.test(bFollow) && !(await rp.evaluate(() => document.querySelector('[data-tile="study"]').style.transform)), JSON.stringify({ bo0, bo1, bGlide, bHit }));
+await rp.locator('[data-tile="transit"] .tile-grip').focus(); await rp.keyboard.press('ArrowUp'); await rp.waitForTimeout(400);
 const bo2 = await bOrder();
-check('bento: keyboard moves a tile with the arrow keys', bo2.split(',').indexOf('cats') === bo1.split(',').indexOf('cats') - 1, bo2);
-check('bento: the order is remembered', (await rp.evaluate(() => localStorage.getItem('kyoto-gis-bento-explore'))) === JSON.stringify(bo2.split(',')));
+check('bento: keyboard moves a tile with the arrow keys', bo2.split(',').indexOf('transit') === bo1.split(',').indexOf('transit') - 1, bo2);
+check('bento: the order is remembered', (await rp.evaluate(() => localStorage.getItem('kyoto-gis-bento-explore-v2'))) === JSON.stringify(bo2.split(',')));
 const bCols = await rp.evaluate(() => getComputedStyle(document.querySelector('#explore-panel .bento')).gridTemplateColumns.split(' ').length);
 check('bento: uneven grid — two columns in the default panel, wide tiles span both', bCols === 2 && (await rp.evaluate(() => getComputedStyle(document.querySelector('[data-tile="analysis"]')).gridColumnStart)) === 'span 2', String(bCols));
 check('no page errors on the layout / route page', rpErr.length === 0, rpErr.join(' | '));

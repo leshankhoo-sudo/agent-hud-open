@@ -1399,7 +1399,7 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
    Dragging changes it directly; opening, closing and reset use a short transition.
    ===================================================================== */
 .app {
-  grid-template-columns: minmax(0, 1fr) 12px clamp(300px, calc(var(--pf, .42) * 100%), calc(100% - 382px));
+  grid-template-columns: minmax(0, 1fr) 12px clamp(360px, calc(var(--pf, .35) * 100%), calc(100% - 382px));
   grid-template-areas: 'top top top' 'center split right';
 }
 .app.no-right { grid-template-columns: minmax(0, 1fr) 12px 0px; }
@@ -1435,11 +1435,6 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
 .edge-btn.r i { transform: rotate(45deg); margin-left: 3px; }
 
 /* study area summary */
-.study .sa-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
-.study .sa-top > div:first-child { display: grid; gap: 1px; }
-.study .sa-n { display: grid; justify-items: end; }
-.study .sa-n b { font-size: 24px; line-height: 1.05; color: var(--ink-strong); }
-.study .sa-n span { font-size: 11px; color: var(--ink-2); }
 .study p { margin: 6px 0 8px; }
 .sa-list { list-style: none; margin: 6px 0; padding: 0; display: grid; gap: 0; max-height: 220px; overflow: auto; }
 .sa-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: baseline; padding: 4px 0; border-top: 1px solid var(--line); font-size: 12.5px; }
@@ -1606,13 +1601,152 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
   .right.panel { padding-top: 0; }
 }
 
+/* =====================================================================
+   Panel v2: sticky tabs and search; compact, unequal cards; quiet headings.
+   Card layout follows the panel's own width (container queries), not the window.
+   ===================================================================== */
+.right.panel, :root[data-theme='light'] .right.panel { background: var(--bg); box-shadow: none; padding: 0 12px 12px; gap: 12px; }
+.phead { position: sticky; top: 0; z-index: 6; margin: 0 -12px; padding: 0 12px 12px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.phead .ptabs { position: static; margin: 0; padding: 10px 0 0; border: 0; background: none; }
+.psearch { position: relative; margin-top: 10px; }
+.psearch svg { position: absolute; left: 13px; top: 50%; translate: 0 -50%; color: var(--ink-2); pointer-events: none; }
+.psearch input[type='search'] { height: 44px; padding: 0 12px 0 38px; border-radius: 11px; font-size: 14px; background: var(--field); border: 1px solid var(--line); transition: border-color .2s, box-shadow .2s; }
+.psearch input[type='search']:focus { outline: none; border-color: var(--glow); box-shadow: 0 0 0 3px color-mix(in srgb, var(--glow) 18%, transparent); }
+.panel .results.card { margin: 0; padding: 6px 8px; }
+.bento { gap: 12px; align-items: start; }
+@container (min-width: 460px) {
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tile[data-w='2'] { grid-column: span 2; }
+}
+@container (max-width: 459px) {
+  .bento { grid-template-columns: minmax(0, 1fr); }
+  .tile[data-w='2'] { grid-column: auto; }
+}
+.tile > .card { flex: 0 0 auto; }
+.panel .card { padding: 14px 16px; border-radius: 14px; }
+.panel .card h3 { font-size: 13px; margin: 0 0 8px; padding: 0; background: none; letter-spacing: .01em; }
+.panel .card h3::before { display: none; }
+.panel .card::before, .panel .card::after, .panel .detail::before, .panel .detail::after { display: none; }
+.panel .card-h { margin-bottom: 4px; }
+.drop-hint { position: absolute; z-index: 1; border: 1.5px dashed var(--glow); border-radius: 14px; background: color-mix(in srgb, var(--glow) 7%, transparent); pointer-events: none; transition: left .18s var(--ez), top .18s var(--ez), width .18s var(--ez), height .18s var(--ez); }
+
+/* study area: one compact summary */
+.study .sa-h { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.study .sa-h h3 { margin: 0; font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-2); font-weight: 600; }
+.study .sa-h b { font-size: 14px; color: var(--ink-strong); font-weight: 600; }
+.sa-nums { display: flex; align-items: flex-end; gap: 22px; margin: 10px 0 2px; flex-wrap: wrap; }
+.sa-n, .sa-a { display: flex; align-items: baseline; gap: 8px; }
+.sa-n b { font-size: 30px; line-height: 1; color: var(--ink-strong); font-weight: 600; }
+.sa-n span { font-size: 12.5px; color: var(--ink); }
+.sa-a b { font-size: 16px; color: var(--ink); font-weight: 500; }
+.sa-a span { font-size: 12px; color: var(--ink-2); }
+.sa-types { margin: 6px 0 10px; font-size: 12.5px; color: var(--ink-2); }
+.sa-acts { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.sa-acts .link { font-size: 12.5px; }
+.sa-more { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2) !important; }
+.sa-more i, .fold-h i { width: 6px; height: 6px; border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg) translate(-1px, -1px); transition: transform .25s var(--ez); }
+.sa-more[aria-expanded='true'] i, .fold-h[aria-expanded='true'] i { transform: rotate(-135deg) translate(-1px, -1px); }
+.sa-details { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 8px; }
+
+/* filter cards: one row per category, counts on the right */
+.panel .filt .card-h { display: flex; align-items: center; justify-content: space-between; }
+.panel .filt .card-h h3 { margin: 0; }
+.mini-acts { display: inline-flex; gap: 10px; }
+.mini-acts .link { font-size: 12px; color: var(--ink-2); }
+.mini-acts .link:hover { color: var(--ink); }
+.panel .chk { grid-template-columns: 16px 18px minmax(0, 1fr) auto; gap: 9px; min-height: 32px; padding: 0 6px; margin: 0 -6px; font-size: 13.5px; }
+.panel .chk input { width: 15px; height: 15px; }
+.panel .chk .sw { width: 10px; height: 10px; border-radius: 50%; justify-self: center; }
+.panel .chk .sw.ico { width: 18px; height: 18px; }
+.panel .chk .sw.ring { background: none; border: 2px solid; }
+.panel .chk .n { font: 12px var(--mono); color: var(--mute); font-variant-numeric: tabular-nums; text-align: right; }
+.switch.pts { margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--line); width: 100%; }
+
+/* folds: Analysis and Additional layers stay closed until needed; active tools show on the header */
+.panel .fold { padding: 12px 16px; }
+.fold-h { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) 12px; align-items: center; gap: 10px; border: 0; background: none; padding: 2px 0; color: inherit; cursor: pointer; text-align: left; font: inherit; }
+.fold-h h3 { margin: 0 !important; }
+.fold-s { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; font-size: 12px; min-width: 0; }
+.st-on { color: var(--glow); background: color-mix(in srgb, var(--glow) 13%, transparent); border-radius: 999px; padding: 1px 8px; font-size: 11.5px; white-space: nowrap; }
+.fold.open > .fold-h { margin-bottom: 10px; }
+.fold .entry:first-child { margin-top: 0; }
+.explore-foot { display: flex; justify-content: space-between; gap: 12px; margin: 0; padding: 0 4px; }
+.explore-foot .link { color: var(--ink-2); font-size: 12px; }
+
+/* Place: back, name and close; one photo across the card; category and place; then the route */
+.pstack { display: flex; flex-direction: column; gap: 12px; }
+.panel .detail .place-h { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; margin-bottom: 12px; }
+.panel .detail .place-h h2 { margin: 0; font-size: 19px; line-height: 1.25; overflow-wrap: anywhere; }
+.back { display: inline-flex; align-items: center; gap: 3px; border: 1px solid var(--line); background: var(--field); color: var(--ink-2); border-radius: 8px; padding: 4px 9px 4px 5px; font-size: 12px; cursor: pointer; transition: color .2s, border-color .2s; }
+.back:hover { color: var(--ink); border-color: var(--glow); }
+.panel .detail .hero { margin: 0 -16px 10px; container-type: inline-size; }
+.panel .detail .hero .ph-frame { width: 100%; height: min(230px, calc(100cqw * 9 / 16)); border-radius: 0; }
+.ph-credit { padding: 5px 16px 0; font-size: 10.5px; color: var(--mute); }
+.ph-credit a { color: var(--ink-2); }
+.ph-none { display: flex; align-items: center; justify-content: center; gap: 8px; height: 60px; margin: 0 0 10px; border: 1px dashed var(--line); border-radius: 10px; color: var(--mute); font-size: 12px; }
+.place-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.place-meta .where { margin: 0; }
+.pmore .tabs { margin-bottom: 4px; }
+.pmore .pane { padding: 4px 0 0; }
+
+/* dark: inputs and inner controls one step lighter than the cards */
+:root:not([data-theme='light']) #dashboard .psearch input[type='search'] { background: var(--float); }
+:root:not([data-theme='light']) #dashboard .phead { background: var(--bg); }
+
+/* panel headings: plain text in both themes (no underline, bar or highlight) */
+:root #dashboard .panel .card h3, :root[data-theme='light'] #dashboard .panel .card h3 { background: none; padding-bottom: 0; }
+:root #dashboard .panel .card h3::before { display: none; }
+.panel .ph-credit, .panel .photo figcaption.ph-credit { display: block; padding: 6px 16px 0; font-size: 10.5px; line-height: 1.4; color: var(--mute); }
+.panel .detail .hero { margin-bottom: 12px; }
+@media (max-width: 760px) {
+  .right.panel, :root[data-theme='light'] .right.panel { height: 50svh; }
+}
+
+/* right column next to the categories: transport, map display and extra layers, stacked */
+.tcol { display: flex; flex-direction: column; gap: 12px; }
+.panel .card.mapdisp { padding: 10px 16px; }
+.mapdisp .switch.pts { margin: 0; padding: 0; border: 0; }
+.mapdisp .pts-off { margin: 6px 0 0; }
+
+.tcol .fold-s .muted { display: none; }   /* the short column keeps only active-layer status */
+
+/* cards side by side end on the same line: the shorter column's last card grows, so no empty gap shows */
+.bento { align-items: stretch; }
+.tile > .card, .tile > .tcol { flex: 1 1 auto; }
+.tcol > .card:last-child { flex: 1 1 auto; }
+
+/* =====================================================================
+   Pointer light on the panel cards (the earlier motion, restored): a soft spot of light follows the
+   pointer inside the card and lights the nearby edge. Cards also carry a faint static sheen from the
+   top left, as in the reference. Only on hover; nothing moves on its own.
+   ===================================================================== */
+:root #dashboard .right.panel .card { isolation: isolate; overflow: clip; position: relative; }
+:root #dashboard .right.panel .card::after {
+  display: block; content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), var(--spot, rgba(121, 215, 218, .16)), transparent 65%);
+  opacity: 0; transition: opacity .35s var(--ez);
+}
+:root #dashboard .right.panel .card::before {
+  display: block; content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; padding: 1px;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), var(--spot-edge, rgba(121, 215, 218, .6)), transparent 62%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0; transition: opacity .35s var(--ez);
+}
+:root #dashboard .right.panel .card:hover::after, :root #dashboard .right.panel .card:hover::before { opacity: 1; }
+:root:not([data-theme='light']) #dashboard .right.panel .card { background: linear-gradient(155deg, rgba(237, 243, 245, .05) 0%, rgba(237, 243, 245, 0) 45%), var(--panel-solid); }
+:root[data-theme='light'] #dashboard .right.panel .card { --spot: rgba(180, 84, 58, .09); --spot-edge: rgba(180, 84, 58, .45); }
+@media (hover: none) { :root #dashboard .right.panel .card::after, :root #dashboard .right.panel .card::before { display: none; } }
+
 /* phone: map on top, the panel as a bottom sheet that can be closed (after the split rules above) */
 @media (max-width: 760px) {
   .app, .app.no-right { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'top' 'center'; }
   .splitter { display: none; }
-  .right.panel { grid-area: center; justify-self: stretch; align-self: end; width: 100%; max-height: 62%; z-index: 8; border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; box-shadow: 0 -12px 34px rgba(0, 0, 0, .4); padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)); animation: sheetUp .35s var(--ez) both; background: var(--panel-solid); }
+  .app { grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: 'top' 'center' 'right'; }
+  .app.no-right { grid-template-rows: auto minmax(0, 1fr); }
+  .right.panel, :root[data-theme='light'] .right.panel { grid-area: right; height: 50svh; width: 100%; border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; box-shadow: 0 -8px 24px rgba(0, 0, 0, .3); padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)); animation: sheetUp .35s var(--ez) both; }
+  .phead { border-radius: 16px 16px 0 0; }
   .app.no-right .right.panel { display: none; }
-  .ptabs { border-radius: 16px 16px 0 0; }
   .pick-bar { top: auto; bottom: 90px; width: calc(100% - 24px); }
   /* compact top bar: one line for the menu and title, one line of short buttons */
   .top { row-gap: 6px; padding-top: 6px; padding-bottom: 6px; }

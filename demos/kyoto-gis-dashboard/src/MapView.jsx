@@ -99,7 +99,13 @@ const lmSize = (k = 1) => ['interpolate', ['linear'], ['zoom'],
   16, ['*', k, ['match', ['get', 'lm_tier'], 1, 1.12, ['match', ['get', 'lm_tier'], 2, 1, 0.86]]]];
 // attraction dots: ordinary records start smaller, so the well-known places lead when zoomed out
 // (an iconic place keeps a small dot: the exact point its building stands on)
-const PT_RADIUS = ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'lm_tier'], 3, 2.3, 3], 12, ['match', ['get', 'lm_tier'], 3, 4.6, 1, 3.2, 5.5], 16, ['match', ['get', 'lm_tier'], 1, 3.6, 8]];
+// graded by level so the whole-prefecture view stays legible: ordinary records start small
+const PT_RADIUS = ['interpolate', ['linear'], ['zoom'], 7, ['match', ['get', 'lm_tier'], 3, 1.7, 2, 2.4, 3], 10, ['match', ['get', 'lm_tier'], 3, 2.6, 3.4], 12, ['match', ['get', 'lm_tier'], 3, 4.4, 1, 3.2, 5.2], 16, ['match', ['get', 'lm_tier'], 1, 3.6, 8]];
+// the soft halo under the points: faint, tight, and absent in the whole-prefecture view (dark theme);
+// hover and selection have their own stronger rings
+const GLOW_R = ['interpolate', ['linear'], ['zoom'], 7, 3, 12, 8, 16, 12];
+const glowOp = (T) => (T.ptCore ? ['interpolate', ['linear'], ['zoom'], 8, 0, 10.5, 0.08, 14, 0.14] : 0.45);
+const ptStroke = (T) => (T.ptCore ? ['interpolate', ['linear'], ['zoom'], 7, 0.9, 12, 1.7] : 1.2);
 const lmText = (T) => ({ 'text-color': T.base.label, 'text-halo-color': T.base.halo, 'text-halo-width': 1.5, 'text-halo-blur': 0.4 });
 // name under the symbol: Japanese from `from`, with the English name on a second line from `en`
 const lmLabel = (from, en) => ({
@@ -334,7 +340,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
     }
     map.setPaintProperty('attractions-pt', 'circle-opacity', aOp);
     map.setPaintProperty('attractions-pt', 'circle-stroke-opacity', aOp);
-    map.setPaintProperty('attractions-glow', 'circle-opacity', !focus ? 0.45 : aMatch ? ['case', aMatch, 0.9, 0.05] : 0.05);
+    map.setPaintProperty('attractions-glow', 'circle-opacity', !focus ? glowOp(themeOf(latest.current.theme)) : aMatch ? ['case', aMatch, 0.9, 0.05] : 0.05);
     map.setPaintProperty('transport-pt', 'circle-opacity', tOp);
     const iOp = !focus ? 1 : tMatch ? ['case', tMatch, 1, 0.1] : 0.12;
     for (const l of ['transport-sym-rail', 'transport-sym-bus']) {
@@ -709,13 +715,14 @@ function intro(map) {
   };
   if (!reduce) reveal(map);
   set('outline-line', 'line-opacity', 0, 1, 900, 0);
-  set('outline-glow', 'line-opacity', 0, 0.55, 1400, 200);
+  const OG = themeOf(document.documentElement.dataset.theme).outline;
+  set('outline-glow', 'line-opacity', 0, OG.glowOp, 1400, 200);
   set('outline-fill', 'fill-opacity', 0, 0.1, 1200, 300);
   set('muni-line', 'line-opacity', 0, 0.35, 900, 500);
   set('transport-pt', 'circle-opacity', 0, ['match', ['get', 'transport_type'], 'bus', 0.75, 1], 900, 700);
   set('transport-sym-rail', 'icon-opacity', 0, 1, 900, 800);
   set('transport-sym-bus', 'icon-opacity', 0, 1, 900, 900);
-  set('attractions-glow', 'circle-opacity', 0, 0.45, 900, 1100);
+  set('attractions-glow', 'circle-opacity', 0, glowOp(themeOf(document.documentElement.dataset.theme)), 900, 1100);
   set('attractions-pt', 'circle-opacity', 0, 1, 700, 1100);
   set('attractions-pt', 'circle-stroke-opacity', 0, 1, 700, 1100);
   for (const l of LM_BASE) set(l, 'icon-opacity', 0, 1, 800, 1300);
@@ -730,7 +737,8 @@ function intro(map) {
       const breathe = () => {
         if (!map.getLayer('outline-glow')) return;
         const t = performance.now() / 1000;
-        map.setPaintProperty('outline-glow', 'line-opacity', 0.42 + 0.16 * Math.sin(t * 1.2));
+        const o = themeOf(document.documentElement.dataset.theme).outline;   // the study area keeps its slow breathing, gentler in the dark theme
+        map.setPaintProperty('outline-glow', 'line-opacity', o.glowOp + o.breathe * Math.sin(t * 1.2));
         setTimeout(breathe, 80);
       };
       breathe();
@@ -789,9 +797,12 @@ function restyleData(map, theme) {
   set('transport-pt', 'circle-color', transitColorExpr(T));
   set('transport-pt', 'circle-stroke-color', T.stroke);
   set('attractions-glow', 'circle-color', catColorExpr(T));
-  set('attractions-glow', 'circle-opacity', T.ptCore ? 0.2 : 0.45);
+  set('attractions-glow', 'circle-opacity', glowOp(T));
+  set('attractions-glow', 'circle-radius', T.ptCore ? GLOW_R : ['interpolate', ['linear'], ['zoom'], 7, 7, 12, 12, 16, 16]);
+  set('outline-glow', 'line-width', T.outline.glowW);
+  set('outline-glow', 'line-blur', T.outline.glowW * 0.85);
   set('attractions-pt', 'circle-color', T.ptCore || catColorExpr(T));
-  set('attractions-pt', 'circle-stroke-width', T.ptCore ? 1.8 : 1.2);
+  set('attractions-pt', 'circle-stroke-width', ptStroke(T));
   set('transport-hover', 'circle-stroke-color', transitColorExpr(T));
   addTransitIcons(map, theme);
   set('cov-fill', 'fill-color', T.coverage.fill);
@@ -819,7 +830,7 @@ function addDataLayers(map, data, theme) {
   if (data.outline) {
     map.addSource('outline', { type: 'geojson', data: data.outline });
     map.addLayer({ id: 'outline-fill', type: 'fill', source: 'outline', paint: { 'fill-color': T.outline.fill, 'fill-opacity': 0.1 } }, 'muni-line');
-    map.addLayer({ id: 'outline-glow', type: 'line', source: 'outline', paint: { 'line-color': T.outline.glow, 'line-width': 14, 'line-blur': 12, 'line-opacity': 0.55 } });
+    map.addLayer({ id: 'outline-glow', type: 'line', source: 'outline', paint: { 'line-color': T.outline.glow, 'line-width': T.outline.glowW, 'line-blur': T.outline.glowW * 0.85, 'line-opacity': T.outline.glowOp } });
     map.addLayer({ id: 'outline-line', type: 'line', source: 'outline', paint: { 'line-color': T.outline.line, 'line-width': 1.8 } });
   }
   if (data.kde) {
@@ -897,7 +908,7 @@ function addDataLayers(map, data, theme) {
   });
   map.addLayer({
     id: 'attractions-glow', type: 'circle', source: 'attractions',
-    paint: { 'circle-color': catColorExpr(T), 'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 7, 12, 12, 16, 16], 'circle-blur': 1, 'circle-opacity': T.ptCore ? 0.2 : 0.45 },
+    paint: { 'circle-color': catColorExpr(T), 'circle-radius': T.ptCore ? GLOW_R : ['interpolate', ['linear'], ['zoom'], 7, 7, 12, 12, 16, 16], 'circle-blur': 1, 'circle-opacity': glowOp(T) },
   });
   // dark theme: white core, category ring; light theme: filled category dot (unchanged)
   map.addLayer({
@@ -906,7 +917,7 @@ function addDataLayers(map, data, theme) {
       'circle-color': T.ptCore || catColorExpr(T),
       'circle-radius': PT_RADIUS,
       'circle-stroke-color': T.ptCore ? catColorExpr(T) : T.stroke,
-      'circle-stroke-width': T.ptCore ? 1.8 : 1.2,
+      'circle-stroke-width': ptStroke(T),
     },
   });
   // landmark symbols above the dots (see LM_LAYERS)
@@ -928,7 +939,7 @@ function addDataLayers(map, data, theme) {
   // One line per ring, so islands and holes are drawn separately and never joined.
   map.addSource('coverage', { type: 'geojson', data: data.coverageLines || EMPTY, lineMetrics: true });
   if (data.municipalities) map.addLayer({ id: 'cov-fill', type: 'fill', source: 'muni', layout: { visibility: 'none' }, paint: { 'fill-color': T.coverage.fill, 'fill-opacity': 0 } }, map.getLayer('outline-fill') ? 'outline-fill' : undefined);
-  map.addLayer({ id: 'cov-glow', type: 'line', source: 'coverage', layout: { visibility: 'none', 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-width': 6, 'line-blur': 5, 'line-gradient': CLEAR } }, map.getLayer('outline-glow') ? 'outline-glow' : undefined);
+  map.addLayer({ id: 'cov-glow', type: 'line', source: 'coverage', layout: { visibility: 'none', 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-width': 4, 'line-blur': 3.5, 'line-gradient': CLEAR } }, map.getLayer('outline-glow') ? 'outline-glow' : undefined);
   map.addLayer({ id: 'cov-line', type: 'line', source: 'coverage', layout: { visibility: 'none', 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 0.9, 12, 1.4], 'line-gradient': CLEAR } }, map.getLayer('outline-glow') ? 'outline-glow' : undefined);
   // the route sits above the points and symbols but under the map's own labels and controls
   map.addSource('route', { type: 'geojson', data: EMPTY, lineMetrics: true });

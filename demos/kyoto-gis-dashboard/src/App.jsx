@@ -14,7 +14,7 @@ import MusicPlayer from './MusicPlayer.jsx';
 import Panorama from './Panorama.jsx';
 import Seam from './Seam.jsx';
 import Pager from './Pager.jsx';
-import Bento, { Tile } from './Bento.jsx';
+import Bento, { Tile, resetBento } from './Bento.jsx';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
@@ -79,8 +79,11 @@ function Rolling({ value }) {
 
 const isPhone = () => typeof innerWidth === 'number' && innerWidth <= 760;
 // Map and side panel share the width; the panel's share is remembered. Limits keep both usable.
-const PANEL_KEY = 'kyoto-gis-panel', CINE_KEY = 'kyoto-gis-cinematic';
-const PANEL_DEFAULT = 0.42, MIN_PANEL = 300, MIN_MAP = 370, SPLIT = 12;   // the map column includes its 10 px frame
+const PANEL_KEY = 'kyoto-gis-panel-v2', CINE_KEY = 'kyoto-gis-cinematic';
+// about 65 % map and 35 % panel; the panel never gets narrower than 360 px (below that the layout stacks)
+const PANEL_DEFAULT = 0.35, MIN_PANEL = 360, MIN_MAP = 370, SPLIT = 12;   // the map column includes its 10 px frame
+// layouts saved by earlier versions do not fit the new panel: drop them once, so it opens in the default order
+try { ['kyoto-gis-panel', 'kyoto-gis-bento-explore', 'kyoto-gis-bento-place'].forEach((k) => localStorage.removeItem(k)); } catch { /* storage blocked */ }
 const readNum = (k, d) => { try { const v = parseFloat(localStorage.getItem(k)); return Number.isFinite(v) ? v : d; } catch { return d; } };
 const store = (k, v) => { try { localStorage.setItem(k, String(v)); } catch { /* not stored */ } };
 const bboxCache = new WeakMap();
@@ -116,6 +119,19 @@ export default function App() {
   // one information panel beside the map: Explore (search, filters, analysis) and Place (the selected record)
   const [rightOpen, setRightOpen] = useState(() => !isPhone());
   const [ptab, setPtab] = useState('explore');
+  const panelRef = useRef(null);
+  const scrollPos = useRef({});
+  // switching Explore / Place keeps each tab's own scroll position (search, filters and map are state)
+  const switchTab = (t) => {
+    if (t === ptab) return;
+    if (panelRef.current) scrollPos.current[ptab] = panelRef.current.scrollTop;
+    setPtab(t);
+    requestAnimationFrame(() => { if (panelRef.current) panelRef.current.scrollTop = scrollPos.current[t] || 0; });
+  };
+  const [anOpen, setAnOpen] = useState(false);      // Analysis fold
+  const [layersOpen, setLayersOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);  // "More about this place"
+  const [bentoReset, setBentoReset] = useState(0);
   const [panelFrac, setPanelFrac] = useState(() => Math.min(0.9, Math.max(0.1, readNum(PANEL_KEY, PANEL_DEFAULT))));
   const appRef = useRef(null);
   // routes: an explicit start (never assumed), the selected place as the end
@@ -324,7 +340,7 @@ export default function App() {
     requestAnimationFrame(f);
     setTimeout(() => { live = false; el.classList.remove('anim'); requestAnimationFrame(resizeMap); }, 420);
   };
-  const openPanel = (which) => { if (which) setPtab(which); if (!rightOpen) animateLayout(() => setRightOpen(true)); };
+  const openPanel = (which) => { if (which) switchTab(which); if (!rightOpen) animateLayout(() => setRightOpen(true)); };
   const fracLimits = () => { const w = appRef.current?.clientWidth || innerWidth; return [MIN_PANEL / w, Math.max(MIN_PANEL / w, (w - MIN_MAP - SPLIT) / w)]; };
   const setFrac = (v, commit = true) => {
     const [lo, hi] = fracLimits();
@@ -360,7 +376,7 @@ export default function App() {
     if (k != null) { e.preventDefault(); if (!rightOpen) animateLayout(() => setRightOpen(true)); else setFrac(k); }
     else if (e.key === 'Enter') { e.preventDefault(); resetLayout(); }
   };
-  const resetLayout = () => animateLayout(() => { setRightOpen(true); setFrac(PANEL_DEFAULT); });
+  const resetLayout = () => { resetBento('explore-v2'); setBentoReset((n) => n + 1); animateLayout(() => { setRightOpen(true); setFrac(PANEL_DEFAULT); }); };
   const togglePanel = () => animateLayout(() => setRightOpen(!rightOpen));
   // keep the map the right size when the window changes (the grid recomputes; the map follows)
   useEffect(() => { const r = () => requestAnimationFrame(resizeMap); addEventListener('resize', r); return () => removeEventListener('resize', r); }, []);
@@ -403,7 +419,7 @@ export default function App() {
   const topDown = () => mapRef.current?.easeTo({ pitch: 0, bearing: 0, duration: reduceMotion() ? 0 : 600 });
   // the callout swatch follows the theme without re-running the camera move
   const routing = !!(origin && sel && origin.id !== sel.id);
-  const selForMap = useMemo(() => (sel ? { ...sel, color: pointColor(byId.get(sel.id)?.f.properties || {}, theme), ...(routing ? { label: null, fly: false } : {}), ...(rightOpen && ptab === 'place' && !isPhone() ? { photo: null } : {}) } : null), [sel, byId, routing, rightOpen, ptab]); // eslint-disable-line react-hooks/exhaustive-deps
+  const selForMap = useMemo(() => (sel ? { ...sel, color: pointColor(byId.get(sel.id)?.f.properties || {}, theme), ...(routing ? { label: null, fly: false } : {}), ...(rightOpen && ptab === 'place' ? (isPhone() ? { label: null } : { photo: null }) : {}) } : null), [sel, byId, routing, rightOpen, ptab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Press feedback from the Smart Build chapter: sink on press, squash and spring back on release.
   useEffect(() => {
@@ -478,7 +494,7 @@ export default function App() {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.getElementById('dashboard')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
     setSheet(key === 'fares' ? 'journeys' : key === 'sources' ? 'sources' : null);
-    if (key === 'density' || key === 'walk') { if (!isPhone()) openPanel('explore'); else setPtab('explore'); setPanel(key); }
+    if (key === 'density' || key === 'walk') { if (!isPhone()) openPanel('explore'); else switchTab('explore'); setAnOpen(true); setPanel(key); }
     if (key === 'density' && d?.kde) setDensityMode('kde');
     if (key === 'walk' && walk.available) { setSel(null); setWalkShow(true); }
     if (key === 'weather') { select({ id: 'S00019' }); setTab('weather'); } // Kyoto Station
@@ -511,13 +527,14 @@ export default function App() {
   const busRouteObj = d.bus?.routes.find((r) => r.key === busRoute) || null;
   const curTab = tabs.some(([k]) => k === tab) ? tab : 'overview';
   const densityLabel = densityMode === 'kde' ? 'KDE layer on' : densityMode === 'heat' ? 'Heatmap on' : 'Off';
+  const anStatus = [densityMode === 'kde' && 'KDE on', densityMode === 'heat' && 'Heatmap on', walkShow && 'Walking routes shown', busRun && `Bus ${busRun.route.number} shown`, busHl && `Bus ${busHl.route.number} stops`].filter(Boolean);
   const pilotName = walk.pilotInfo?.name;
   const cls = 'app' + (introDone ? '' : dashSeen ? ' intro' : ' waiting') + (rightOpen ? '' : ' no-right') + (selHit ? ' has-sel' : '') + (picking ? ' picking' : '');
   const cov = d.coverage;
   const covBbox = bboxOf(d.coverageLines);
   const toggleCoverage = () => setCovShow((c) => ({ on: !c.on, token: c.token + 1 }));
   const replayCoverage = () => setCovShow((c) => ({ on: true, token: c.token + 1 }));
-  const routePad = isPhone() && rightOpen ? { bottom: Math.round(innerHeight * 0.62) + 20 } : null;
+  const routePad = null;
 
   return (
     <>
@@ -530,7 +547,7 @@ export default function App() {
     <div id="dashboard" className={cls} ref={appRef} style={{ '--pf': panelFrac }}>
       <header className="top">
         <span className="wa-band" aria-hidden="true" />
-        <button type="button" className="nav-btn" onClick={() => { if (rightOpen && ptab === 'explore') setRightOpen(false); else { setPtab('explore'); setRightOpen(true); } }} aria-expanded={rightOpen && ptab === 'explore'} aria-controls="explore-panel">
+        <button type="button" className="nav-btn" onClick={() => { if (rightOpen && ptab === 'explore') animateLayout(() => setRightOpen(false)); else { switchTab('explore'); if (!rightOpen) animateLayout(() => setRightOpen(true)); } }} aria-expanded={rightOpen && ptab === 'explore'} aria-controls="explore-panel">
           <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" /></svg>
           <span>Explore</span>
         </button>
@@ -556,194 +573,220 @@ export default function App() {
           <button className={'btn ghost lang-order' + (enFirst ? ' on' : '')} type="button" onClick={toggleEnFirst} aria-pressed={enFirst} title="Name order: English first, Japanese in brackets"><span aria-hidden="true">{enFirst ? 'EN' : '日'}</span>English first</button>
           <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'journeys' ? null : 'journeys')} aria-expanded={sheet === 'journeys'}><span className="full">Journeys & Fares</span><span className="short" aria-hidden="true">Fares</span></button>
           <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'sources' ? null : 'sources')} aria-expanded={sheet === 'sources'}><span className="full">Data & Sources</span><span className="short" aria-hidden="true">Sources</span></button>
-          {d?.records && <button className="btn ghost" type="button" onClick={() => { setRecFocus(null); setSheet(sheet === 'records' ? null : 'records'); }} aria-expanded={sheet === 'records'}><span className="full">Kyoto City Records</span><span className="short" aria-hidden="true">Records</span></button>}
         </nav>
       </header>
 
-      <aside className="right panel" id="details" aria-label="Information panel">
-        <div className="ptabs" role="tablist" aria-label="Panel">
-          <button type="button" role="tab" id="ptab-explore" aria-selected={ptab === 'explore'} aria-controls="explore-panel" className={ptab === 'explore' ? 'on' : ''} onClick={() => setPtab('explore')}>Explore</button>
-          <button type="button" role="tab" id="ptab-place" aria-selected={ptab === 'place'} aria-controls="place-panel" className={ptab === 'place' ? 'on' : ''} onClick={() => setPtab('place')}>
-            <span>Place</span>{selHit && <small lang="ja">{recordLabel(selHit.f.properties)}</small>}
-          </button>
-          <button type="button" className="x ptabs-x" onClick={togglePanel} aria-label="Hide the panel">×</button>
+      <aside className="right panel" id="details" aria-label="Information panel" ref={panelRef}>
+        <div className="phead">
+          <div className="ptabs" role="tablist" aria-label="Panel">
+            <button type="button" role="tab" id="ptab-explore" aria-selected={ptab === 'explore'} aria-controls="explore-panel" className={ptab === 'explore' ? 'on' : ''} onClick={() => switchTab('explore')}>Explore</button>
+            <button type="button" role="tab" id="ptab-place" aria-selected={ptab === 'place'} aria-controls="place-panel" className={ptab === 'place' ? 'on' : ''} onClick={() => switchTab('place')}>
+              <span>Place</span>{selHit && <small lang="ja">{recordLabel(selHit.f.properties)}</small>}
+            </button>
+            <button type="button" className="x ptabs-x" onClick={togglePanel} aria-label="Hide the panel">×</button>
+          </div>
+          {ptab === 'explore' && (
+            <div className="psearch">
+              <label htmlFor="q" className="sr-only">Search places or transport stops (Japanese, English or record ID)</label>
+              <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" strokeWidth="1.7" /><path d="M13 13l4.5 4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
+              <input id="q" type="search" placeholder="Search places or transport stops" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
+            </div>
+          )}
         </div>
       <div className="left" id="explore-panel" role="tabpanel" aria-labelledby="ptab-explore" hidden={ptab !== 'explore'}>
-        <Bento id="explore">
-        <Tile k="search" w={2} label="Find a place">
-        <section className="card">
-          <h3>Find a place</h3>
-          <input id="q" type="search" placeholder="Attraction or stop · 日本語 / English / ID" aria-label="Search attractions or stops" value={query} onChange={(e) => setQuery(e.target.value)} />
-          {query.trim() && (
-            <ul className="results">
-              {matches.length === 0 && <li className="muted">No records match.</li>}
-              {matches.slice(0, 8).map((f, i) => (
-                <li key={f.properties.id} style={{ '--i': i }}>
-                  <button type="button" onClick={() => select({ id: f.properties.id })}>
-                    <span className="dot" style={{ background: dotColor(f) }} />
-                    <span className="nm" lang="ja"><NameEn p={f.properties} /></span>
-                    <span className="id">{f.properties.id}</span>
-                  </button>
-                </li>
-              ))}
-              {matches.length > 8 && <li className="muted xs more">Showing 8 of {matches.length >= 80 ? '80+' : matches.length} matches. Type more to narrow the list.</li>}
-            </ul>
-          )}
-        </section></Tile>
-
-        <Tile k="study" label="Study area"><StudyArea cov={cov} on={covShow.on} onToggle={toggleCoverage} onReplay={replayCoverage} /></Tile>
-
-        <Tile k="cats" label="Attraction categories">
-        <section className="card">
-          <div className="card-h"><h3>Attraction categories</h3>
-            <label className="switch" title="Hide the attraction points and symbols; density layers stay on">
-              <input type="checkbox" checked={pointsOn} onChange={() => setPointsOn(!pointsOn)} /><i aria-hidden="true" /><span>Points</span>
-            </label>
-          </div>
-          {!pointsOn && <p className="xs muted pts-off">Points hidden. Density layers, search and selection still work.</p>}
-          {ATTRACTION_CATS.filter((c) => catCount[c.key] > 0).map((c) => (
-            <label className="chk" key={c.key} onMouseEnter={() => setFocus({ kind: 'cat', key: c.key })} onMouseLeave={() => setFocus(null)}>
-              <input type="checkbox" checked={cats.includes(c.key)} onChange={() => toggle(cats, setCats, c.key)} />
-              <span className="sw" style={{ background: T.cat[c.key] }} />
-              <span>{c.label}</span>
-              <span className="n">{catCount[c.key] || 0}</span>
-            </label>
-          ))}
-          <div className="row-btns"><button className="link" type="button" onClick={() => setCats(ATTRACTION_CATS.map((c) => c.key))}>All</button><button className="link" type="button" onClick={() => setCats([])}>None</button></div>
-        </section></Tile>
-
-        {d.records && (
-          <Tile k="records" label="Kyoto City records">
-          <section className="card">
-            <h3>Kyoto City records</h3>
-            <label className="chk">
-              <input type="checkbox" checked={geoOn} onChange={() => setGeoOn(!geoOn)} />
-              <span className="sw ring" style={{ borderColor: T.geo.land }} />
-              <span>Places and landscape</span>
-              <span className="n">{d.geography?.features.filter((g) => g.geometry.type === 'Point').length || 0}</span>
-            </label>
-            <p className="xs muted">Place names, mountains, rivers and springs from the city's sightseeing list, placed where two sources agree.</p>
-            <button className="link" type="button" onClick={() => { setRecFocus(null); setSheet('records'); }}>All {d.records.records.length} records and what was done with each →</button>
-          </section></Tile>
+        {query.trim() && (
+          <ul className="results card" aria-label="Search results">
+            {matches.length === 0 && <li className="muted">No records match.</li>}
+            {matches.slice(0, 8).map((f, i) => (
+              <li key={f.properties.id} style={{ '--i': i }}>
+                <button type="button" onClick={() => select({ id: f.properties.id })}>
+                  <span className="dot" style={{ background: dotColor(f) }} />
+                  <span className="nm" lang="ja"><NameEn p={f.properties} /></span>
+                  <span className="id">{f.properties.id}</span>
+                </button>
+              </li>
+            ))}
+            {matches.length > 8 && <li className="muted xs more">Showing 8 of {matches.length >= 80 ? '80+' : matches.length} matches. Type more to narrow the list.</li>}
+          </ul>
         )}
+        <Bento id="explore-v2" resetToken={bentoReset}>
+          <Tile k="study" w={2} label="Study area"><StudyArea cov={cov} on={covShow.on} onToggle={toggleCoverage} onReplay={replayCoverage} /></Tile>
 
-        <Tile k="transit" label="Public transport">
-        <section className="card">
-          <h3>Public transport</h3>
-          {TRANSPORT_TYPES.map((t) => (
-            <label className="chk" key={t.key} title={t.cats.map((c) => `${subCount[c] || 0} ${CATEGORY_LABEL[c].toLowerCase()}${(subCount[c] || 0) === 1 ? '' : 's'}`).join(' + ')} onMouseEnter={() => setFocus({ kind: 'type', key: t.key })} onMouseLeave={() => setFocus(null)}>
-              <input type="checkbox" checked={types.includes(t.key)} onChange={() => toggle(types, setTypes, t.key)} />
-              <img className="sw ico" src={iconURL(t.key, theme)} alt="" />
-              <span>{t.label}</span>
-              <span className="n">{(typeCount[t.key] || 0).toLocaleString('en-US')}</span>
-            </label>
-          ))}
-        </section></Tile>
-
-        <Tile k="analysis" w={2} label="Analysis">
-        <section className="card analysis">
-          <h3>Analysis</h3>
-          <button type="button" className={'entry' + (panel === 'density' ? ' open' : '')} aria-expanded={panel === 'density'} aria-controls="an-density" onClick={() => setPanel(panel === 'density' ? null : 'density')}>
-            <span className="entry-t">Attraction Density</span>
-            <span className={'entry-s' + (densityMode !== 'off' ? ' on' : '')}>{densityLabel}</span>
-            <i aria-hidden="true" />
-          </button>
-          {panel === 'density' && (
-            <div className="entry-body" id="an-density">
-              <div className="seg" role="radiogroup" aria-label="Density layer">
-                {[['off', 'Off'], ['kde', 'KDE result'], ['heat', 'Visual heatmap']].map(([k, l]) => (
-                  <button key={k} type="button" role="radio" aria-checked={densityMode === k} className={densityMode === k ? 'on' : ''} onClick={() => setDensityMode(k)} disabled={k === 'kde' && !d.kde}>{l}</button>
-                ))}
-              </div>
-              {densityMode === 'kde' && d.kdeMeta && (
-                <div className="legend">
-                  <div className="ramp">{kdeColors(theme).map((c, i) => <span key={c} style={{ background: c }} title={`${KDE_BREAKS[i]}+`} />)}</div>
-                  <div className="ramp-l">{KDE_BREAKS.map((b) => <span key={b}>{b}</span>)}</div>
-                  <p className="xs">Records per km² · {d.kdeMeta.search_radius_m / 1000} km search radius · {d.kdeMeta.cell_size_m} m cells. Follows the category filter.</p>
-                </div>
-              )}
-              {densityMode === 'heat' && <p className="xs warnline">Visual heatmap for display only. Its radius changes with zoom, so it is not a Kernel Density result.</p>}
-              <p className="xs limit">Shows where attraction records concentrate. It does not measure visitor numbers or crowding.</p>
+          <Tile k="cats" label="Attraction categories">
+          <section className="card filt">
+            <div className="card-h"><h3>Attraction categories</h3>
+              <span className="mini-acts"><button className="link" type="button" onClick={() => setCats(ATTRACTION_CATS.map((c) => c.key))}>All</button><button className="link" type="button" onClick={() => setCats([])}>None</button></span>
             </div>
-          )}
+            {ATTRACTION_CATS.filter((c) => catCount[c.key] > 0).map((c) => (
+              <label className="chk" key={c.key} onMouseEnter={() => setFocus({ kind: 'cat', key: c.key })} onMouseLeave={() => setFocus(null)}>
+                <input type="checkbox" checked={cats.includes(c.key)} onChange={() => toggle(cats, setCats, c.key)} />
+                <span className="sw" style={{ background: T.cat[c.key] }} />
+                <span>{c.label}</span>
+                <span className="n">{catCount[c.key] || 0}</span>
+              </label>
+            ))}
+          </section></Tile>
 
-          <button type="button" className={'entry' + (panel === 'walk' ? ' open' : '')} aria-expanded={panel === 'walk'} aria-controls="an-walk" onClick={() => setPanel(panel === 'walk' ? null : 'walk')}>
-            <span className="entry-t">Walking Access</span>
-            <span className={'entry-s' + (walkShow ? ' on' : '')}>{!walk.available ? 'Not calculated' : walk.pilot ? `Pilot · ${walk.scopeIds.size} records` : `${walk.scopeIds.size} records`}</span>
-            <i aria-hidden="true" />
-          </button>
-          {panel === 'walk' && (
-            <div className="entry-body" id="an-walk" aria-disabled={!walk.available}>
-              {!walk.available && <p className="xs limit">Walking analysis not yet available. These controls stay disabled until real network results are loaded.</p>}
-              {walk.pilot && <p className="xs limit">Pilot area only: {pilotName}, {walk.scopeIds.size} named attraction records (dashed box on the map). Not a Kyoto Prefecture result.</p>}
-              {walk.available && !walk.pilot && <p className="xs limit">All {walk.scopeIds.size} attraction records in Kyoto Prefecture. Walkability is assumed from road class, and results are not checked one by one.</p>}
-              <label className="xs" htmlFor="walkmax">Max walking distance along roads: <b className="mono">{maxWalk} m</b></label>
-              <input id="walkmax" type="range" min="100" max="2000" step="50" value={maxWalk} onChange={(e) => { setMaxWalk(Number(e.target.value)); setWalkShow(true); }} disabled={!walk.available} />
-              <div className="seg sm">
-                {[['bus', 'Nearest bus'], ['rail', 'Nearest rail']].map(([k, l]) => (
-                  <button key={k} type="button" disabled={!walk.available} className={walkTypes.includes(k) ? 'on' : ''} aria-pressed={walkTypes.includes(k)} onClick={() => { setWalkTypes(walkTypes.includes(k) ? (walkTypes.length > 1 ? walkTypes.filter((x) => x !== k) : walkTypes) : [...walkTypes, k]); setWalkShow(true); }}>{l}</button>
-                ))}
-              </div>
-              {walk.available && !walk.pilot && (
-                <>
-                  <p className="xs ident-h" id="walk-ident-h">Include records</p>
-                  <div className="seg sm ident" role="group" aria-labelledby="walk-ident-h">
-                    {IDENTITIES.map(({ key, label, hint }) => (
-                      <button key={key} type="button" title={hint} className={walkIdent.includes(key) ? 'on' : ''} aria-pressed={walkIdent.includes(key)} onClick={() => { setWalkIdent(walkIdent.includes(key) ? (walkIdent.length > 1 ? walkIdent.filter((x) => x !== key) : walkIdent) : [...walkIdent, key]); setWalkShow(true); }}>
-                        {label} <span className="mono">{identCount[key] ?? 0}</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-              {walk.available && (
-                <div className="walk-map">
-                  <button type="button" className={'btn sm' + (walkShow ? '' : ' ghost')} onClick={() => { if (sel?.layer === 'attraction') setSel(null); setWalkShow(!walkShow || sel?.layer === 'attraction'); }}>
-                    {walkShow && !(sel?.layer === 'attraction') ? 'Hide routes on map' : walk.pilot ? 'Show pilot routes on map' : 'Show routes on map'}
-                  </button>
-                </div>
-              )}
-              {coverage && (
-                <div className="cov">
-                  <div className="cov-big"><b className="mono"><Rolling value={coverage.within} /></b><span>of {coverage.denominator} {walk.pilot ? 'pilot ' : ''}records within {maxWalk} m of a {walkTypes.join(' or ')} stop</span></div>
-                  <ul className="xs states">
-                    <li><i className="st far" />Beyond {maxWalk} m: {coverage.beyond}</li>
-                    <li><i className="st none" />No {walkTypes.join(' or ')} stop within {(CUTOFF_M / 1000).toFixed(0)} km on foot: {coverage.noStop}</li>
-                    <li><i className="st cut" />Not connected to the street network: {coverage.notConnected}</li>
-                    <li><i className="st nc" />Not calculated: {coverage.notComputed}{walk.pilot ? ` in the pilot · ${(A.length - walk.scopeIds.size).toLocaleString('en-US')} records outside it` : ''}</li>
-                  </ul>
-                  <details className="more-d"><summary>How this is counted</summary>
-                    <p className="xs">Routes follow the road network; no straight lines are used. Counted over records in the current category and record filters, each attraction once, using its nearer selected stop type. "No stop within 3 km" can also mean the stop is missing from OpenStreetMap. Stops in neighbouring prefectures are not in the data; affected results are flagged. Click an attraction to see only its routes.</p>
-                  </details>
-                </div>
-              )}
+          <Tile k="transit" label="Public transport and layers">
+          <div className="tcol">
+          <section className="card filt">
+            <div className="card-h"><h3>Public transport</h3>
+              <span className="mini-acts"><button className="link" type="button" onClick={() => setTypes(TRANSPORT_TYPES.map((t) => t.key))}>All</button><button className="link" type="button" onClick={() => setTypes([])}>None</button></span>
             </div>
-          )}
-
-          {d.bus && (
-            <>
-              <button type="button" className={'entry' + (panel === 'bus' ? ' open' : '')} aria-expanded={panel === 'bus'} aria-controls="an-bus" onClick={() => setPanel(panel === 'bus' ? null : 'bus')}>
-                <span className="entry-t">Bus Routes</span>
-                <span className={'entry-s' + (busRun || busHl ? ' on' : '')}>{busRun ? `Route ${busRun.route.number} shown` : busHl ? `Route ${busHl.route.number} stops` : `${d.bus.coverage.routes} routes`}</span>
+            {TRANSPORT_TYPES.map((t) => (
+              <label className="chk" key={t.key} title={t.cats.map((c) => `${subCount[c] || 0} ${CATEGORY_LABEL[c].toLowerCase()}${(subCount[c] || 0) === 1 ? '' : 's'}`).join(' + ')} onMouseEnter={() => setFocus({ kind: 'type', key: t.key })} onMouseLeave={() => setFocus(null)}>
+                <input type="checkbox" checked={types.includes(t.key)} onChange={() => toggle(types, setTypes, t.key)} />
+                <img className="sw ico" src={iconURL(t.key, theme)} alt="" />
+                <span>{t.label}</span>
+                <span className="n">{(typeCount[t.key] || 0).toLocaleString('en-US')}</span>
+              </label>
+            ))}
+          </section>
+          <section className="card mapdisp">
+            <label className="switch pts" title="Hide the attraction points and symbols; density layers stay on">
+                          <input type="checkbox" checked={pointsOn} onChange={() => setPointsOn(!pointsOn)} /><i aria-hidden="true" /><span>Points on map</span>
+                        </label>
+                        {!pointsOn && <p className="xs muted pts-off">Points hidden. Density layers, search and selection still work.</p>}
+          </section>
+          {d.geography && (
+            <section className={'card fold' + (layersOpen ? ' open' : '')}>
+              <button type="button" className="fold-h" aria-expanded={layersOpen} aria-controls="layers-body" onClick={() => setLayersOpen(!layersOpen)}>
+                <h3>Additional layers</h3>
+                <span className="fold-s">{geoOn ? <span className="st-on">Places and landscape on</span> : <span className="muted">Kyoto City places and landscape</span>}</span>
                 <i aria-hidden="true" />
               </button>
-              {panel === 'bus' && (
-                <div className="entry-body" id="an-bus">
-                  <p className="xs limit">Kyoto City Bus only (one operator), not every bus route in the prefecture. Line and stop order from OpenStreetMap; not live positions.</p>
-                  <label className="xs" htmlFor="bus-route">Route</label>
-                  <select id="bus-route" className="sel" value={busRoute} onChange={(e) => pickBusRoute(e.target.value)}>
-                    <option value="">Choose a route…</option>
-                    {d.bus.routes.map((r) => <option key={r.key} value={r.key}>{r.number}{r.variants.length ? '' : ' (stops only)'} · {r.via_ja}</option>)}
-                  </select>
-                  {busRouteObj && <BusVariants route={busRouteObj} active={busRun?.variant.id} onPick={(v) => startBus(busRouteObj, v.id)} />}
-                  {busRouteObj && <BusFare route={busRouteObj} />}
-                  {busErr && <p className="xs warnline" role="alert">{busErr}</p>}
+              {layersOpen && (
+                <div id="layers-body">
+                  <label className="chk">
+                    <input type="checkbox" checked={geoOn} onChange={() => setGeoOn(!geoOn)} />
+                    <span className="sw ring" style={{ borderColor: T.geo.land }} />
+                    <span>Places and landscape</span>
+                    <span className="n">{d.geography.features.filter((g) => g.geometry.type === 'Point').length}</span>
+                  </label>
+                  <p className="xs muted">Place names, mountains, rivers and springs from the Kyoto City sightseeing list, placed where two sources agree. The full record list is under Data &amp; Sources.</p>
                 </div>
               )}
-            </>
+            </section>
           )}
-        </section></Tile>
+          </div></Tile>
+
+          <Tile k="analysis" w={2} label="Analysis">
+          <section className={'card fold analysis' + (anOpen ? ' open' : '')}>
+            <button type="button" className="fold-h" aria-expanded={anOpen} aria-controls="an-body" onClick={() => setAnOpen(!anOpen)}>
+              <h3>Analysis</h3>
+              <span className="fold-s">{anStatus.length ? anStatus.map((s) => <span key={s} className="st-on">{s}</span>) : <span className="muted">Density, walking access, bus routes</span>}</span>
+              <i aria-hidden="true" />
+            </button>
+            {anOpen && (
+            <div id="an-body">
+            <button type="button" className={'entry' + (panel === 'density' ? ' open' : '')} aria-expanded={panel === 'density'} aria-controls="an-density" onClick={() => setPanel(panel === 'density' ? null : 'density')}>
+              <span className="entry-t">Attraction Density</span>
+              <span className={'entry-s' + (densityMode !== 'off' ? ' on' : '')}>{densityLabel}</span>
+              <i aria-hidden="true" />
+            </button>
+            {panel === 'density' && (
+              <div className="entry-body" id="an-density">
+                <div className="seg" role="radiogroup" aria-label="Density layer">
+                  {[['off', 'Off'], ['kde', 'KDE result'], ['heat', 'Visual heatmap']].map(([k, l]) => (
+                    <button key={k} type="button" role="radio" aria-checked={densityMode === k} className={densityMode === k ? 'on' : ''} onClick={() => setDensityMode(k)} disabled={k === 'kde' && !d.kde}>{l}</button>
+                  ))}
+                </div>
+                {densityMode === 'kde' && d.kdeMeta && (
+                  <div className="legend">
+                    <div className="ramp">{kdeColors(theme).map((c, i) => <span key={c} style={{ background: c }} title={`${KDE_BREAKS[i]}+`} />)}</div>
+                    <div className="ramp-l">{KDE_BREAKS.map((b) => <span key={b}>{b}</span>)}</div>
+                    <p className="xs">Records per km² · {d.kdeMeta.search_radius_m / 1000} km search radius · {d.kdeMeta.cell_size_m} m cells. Follows the category filter.</p>
+                  </div>
+                )}
+                {densityMode === 'heat' && <p className="xs warnline">Visual heatmap for display only. Its radius changes with zoom, so it is not a Kernel Density result.</p>}
+                <p className="xs limit">Shows where attraction records concentrate. It does not measure visitor numbers or crowding.</p>
+              </div>
+            )}
+
+            <button type="button" className={'entry' + (panel === 'walk' ? ' open' : '')} aria-expanded={panel === 'walk'} aria-controls="an-walk" onClick={() => setPanel(panel === 'walk' ? null : 'walk')}>
+              <span className="entry-t">Walking Access</span>
+              <span className={'entry-s' + (walkShow ? ' on' : '')}>{!walk.available ? 'Not calculated' : walk.pilot ? `Pilot · ${walk.scopeIds.size} records` : `${walk.scopeIds.size} records`}</span>
+              <i aria-hidden="true" />
+            </button>
+            {panel === 'walk' && (
+              <div className="entry-body" id="an-walk" aria-disabled={!walk.available}>
+                {!walk.available && <p className="xs limit">Walking analysis not yet available. These controls stay disabled until real network results are loaded.</p>}
+                {walk.pilot && <p className="xs limit">Pilot area only: {pilotName}, {walk.scopeIds.size} named attraction records (dashed box on the map). Not a Kyoto Prefecture result.</p>}
+                {walk.available && !walk.pilot && <p className="xs limit">All {walk.scopeIds.size} attraction records in Kyoto Prefecture. Walkability is assumed from road class, and results are not checked one by one.</p>}
+                <label className="xs" htmlFor="walkmax">Max walking distance along roads: <b className="mono">{maxWalk} m</b></label>
+                <input id="walkmax" type="range" min="100" max="2000" step="50" value={maxWalk} onChange={(e) => { setMaxWalk(Number(e.target.value)); setWalkShow(true); }} disabled={!walk.available} />
+                <div className="seg sm">
+                  {[['bus', 'Nearest bus'], ['rail', 'Nearest rail']].map(([k, l]) => (
+                    <button key={k} type="button" disabled={!walk.available} className={walkTypes.includes(k) ? 'on' : ''} aria-pressed={walkTypes.includes(k)} onClick={() => { setWalkTypes(walkTypes.includes(k) ? (walkTypes.length > 1 ? walkTypes.filter((x) => x !== k) : walkTypes) : [...walkTypes, k]); setWalkShow(true); }}>{l}</button>
+                  ))}
+                </div>
+                {walk.available && !walk.pilot && (
+                  <>
+                    <p className="xs ident-h" id="walk-ident-h">Include records</p>
+                    <div className="seg sm ident" role="group" aria-labelledby="walk-ident-h">
+                      {IDENTITIES.map(({ key, label, hint }) => (
+                        <button key={key} type="button" title={hint} className={walkIdent.includes(key) ? 'on' : ''} aria-pressed={walkIdent.includes(key)} onClick={() => { setWalkIdent(walkIdent.includes(key) ? (walkIdent.length > 1 ? walkIdent.filter((x) => x !== key) : walkIdent) : [...walkIdent, key]); setWalkShow(true); }}>
+                          {label} <span className="mono">{identCount[key] ?? 0}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {walk.available && (
+                  <div className="walk-map">
+                    <button type="button" className={'btn sm' + (walkShow ? '' : ' ghost')} onClick={() => { if (sel?.layer === 'attraction') setSel(null); setWalkShow(!walkShow || sel?.layer === 'attraction'); }}>
+                      {walkShow && !(sel?.layer === 'attraction') ? 'Hide routes on map' : walk.pilot ? 'Show pilot routes on map' : 'Show routes on map'}
+                    </button>
+                  </div>
+                )}
+                {coverage && (
+                  <div className="cov">
+                    <div className="cov-big"><b className="mono"><Rolling value={coverage.within} /></b><span>of {coverage.denominator} {walk.pilot ? 'pilot ' : ''}records within {maxWalk} m of a {walkTypes.join(' or ')} stop</span></div>
+                    <ul className="xs states">
+                      <li><i className="st far" />Beyond {maxWalk} m: {coverage.beyond}</li>
+                      <li><i className="st none" />No {walkTypes.join(' or ')} stop within {(CUTOFF_M / 1000).toFixed(0)} km on foot: {coverage.noStop}</li>
+                      <li><i className="st cut" />Not connected to the street network: {coverage.notConnected}</li>
+                      <li><i className="st nc" />Not calculated: {coverage.notComputed}{walk.pilot ? ` in the pilot · ${(A.length - walk.scopeIds.size).toLocaleString('en-US')} records outside it` : ''}</li>
+                    </ul>
+                    <details className="more-d"><summary>How this is counted</summary>
+                      <p className="xs">Routes follow the road network; no straight lines are used. Counted over records in the current category and record filters, each attraction once, using its nearer selected stop type. "No stop within 3 km" can also mean the stop is missing from OpenStreetMap. Stops in neighbouring prefectures are not in the data; affected results are flagged. Click an attraction to see only its routes.</p>
+                    </details>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {d.bus && (
+              <>
+                <button type="button" className={'entry' + (panel === 'bus' ? ' open' : '')} aria-expanded={panel === 'bus'} aria-controls="an-bus" onClick={() => setPanel(panel === 'bus' ? null : 'bus')}>
+                  <span className="entry-t">Bus Routes</span>
+                  <span className={'entry-s' + (busRun || busHl ? ' on' : '')}>{busRun ? `Route ${busRun.route.number} shown` : busHl ? `Route ${busHl.route.number} stops` : `${d.bus.coverage.routes} routes`}</span>
+                  <i aria-hidden="true" />
+                </button>
+                {panel === 'bus' && (
+                  <div className="entry-body" id="an-bus">
+                    <p className="xs limit">Kyoto City Bus only (one operator), not every bus route in the prefecture. Line and stop order from OpenStreetMap; not live positions.</p>
+                    <label className="xs" htmlFor="bus-route">Route</label>
+                    <select id="bus-route" className="sel" value={busRoute} onChange={(e) => pickBusRoute(e.target.value)}>
+                      <option value="">Choose a route…</option>
+                      {d.bus.routes.map((r) => <option key={r.key} value={r.key}>{r.number}{r.variants.length ? '' : ' (stops only)'} · {r.via_ja}</option>)}
+                    </select>
+                    {busRouteObj && <BusVariants route={busRouteObj} active={busRun?.variant.id} onPick={(v) => startBus(busRouteObj, v.id)} />}
+                    {busRouteObj && <BusFare route={busRouteObj} />}
+                    {busErr && <p className="xs warnline" role="alert">{busErr}</p>}
+                  </div>
+                )}
+              </>
+            )}
+            </div>
+            )}
+          </section></Tile>
+
         </Bento>
+        <p className="explore-foot xs">
+          <button className="link" type="button" onClick={() => setSheet('sources')}>Data &amp; Sources{d.records ? ` · ${d.records.records.length} Kyoto City records` : ''}</button>
+          <button className="link" type="button" onClick={resetLayout} title="Default split and card order">Reset layout</button>
+        </p>
       </div>
       <div className="place" id="place-panel" role="tabpanel" aria-labelledby="ptab-place" hidden={ptab !== 'place'}>
         {!selHit ? (
@@ -753,37 +796,45 @@ export default function App() {
             {origin && <p className="xs">Route start: <b lang="ja">{origin.label}</b>. Select a destination to get a route.</p>}
           </section>
         ) : (
-          <Bento id="place" key={sel.id}>
-            <Tile k="summary" label="Place summary"><Summary hit={selHit} pm={d.pointMuni} photos={d.photos} color={dotColor(selHit.f)} onClose={() => setSel(null)} onHide={togglePanel} /></Tile>
-            <Tile k="route" label="Route"><RouteCard sel={sel} origin={origin} res={routeRes} mode={routeMode} picking={picking} locErr={locErr}
+          <div className="pstack" key={sel.id}>
+            <Summary hit={selHit} pm={d.pointMuni} photos={d.photos} color={dotColor(selHit.f)} onClose={() => setSel(null)} onBack={() => switchTab('explore')} />
+            <RouteCard sel={sel} origin={origin} res={routeRes} mode={routeMode} picking={picking} locErr={locErr}
               onMode={setRouteMode} onPick={() => setPicking(!picking)} onHere={() => setOrigin({ key: sel.id, id: sel.id, coords: sel.coords, label: sel.label, kind: sel.layer })}
-              onLocate={useMyLocation} onClear={() => { setOrigin(null); setPicking(false); }} onRetry={() => setRouteTry((n) => n + 1)} /></Tile>
-            <Tile k="details" w={2} label="Details"><div className="stack">
-            <div className="tabs" role="tablist" aria-label="Details">
-              {tabs.map(([k, l]) => <button key={k} type="button" role="tab" id={`tab-${k}`} aria-selected={curTab === k} aria-controls={`pane-${k}`} className={curTab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
-            </div>
-            <div className="pane card" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" hidden={curTab !== 'overview'}>
-              <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} rel={d.relations} byId={byId} onOpen={(id) => select({ id })} recs={recById} onRecord={(id) => { setRecFocus(id); setSheet('records'); }} />
-            </div>
-            {selStopKeys && (
-              <div className="pane card" role="tabpanel" id="pane-bus" aria-labelledby="tab-bus" hidden={curTab !== 'bus'}>
-                <BusAtStop bus={d.bus} stopKeys={selStopKeys} active={busRun?.variant.id} hlKey={busHl?.route.key} onStart={(route, v, key) => startBus(route, v.id, key, sel.id)} onHighlight={highlightBus} err={busErr} />
+              onLocate={useMyLocation} onClear={() => { setOrigin(null); setPicking(false); }} onRetry={() => setRouteTry((n) => n + 1)} />
+            <section className={'card fold pmore' + (moreOpen ? ' open' : '')}>
+              <button type="button" className="fold-h" aria-expanded={moreOpen} aria-controls="pmore-body" onClick={() => setMoreOpen(!moreOpen)}>
+                <h3>More about this place</h3>
+                <span className="fold-s muted">Record, history, weather, journeys</span>
+                <i aria-hidden="true" />
+              </button>
+              {moreOpen && (
+              <div id="pmore-body" className="stack">
+              <div className="tabs" role="tablist" aria-label="Details">
+                {tabs.map(([k, l]) => <button key={k} type="button" role="tab" id={`tab-${k}`} aria-selected={curTab === k} aria-controls={`pane-${k}`} className={curTab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
               </div>
-            )}
-            {isAttr && (
-              <div className="pane card" role="tabpanel" id="pane-walk" aria-labelledby="tab-walk" hidden={curTab !== 'walk'}>
-                <Walking available={walk} index={walkIndex} id={sel.id} byId={byId} maxWalk={maxWalk} />
+              <div className="pane" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" hidden={curTab !== 'overview'}>
+                <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} rel={d.relations} byId={byId} onOpen={(id) => select({ id })} recs={recById} onRecord={(id) => { setRecFocus(id); setSheet('records'); }} />
               </div>
-            )}
-            {/* kept mounted so the forecast and the planned visit survive a change of tab */}
-            <div className="pane card" role="tabpanel" id="pane-weather" aria-labelledby="tab-weather" hidden={curTab !== 'weather'}>
-              <Weather target={{ id: sel.id, lat: sel.coords[1], lon: sel.coords[0] }} visit={visit} onVisit={setVisit} />
-            </div>
-            <div className="pane card" role="tabpanel" id="pane-journeys" aria-labelledby="tab-journeys" hidden={curTab !== 'journeys'}>
-              <PlaceJourneys journeys={d.journeys} id={sel.id} onOpen={() => setSheet('journeys')} />
-            </div>
-            </div></Tile>
-          </Bento>
+              {selStopKeys && (
+                <div className="pane" role="tabpanel" id="pane-bus" aria-labelledby="tab-bus" hidden={curTab !== 'bus'}>
+                  <BusAtStop bus={d.bus} stopKeys={selStopKeys} active={busRun?.variant.id} hlKey={busHl?.route.key} onStart={(route, v, key) => startBus(route, v.id, key, sel.id)} onHighlight={highlightBus} err={busErr} />
+                </div>
+              )}
+              {isAttr && (
+                <div className="pane" role="tabpanel" id="pane-walk" aria-labelledby="tab-walk" hidden={curTab !== 'walk'}>
+                  <Walking available={walk} index={walkIndex} id={sel.id} byId={byId} maxWalk={maxWalk} />
+                </div>
+              )}
+              <div className="pane" role="tabpanel" id="pane-weather" aria-labelledby="tab-weather" hidden={curTab !== 'weather'}>
+                <Weather target={{ id: sel.id, lat: sel.coords[1], lon: sel.coords[0] }} visit={visit} onVisit={setVisit} />
+              </div>
+              <div className="pane" role="tabpanel" id="pane-journeys" aria-labelledby="tab-journeys" hidden={curTab !== 'journeys'}>
+                <PlaceJourneys journeys={d.journeys} id={sel.id} onOpen={() => setSheet('journeys')} />
+              </div>
+              </div>
+              )}
+            </section>
+          </div>
         )}
       </div>
       </aside>
@@ -880,7 +931,7 @@ export default function App() {
         {failed.length > 0 && core && <div className="toast" role="alert">Some files failed to load: {failed.map(([, v]) => v.file).join(', ')}</div>}
 
         {sheet === 'journeys' && <Journeys journeys={d.journeys} onClose={() => setSheet(null)} />}
-        {sheet === 'sources' && <Sources d={d} status={loaded.status} walk={walk} failed={failed} onClose={() => setSheet(null)} />}
+        {sheet === 'sources' && <Sources d={d} status={loaded.status} walk={walk} failed={failed} onClose={() => setSheet(null)} onRecords={() => { setRecFocus(null); setSheet('records'); }} />}
         {sheet === 'records' && d.records && <Records data={d.records} geo={d.geography} byId={byId} focus={recFocus}
           onOpen={(id) => { setSheet(null); select({ id }); }}
           onShow={(f) => { setSheet(null); setGeoOn(true); mapRef.current?.flyTo({ center: f.geometry.coordinates, zoom: 14, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1200, essential: true }); }}
@@ -985,10 +1036,11 @@ const BADGE = { 'wikidata-related': 'Related place', 'commons-geo': 'Nearby phot
 // scripts/study_area_coverage.py. Kyoto City's wards are a lower level and are listed, not counted.
 const TYPE_PL = { city: ['city', 'cities'], town: ['town', 'towns'], village: ['village', 'villages'] };
 function StudyArea({ cov, on, onToggle, onReplay }) {
+  const [open, setOpen] = useState(false);
   if (!cov) {
     return (
       <section className="card study">
-        <h3>Study area</h3>
+        <div className="sa-h"><h3>Study area</h3></div>
         <p className="xs warnline">Coverage not available: study_area_coverage.json did not load. It needs the MLIT N03 municipal boundaries (scripts/study_area_coverage.py).</p>
       </section>
     );
@@ -997,30 +1049,32 @@ function StudyArea({ cov, on, onToggle, onReplay }) {
   const types = Object.entries(c.by_type).filter(([, n]) => n > 0).map(([t, n]) => `${n} ${TYPE_PL[t][n === 1 ? 0 : 1]}`).join(' · ');
   return (
     <section className="card study">
-      <h3>Study area</h3>
-      <div className="sa-top">
-        <div><b>{cov.study_area.name}</b><span className="xs muted mono">{cov.study_area.area_km2.toLocaleString('en-US')} km²</span></div>
+      <div className="sa-h"><h3>Study area</h3><b>{cov.study_area.name}</b></div>
+      <div className="sa-nums">
         <div className="sa-n"><b className="mono">{c.covered}</b><span>{cov.label}</span></div>
+        <div className="sa-a"><b className="mono">{cov.study_area.area_km2.toLocaleString('en-US')}</b><span>km² area</span></div>
       </div>
-      <p className="xs muted">{types}{c.partial ? ` · ${c.full} full, ${c.partial} partial` : ' · all fully covered'}</p>
-      <div className="row-btns">
+      <p className="sa-types">{types}{c.partial ? ` · ${c.full} full, ${c.partial} partial` : ' · all fully covered'}</p>
+      <div className="sa-acts">
         <button type="button" className={'btn sm' + (on ? '' : ' ghost')} aria-pressed={on} onClick={onToggle}>{on ? 'Hide coverage' : 'Show coverage'}</button>
-        {on && <button type="button" className="btn ghost sm" onClick={onReplay}>Replay</button>}
+        {on && <button type="button" className="link" onClick={onReplay}>Replay</button>}
+        <button type="button" className="link sa-more" aria-expanded={open} aria-controls="sa-details" onClick={() => setOpen(!open)}>Coverage details<i aria-hidden="true" /></button>
       </div>
-      <details className="more-d">
-        <summary>Municipalities and how they are counted</summary>
-        <ul className="sa-list">
-          {cov.municipalities.map((m) => (
-            <li key={m.code}>
-              <span lang="ja">{m.name}</span>
-              <span className="xs muted">{m.type}{m.wards ? ` · ${m.wards.length} wards` : ''}</span>
-              <span className={'sa-st ' + m.status.replace(' ', '-')}>{m.status === 'full' ? 'Full' : m.status === 'partial' ? `Partial ${(m.share * 100).toFixed(1)}%` : 'Not counted'}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="xs">{cov.method}</p>
-        <p className="xs muted">Source: {cov.source}. The study area is {cov.study_area.definition}, so every municipality is inside it. The lines on the map are simplified for drawing (about 15 m); the counts use the full-precision polygons.</p>
-      </details>
+      {open && (
+        <div id="sa-details" className="sa-details">
+          <ul className="sa-list">
+            {cov.municipalities.map((m) => (
+              <li key={m.code}>
+                <span lang="ja">{m.name}</span>
+                <span className="xs muted">{m.type}{m.wards ? ` · ${m.wards.length} wards` : ''}</span>
+                <span className={'sa-st ' + m.status.replace(' ', '-')}>{m.status === 'full' ? 'Full' : m.status === 'partial' ? `Partial ${(m.share * 100).toFixed(1)}%` : 'Not counted'}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="xs">{cov.method}</p>
+          <p className="xs muted">Source: {cov.source}. The study area is {cov.study_area.definition}, so every municipality is inside it. The lines on the map are simplified for drawing (about 15 m); the counts use the full-precision polygons.</p>
+        </div>
+      )}
     </section>
   );
 }
@@ -1071,41 +1125,41 @@ function RouteCard({ sel, origin, res, mode, picking, locErr, onMode, onPick, on
   );
 }
 
-function Summary({ hit, pm, photos, color, onClose, onHide }) {
+function Summary({ hit, pm, photos, color, onClose, onBack }) {
   const p = hit.f.properties;
   const [imgOk, setImgOk] = useState(false);
   const ph = hit.layer === 'attraction' ? photos?.photos?.[p.id] : null;
   const muniCode = pm?.points?.[p.id];
   return (
     <section className={'card detail' + (ph ? ' with-photo' : '')}>
-      {/* hazy moving backdrop: the record's own photo when there is one, else a soft colour field */}
-      <div className="haze" aria-hidden="true"><i key={p.id} style={{ backgroundImage: `url(${import.meta.env.BASE_URL}${ph?.src || `media/haze-${(p.id.charCodeAt(p.id.length - 1) % 5) + 1}.jpg`})` }} /></div>
-      {ph && (
+      <header className="place-h">
+        <button className="back" type="button" onClick={onBack} aria-label="Back to Explore"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg><span>Explore</span></button>
+        <h2 lang={p.name ? 'ja' : 'en'} key={p.id + (isEnglishFirst() ? 'en' : 'ja')}>
+          {p.name ? (englishPart(p.name, p.name_en) && isEnglishFirst()
+            ? <><Decode lang="en" text={p.name_en} /> <span className="en" lang="ja">({p.name})</span></>
+            : <>{p.name}{p.name_en && englishPart(p.name, p.name_en) && <> <Decode className="en" lang="en" text={`(${p.name_en})`} /></>}</>)
+            : p.name_en ? <span lang="en">{p.name_en}</span> : <span className="muted">{p.display_name}</span>}
+        </h2>
+        <button className="x" type="button" onClick={onClose} aria-label="Clear selection">×</button>
+      </header>
+      {ph ? (
         <figure className={'hero photo' + (imgOk ? ' loaded' : '')}>
           <div className="ph-frame">
             <img src={`${import.meta.env.BASE_URL}${ph.src}`} alt={ph.description || ph.title} width={ph.width} height={ph.height} onLoad={() => setImgOk(true)} />
             <span className={'ph-badge ' + ph.match}>{BADGE[ph.match] || 'Verified match'}</span>
           </div>
+          <figcaption className="ph-credit">Photo: {ph.artist} · {ph.license_url ? <a href={ph.license_url} target="_blank" rel="noreferrer">{ph.license}</a> : ph.license} · <a href={ph.page} target="_blank" rel="noreferrer">Wikimedia Commons</a></figcaption>
         </figure>
-      )}
-      <header className="card-h">
+      ) : hit.layer === 'attraction' && photos ? (
+        <div className="ph-none" role="img" aria-label="No verified photo"><span className="ph-ico" aria-hidden="true" /><span>No verified photo for this place</span></div>
+      ) : null}
+      <div className="place-meta">
         <span className="kind"><i className="hanko" style={{ '--c': color }} aria-hidden="true" lang="ja">{SEAL[p.category] || '印'}</i>{CATEGORY_LABEL[p.category]}</span>
-        <span className="card-h-btns">
-          <button className="x hide-btn" type="button" onClick={onHide} aria-label="Hide details">⌄</button>
-          <button className="x" type="button" onClick={onClose} aria-label="Clear selection">×</button>
-        </span>
-      </header>
-      <h2 lang={p.name ? 'ja' : 'en'} key={p.id + (isEnglishFirst() ? 'en' : 'ja')}>
-        {p.name ? (englishPart(p.name, p.name_en) && isEnglishFirst()
-          ? <><Decode lang="en" text={p.name_en} /> <span className="en" lang="ja">({p.name})</span></>
-          : <>{p.name}{p.name_en && englishPart(p.name, p.name_en) && <> <Decode className="en" lang="en" text={`(${p.name_en})`} /></>}</>)
-          : p.name_en ? <span lang="en">{p.name_en}</span> : <span className="muted">{p.display_name}</span>}
-      </h2>
-      <p className="where" lang="ja">
-        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M8 14.5s4.5-4.2 4.5-8A4.5 4.5 0 0 0 3.500 6.5c0 3.800 4.500 8 4.500 8z" fill="none" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="6.4" r="1.6" fill="currentColor" /></svg>
-        {muniCode ? muniLabel(pm, muniCode) : 'Outside the prefecture boundary polygons'}
-      </p>
-      {hit.layer === 'attraction' && photos && !ph && <p className="nophoto xs"><span className="ph-ico" aria-hidden="true" />No verified photo for this place</p>}
+        <p className="where" lang="ja">
+          <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M8 14.5s4.5-4.2 4.5-8A4.5 4.5 0 0 0 3.500 6.5c0 3.800 4.500 8 4.500 8z" fill="none" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="6.4" r="1.6" fill="currentColor" /></svg>
+          {muniCode ? muniLabel(pm, muniCode) : 'Outside the prefecture boundary polygons'}
+        </p>
+      </div>
     </section>
   );
 }
@@ -1414,7 +1468,7 @@ function Records({ data, geo, byId, focus, onOpen, onShow, onClose }) {
   );
 }
 
-function Sources({ d, status, walk, failed, onClose }) {
+function Sources({ d, status, walk, failed, onClose, onRecords }) {
   const m = d.manifest;
   const k = d.kdeMeta;
   return (
@@ -1431,6 +1485,13 @@ function Sources({ d, status, walk, failed, onClose }) {
         <Clock />
       </div>
       <div className="src-grid">
+        {d.records && (
+          <section className="src-records">
+            <h3>Kyoto City records</h3>
+            <p>{d.records.records.length} records of the Kyoto City sightseeing list ({d.records.source?.publisher || 'Kyoto City'}, {d.records.source?.licence}). Each one is kept with its ID and what was done with it: placed on the map, attached to a site, kept as culture, placed as a landscape feature, or left unverified.</p>
+            <button className="btn sm" type="button" onClick={onRecords}>Open the record library</button>
+          </section>
+        )}
         <section>
           <h3>Attractions & transit stops</h3>
           <p>OpenStreetMap contributors via <a href="https://download.geofabrik.de/asia/japan/kansai.html" target="_blank" rel="noreferrer">Geofabrik Kansai</a>, layers gis_osm_pois_free_1 and gis_osm_transport_free_1. Licence: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">ODbL</a>.</p>

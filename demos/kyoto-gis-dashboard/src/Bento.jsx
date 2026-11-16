@@ -16,10 +16,13 @@ function restore(id, keys) {
 
 export function Tile({ children }) { return children; }
 
-export default function Bento({ id, children, className = '' }) {
+export default function Bento({ id, children, className = '', resetToken = 0 }) {
   const tiles = Children.toArray(children).filter((c) => isValidElement(c) && c.props.k);
   const keys = tiles.map((t) => t.props.k);
   const [order, setOrder] = useState(() => restore(id, keys));
+  const hint = useRef(null);
+  const lastReset = useRef(resetToken);
+  if (lastReset.current !== resetToken) { lastReset.current = resetToken; if (order.join() !== keys.join()) setOrder(keys); }
   const box = useRef(null);
   const els = useRef(new Map());
   const before = useRef(null);       // offsets before a reorder, for the glide
@@ -71,6 +74,9 @@ export default function Bento({ id, children, className = '' }) {
     const el = els.current.get(d.key);
     const r = box.current.getBoundingClientRect();
     el.style.transform = `translate(${d.x - d.ox - (r.left + el.offsetLeft)}px, ${d.y - d.oy - (r.top + el.offsetTop)}px) scale(1.02)`;
+    // the slot it will drop into
+    const h = hint.current;
+    if (h) Object.assign(h.style, { left: `${el.offsetLeft}px`, top: `${el.offsetTop}px`, width: `${el.offsetWidth}px`, height: `${el.offsetHeight}px` });
   };
   const nearest = () => {
     const d = drag.current;
@@ -158,6 +164,7 @@ export default function Bento({ id, children, className = '' }) {
           </div>
         );
       })}
+      {dragKey && <i className="drop-hint" ref={hint} aria-hidden="true" />}
       <span className="sr-only" aria-live="polite">{said}</span>
     </div>
   );

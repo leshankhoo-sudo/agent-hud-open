@@ -206,13 +206,26 @@ function withHalo(go, ink, acc, size, halo, w) {
   for (let i = 0; i < 12; i++) go.drawImage(m, Math.cos(i * Math.PI / 6) * w, Math.sin(i * Math.PI / 6) * w);
   go.drawImage(acc, 0, 0); go.drawImage(ink, 0, 0);
 }
+// Dark map: no sun disc and no colour. The building is drawn in near-white with its windows, doors and
+// tiers cut out (they show the map through), inner panels in a mid grey so the tiers still read, a thin
+// dark edge to separate it from bright map features, and a faint white glow around it.
+const DARK = { ink: '#eef3f5', gold: '#8e9da4', paper: '#56646b', disc: '#9fb0b6', halo: '#0b0f11' };
 function landmarkImage(key, theme) {
-  const P = PAL[theme] || PAL.dark;
+  const dark = theme !== 'light';
+  const P = dark ? { ...PAL.dark, ...DARK } : PAL.light;
   const ink = mk(L), acc = mk(L), out = mk(L);
   const gi = ink.getContext('2d'), ga = acc.getContext('2d'), go = out.getContext('2d');
   gi.fillStyle = P.ink;
   DRAW[key](gi, ga, P);
   gi.beginPath(); gi.moveTo(14, 90); gi.quadraticCurveTo(56, 80.5, 98, 90); gi.quadraticCurveTo(56, 85.5, 14, 90); gi.fill();   // the ground line
+  if (dark) {
+    // faint glow first (from a blurred copy), then a thin dark edge, then the drawing itself
+    const shape = mk(L), gs = shape.getContext('2d');
+    gs.drawImage(ink, 0, 0); gs.drawImage(acc, 0, 0);
+    go.save(); go.filter = 'blur(5px)'; go.globalAlpha = 0.5; go.drawImage(shape, 0, 0); go.restore();
+    withHalo(go, ink, acc, L, P.halo, 1.3);
+    return out;
+  }
   go.shadowColor = P.rim; go.shadowBlur = 5; go.shadowOffsetY = 1.5;
   go.fillStyle = P.disc; go.beginPath(); go.arc(56, 50, 33, 0, 7); go.fill();
   go.shadowColor = 'transparent';
@@ -220,7 +233,9 @@ function landmarkImage(key, theme) {
   return out;
 }
 function categoryImage(cat, theme, ring) {
-  const P = PAL[theme] || PAL.dark;
+  const dark = theme !== 'light';
+  // dark map: a charcoal plate with a white glyph; the category shows in the ring (as on the dots)
+  const P = dark ? { ...PAL.dark, plate: '#1b2226', plateInk: '#eef3f5', disc: '#9fb0b6', rim: 'rgba(0,0,0,.6)' } : PAL.light;
   const ink = mk(C), acc = mk(C), out = mk(C);
   const gi = ink.getContext('2d'), ga = acc.getContext('2d'), go = out.getContext('2d');
   gi.fillStyle = P.plateInk;
