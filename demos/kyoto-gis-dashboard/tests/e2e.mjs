@@ -653,7 +653,7 @@ await rp.waitForTimeout(4000);
 const y_lay = () => rp.evaluate(() => { const m = window.__kyotoMap; const c = document.querySelector('.center').getBoundingClientRect(); const r = document.querySelector('aside.right').getBoundingClientRect(); return { map: Math.round(c.width), panel: Math.round(r.width), canvas: Math.round(m.getCanvas().getBoundingClientRect().width), center: m.getCenter().toArray().map((v) => +v.toFixed(5)).join(), z: +m.getZoom().toFixed(3) }; });
 const y_l0 = await y_lay();
 const y_darkBg = await rp.evaluate(() => [getComputedStyle(document.getElementById('dashboard')).backgroundColor, getComputedStyle(document.querySelector('.right .card')).backgroundColor, getComputedStyle(document.querySelector('.right .card')).boxShadow.includes('rgba(121, 215, 218')]);
-check('dark theme: charcoal page (#101416) and slightly lighter cards (#191F23), cards do not glow', y_darkBg[0] === 'rgb(16, 20, 22)' && y_darkBg[1] === 'rgb(25, 31, 35)' && !y_darkBg[2], JSON.stringify(y_darkBg));
+check('dark theme: charcoal page (#101416) and slightly lighter cards (#191F23), cards do not glow', y_darkBg[0] === 'rgb(16, 20, 22)' && /^rgba?\(25, 31, 35(, 0\.(8[5-9]|9\d*))?\)$/.test(y_darkBg[1]) && !y_darkBg[2], JSON.stringify(y_darkBg));
 check('layout: map and one information panel side by side (no left sidebar); canvas matches the map width', y_l0.map > 780 && y_l0.panel >= 360 && Math.abs(y_l0.canvas - y_l0.map) <= 2 && !(await rp.locator('aside.left').count()), JSON.stringify(y_l0));
 const y_sb = await rp.locator('.splitter').boundingBox();
 await rp.mouse.move(y_sb.x + 6, y_sb.y + y_sb.height * 0.7);
@@ -786,9 +786,9 @@ check('dark map: ordinary attraction dots have a white core and a category-colou
 // bento: drag a tile by its grip onto another; the others glide, it snaps into the slot, the order is kept
 await exploreTab(rp);
 const bOrder = () => rp.evaluate(() => [...document.querySelectorAll('#explore-panel .tile')].map((t) => t.dataset.tile).join());
-await rp.evaluate(() => { document.querySelector('aside.right').scrollTop = 0; }); await rp.waitForTimeout(200);
+await rp.evaluate(() => { document.getElementById('dashboard').scrollIntoView(); document.querySelector('aside.right').scrollTop = 0; }); await rp.waitForTimeout(300);
 const bo0 = await bOrder();
-await rp.locator('[data-tile="study"] .tile-grip').hover(); await rp.waitForTimeout(300);
+await rp.locator('[data-tile="study"] .tile-grip').hover(); await rp.waitForTimeout(300); await rp.evaluate(() => document.getElementById('dashboard').scrollIntoView()); await rp.waitForTimeout(200);
 const bg = await rp.locator('[data-tile="study"] .tile-grip').boundingBox();
 const bHit = await rp.evaluate(([x, y]) => { const e = document.elementFromPoint(x, y); return (e.closest('.tile-grip') ? 'grip' : '') + ' ' + (e.className?.baseVal ?? e.className) + ' ' + Math.round(document.getElementById('dashboard').getBoundingClientRect().top); }, [bg.x + 5, bg.y + 8]);
 const bt = await rp.locator('[data-tile="transit"]').boundingBox();
@@ -808,6 +808,8 @@ check('bento: keyboard moves a tile with the arrow keys', bo2.split(',').indexOf
 check('bento: the order is remembered', (await rp.evaluate(() => localStorage.getItem('kyoto-gis-bento-explore-v2'))) === JSON.stringify(bo2.split(',')));
 const bCols = await rp.evaluate(() => getComputedStyle(document.querySelector('#explore-panel .bento')).gridTemplateColumns.split(' ').length);
 check('bento: uneven grid — two columns in the default panel, wide tiles span both', bCols === 2 && (await rp.evaluate(() => getComputedStyle(document.querySelector('[data-tile="analysis"]')).gridColumnStart)) === 'span 2', String(bCols));
+const koi = await rp.evaluate(() => { const c = document.querySelector('.koi-layer canvas'); const l = document.querySelector('.koi-layer'); const card = document.querySelector('#explore-panel .card'); return { ok: !!c && c.width > 100, pe: getComputedStyle(l).pointerEvents, op: +getComputedStyle(c).opacity, under: +getComputedStyle(l).zIndex < +getComputedStyle(document.querySelector('#explore-panel')).zIndex, engine: !!window.AsciiKoi, fish: window.__koi ? window.__koi.fish.filter((f) => f.seen > 0).length : 0 }; });
+check('koi pond: drawn behind the panel cards, several small koi, takes no clicks', koi.ok && koi.engine && koi.pe === 'none' && koi.fish >= 6 && koi.under, JSON.stringify(koi));
 check('no page errors on the layout / route page', rpErr.length === 0, rpErr.join(' | '));
 await rp.close();
 

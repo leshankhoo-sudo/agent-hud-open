@@ -1755,6 +1755,23 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
   :root #dashboard .right.panel .card::before, :root #dashboard .right.panel .card.detail { animation: none; }
 }
 
+/* =====================================================================
+   Koi pond behind the panel cards (Koi.jsx; engine: ASCII Koi by pursurer, MIT).
+   A zero-height sticky box keeps the canvas fixed while the panel scrolls. It is under every card,
+   in its own colours, and takes no pointer events. Cards let a little of it through, so a koi can be seen
+   passing under them without touching the text's contrast.
+   ===================================================================== */
+.koi-layer { position: sticky; top: 0; height: 0; z-index: 0; margin: 0 -12px; pointer-events: none; }
+.right.panel > .koi-layer { min-width: 0; }
+.koi-layer canvas { position: absolute; left: 0; top: 0; display: block; }
+.right.panel > .left, .right.panel > .place { position: relative; z-index: 1; }
+/* text outside the cards keeps its contrast when a koi passes under it */
+.explore-foot .link { text-shadow: 0 0 3px var(--bg), 0 0 6px var(--bg), 0 0 10px var(--bg); }
+:root:not([data-theme='light']) #dashboard .right.panel .card { background: linear-gradient(155deg, rgba(237, 243, 245, .05) 0%, rgba(237, 243, 245, 0) 45%), rgba(25, 31, 35, .88); }
+:root[data-theme='light'] #dashboard .right.panel .card { background: linear-gradient(180deg, rgba(255, 253, 248, .9), rgba(249, 244, 234, .9)); }
+:root #dashboard .right.panel .card.detail { background-color: var(--panel-solid); }
+
+
 /* phone: map on top, the panel as a bottom sheet that can be closed (after the split rules above) */
 @media (max-width: 760px) {
   .app, .app.no-right { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'top' 'center'; }

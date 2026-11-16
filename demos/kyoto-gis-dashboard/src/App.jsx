@@ -15,6 +15,7 @@ import Panorama from './Panorama.jsx';
 import Seam from './Seam.jsx';
 import Pager from './Pager.jsx';
 import Bento, { Tile, resetBento } from './Bento.jsx';
+import Koi from './Koi.jsx';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
@@ -577,6 +578,7 @@ export default function App() {
       </header>
 
       <aside className="right panel" id="details" aria-label="Information panel" ref={panelRef}>
+        <Koi theme={theme} scroller={panelRef} />
         <div className="phead">
           <div className="ptabs" role="tablist" aria-label="Panel">
             <button type="button" role="tab" id="ptab-explore" aria-selected={ptab === 'explore'} aria-controls="explore-panel" className={ptab === 'explore' ? 'on' : ''} onClick={() => switchTab('explore')}>Explore</button>
@@ -1503,6 +1505,10 @@ function Sources({ d, status, walk, failed, onClose, onRecords }) {
           <h3>Administrative boundary</h3>
           <p>MLIT National Land Numerical Information <a href="https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html" target="_blank" rel="noreferrer">N03 (2026)</a>. File name N03-20260101_26 indicates the 1 January 2026 edition. {m?.boundary?.raw_features} raw municipality/ward polygons, drawn as {m?.boundary?.display_municipalities} dissolved municipalities.</p>
           <p className="xs">{m?.boundary?.display_note} Spatial joins use the raw polygons.</p>
+        </section>
+        <section>
+          <h3>Koi pond background</h3>
+          <p>The koi swimming behind the panel are drawn by <a href="https://github.com/pursurer/ascii-koi" target="_blank" rel="noreferrer">ASCII Koi</a> by pursurer (MIT licence), used unchanged. Decoration only: it carries no data.</p>
         </section>
         <section>
           <h3>Sample journeys & fares</h3>
