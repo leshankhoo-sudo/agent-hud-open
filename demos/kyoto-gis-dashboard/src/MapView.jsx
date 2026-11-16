@@ -122,13 +122,13 @@ function lmLayer(id, filter, T, { minzoom = 0, k = 1, overlap = false, label = n
   };
 }
 
-export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, onGeo, geoOn = false, mapRef: externalRef, walkSet, maxWalk, busRun, busHighlight, onBusProgress, busCtl }) {
+export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, onGeo, geoOn = false, mapRef: externalRef, walkSet, maxWalk, busRun, busHighlight, onBusProgress, busCtl, route = null, origin = null, cinematic = false, coverage = null, pointsOn = true, padding = null }) {
   const el = useRef(null);
   const mapRef = useRef(null);
   const marker = useRef(null);
   const callout = useRef(null);
   const latest = useRef({});
-  latest.current = { onSelect, onHover, onGeo, cats, types, query, densityMode, active, theme, onBusProgress };
+  latest.current = { onSelect, onHover, onGeo, cats, types, query, densityMode, active, theme, onBusProgress, cinematic, padding, pointsOn };
   const introPending = useRef(false);
   useEffect(() => {
     if (active && introPending.current && mapRef.current) { introPending.current = false; mapRef.current.resize(); intro(mapRef.current); }
@@ -142,11 +142,14 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       bounds: [[134.85, 34.7], [136.06, 35.79]],
       fitBoundsOptions: { padding: 24 },
       attributionControl: false,
-      maxPitch: 0,
+      maxPitch: 60,        // only the Cinematic view tilts the camera; people cannot tilt or rotate it by hand
       dragRotate: false,
+      pitchWithRotate: false,
       fadeDuration: prefersReducedMotion() ? 0 : 320,   // symbols fade in and out as zoom and collisions change
     });
     map.touchZoomRotate.disableRotation();
+    map.touchPitch.disable();
+    map.keyboard.disableRotation();
     map.addControl(new maplibregl.AttributionControl({ compact: innerWidth <= 760, customAttribution: DATA_ATTR }), 'bottom-right');
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left');
@@ -168,16 +171,17 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
     const interactive = [...LM_PICK, ...TRANSIT_LAYERS, 'geo-pt'];
     // the hovered place gets its symbol, a little larger, on a soft ring; the filter only changes when the place does
     let hoverId = null;
-    const setHoverId = (id) => {
+    const setHoverId = (id, src) => {
       if (id === hoverId || !map.getLayer('lm-hover')) return;
       hoverId = id;
-      const f = id ? ['==', ['get', 'id'], id] : NONE;
+      const f = id && src === 'attractions' ? ['==', ['get', 'id'], id] : NONE;
       map.setFilter('lm-hover', f); map.setFilter('lm-hover-ring', f);
+      if (map.getLayer('transport-hover')) map.setFilter('transport-hover', id && src === 'transport' ? ['==', ['get', 'id'], id] : NONE);
     };
     map.on('mousemove', (e) => {
       const f = map.getLayer('attractions-pt') ? map.queryRenderedFeatures(e.point, { layers: interactive.filter((l) => map.getLayer(l)) }) : [];
       map.getCanvas().style.cursor = f.length ? 'pointer' : '';
-      setHoverId(f.length && f[0].source === 'attractions' ? f[0].properties.id : null);
+      setHoverId(f.length && (f[0].source === 'attractions' || f[0].source === 'transport') ? f[0].properties.id : null, f[0]?.source);
       latest.current.onHover(f.length ? { feature: f[0], x: e.point.x, y: e.point.y } : null);
     });
     map.on('mouseout', () => { setHoverId(null); latest.current.onHover(null); });
@@ -192,9 +196,116 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       if (g.length) { latest.current.onGeo?.(g[0].properties.csv_id); return; }
       latest.current.onSelect(f ? { layer: a[0] ? 'attraction' : 'transport', id: f.properties.id } : null);
     });
+    // Moving the map by hand ends any camera sequence and route drawing that is still running.
+    const userMove = (e) => { if (e.originalEvent) camCtl.current.cancel?.(); };
+    for (const ev of ['dragstart', 'wheel', 'touchstart', 'boxzoomstart']) map.on(ev, userMove);
     return () => map.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ---------- point-to-point route: camera first, then the line grows from start to end ----------
+  const camCtl = useRef({ token: 0, raf: 0, label: null, cancel: null });
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const C = camCtl.current;
+    const run = () => {
+      cancelAnimationFrame(C.raf);
+      const token = ++C.token;
+      C.label?.remove(); C.label = null;
+      const T = themeOf(latest.current.theme);
+      const ends = [];
+      if (origin) ends.push({ type: 'Feature', properties: { kind: 'start' }, geometry: { type: 'Point', coordinates: route ? route.coords[0] : origin.coords } });
+      if (route) ends.push({ type: 'Feature', properties: { kind: 'end' }, geometry: { type: 'Point', coordinates: route.coords[route.coords.length - 1] } });
+      map.getSource('route-ends')?.setData({ type: 'FeatureCollection', features: ends });
+      map.getSource('route')?.setData(route ? { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: route.coords } } : EMPTY);
+      map.getSource('route-head')?.setData(EMPTY);
+      setRouteProgress(map, T, route ? 0 : 1);
+      if (!route) { C.cancel = null; return; }
+      const reduce = prefersReducedMotion();
+      const cum = cumulative(route.coords);
+      let drawing = false, finished = false;
+      const finish = () => {
+        if (finished || token !== C.token) return;
+        finished = true;
+        cancelAnimationFrame(C.raf);
+        setRouteProgress(map, themeOf(latest.current.theme), 1);
+        map.getSource('route-head')?.setData(EMPTY);
+        C.label = routeLabel(map, route, cum);
+        pulseEnds(map, reduce, () => token === C.token);
+        C.cancel = null;
+      };
+      const draw = () => {
+        if (token !== C.token || drawing) return;
+        drawing = true;
+        if (reduce) return finish();
+        const dur = Math.max(900, Math.min(2400, cum[cum.length - 1] / 6));   // about 6 m of route per ms, within 0.9–2.4 s
+        const t0 = performance.now();
+        const frame = (now) => {
+          if (token !== C.token) return;
+          const k = Math.max(0, Math.min(1, (now - t0) / dur));
+          const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+          setRouteProgress(map, themeOf(latest.current.theme), e);
+          const [a] = cut(route.coords, cum, e);
+          if (a) map.getSource('route-head')?.setData({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: a[a.length - 1] } });
+          if (k < 1) C.raf = requestAnimationFrame(frame); else finish();
+        };
+        C.raf = requestAnimationFrame(frame);
+      };
+      // a hand move during the camera sequence or the drawing: stop the camera, show the whole route at once
+      C.cancel = () => { if (token !== C.token) return; map.stop(); finish(); };
+      routeCamera(map, route.coords, latest.current.cinematic, reduce, latest.current.padding, () => token === C.token).then(draw);
+    };
+    if (map.getSource('route')) run(); else map.once('idle', run);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route?.key, origin?.key]);
+  useEffect(() => () => { camCtl.current.token++; cancelAnimationFrame(camCtl.current.raf); camCtl.current.label?.remove(); }, []);
+
+  // ---------- "Show coverage": municipal boundaries drawn along their real outlines ----------
+  const covCtl = useRef({ raf: 0, token: 0 });
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const K = covCtl.current;
+    const run = () => {
+      cancelAnimationFrame(K.raf);
+      const token = ++K.token;
+      const on = !!coverage?.on;
+      for (const l of COV_LAYERS) if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', on ? 'visible' : 'none');
+      if (!on || !map.getLayer('cov-line')) return;
+      const reduce = prefersReducedMotion();
+      const start = () => {
+        if (token !== K.token) return;
+        if (reduce) { setCoverageProgress(map, themeOf(latest.current.theme), 1); return; }
+        const t0 = performance.now(), dur = 2200;
+        const frame = (now) => {
+          if (token !== K.token) return;
+          const k = Math.max(0, Math.min(1, (now - t0) / dur));
+          setCoverageProgress(map, themeOf(latest.current.theme), 1 - Math.pow(1 - k, 2.2));
+          if (k < 1) K.raf = requestAnimationFrame(frame);
+        };
+        K.raf = requestAnimationFrame(frame);
+      };
+      setCoverageProgress(map, themeOf(latest.current.theme), 0);
+      // bring the whole covered area into view first when it is not already
+      const bb = coverage.bbox;
+      const v = map.getBounds();
+      const inView = bb && v.getWest() <= bb[0] && v.getSouth() <= bb[1] && v.getEast() >= bb[2] && v.getNorth() >= bb[3];
+      if (bb && !inView) {
+        map.fitBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: 30, pitch: 0, bearing: 0, duration: reduce ? 0 : 1100, essential: true });
+        if (reduce) start(); else map.once('moveend', start);
+      } else start();
+    };
+    if (map.getLayer('cov-line')) run(); else map.once('idle', run);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coverage?.on, coverage?.token]);
+
+  // attraction and stop points on or off; the density layers do not depend on them
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.getLayer('attractions-pt')) return;
+    for (const l of ['attractions-glow', 'attractions-pt', ...LM_BASE, 'lm-search']) if (map.getLayer(l)) map.setLayoutProperty(l, 'visibility', pointsOn ? 'visible' : 'none');
+  }, [pointsOn]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -487,6 +598,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       callout.current = new maplibregl.Marker({ element: c, anchor: 'bottom-left', offset: [6, -6] }).setLngLat(selected.coords).addTo(map);
     }
     const z = Math.max(map.getZoom(), 13.5);
+    if (selected.fly !== false && map.getPitch() > 0) { map.flyTo({ center: selected.coords, zoom: z, pitch: 0, bearing: 0, duration: prefersReducedMotion() ? 0 : 1100, essential: true }); return; }
     if (selected.fly !== false) map.flyTo({ center: selected.coords, zoom: z, duration: prefersReducedMotion() ? 0 : 1100, essential: true, offset: [0, innerWidth <= 760 ? -map.getContainer().clientHeight * 0.27 : 0] }); // on phones the details sheet covers the lower map
   }, [selected]);
 
@@ -672,12 +784,21 @@ function restyleData(map, theme) {
   set('transport-pt', 'circle-color', transitColorExpr(T));
   set('transport-pt', 'circle-stroke-color', T.stroke);
   set('attractions-glow', 'circle-color', catColorExpr(T));
-  set('attractions-pt', 'circle-color', catColorExpr(T));
+  set('attractions-glow', 'circle-opacity', T.ptCore ? 0.2 : 0.45);
+  set('attractions-pt', 'circle-color', T.ptCore || catColorExpr(T));
+  set('attractions-pt', 'circle-stroke-width', T.ptCore ? 1.8 : 1.2);
+  set('transport-hover', 'circle-stroke-color', transitColorExpr(T));
+  addTransitIcons(map, theme);
+  set('cov-fill', 'fill-color', T.coverage.fill);
+  set('route-ends', 'circle-stroke-color', ['match', ['get', 'kind'], 'start', T.route.start, T.route.end]);
+  set('route-head', 'circle-color', T.route.core);
+  setRouteProgress(map, T, routeP);
+  setCoverageProgress(map, T, covP);
   const geoCol = ['match', ['get', 'kind'], ['river', 'pond', 'spring or well', 'waterfall', 'river basin', 'gorge'], T.geo.water, ['area', 'street'], T.geo.area, T.geo.land];
   set('geo-ring', 'circle-stroke-color', geoCol);
   set('geo-line', 'line-color', geoCol);
   set('geo-pt', 'circle-color', geoCol);
-  set('attractions-pt', 'circle-stroke-color', T.stroke);
+  set('attractions-pt', 'circle-stroke-color', T.ptCore ? catColorExpr(T) : T.stroke);
   // landmark symbols: the same images repainted for the theme (no layer is rebuilt)
   addLandmarkImages(map, theme, T.cat);
   if (!OFFLINE_PREVIEW) for (const l of [...LM_BASE, 'lm-search']) for (const [k, v] of Object.entries(lmText(T))) set(l, k, v);
@@ -759,7 +880,7 @@ function addDataLayers(map, data, theme) {
     paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3, 13, 6, 16, 9], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': T.busLine, 'circle-stroke-width': 2 } });
   // Stations and stops as pictograms once zoomed in (rail from z9, bus from z13); below that, and where
   // icons would overlap, the small dots above still mark every record.
-  addTransitIcons(map);
+  addTransitIcons(map, theme);
   const iconSize = (a, b, c) => ['interpolate', ['linear'], ['zoom'], 9, a, 13, b, 17, c];
   map.addLayer({
     id: 'transport-sym-bus', type: 'symbol', source: 'transport', minzoom: 13, filter: BUS_F,
@@ -771,15 +892,16 @@ function addDataLayers(map, data, theme) {
   });
   map.addLayer({
     id: 'attractions-glow', type: 'circle', source: 'attractions',
-    paint: { 'circle-color': catColorExpr(T), 'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 7, 12, 12, 16, 16], 'circle-blur': 1, 'circle-opacity': 0.45 },
+    paint: { 'circle-color': catColorExpr(T), 'circle-radius': ['interpolate', ['linear'], ['zoom'], 7, 7, 12, 12, 16, 16], 'circle-blur': 1, 'circle-opacity': T.ptCore ? 0.2 : 0.45 },
   });
+  // dark theme: white core, category ring; light theme: filled category dot (unchanged)
   map.addLayer({
     id: 'attractions-pt', type: 'circle', source: 'attractions',
     paint: {
-      'circle-color': catColorExpr(T),
+      'circle-color': T.ptCore || catColorExpr(T),
       'circle-radius': PT_RADIUS,
-      'circle-stroke-color': T.stroke,
-      'circle-stroke-width': 1.2,
+      'circle-stroke-color': T.ptCore ? catColorExpr(T) : T.stroke,
+      'circle-stroke-width': T.ptCore ? 1.8 : 1.2,
     },
   });
   // landmark symbols above the dots (see LM_LAYERS)
@@ -794,6 +916,96 @@ function addDataLayers(map, data, theme) {
   map.addLayer(lmLayer('lm-hover', NONE, T, { k: 1.22, overlap: true }));
   map.addLayer(glow('lm-sel-glow', 34, 0.6));
   map.addLayer(lmLayer('lm-sel', NONE, T, { k: 1.34, overlap: true }));
+  // hovered stop: a ring in its type colour
+  map.addLayer({ id: 'transport-hover', type: 'circle', source: 'transport', filter: NONE,
+    paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 7, 14, 13], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': transitColorExpr(T), 'circle-stroke-width': 2, 'circle-stroke-opacity': 0.9 } }, 'transport-sym-bus');
+  // municipal boundaries for "Show coverage" (hidden until asked): faint fill, white glow, thin white line.
+  // One line per ring, so islands and holes are drawn separately and never joined.
+  map.addSource('coverage', { type: 'geojson', data: data.coverageLines || EMPTY, lineMetrics: true });
+  if (data.municipalities) map.addLayer({ id: 'cov-fill', type: 'fill', source: 'muni', layout: { visibility: 'none' }, paint: { 'fill-color': T.coverage.fill, 'fill-opacity': 0 } }, map.getLayer('outline-fill') ? 'outline-fill' : undefined);
+  map.addLayer({ id: 'cov-glow', type: 'line', source: 'coverage', layout: { visibility: 'none', 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-width': 6, 'line-blur': 5, 'line-gradient': CLEAR } }, map.getLayer('outline-glow') ? 'outline-glow' : undefined);
+  map.addLayer({ id: 'cov-line', type: 'line', source: 'coverage', layout: { visibility: 'none', 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-width': ['interpolate', ['linear'], ['zoom'], 7, 0.9, 12, 1.4], 'line-gradient': CLEAR } }, map.getLayer('outline-glow') ? 'outline-glow' : undefined);
+  // the route sits above the points and symbols but under the map's own labels and controls
+  map.addSource('route', { type: 'geojson', data: EMPTY, lineMetrics: true });
+  map.addSource('route-ends', { type: 'geojson', data: EMPTY });
+  map.addSource('route-head', { type: 'geojson', data: EMPTY });
+  map.addLayer({ id: 'route-glow', type: 'line', source: 'route', layout: round, paint: { 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 7, 15, 12], 'line-blur': 6, 'line-gradient': CLEAR } }, 'lm-minor');
+  map.addLayer({ id: 'route-line', type: 'line', source: 'route', layout: round, paint: { 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 2, 15, 3.2], 'line-gradient': CLEAR } }, 'lm-minor');
+  map.addLayer({ id: 'route-head', type: 'circle', source: 'route-head', paint: { 'circle-radius': 4, 'circle-color': T.route.core, 'circle-blur': 0.4 } });
+  map.addLayer({ id: 'route-pulse', type: 'circle', source: 'route-ends', paint: { 'circle-radius': 6, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-width': 1.5, 'circle-stroke-color': ['match', ['get', 'kind'], 'start', T.route.start, T.route.end], 'circle-stroke-opacity': 0 } });
+  map.addLayer({ id: 'route-ends', type: 'circle', source: 'route-ends',
+    paint: { 'circle-radius': ['match', ['get', 'kind'], 'start', 6, 5], 'circle-color': ['match', ['get', 'kind'], 'start', T.stroke, T.route.end], 'circle-stroke-width': ['match', ['get', 'kind'], 'start', 3, 2], 'circle-stroke-color': ['match', ['get', 'kind'], 'start', T.route.start, T.route.end] } });
+}
+
+// ---------- route and coverage drawing helpers ----------
+const CLEAR = ['interpolate', ['linear'], ['line-progress'], 0, 'rgba(0,0,0,0)', 1, 'rgba(0,0,0,0)'];
+const COV_LAYERS = ['cov-fill', 'cov-glow', 'cov-line'];
+let routeP = 1, covP = 1;
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+// visible up to p of each line's own length (line-progress runs 0..1 along every feature)
+const grown = (col, p) => (p >= 1 ? ['interpolate', ['linear'], ['line-progress'], 0, col, 1, col] : ['step', ['line-progress'], col, Math.max(p, 1e-6), 'rgba(0,0,0,0)']);
+function setRouteProgress(map, T, p) {
+  routeP = p;
+  if (!map.getLayer('route-line')) return;
+  map.setPaintProperty('route-line', 'line-gradient', grown(T.route.core, p));
+  map.setPaintProperty('route-glow', 'line-gradient', grown(rgba(T.route.glow, 0.32), p));
+}
+function setCoverageProgress(map, T, p) {
+  covP = p;
+  if (!map.getLayer('cov-line')) return;
+  map.setPaintProperty('cov-line', 'line-gradient', grown(T.coverage.line, p));
+  map.setPaintProperty('cov-glow', 'line-gradient', grown(rgba(T.coverage.glow, T.coverage.glowOp), p));
+  if (map.getLayer('cov-fill')) map.setPaintProperty('cov-fill', 'fill-opacity', T.coverage.fillOp * p);
+}
+// Endpoints pulse twice, gently, then stay still.
+function pulseEnds(map, reduce, alive) {
+  if (reduce || !map.getLayer('route-pulse')) return;
+  const t0 = performance.now();
+  const f = (now) => {
+    if (!alive() || !map.getLayer('route-pulse')) return;
+    const k = (now - t0) / 1400;
+    if (k >= 2) { map.setPaintProperty('route-pulse', 'circle-stroke-opacity', 0); return; }
+    const q = k % 1;
+    map.setPaintProperty('route-pulse', 'circle-radius', 6 + 14 * q);
+    map.setPaintProperty('route-pulse', 'circle-stroke-opacity', 0.7 * (1 - q));
+    requestAnimationFrame(f);
+  };
+  requestAnimationFrame(f);
+}
+// Compact time and distance tag at the middle of the route, lifted off the line.
+function routeLabel(map, route, cum) {
+  const [a] = cut(route.coords, cum, 0.5);
+  const at = a ? a[a.length - 1] : route.coords[0];
+  const el = document.createElement('div');
+  el.className = 'route-tag';
+  const b = document.createElement('b'); b.textContent = route.timeText;
+  const s = document.createElement('span'); s.textContent = `${route.distText} · ${route.modeLabel}`;
+  el.append(b, s);
+  return new maplibregl.Marker({ element: el, anchor: 'bottom', offset: [0, -12] }).setLngLat(at).addTo(map);
+}
+const wait = (map, alive) => new Promise((res) => { if (!map.isMoving()) return res(); map.once('moveend', () => res()); }).then(() => alive());
+// Camera for a route: the whole path in view with room for the controls and the tag; never closer than
+// needed. Cinematic: fly to it, then tilt a little once it has settled. Plain: top-down, no tilt or turn.
+async function routeCamera(map, coords, cinematic, reduce, pad, alive) {
+  const bb = coords.reduce((b, [x, y]) => [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)], [180, 90, -180, -90]);
+  const P = { top: 96, bottom: 56, left: 56, right: 56, ...(pad || {}) };
+  const cam = map.cameraForBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: P, bearing: 0, maxZoom: 16.5 });
+  if (!cam) return;
+  const d = reduce ? 0 : 1;
+  map.flyTo({ center: cam.center, zoom: cam.zoom, pitch: 0, bearing: 0, duration: 1100 * d, essential: true });
+  if (!(await wait(map, alive))) return;
+  if (!cinematic) return;
+  map.easeTo({ pitch: 45, zoom: cam.zoom - 0.15, duration: 850 * d, essential: true });
+  if (!(await wait(map, alive))) return;
+  // tilting makes the far side smaller and the near side larger: back off until every point fits
+  for (let i = 0; i < 4; i++) {
+    const c = map.getContainer(), W = c.clientWidth, H = c.clientHeight;
+    const step = Math.max(1, Math.floor(coords.length / 300));
+    const out = coords.some(([x, y], k) => { if (k % step && k !== coords.length - 1) return false; const p = map.project([x, y]); return p.x < P.left * 0.6 || p.x > W - P.right * 0.6 || p.y < P.top * 0.6 || p.y > H - P.bottom * 0.6; });
+    if (!out) break;
+    map.easeTo({ zoom: map.getZoom() - 0.35, duration: 350 * d, essential: true });
+    if (!(await wait(map, alive))) return;
+  }
 }
 
 function applyFilters(map, { cats, types, query, densityMode, theme }) {

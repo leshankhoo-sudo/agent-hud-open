@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { iconURL } from './lib/icons.js';
 import { landmarkURL, ICONIC } from './lib/landmarks.js';
+import { MODES, TRANSIT_NOTE, ROUTE_SERVICE, modeOf, fetchRoute, fmtDuration, fmtDistance, initialMode, rememberMode } from './lib/route.js';
 import MapView, { BASEMAPS, KDE_BREAKS, kdeColors, OFFLINE_PREVIEW } from './MapView.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import Weather from './Weather.jsx';
@@ -13,6 +14,7 @@ import MusicPlayer from './MusicPlayer.jsx';
 import Panorama from './Panorama.jsx';
 import Seam from './Seam.jsx';
 import Pager from './Pager.jsx';
+import Bento, { Tile } from './Bento.jsx';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
 import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
@@ -76,6 +78,18 @@ function Rolling({ value }) {
 }
 
 const isPhone = () => typeof innerWidth === 'number' && innerWidth <= 760;
+// Map and side panel share the width; the panel's share is remembered. Limits keep both usable.
+const PANEL_KEY = 'kyoto-gis-panel', CINE_KEY = 'kyoto-gis-cinematic';
+const PANEL_DEFAULT = 0.42, MIN_PANEL = 300, MIN_MAP = 370, SPLIT = 12;   // the map column includes its 10 px frame
+const readNum = (k, d) => { try { const v = parseFloat(localStorage.getItem(k)); return Number.isFinite(v) ? v : d; } catch { return d; } };
+const store = (k, v) => { try { localStorage.setItem(k, String(v)); } catch { /* not stored */ } };
+const bboxCache = new WeakMap();
+const bboxOf = (fc) => {
+  if (!fc?.features?.length) return null;
+  if (!bboxCache.has(fc)) bboxCache.set(fc, fc.features.reduce((b, f) => f.geometry.coordinates.reduce((q, [x, y]) => [Math.min(q[0], x), Math.min(q[1], y), Math.max(q[2], x), Math.max(q[3], y)], b), [180, 90, -180, -90]));
+  return bboxCache.get(fc);
+};
+const reduceMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const n0 = (v) => (v == null ? '—' : v.toLocaleString('en-US'));
 
 export default function App() {
@@ -99,8 +113,24 @@ export default function App() {
   // Which attraction records the walking summary and map include (unverified ones are off by default).
   const [walkIdent, setWalkIdent] = useState(['named', 'osm_tags']);
   const [focus, setFocus] = useState(null); // hovered category / transit type in the filter list
-  const [leftOpen, setLeftOpen] = useState(() => !isPhone());
-  const [rightOpen, setRightOpen] = useState(true);
+  // one information panel beside the map: Explore (search, filters, analysis) and Place (the selected record)
+  const [rightOpen, setRightOpen] = useState(() => !isPhone());
+  const [ptab, setPtab] = useState('explore');
+  const [panelFrac, setPanelFrac] = useState(() => Math.min(0.9, Math.max(0.1, readNum(PANEL_KEY, PANEL_DEFAULT))));
+  const appRef = useRef(null);
+  // routes: an explicit start (never assumed), the selected place as the end
+  const [origin, setOrigin] = useState(null);
+  const [picking, setPicking] = useState(false);
+  const [routeMode, setRouteModeState] = useState(initialMode);
+  const setRouteMode = (m) => { setRouteModeState(m); rememberMode(m); };
+  const [routeRes, setRouteRes] = useState(null);
+  const [routeTry, setRouteTry] = useState(0);
+  const [locErr, setLocErr] = useState(null);
+  const [cinematic, setCinematicState] = useState(() => readNum(CINE_KEY, 0) === 1);
+  const setCinematic = (v) => { setCinematicState(v); store(CINE_KEY, v ? 1 : 0); };
+  const [tilted, setTilted] = useState(false);
+  const [covShow, setCovShow] = useState({ on: false, token: 0 });
+  const [pointsOn, setPointsOn] = useState(true);
   const [panel, setPanel] = useState(null); // which analysis is expanded: 'density' | 'walk' | null
   const [tab, setTab] = useState('overview');
   const [legend, setLegend] = useState(false);
@@ -190,6 +220,8 @@ export default function App() {
       return st ? { feature: f, stop: { id: st.properties.id, name: recordLabel(st.properties), coords: st.geometry.coordinates, type: f.properties.stop_type } } : null;
     };
     let mode = null, feats = [];
+    // a point-to-point route is on screen: the nearest-stop walking routes would compete with it
+    if (origin && sel && origin.id !== sel.id) return null;
     if (sel && sel.layer === 'attraction' && walk.scopeIds.has(sel.id)) {
       mode = 'one';
       feats = d.walking.features.filter((f) => f.properties.attraction_id === sel.id && ok(f));
@@ -200,7 +232,7 @@ export default function App() {
     }
     if (!mode) return null;
     return { mode, key: `${mode}|${sel?.id || ''}|${walkTypes.join()}|${cats.join()}|${walkIdent.join()}`, items: feats.map(item).filter(Boolean) };
-  }, [walk, d, sel, walkShow, walkTypes, cats, A, byId, walkIdent]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [walk, d, sel, walkShow, walkTypes, cats, A, byId, walkIdent, origin]); // eslint-disable-line react-hooks/exhaustive-deps
   const dupOsm = useMemo(() => {
     const m = {};
     (d?.manifest?.transport?.duplicate_osm_ids || []).forEach((x) => x.ids.forEach((id) => (m[id] = x)));
@@ -257,9 +289,16 @@ export default function App() {
   const replayBus = () => { if (busRun) { const token = ++busToken.current; setBusProg({ idx: busRun.startIdx - 1, done: false }); setBusRun({ ...busRun, key: `${busRun.variant.id}|${busRun.startIdx}|${token}` }); } };
 
   const select = (s, fly = true) => {
+    if (picking && s) {   // choosing the start of a route: the clicked place becomes the start
+      const hit = byId.get(s.id);
+      if (hit) setOrigin({ key: s.id, id: s.id, coords: hit.f.geometry.coordinates, label: recordLabel(hit.f.properties), kind: hit.layer });
+      setPicking(false);
+      return;
+    }
     if (!s) return setSel(null);
     const hit = byId.get(s.id);
     if (!hit) return;
+    if (origin && origin.id !== s.id) fly = false;
     // choosing another stop ends the route that was started from the previous stop
     if (hit.layer === 'transport' && busRun?.fromPoint && busRun.fromPoint !== s.id) closeBus();
     const [lon, lat] = hit.f.geometry.coordinates;
@@ -267,13 +306,104 @@ export default function App() {
     const ph = d?.photos?.photos?.[s.id];
     setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, label: recordLabel(p), en: !!(p.name && englishPart(p.name, p.name_en)), sub: CATEGORY_LABEL[p.category],
       photo: ph ? { src: `${import.meta.env.BASE_URL}${ph.src}`, related: ph.match === 'wikidata-related' ? ph.matched_label : null, credit: `${ph.artist} · ${ph.license}` } : null });
-    setRightOpen(true);
+    openPanel('place');
     if (hit.layer !== 'attraction') setTab((t) => (t === 'walk' ? 'overview' : t));
     if (!d?.bus?.point_stops?.[s.id]) setTab((t) => (t === 'bus' ? 'overview' : t));
-    if (isPhone()) setLeftOpen(false);
   };
+  // ---------- map | panel split ----------
+  const resizeMap = () => mapRef.current?.resize();
+  // a short eased change (open, close, reset); dragging itself follows the pointer with no transition
+  const animateLayout = (fn) => {
+    const el = appRef.current;
+    if (!el || reduceMotion()) { fn(); requestAnimationFrame(resizeMap); return; }
+    el.classList.add('anim');
+    fn();
+    // follow the eased width every frame; drop the transition only after it has surely ended
+    let live = true;
+    const f = () => { resizeMap(); if (live) requestAnimationFrame(f); };
+    requestAnimationFrame(f);
+    setTimeout(() => { live = false; el.classList.remove('anim'); requestAnimationFrame(resizeMap); }, 420);
+  };
+  const openPanel = (which) => { if (which) setPtab(which); if (!rightOpen) animateLayout(() => setRightOpen(true)); };
+  const fracLimits = () => { const w = appRef.current?.clientWidth || innerWidth; return [MIN_PANEL / w, Math.max(MIN_PANEL / w, (w - MIN_MAP - SPLIT) / w)]; };
+  const setFrac = (v, commit = true) => {
+    const [lo, hi] = fracLimits();
+    const f = Math.min(hi, Math.max(lo, v));
+    appRef.current?.style.setProperty('--pf', f);
+    resizeMap();
+    if (commit) { setPanelFrac(f); store(PANEL_KEY, f.toFixed(4)); }
+    return f;
+  };
+  const startDrag = (e) => {
+    if (e.button !== 0 || !rightOpen) return;
+    const el = appRef.current, bar = e.currentTarget;
+    bar.setPointerCapture(e.pointerId);
+    el.classList.add('dragging');
+    let last = panelFrac, raf = 0, x = e.clientX;
+    const move = (ev) => {
+      x = ev.clientX;
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = 0; const r = el.getBoundingClientRect(); last = setFrac((r.right - x - SPLIT / 2) / r.width, false); });
+    };
+    const up = () => {
+      cancelAnimationFrame(raf);
+      bar.removeEventListener('pointermove', move); bar.removeEventListener('pointerup', up); bar.removeEventListener('pointercancel', up);
+      el.classList.remove('dragging');
+      setFrac(last);
+    };
+    bar.addEventListener('pointermove', move); bar.addEventListener('pointerup', up); bar.addEventListener('pointercancel', up);
+  };
+  const splitKey = (e) => {
+    const step = e.shiftKey ? 0.06 : 0.02;
+    const [lo, hi] = fracLimits();
+    const k = { ArrowLeft: panelFrac + step, ArrowRight: panelFrac - step, Home: hi, End: lo }[e.key];
+    if (k != null) { e.preventDefault(); if (!rightOpen) animateLayout(() => setRightOpen(true)); else setFrac(k); }
+    else if (e.key === 'Enter') { e.preventDefault(); resetLayout(); }
+  };
+  const resetLayout = () => animateLayout(() => { setRightOpen(true); setFrac(PANEL_DEFAULT); });
+  const togglePanel = () => animateLayout(() => setRightOpen(!rightOpen));
+  // keep the map the right size when the window changes (the grid recomputes; the map follows)
+  useEffect(() => { const r = () => requestAnimationFrame(resizeMap); addEventListener('resize', r); return () => removeEventListener('resize', r); }, []);
+
+  // ---------- route from the chosen start to the selected place (real routing service only) ----------
+  useEffect(() => {
+    if (!origin || !sel || origin.id === sel.id) { setRouteRes(null); return; }
+    const ac = new AbortController();
+    const key = `${origin.key}>${sel.id}|${routeMode}|${routeTry}`;
+    setRouteRes({ status: 'loading', key });
+    fetchRoute(origin.coords, sel.coords, routeMode, ac.signal)
+      .then((r) => setRouteRes({ status: 'ok', key, ...r }))
+      .catch((e) => {
+        if (e.name === 'AbortError') return;
+        setRouteRes({ status: 'error', key, error: e.message });
+        // no route to frame: show the place itself
+        mapRef.current?.flyTo({ center: sel.coords, zoom: Math.max(mapRef.current.getZoom(), 13.5), pitch: 0, duration: reduceMotion() ? 0 : 900, essential: true });
+      });
+    return () => ac.abort();   // a newer click, mode change or closing the details drops this request
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [origin?.key, sel?.id, routeMode, routeTry]);
+  const routeForMap = useMemo(() => (routeRes?.status === 'ok'
+    ? { key: routeRes.key, coords: routeRes.coords, timeText: fmtDuration(routeRes.duration_s), distText: fmtDistance(routeRes.distance_m), modeLabel: modeOf(routeRes.mode).label }
+    : null), [routeRes]);
+  const useMyLocation = () => {
+    setLocErr(null);
+    if (!navigator.geolocation) { setLocErr('This browser cannot share a location.'); return; }
+    navigator.geolocation.getCurrentPosition(
+      (p) => setOrigin({ key: `loc:${p.coords.longitude.toFixed(5)},${p.coords.latitude.toFixed(5)}`, id: null, coords: [p.coords.longitude, p.coords.latitude], label: 'Your location', kind: 'location', acc: p.coords.accuracy }),
+      (e) => setLocErr(e.code === 1 ? 'Location permission was not given. Pick a start on the map instead.' : 'Your location could not be found. Pick a start on the map instead.'),
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+  };
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const f = () => setTilted(map.getPitch() > 0.5);
+    map.on('pitchend', f);
+    return () => map.off('pitchend', f);
+  }, [mapRef.current]); // eslint-disable-line react-hooks/exhaustive-deps
+  const topDown = () => mapRef.current?.easeTo({ pitch: 0, bearing: 0, duration: reduceMotion() ? 0 : 600 });
   // the callout swatch follows the theme without re-running the camera move
-  const selForMap = useMemo(() => (sel ? { ...sel, color: pointColor(byId.get(sel.id)?.f.properties || {}, theme) } : null), [sel, byId]); // eslint-disable-line react-hooks/exhaustive-deps
+  const routing = !!(origin && sel && origin.id !== sel.id);
+  const selForMap = useMemo(() => (sel ? { ...sel, color: pointColor(byId.get(sel.id)?.f.properties || {}, theme), ...(routing ? { label: null, fly: false } : {}) } : null), [sel, byId, routing]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Press feedback from the Smart Build chapter: sink on press, squash and spring back on release.
   useEffect(() => {
@@ -315,7 +445,7 @@ export default function App() {
     return () => { removeEventListener('pointermove', move); cancelAnimationFrame(raf); };
   }, []);
   useEffect(() => {
-    const k = (e) => { if (e.key === 'Escape') { setSheet(null); setLegend(false); } };
+    const k = (e) => { if (e.key === 'Escape') { setSheet(null); setLegend(false); setPicking(false); } };
     addEventListener('keydown', k);
     return () => removeEventListener('keydown', k);
   }, []);
@@ -348,7 +478,7 @@ export default function App() {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.getElementById('dashboard')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
     setSheet(key === 'fares' ? 'journeys' : key === 'sources' ? 'sources' : null);
-    if (key === 'density' || key === 'walk') { if (!isPhone()) setLeftOpen(true); setPanel(key); }
+    if (key === 'density' || key === 'walk') { if (!isPhone()) openPanel('explore'); else setPtab('explore'); setPanel(key); }
     if (key === 'density' && d?.kde) setDensityMode('kde');
     if (key === 'walk' && walk.available) { setSel(null); setWalkShow(true); }
     if (key === 'weather') { select({ id: 'S00019' }); setTab('weather'); } // Kyoto Station
@@ -382,7 +512,12 @@ export default function App() {
   const curTab = tabs.some(([k]) => k === tab) ? tab : 'overview';
   const densityLabel = densityMode === 'kde' ? 'KDE layer on' : densityMode === 'heat' ? 'Heatmap on' : 'Off';
   const pilotName = walk.pilotInfo?.name;
-  const cls = 'app' + (introDone ? '' : dashSeen ? ' intro' : ' waiting') + (leftOpen ? '' : ' no-left') + (rightOpen ? '' : ' no-right') + (selHit ? ' has-sel' : '');
+  const cls = 'app' + (introDone ? '' : dashSeen ? ' intro' : ' waiting') + (rightOpen ? '' : ' no-right') + (selHit ? ' has-sel' : '') + (picking ? ' picking' : '');
+  const cov = d.coverage;
+  const covBbox = bboxOf(d.coverageLines);
+  const toggleCoverage = () => setCovShow((c) => ({ on: !c.on, token: c.token + 1 }));
+  const replayCoverage = () => setCovShow((c) => ({ on: true, token: c.token + 1 }));
+  const routePad = isPhone() && rightOpen ? { bottom: Math.round(innerHeight * 0.62) + 20 } : null;
 
   return (
     <>
@@ -392,10 +527,10 @@ export default function App() {
     <Seam mark="読" ja="地図を読む" en="Reading the map" />
     <Features items={features} onOpen={openFeature} />
     <Seam mark="図" ja="地図" en="The dashboard" />
-    <div id="dashboard" className={cls}>
+    <div id="dashboard" className={cls} ref={appRef} style={{ '--pf': panelFrac }}>
       <header className="top">
         <span className="wa-band" aria-hidden="true" />
-        <button type="button" className="nav-btn" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore-panel">
+        <button type="button" className="nav-btn" onClick={() => { if (rightOpen && ptab === 'explore') setRightOpen(false); else { setPtab('explore'); setRightOpen(true); } }} aria-expanded={rightOpen && ptab === 'explore'} aria-controls="explore-panel">
           <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" /></svg>
           <span>Explore</span>
         </button>
@@ -425,8 +560,17 @@ export default function App() {
         </nav>
       </header>
 
-      <button type="button" className="scrim" aria-label="Close the explore panel" tabIndex={leftOpen ? 0 : -1} onClick={() => setLeftOpen(false)} />
-      <aside className="left" id="explore-panel" aria-label="Explore: search, filters and analysis">
+      <aside className="right panel" id="details" aria-label="Information panel">
+        <div className="ptabs" role="tablist" aria-label="Panel">
+          <button type="button" role="tab" id="ptab-explore" aria-selected={ptab === 'explore'} aria-controls="explore-panel" className={ptab === 'explore' ? 'on' : ''} onClick={() => setPtab('explore')}>Explore</button>
+          <button type="button" role="tab" id="ptab-place" aria-selected={ptab === 'place'} aria-controls="place-panel" className={ptab === 'place' ? 'on' : ''} onClick={() => setPtab('place')}>
+            <span>Place</span>{selHit && <small lang="ja">{recordLabel(selHit.f.properties)}</small>}
+          </button>
+          <button type="button" className="x ptabs-x" onClick={togglePanel} aria-label="Hide the panel">×</button>
+        </div>
+      <div className="left" id="explore-panel" role="tabpanel" aria-labelledby="ptab-explore" hidden={ptab !== 'explore'}>
+        <Bento id="explore">
+        <Tile k="search" w={2} label="Find a place">
         <section className="card">
           <h3>Find a place</h3>
           <input id="q" type="search" placeholder="Attraction or stop · 日本語 / English / ID" aria-label="Search attractions or stops" value={query} onChange={(e) => setQuery(e.target.value)} />
@@ -445,10 +589,18 @@ export default function App() {
               {matches.length > 8 && <li className="muted xs more">Showing 8 of {matches.length >= 80 ? '80+' : matches.length} matches. Type more to narrow the list.</li>}
             </ul>
           )}
-        </section>
+        </section></Tile>
 
+        <Tile k="study" label="Study area"><StudyArea cov={cov} on={covShow.on} onToggle={toggleCoverage} onReplay={replayCoverage} /></Tile>
+
+        <Tile k="cats" label="Attraction categories">
         <section className="card">
-          <h3>Attraction categories</h3>
+          <div className="card-h"><h3>Attraction categories</h3>
+            <label className="switch" title="Hide the attraction points and symbols; density layers stay on">
+              <input type="checkbox" checked={pointsOn} onChange={() => setPointsOn(!pointsOn)} /><i aria-hidden="true" /><span>Points</span>
+            </label>
+          </div>
+          {!pointsOn && <p className="xs muted pts-off">Points hidden. Density layers, search and selection still work.</p>}
           {ATTRACTION_CATS.filter((c) => catCount[c.key] > 0).map((c) => (
             <label className="chk" key={c.key} onMouseEnter={() => setFocus({ kind: 'cat', key: c.key })} onMouseLeave={() => setFocus(null)}>
               <input type="checkbox" checked={cats.includes(c.key)} onChange={() => toggle(cats, setCats, c.key)} />
@@ -458,9 +610,10 @@ export default function App() {
             </label>
           ))}
           <div className="row-btns"><button className="link" type="button" onClick={() => setCats(ATTRACTION_CATS.map((c) => c.key))}>All</button><button className="link" type="button" onClick={() => setCats([])}>None</button></div>
-        </section>
+        </section></Tile>
 
         {d.records && (
+          <Tile k="records" label="Kyoto City records">
           <section className="card">
             <h3>Kyoto City records</h3>
             <label className="chk">
@@ -471,21 +624,23 @@ export default function App() {
             </label>
             <p className="xs muted">Place names, mountains, rivers and springs from the city's sightseeing list, placed where two sources agree.</p>
             <button className="link" type="button" onClick={() => { setRecFocus(null); setSheet('records'); }}>All {d.records.records.length} records and what was done with each →</button>
-          </section>
+          </section></Tile>
         )}
 
+        <Tile k="transit" label="Public transport">
         <section className="card">
           <h3>Public transport</h3>
           {TRANSPORT_TYPES.map((t) => (
             <label className="chk" key={t.key} title={t.cats.map((c) => `${subCount[c] || 0} ${CATEGORY_LABEL[c].toLowerCase()}${(subCount[c] || 0) === 1 ? '' : 's'}`).join(' + ')} onMouseEnter={() => setFocus({ kind: 'type', key: t.key })} onMouseLeave={() => setFocus(null)}>
               <input type="checkbox" checked={types.includes(t.key)} onChange={() => toggle(types, setTypes, t.key)} />
-              <img className="sw ico" src={iconURL(t.key)} alt="" />
+              <img className="sw ico" src={iconURL(t.key, theme)} alt="" />
               <span>{t.label}</span>
               <span className="n">{(typeCount[t.key] || 0).toLocaleString('en-US')}</span>
             </label>
           ))}
-        </section>
+        </section></Tile>
 
+        <Tile k="analysis" w={2} label="Analysis">
         <section className="card analysis">
           <h3>Analysis</h3>
           <button type="button" className={'entry' + (panel === 'density' ? ' open' : '')} aria-expanded={panel === 'density'} aria-controls="an-density" onClick={() => setPanel(panel === 'density' ? null : 'density')}>
@@ -587,13 +742,68 @@ export default function App() {
               )}
             </>
           )}
-        </section>
+        </section></Tile>
+        </Bento>
+      </div>
+      <div className="place" id="place-panel" role="tabpanel" aria-labelledby="ptab-place" hidden={ptab !== 'place'}>
+        {!selHit ? (
+          <section className="card empty">
+            <h3>Select a place</h3>
+            <p>Click an attraction or a stop on the map, or search for one in Explore.</p>
+            {origin && <p className="xs">Route start: <b lang="ja">{origin.label}</b>. Select a destination to get a route.</p>}
+          </section>
+        ) : (
+          <Bento id="place" key={sel.id}>
+            <Tile k="summary" label="Place summary"><Summary hit={selHit} pm={d.pointMuni} photos={d.photos} color={dotColor(selHit.f)} onClose={() => setSel(null)} onHide={togglePanel} /></Tile>
+            <Tile k="route" label="Route"><RouteCard sel={sel} origin={origin} res={routeRes} mode={routeMode} picking={picking} locErr={locErr}
+              onMode={setRouteMode} onPick={() => setPicking(!picking)} onHere={() => setOrigin({ key: sel.id, id: sel.id, coords: sel.coords, label: sel.label, kind: sel.layer })}
+              onLocate={useMyLocation} onClear={() => { setOrigin(null); setPicking(false); }} onRetry={() => setRouteTry((n) => n + 1)} /></Tile>
+            <Tile k="details" w={2} label="Details"><div className="stack">
+            <div className="tabs" role="tablist" aria-label="Details">
+              {tabs.map(([k, l]) => <button key={k} type="button" role="tab" id={`tab-${k}`} aria-selected={curTab === k} aria-controls={`pane-${k}`} className={curTab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
+            </div>
+            <div className="pane card" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" hidden={curTab !== 'overview'}>
+              <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} rel={d.relations} byId={byId} onOpen={(id) => select({ id })} recs={recById} onRecord={(id) => { setRecFocus(id); setSheet('records'); }} />
+            </div>
+            {selStopKeys && (
+              <div className="pane card" role="tabpanel" id="pane-bus" aria-labelledby="tab-bus" hidden={curTab !== 'bus'}>
+                <BusAtStop bus={d.bus} stopKeys={selStopKeys} active={busRun?.variant.id} hlKey={busHl?.route.key} onStart={(route, v, key) => startBus(route, v.id, key, sel.id)} onHighlight={highlightBus} err={busErr} />
+              </div>
+            )}
+            {isAttr && (
+              <div className="pane card" role="tabpanel" id="pane-walk" aria-labelledby="tab-walk" hidden={curTab !== 'walk'}>
+                <Walking available={walk} index={walkIndex} id={sel.id} byId={byId} maxWalk={maxWalk} />
+              </div>
+            )}
+            {/* kept mounted so the forecast and the planned visit survive a change of tab */}
+            <div className="pane card" role="tabpanel" id="pane-weather" aria-labelledby="tab-weather" hidden={curTab !== 'weather'}>
+              <Weather target={{ id: sel.id, lat: sel.coords[1], lon: sel.coords[0] }} visit={visit} onVisit={setVisit} />
+            </div>
+            <div className="pane card" role="tabpanel" id="pane-journeys" aria-labelledby="tab-journeys" hidden={curTab !== 'journeys'}>
+              <PlaceJourneys journeys={d.journeys} id={sel.id} onOpen={() => setSheet('journeys')} />
+            </div>
+            </div></Tile>
+          </Bento>
+        )}
+      </div>
       </aside>
+      <div className="splitter" role="separator" aria-orientation="vertical" aria-controls="details" tabIndex={0}
+        aria-label="Resize the map and the panel. Arrow keys resize, Enter resets."
+        aria-valuemin={0} aria-valuemax={100} aria-valuenow={rightOpen ? Math.round((1 - panelFrac) * 100) : 100} aria-valuetext={rightOpen ? `Map ${Math.round((1 - panelFrac) * 100)}%, panel ${Math.round(panelFrac * 100)}%` : 'Panel hidden'}
+        onPointerDown={startDrag} onKeyDown={splitKey} onDoubleClick={resetLayout}>
+        <span className="grip" aria-hidden="true" />
+        <span className="split-tip" aria-hidden="true">Drag to resize · double-click to reset</span>
+        <div className="split-btns">
+          <button type="button" onPointerDown={(e) => e.stopPropagation()} onClick={togglePanel} aria-expanded={rightOpen} aria-controls="details" title={rightOpen ? 'Expand the map (hide the panel)' : 'Show the panel'} aria-label={rightOpen ? 'Expand the map' : 'Show the panel'}><i className={rightOpen ? 'r' : 'l'} /></button>
+          <button type="button" onPointerDown={(e) => e.stopPropagation()} onClick={resetLayout} title="Reset to the default split" aria-label="Reset the layout"><svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3 8a5 5 0 1 0 1.6-3.7M3 2.5v3h3" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
+        </div>
+      </div>
 
       <main className="center">
         <i className="corner c1" /><i className="corner c2" /><i className="corner c3" /><i className="corner c4" />
         {core ? (
-          <MapView theme={theme} data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={selForMap} active={dashSeen} focus={focus} onSelect={(s) => select(s, false)} onHover={setHover} onGeo={(id) => { setRecFocus(id); setSheet('records'); }} geoOn={geoOn} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} busRun={busRun} busHighlight={busHl?.ids} onBusProgress={setBusProg} busCtl={busCtl} />
+          <MapView theme={theme} data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={selForMap} active={dashSeen} focus={focus} onSelect={(s) => select(s, false)} onHover={setHover} onGeo={(id) => { setRecFocus(id); setSheet('records'); }} geoOn={geoOn} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} busRun={busRun} busHighlight={busHl?.ids} onBusProgress={setBusProg} busCtl={busCtl}
+            route={routeForMap} origin={origin} cinematic={cinematic} coverage={covBbox ? { ...covShow, bbox: covBbox } : null} pointsOn={pointsOn} padding={routePad} />
         ) : (
           <div className="alert big" role="alert"><b>Map data could not be loaded.</b>{failed.map(([k, v]) => <span key={k}>{v.file}: {v.error}</span>)}</div>
         )}
@@ -606,7 +816,12 @@ export default function App() {
             <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><circle cx="5" cy="5" r="2" fill="currentColor" /><circle cx="5" cy="10" r="2" fill="currentColor" opacity=".6" /><circle cx="5" cy="15" r="2" fill="currentColor" opacity=".35" /><path d="M10 5h7M10 10h7M10 15h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
             <span>Legend</span>
           </button>
+          <button type="button" className={'cine' + (cinematic ? ' on' : '')} aria-pressed={cinematic} onClick={() => setCinematic(!cinematic)} title="Cinematic view: routes are framed with a gentle tilt. Off: top-down, no tilt or turn.">
+            <i className="tg" aria-hidden="true" /><span>Cinematic view</span>
+          </button>
+          {tilted && <button type="button" onClick={topDown} title="Back to a top-down view"><span>Top-down</span></button>}
         </div>
+        {picking && <div className="pick-bar" role="status">Click a place on the map to set the route start. <button type="button" className="link" onClick={() => setPicking(false)}>Cancel</button></div>}
         {legend && (
           <div className="map-legend" id="map-legend" role="region" aria-label="Map legend">
             <header><b>Legend</b><button className="x" type="button" onClick={() => setLegend(false)} aria-label="Close legend">×</button></header>
@@ -614,8 +829,10 @@ export default function App() {
               <li className="lm-key"><img src={landmarkURL('lm-kinkaku', theme)} alt="" width="30" height="30" /><span>Iconic landmark <span className="muted">({Object.keys(ICONIC).length} places, each with its own symbol)</span></span></li>
               {ATTRACTION_CATS.filter((c) => catCount[c.key] > 0).map((c) => <li key={c.key}><img src={landmarkURL('cat-' + c.key, theme, T.cat[c.key])} alt="" width="20" height="20" /><span className="dot" style={{ background: T.cat[c.key] }} />{c.label}</li>)}
               <li className="muted xs">Symbol: major place, or any place when zoomed in. Dot: every record, at any zoom.</li>
-              {TRANSPORT_TYPES.map((t) => <li key={t.key}><img src={iconURL(t.key)} alt="" width="16" height="16" />{t.label} stop <span className="muted">(dot when zoomed out)</span></li>)}
-              <li><span className="ln" style={{ borderColor: T.outline.line }} />Kyoto Prefecture boundary</li>
+              {TRANSPORT_TYPES.map((t) => <li key={t.key}><img src={iconURL(t.key, theme)} alt="" width="16" height="16" /><span className="dot" style={{ background: T.transit[t.key] }} />{t.label} stop <span className="muted">({t.key === 'bus' ? 'square' : t.key === 'tram' ? 'diamond' : 'circle'}; dot when zoomed out)</span></li>)}
+              <li><span className="ln study" style={{ borderColor: T.outline.line }} />Study area: Kyoto Prefecture</li>
+              {covShow.on && <li><span className="ln thin" style={{ borderColor: T.coverage.line }} />Municipal boundary (coverage)</li>}
+              {routeForMap && <li><span className="ln" style={{ borderColor: T.route.core }} />Route · <span className="end-dot s" style={{ borderColor: T.route.start }} />start · <span className="end-dot" style={{ background: T.route.end }} />end</li>}
               {walk.pilot && <li><span className="ln dash" style={{ borderColor: T.pilot }} />Walking pilot area</li>}
               {(busRun || busHl) && <li><span className="ln" style={{ borderColor: T.busLine }} />Kyoto City Bus route {(busRun || busHl).route.number}{busHl ? ' (stops only)' : ''}</li>}
               {walkSet && <li><span className="ln" style={{ borderColor: T.walk.bus }} />Walk to bus stop · <span className="ln" style={{ borderColor: T.walk.rail }} />to rail</li>}
@@ -632,8 +849,7 @@ export default function App() {
             )}
           </div>
         )}
-        <button type="button" className="edge-btn l" onClick={() => setLeftOpen(!leftOpen)} aria-expanded={leftOpen} aria-controls="explore-panel" aria-label={leftOpen ? 'Hide the explore panel' : 'Show the explore panel'}><i /></button>
-        <button type="button" className="edge-btn r" onClick={() => setRightOpen(!rightOpen)} aria-expanded={rightOpen} aria-controls="details" aria-label={rightOpen ? 'Hide the details panel' : 'Show the details panel'}><i /><span>Details</span></button>
+        <button type="button" className="edge-btn r" onClick={() => openPanel(selHit ? 'place' : 'explore')} aria-expanded={rightOpen} aria-controls="details" aria-label="Show the panel"><i /><span>{selHit ? 'Details' : 'Explore'}</span></button>
         {(busRun || busHl) && (
           <div className="bus-bar" role="region" aria-label="Bus route on the map">
             <span className="bus-no">{(busRun || busHl).route.number}</span>
@@ -671,41 +887,6 @@ export default function App() {
           onClose={() => setSheet(null)} />}
       </main>
 
-      <aside className="right" id="details" aria-label="Selected place">
-        {!selHit ? (
-          <section className="card empty">
-            <h3>Select a place</h3>
-            <p>Click an attraction or a stop on the map, or search by name on the left.</p>
-          </section>
-        ) : (
-          <div className="stack" key={sel.id}>
-            <Summary hit={selHit} pm={d.pointMuni} photos={d.photos} color={dotColor(selHit.f)} onClose={() => setSel(null)} onHide={() => setRightOpen(false)} />
-            <div className="tabs" role="tablist" aria-label="Details">
-              {tabs.map(([k, l]) => <button key={k} type="button" role="tab" id={`tab-${k}`} aria-selected={curTab === k} aria-controls={`pane-${k}`} className={curTab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
-            </div>
-            <div className="pane card" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" hidden={curTab !== 'overview'}>
-              <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} rel={d.relations} byId={byId} onOpen={(id) => select({ id })} recs={recById} onRecord={(id) => { setRecFocus(id); setSheet('records'); }} />
-            </div>
-            {selStopKeys && (
-              <div className="pane card" role="tabpanel" id="pane-bus" aria-labelledby="tab-bus" hidden={curTab !== 'bus'}>
-                <BusAtStop bus={d.bus} stopKeys={selStopKeys} active={busRun?.variant.id} hlKey={busHl?.route.key} onStart={(route, v, key) => startBus(route, v.id, key, sel.id)} onHighlight={highlightBus} err={busErr} />
-              </div>
-            )}
-            {isAttr && (
-              <div className="pane card" role="tabpanel" id="pane-walk" aria-labelledby="tab-walk" hidden={curTab !== 'walk'}>
-                <Walking available={walk} index={walkIndex} id={sel.id} byId={byId} maxWalk={maxWalk} />
-              </div>
-            )}
-            {/* kept mounted so the forecast and the planned visit survive a change of tab */}
-            <div className="pane card" role="tabpanel" id="pane-weather" aria-labelledby="tab-weather" hidden={curTab !== 'weather'}>
-              <Weather target={{ id: sel.id, lat: sel.coords[1], lon: sel.coords[0] }} visit={visit} onVisit={setVisit} />
-            </div>
-            <div className="pane card" role="tabpanel" id="pane-journeys" aria-labelledby="tab-journeys" hidden={curTab !== 'journeys'}>
-              <PlaceJourneys journeys={d.journeys} id={sel.id} onOpen={() => setSheet('journeys')} />
-            </div>
-          </div>
-        )}
-      </aside>
     </div>
     <Seam mark="結" ja="結び" en="Closing" />
     <Outro manifest={d.manifest} />
@@ -800,6 +981,96 @@ const MATCH_TEXT = {
 const BADGE = { 'wikidata-related': 'Related place', 'commons-geo': 'Nearby photo', 'commons-near': 'Nearby photo', 'osm-wikidata': 'Linked in OSM', 'osm-image': 'Linked in OSM', 'osm-commons': 'Linked in OSM' };
 
 // Top of the details panel: reliable photo (if any), name, category and where it is.
+// Study area summary: how many municipalities the study area covers, from a polygon intersection made by
+// scripts/study_area_coverage.py. Kyoto City's wards are a lower level and are listed, not counted.
+const TYPE_PL = { city: ['city', 'cities'], town: ['town', 'towns'], village: ['village', 'villages'] };
+function StudyArea({ cov, on, onToggle, onReplay }) {
+  if (!cov) {
+    return (
+      <section className="card study">
+        <h3>Study area</h3>
+        <p className="xs warnline">Coverage not available: study_area_coverage.json did not load. It needs the MLIT N03 municipal boundaries (scripts/study_area_coverage.py).</p>
+      </section>
+    );
+  }
+  const c = cov.counts;
+  const types = Object.entries(c.by_type).filter(([, n]) => n > 0).map(([t, n]) => `${n} ${TYPE_PL[t][n === 1 ? 0 : 1]}`).join(' · ');
+  return (
+    <section className="card study">
+      <h3>Study area</h3>
+      <div className="sa-top">
+        <div><b>{cov.study_area.name}</b><span className="xs muted mono">{cov.study_area.area_km2.toLocaleString('en-US')} km²</span></div>
+        <div className="sa-n"><b className="mono">{c.covered}</b><span>{cov.label}</span></div>
+      </div>
+      <p className="xs muted">{types}{c.partial ? ` · ${c.full} full, ${c.partial} partial` : ' · all fully covered'}</p>
+      <div className="row-btns">
+        <button type="button" className={'btn sm' + (on ? '' : ' ghost')} aria-pressed={on} onClick={onToggle}>{on ? 'Hide coverage' : 'Show coverage'}</button>
+        {on && <button type="button" className="btn ghost sm" onClick={onReplay}>Replay</button>}
+      </div>
+      <details className="more-d">
+        <summary>Municipalities and how they are counted</summary>
+        <ul className="sa-list">
+          {cov.municipalities.map((m) => (
+            <li key={m.code}>
+              <span lang="ja">{m.name}</span>
+              <span className="xs muted">{m.type}{m.wards ? ` · ${m.wards.length} wards` : ''}</span>
+              <span className={'sa-st ' + m.status.replace(' ', '-')}>{m.status === 'full' ? 'Full' : m.status === 'partial' ? `Partial ${(m.share * 100).toFixed(1)}%` : 'Not counted'}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="xs">{cov.method}</p>
+        <p className="xs muted">Source: {cov.source}. The study area is {cov.study_area.definition}, so every municipality is inside it. The lines on the map are simplified for drawing (about 15 m); the counts use the full-precision polygons.</p>
+      </details>
+    </section>
+  );
+}
+
+// Route from an explicit start to the selected place. Times and distances come only from the routing
+// service's result; without a start nothing is requested or drawn.
+function RouteCard({ sel, origin, res, mode, picking, locErr, onMode, onPick, onHere, onLocate, onClear, onRetry }) {
+  const isStart = origin && origin.id === sel.id;
+  const m = modeOf(mode);
+  return (
+    <section className="card route-card" aria-live="polite">
+      <div className="card-h">
+        <h3>Route</h3>
+        <div className="seg sm modes" role="radiogroup" aria-label="Travel mode">
+          {MODES.map((x) => <button key={x.key} type="button" role="radio" aria-checked={mode === x.key} className={mode === x.key ? 'on' : ''} onClick={() => onMode(x.key)}>{x.label}</button>)}
+          <button type="button" disabled title={TRANSIT_NOTE} aria-label={`Transit: ${TRANSIT_NOTE}`}>Transit</button>
+        </div>
+      </div>
+      <ol className="rt-ends">
+        <li className="s"><i aria-hidden="true" /><span className="k">From</span>{origin ? <b lang="ja">{origin.label}</b> : <span className="muted">No start chosen</span>}</li>
+        <li className="e"><i aria-hidden="true" /><span className="k">To</span><b lang="ja">{isStart ? '—' : sel.label}</b></li>
+      </ol>
+      {!origin && <p className="xs">Choose where the route starts. Nothing is drawn until you do.</p>}
+      {isStart && <p className="xs">This place is the start. Select a destination on the map or in Explore.</p>}
+      {res?.status === 'loading' && <p className="xs rt-load"><span className="spin" aria-hidden="true" />Getting the route from {ROUTE_SERVICE.host}…</p>}
+      {res?.status === 'error' && (
+        <div className="rt-err" role="alert">
+          <p className="xs warnline">{res.error}</p>
+          <p className="xs muted">No route is drawn, and no straight-line distance is shown instead.</p>
+          <button type="button" className="btn ghost sm" onClick={onRetry}>Try again</button>
+        </div>
+      )}
+      {res?.status === 'ok' && (
+        <div className="rt-sum">
+          <div><b className="mono">{fmtDuration(res.duration_s)}</b><span>Estimated travel time · {m.label.toLowerCase()}</span></div>
+          <div><b className="mono">{fmtDistance(res.distance_m)}</b><span>Route distance</span></div>
+          <p className="xs muted">{m.note} Not a live ETA.{(res.snap_m || []).some((x) => x > 50) ? ` The ${res.snap_m[0] > 50 ? 'start' : 'end'} was moved ${Math.round(Math.max(...res.snap_m))} m to the nearest routable road.` : ''} Route: <a href={ROUTE_SERVICE.url} target="_blank" rel="noreferrer">{ROUTE_SERVICE.name}</a>, © OpenStreetMap contributors.</p>
+        </div>
+      )}
+      <div className="row-btns rt-btns">
+        {!isStart && <button type="button" className={'btn sm' + (picking ? '' : ' ghost')} aria-pressed={picking} onClick={onPick}>{picking ? 'Cancel picking' : origin ? 'Change start' : 'Pick start on map'}</button>}
+        {!isStart && <button type="button" className="btn ghost sm" onClick={onLocate} title="Asks for your permission; your position is sent to the routing service only to compute this route">Use my location</button>}
+        {!isStart && <button type="button" className="btn ghost sm" onClick={onHere}>Start from here</button>}
+        {origin && <button type="button" className="link" onClick={onClear}>Clear start</button>}
+      </div>
+      {locErr && <p className="xs warnline" role="alert">{locErr}</p>}
+    </section>
+  );
+}
+
 function Summary({ hit, pm, photos, color, onClose, onHide }) {
   const p = hit.f.properties;
   const [imgOk, setImgOk] = useState(false);

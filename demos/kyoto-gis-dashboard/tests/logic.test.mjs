@@ -556,3 +556,44 @@ test('landmark symbols: 15 iconic records exist, levels come from data fields, e
   assert.equal(n[1], 15);
   assert.ok(n[2] > 100 && n[3] > 300, JSON.stringify(n));
 });
+
+// ---------- study area coverage: polygon intersection, one level, rings drawn separately ----------
+test('study area coverage: municipalities only (wards listed under Kyoto City), counted by intersection with a stated tolerance', () => {
+  const C = J('study_area_coverage.json');
+  assert.equal(C.level, 'municipality');
+  assert.equal(C.label, 'Municipalities covered');               // cities, towns and a village: not "Cities"
+  assert.equal(C.municipalities.length, 26);
+  assert.deepEqual(C.counts.by_type, { city: 15, town: 10, village: 1 });
+  assert.equal(C.counts.covered, C.counts.full + C.counts.partial);
+  assert.ok(C.tolerance.min_area_m2 > 0 && C.tolerance.full_share < 1);
+  const kyoto = C.municipalities.find((m) => m.name === '京都市');
+  assert.equal(kyoto.wards.length, 11);
+  assert.equal(new Set(C.municipalities.map((m) => m.code)).size, 26);   // no duplicates
+  assert.ok(Math.abs(C.study_area.area_km2 - 4612) < 5);                 // Kyoto Prefecture is about 4,612 km²
+  const L = J('coverage_lines.geojson').features;
+  for (const f of L) {
+    assert.equal(f.geometry.type, 'LineString');                          // one ring per line, never joined to another
+    const c = f.geometry.coordinates;
+    assert.deepEqual(c[0], c[c.length - 1], f.properties.name);           // each ring closes on itself
+  }
+  assert.equal(new Set(L.map((f) => f.properties.code)).size, 26);
+});
+
+test('route: only the service result is used; failures raise, nothing is estimated from a straight line', async () => {
+  const { fetchRoute, fmtDuration, fmtDistance, MODES } = await import('../src/lib/route.js');
+  assert.deepEqual(MODES.map((m) => m.key), ['foot', 'bike', 'car']);
+  assert.equal(fmtDuration(43 * 60), '43 min');
+  assert.equal(fmtDuration(107 * 60), '1 h 47 min');
+  assert.equal(fmtDistance(3204), '3.20 km');
+  assert.equal(fmtDistance(480), '480 m');
+  const real = globalThis.fetch;
+  try {
+    globalThis.fetch = async () => ({ ok: true, status: 200, json: async () => ({ code: 'NoRoute', routes: [] }) });
+    await assert.rejects(fetchRoute([135.1, 35.1], [135.2, 35.2], 'foot'), /no route/i);
+    globalThis.fetch = async () => ({ ok: false, status: 503 });
+    await assert.rejects(fetchRoute([135.1, 35.3], [135.2, 35.2], 'car'), /HTTP 503/);
+    globalThis.fetch = async () => ({ ok: true, status: 200, json: async () => ({ code: 'Ok', routes: [{ distance: 1234, duration: 900, geometry: { coordinates: [[135.1, 35.0], [135.15, 35.05], [135.2, 35.1]] } }], waypoints: [{ distance: 3 }, { distance: 120 }] }) });
+    const r = await fetchRoute([135.1, 35.0], [135.2, 35.1], 'bike');
+    assert.equal(r.distance_m, 1234); assert.equal(r.duration_s, 900); assert.deepEqual(r.snap_m, [3, 120]);
+  } finally { globalThis.fetch = real; }
+});

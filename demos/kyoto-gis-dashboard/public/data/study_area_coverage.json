@@ -1,0 +1,319 @@
+{
+ "study_area": {
+  "name": "Kyoto Prefecture",
+  "definition": "union of all N03 polygons for Kyoto Prefecture",
+  "area_km2": 4611.5
+ },
+ "level": "municipality",
+ "label": "Municipalities covered",
+ "source": "MLIT National Land Numerical Information N03 (administrative areas), data/raw/kyoto_boundary.geojson",
+ "method": "Polygon intersection in EPSG:6674 (metres). Full: at least 99.9% of the municipality lies in the study area. Partial: shared area at least 1,000 m² and 0.1%. Smaller overlaps (edge contact, digitising slivers) are not counted. Kyoto City wards are a lower level and are listed under Kyoto City, not counted.",
+ "tolerance": {
+  "full_share": 0.999,
+  "min_share": 0.001,
+  "min_area_m2": 1000.0
+ },
+ "counts": {
+  "covered": 26,
+  "full": 26,
+  "partial": 0,
+  "by_type": {
+   "city": 15,
+   "town": 10,
+   "village": 1
+  }
+ },
+ "municipalities": [
+  {
+   "code": "26100",
+   "name": "京都市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 827.67,
+   "parts": 1,
+   "wards": [
+    {
+     "code": "26101",
+     "name": "北区",
+     "area_km2": 94.87
+    },
+    {
+     "code": "26102",
+     "name": "上京区",
+     "area_km2": 7.03
+    },
+    {
+     "code": "26103",
+     "name": "左京区",
+     "area_km2": 246.72
+    },
+    {
+     "code": "26104",
+     "name": "中京区",
+     "area_km2": 7.41
+    },
+    {
+     "code": "26105",
+     "name": "東山区",
+     "area_km2": 7.48
+    },
+    {
+     "code": "26106",
+     "name": "下京区",
+     "area_km2": 6.78
+    },
+    {
+     "code": "26107",
+     "name": "南区",
+     "area_km2": 15.78
+    },
+    {
+     "code": "26108",
+     "name": "右京区",
+     "area_km2": 292.01
+    },
+    {
+     "code": "26109",
+     "name": "伏見区",
+     "area_km2": 61.67
+    },
+    {
+     "code": "26110",
+     "name": "山科区",
+     "area_km2": 28.7
+    },
+    {
+     "code": "26111",
+     "name": "西京区",
+     "area_km2": 59.23
+    }
+   ]
+  },
+  {
+   "code": "26201",
+   "name": "福知山市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 552.51,
+   "parts": 1
+  },
+  {
+   "code": "26202",
+   "name": "舞鶴市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 342.02,
+   "parts": 285
+  },
+  {
+   "code": "26203",
+   "name": "綾部市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 347.07,
+   "parts": 1
+  },
+  {
+   "code": "26204",
+   "name": "宇治市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 67.52,
+   "parts": 1
+  },
+  {
+   "code": "26205",
+   "name": "宮津市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 172.94,
+   "parts": 54
+  },
+  {
+   "code": "26206",
+   "name": "亀岡市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 224.76,
+   "parts": 1
+  },
+  {
+   "code": "26207",
+   "name": "城陽市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 32.7,
+   "parts": 1
+  },
+  {
+   "code": "26208",
+   "name": "向日市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 7.72,
+   "parts": 1
+  },
+  {
+   "code": "26209",
+   "name": "長岡京市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 19.16,
+   "parts": 1
+  },
+  {
+   "code": "26210",
+   "name": "八幡市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 24.35,
+   "parts": 5
+  },
+  {
+   "code": "26211",
+   "name": "京田辺市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 42.91,
+   "parts": 1
+  },
+  {
+   "code": "26212",
+   "name": "京丹後市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 502.13,
+   "parts": 496
+  },
+  {
+   "code": "26213",
+   "name": "南丹市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 616.3,
+   "parts": 1
+  },
+  {
+   "code": "26214",
+   "name": "木津川市",
+   "type": "city",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 85.11,
+   "parts": 1
+  },
+  {
+   "code": "26303",
+   "name": "大山崎町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 5.97,
+   "parts": 1
+  },
+  {
+   "code": "26322",
+   "name": "久御山町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 13.86,
+   "parts": 3
+  },
+  {
+   "code": "26343",
+   "name": "井手町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 18.04,
+   "parts": 2
+  },
+  {
+   "code": "26344",
+   "name": "宇治田原町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 58.15,
+   "parts": 1
+  },
+  {
+   "code": "26364",
+   "name": "笠置町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 23.51,
+   "parts": 2
+  },
+  {
+   "code": "26365",
+   "name": "和束町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 64.91,
+   "parts": 1
+  },
+  {
+   "code": "26366",
+   "name": "精華町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 25.68,
+   "parts": 1
+  },
+  {
+   "code": "26367",
+   "name": "南山城村",
+   "type": "village",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 64.1,
+   "parts": 1
+  },
+  {
+   "code": "26407",
+   "name": "京丹波町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 303.05,
+   "parts": 1
+  },
+  {
+   "code": "26463",
+   "name": "伊根町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 60.99,
+   "parts": 124
+  },
+  {
+   "code": "26465",
+   "name": "与謝野町",
+   "type": "town",
+   "status": "full",
+   "share": 1.0,
+   "area_km2": 108.38,
+   "parts": 1
+  }
+ ]
+}

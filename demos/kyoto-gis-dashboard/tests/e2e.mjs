@@ -12,6 +12,9 @@ mkdirSync(out, { recursive: true });
 const proxy = process.env.HTTPS_PROXY ? { server: process.env.HTTPS_PROXY, bypass: 'localhost,127.0.0.1' } : undefined;
 // PW_CHANNEL=msedge runs Microsoft Edge, which can decode the H.264 opening video (Playwright's own Chromium cannot).
 const browser = await chromium.launch({ proxy, channel: process.env.PW_CHANNEL || undefined, args: ['--use-gl=swiftshader', '--ignore-gpu-blocklist'] });
+// the panel shows Explore or Place; search, filters and analysis live in Explore
+const placeTab = async (pg) => { const t = pg.locator('#ptab-place'); if (await t.isVisible() && (await t.getAttribute('aria-selected')) !== 'true') await t.click(); };
+const exploreTab = async (pg) => { const t = pg.locator('#ptab-explore'); if (await t.isVisible() && (await t.getAttribute('aria-selected')) !== 'true') await t.click(); };
 const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok, detail }); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? '  — ' + detail : ''}`); };
 
@@ -258,11 +261,11 @@ check('金閣 A00265 renders at 35.0395 N, 135.7285 E', pos.kinkaku.includes('A0
 
 // 3. filters
 await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 35.79]], { duration: 0 }));
-await page.getByLabel('Viewpoint').uncheck();
+await exploreTab(page); await page.getByLabel('Viewpoint').uncheck();
 await page.waitForTimeout(800);
 c = await counts();
 check('uncheck Viewpoint → 395 attractions', c[0] === '395/638', c[0]);
-await page.getByLabel('Bus').uncheck();
+await exploreTab(page); await page.getByLabel('Bus').uncheck();
 await page.waitForTimeout(800);
 c = await counts();
 check('uncheck Bus → 250 stops (248 rail + 2 tram)', c[1] === '250/5,479', c[1]);
@@ -274,11 +277,11 @@ const rendered = await page.evaluate(async () => {
 });
 check('map shows no bus stops and no viewpoints after filtering', !rendered.types.includes('bus') && rendered.viewpoints === 0, JSON.stringify(rendered));
 await page.screenshot({ path: `${out}/02-filtered.png` });
-await page.getByLabel('Viewpoint').check();
-await page.getByLabel('Bus').check();
+await exploreTab(page); await page.getByLabel('Viewpoint').check();
+await exploreTab(page); await page.getByLabel('Bus').check();
 
 // 4. density modes (the analysis panels are closed until opened)
-await page.locator('.entry', { hasText: 'Attraction Density' }).click();
+await exploreTab(page); await page.locator('.entry', { hasText: 'Attraction Density' }).click();
 await page.getByRole('radio', { name: 'KDE result' }).click();
 await page.waitForTimeout(1200);
 const kdeVis = await page.evaluate(() => window.__kyotoMap.getLayoutProperty('kde-fill', 'visibility'));
@@ -290,14 +293,14 @@ check('heatmap is labelled as display only', (await page.locator('.warnline').fi
 await page.getByRole('radio', { name: 'Off' }).click();
 
 // 5. walking, prefecture-wide: a record far from the old pilot box has network results
-await page.locator('#q').fill('A00265');
+await exploreTab(page); await page.locator('#q').fill('A00265');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1800);
-await page.getByRole('tab', { name: 'Walking Routes' }).click();
+await placeTab(page); await page.getByRole('tab', { name: 'Walking Routes' }).click();
 const walkText = await page.locator('.walk').innerText();
 check('Kinkaku-ji (outside the old pilot) now shows network walking distances', /\d+ m · ≈[\d.]+ min walk/.test(walkText) && !walkText.includes('Pilot result'), walkText.replace(/\n/g, ' / ').slice(0, 200));
-check('walking entry shows the prefecture record count', (await page.locator('aside.left').innerText()).includes('638 records'));
-await page.getByRole('tab', { name: 'Overview' }).click();
+check('walking entry shows the prefecture record count', (await exploreTab(page), await page.locator('#explore-panel').innerText()).includes('638 records'));
+await placeTab(page); await page.getByRole('tab', { name: 'Overview' }).click();
 await page.locator('.tech summary').click();
 const ovText = await page.locator('#pane-overview').innerText();
 check('overview shows the municipal tourism count with year, unit and source', ovText.includes('62,787,000') && ovText.includes('2025') && ovText.includes('not this ward and not this place') && ovText.includes('Tourism Report'), ovText.replace(/\n/g, ' / ').slice(0, 200));
@@ -309,24 +312,24 @@ check('Kinkaku shows the photo linked from its own OSM record, with author and l
 
 // 5c. POI audit: Nanzen-ji, added from DSIGHT_1.csv with its location confirmed by OSM + Wikidata, is found by its
 // English name, shows what the CSV lists at the site, and says where its point comes from
-await page.locator('#q').fill('Nanzen-ji');
+await exploreTab(page); await page.locator('#q').fill('Nanzen-ji');
 await page.waitForTimeout(400);
 const nzList = await page.locator('.results').innerText();
 await page.locator('.results button').filter({ hasText: '南禅寺' }).first().click();
 await page.waitForTimeout(1600);
-await page.getByRole('tab', { name: 'Overview' }).click();
+await placeTab(page); await page.getByRole('tab', { name: 'Overview' }).click();
 await page.locator('.tech summary').click();
 const nz = await page.locator('aside.right').innerText();
 check('search "Nanzen-ji" finds 南禅寺; its card lists the CSV buildings and the two-source location check', nzList.includes('南禅寺') && nz.includes('南禅寺') && nz.includes('三門') && nz.includes('方丈') && nz.includes('1000024') && nz.includes('Kyoto City sightseeing list') && /OSM way\/352013907 and Wikidata Q1089767/.test(nz) && nz.includes('京都市 左京区'), nz.replace(/\n/g, ' / ').slice(0, 260));
 const nzOnMap = await page.evaluate(() => window.__kyotoMap.querySourceFeatures('attractions').filter((f) => f.properties.name === '南禅寺').length);
 check('南禅寺 is a point of the map\'s attraction layer', nzOnMap >= 1, String(nzOnMap));
 // a merged duplicate's ID opens the record that keeps the place
-await page.locator('#q').fill('A00224');
+await exploreTab(page); await page.locator('#q').fill('A00224');
 await page.waitForTimeout(400);
 check('the ID of a merged duplicate finds the record that keeps it', (await page.locator('.results').innerText()).includes('A00222'));
 // Kyoto City records: categories, the library of all 648 records, and the places-and-landscape layer
-await page.locator('#q').fill('');
-const leftText = await page.locator('aside.left').innerText();
+await exploreTab(page); await page.locator('#q').fill('');
+const leftText = await page.locator('#explore-panel').innerText();
 check('filters list Temple and Shrine with counts; Nanzen-ji is a temple', /Temple\s*\d{2,}/.test(leftText) && /Shrine\s*\d{2,}/.test(leftText) && nz.includes('Temple'), leftText.replace(/\n/g, ' ').slice(0, 200));
 await page.getByRole('button', { name: 'Kyoto City Records' }).click();
 await page.waitForSelector('.rec-list li');
@@ -336,18 +339,18 @@ await page.waitForTimeout(300);
 const libHit = await page.locator('.rec-list').innerText();
 check('record library: all 648 Kyoto City records with source and licence; search finds 南禅寺 三門 as part of a site', lib0.includes('All 648') && lib0.includes('CC BY 4.0') && lib0.includes('Not placed') && libHit.includes('南禅寺') && libHit.includes('Part of a site'), libHit.replace(/\n/g, ' ').slice(0, 160));
 await page.keyboard.press('Escape');
-await page.locator('aside.left label.chk', { hasText: 'Places and landscape' }).locator('input').check();
+await exploreTab(page); await page.locator('#explore-panel label.chk', { hasText: 'Places and landscape' }).locator('input').check();
 await page.waitForTimeout(600);
 const geoVis = await page.evaluate(() => ({ vis: window.__kyotoMap.getLayoutProperty('geo-pt', 'visibility'), n: window.__kyotoMap.getSource('geography')._data.features.length, lines: window.__kyotoMap.getSource('geography')._data.features.filter((f) => f.geometry.type === 'LineString').length }));
 check('places and landscape layer switches on: points and river lines from the Kyoto City records', geoVis.vis === 'visible' && geoVis.n >= 30 && geoVis.lines >= 5, JSON.stringify(geoVis));
-await page.locator('aside.left label.chk', { hasText: 'Places and landscape' }).locator('input').uncheck();
+await exploreTab(page); await page.locator('#explore-panel label.chk', { hasText: 'Places and landscape' }).locator('input').uncheck();
 // back to Kinkaku-ji for the weather checks below
-await page.locator('#q').fill('A00265');
+await exploreTab(page); await page.locator('#q').fill('A00265');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
 
 // 6. weather
-await page.getByRole('tab', { name: 'Weather' }).click();
+await placeTab(page); await page.getByRole('tab', { name: 'Weather' }).click();
 await page.waitForSelector('.wx-body, .alert', { timeout: 30000 });
 const wxOk = await page.locator('.wx-body').count();
 const wxText = (await page.locator('.wx').innerText()).replace(/\n/g, ' / ');
@@ -366,9 +369,9 @@ const p2 = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await p2.route('**/api.open-meteo.com/**', (r) => r.abort('internetdisconnected'));
 await p2.goto(url);
 await p2.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.loaded(), null, { timeout: 30000 });
-await p2.locator('#q').fill('S00019');
+await exploreTab(p2); await p2.locator('#q').fill('S00019');
 await p2.locator('.results button').first().click();
-await p2.getByRole('tab', { name: 'Weather' }).click();
+await placeTab(p2); await p2.getByRole('tab', { name: 'Weather' }).click();
 await p2.waitForSelector('.alert', { timeout: 15000 });
 const failText = await p2.locator('.wx').innerText();
 check('offline: weather error shown, no temperature displayed', /Weather unavailable/.test(failText) && !/°C/.test(failText), failText.replace(/\n/g, ' / ').slice(0, 160));
@@ -376,10 +379,10 @@ await p2.screenshot({ path: `${out}/05-weather-offline.png` });
 await p2.close();
 
 // 7b. walking pilot: real routes for a pilot record, separate bus and rail, unreachable shown as such
-await page.locator('#q').fill('A00230');
+await exploreTab(page); await page.locator('#q').fill('A00230');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(2200);
-await page.getByRole('tab', { name: 'Walking Routes' }).click();
+await placeTab(page); await page.getByRole('tab', { name: 'Walking Routes' }).click();
 const wt = await page.locator('.walk').innerText();
 await page.waitForTimeout(1500);
 const routesOnMap = await page.evaluate(() => window.__kyotoMap.getSource('walk')._data.features.map((f) => f.properties.stop_type).sort());
@@ -389,28 +392,28 @@ check('pilot record A00230: bus and rail network distances shown', wt.includes('
 check('route lines drawn on map for both stop types', JSON.stringify(routesOnMap) === '["bus","rail"]', JSON.stringify(routesOnMap));
 check('at 500 m only the bus stop (75 m) lights up; rail (749 m) stays dim', litStops.length === 1 && litStops[0].includes('五条坂'), JSON.stringify(litStops));
 await page.screenshot({ path: `${out}/04b-walking-route.png` });
-await page.locator('#q').fill('A00119');
+await exploreTab(page); await page.locator('#q').fill('A00119');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
 const ut = await page.locator('.walk').innerText();
 check('A00119 (hilltop paths not joined to the streets) says so, with no distance', ut.includes('Not connected to the street network') && ut.includes('unreachable') && ut.includes('distance not available') && !/\d+ m ·/.test(ut));
-await page.locator('#q').fill('A00401');
+await exploreTab(page); await page.locator('#q').fill('A00401');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
 const nt = await page.locator('.walk').innerText();
 check('A00401 says no bus stop within 3 km on foot, kept apart from "not connected"', nt.includes('No bus stop within 3 km on foot') && !nt.includes('Not connected'), nt.replace(/\n/g, ' / ').slice(0, 200));
-await page.locator('#q').fill('A00453');
+await exploreTab(page); await page.locator('#q').fill('A00453');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
 const zt = await page.locator('.walk').innerText();
 check('A00453 and its station share a street point: shown as "Next to this place", not as 0 m', zt.includes('Next to this place') && !/\b0 m\b/.test(zt), zt.replace(/\n/g, ' / ').slice(0, 220));
-await page.locator('.entry', { hasText: 'Walking Access' }).click();
+await exploreTab(page); await page.locator('.entry', { hasText: 'Walking Access' }).click();
 const cov = await page.locator('.cov').innerText();
 check('coverage counts named + OSM-tagged records by default (472 = 420 named + 52 OSM-tagged), five states listed', cov.includes('of 472 records') && cov.includes('within 3 km on foot') && cov.includes('Not connected to the street network'), cov.replace(/\n/g, ' / '));
 await page.getByRole('button', { name: /^Unverified/ }).click();
 check('including unverified records raises the denominator to 638', (await page.locator('.cov').innerText()).includes('of 638 records'));
 await page.getByRole('button', { name: /^Unverified/ }).click();
-await page.locator('#q').fill('');
+await exploreTab(page); await page.locator('#q').fill('');
 await page.getByRole('button', { name: 'Show routes on map' }).click();
 await page.waitForTimeout(2500);
 const bulk = await page.evaluate(() => ({ lines: window.__kyotoMap.getSource('walk')._data.features.length, rings: window.__kyotoMap.getSource('walk-stops')._data.features.length, tags: document.querySelectorAll('.stop-tag').length }));
@@ -420,7 +423,7 @@ await page.getByRole('button', { name: 'Hide routes on map' }).click();
 // 8. journeys panel
 // 7b2. bus routes (Kyoto City Bus): pick a route, the line grows along the supplied geometry and stops light up in order
 await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: 0 }));
-await page.locator('.entry', { hasText: 'Bus Routes' }).click();
+await exploreTab(page); await page.locator('.entry', { hasText: 'Bus Routes' }).click();
 const busKey = await page.evaluate(() => [...document.querySelectorAll('#bus-route option')].find((o) => o.textContent.startsWith('206 ')).value);
 await page.locator('#bus-route').selectOption(busKey);
 await page.waitForFunction(() => document.querySelectorAll('.bus-stop.passed').length >= 3, null, { timeout: 20000 });
@@ -440,10 +443,10 @@ await page.waitForTimeout(800);
 const bus3 = await page.evaluate(() => ({ markers: document.querySelectorAll('.bus-stop').length, bar: document.querySelector('.bus-bar').innerText, hl: window.__kyotoMap.getFilter('bus-hl')[2][1].length, lit: window.__kyotoMap.getSource('bus-lit')._data.features?.length }));
 check('a route without a verified line draws no line: only its stop points are highlighted, with a notice', bus3.markers === 0 && bus3.hl > 0 && bus3.lit === 0 && bus3.bar.includes('Route animation not available yet'), JSON.stringify(bus3).slice(0, 200));
 await page.locator('.bus-bar').getByRole('button', { name: 'Close route' }).click();
-await page.locator('#q').fill('四条河原町');
+await exploreTab(page); await page.locator('#q').fill('四条河原町');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
-await page.getByRole('tab', { name: 'Bus Routes' }).click();
+await placeTab(page); await page.getByRole('tab', { name: 'Bus Routes' }).click();
 const busAt = await page.evaluate(() => ({ routes: [...document.querySelectorAll('.bus-list .bus-no')].map((e) => e.innerText), first: document.querySelector('.bus-list .bus-dir').innerText, fare: document.querySelector('.bus-list .bus-fare').innerText }));
 check('a bus stop lists the routes serving it, each direction with its next stop, and the separate fare', busAt.routes.includes('205') && /next stop/.test(busAt.first) && busAt.fare.includes('¥230'), `${busAt.routes.length} routes · ${busAt.first.replace(/\n/g, ' / ')}`);
 await page.locator('.bus-list .bus-dir').first().click();
@@ -451,11 +454,11 @@ await page.waitForFunction(() => document.querySelectorAll('.bus-stop.passed').l
 const busFrom = await page.evaluate(() => { const st = [...document.querySelectorAll('.bus-stop')]; const before = st.filter((e) => e.classList.contains('before')).length; const firstLit = st.findIndex((e) => e.classList.contains('passed')); return { before, firstLit, name: st[firstLit].querySelector('b').innerText, bar: document.querySelector('.bus-bar b').innerText }; });
 check('from a stop, the animation starts at that stop and runs towards the terminal; earlier stops stay quiet', busFrom.firstLit === busFrom.before && busFrom.name === '四条河原町' && busFrom.bar.startsWith('四条河原町 →'), JSON.stringify(busFrom));
 await page.locator('.bus-bar').getByRole('button', { name: 'Close route' }).click();
-await page.locator('#q').fill('A00230');
+await exploreTab(page); await page.locator('#q').fill('A00230');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(2200);
-await page.getByRole('tab', { name: 'Walking Routes' }).click();
-await page.locator('.entry', { hasText: 'Bus Routes' }).click();
+await placeTab(page); await page.getByRole('tab', { name: 'Walking Routes' }).click();
+await exploreTab(page); await page.locator('.entry', { hasText: 'Bus Routes' }).click();
 
 // 7c. theme switch keeps the place, tab, filters, routes and camera; petals appear and are removed
 const before = await page.evaluate(() => { const m = window.__kyotoMap; return { theme: document.documentElement.dataset.theme, z: m.getZoom().toFixed(3), c: m.getCenter().toArray().map((v) => v.toFixed(5)).join(), routes: m.getSource('walk')._data.features.length, name: document.querySelector('.detail h2').innerText, tab: document.querySelector('.tabs .on').innerText }; });
@@ -537,7 +540,7 @@ check('back to Auto restores the season of Kyoto\'s date', (await page.evaluate(
 const drift = await page.evaluate(() => document.querySelectorAll('#explore .season-drift i').length);
 check('Explore has a light seasonal drift (12 pieces)', drift === 12, String(drift));
 
-await page.locator('#q').fill('A00265');
+await exploreTab(page); await page.locator('#q').fill('A00265');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1500);
 const h2ja = await page.locator('.detail h2').innerText();
@@ -548,25 +551,25 @@ const enStored = await page.evaluate(() => localStorage.getItem('kyoto-gis-en-fi
 check('English first: 金閣 (Golden Pavilion) becomes Golden Pavilion (金閣), remembered', h2ja.startsWith('金閣') && h2en.startsWith('Golden Pavilion') && h2en.includes('金閣') && enStored === '1', `${h2ja} -> ${h2en}`);
 await page.locator('.lang-order').click();
 await page.waitForTimeout(400);
-await page.getByRole('tab', { name: 'Overview' }).click();
+await placeTab(page); await page.getByRole('tab', { name: 'Overview' }).click();
 await page.waitForTimeout(300);
 const seal = await page.locator('.detail .kind .hanko').innerText();
 const hrW = await page.evaluate(() => document.querySelector('hr.mizuhiki')?.getBoundingClientRect().width || 0);
 const band = await page.evaluate(() => { const s = getComputedStyle(document.querySelector('.wa-band')); return (s.maskImage || s.webkitMaskImage || '').includes('svg'); });
 const serif = await page.evaluate(() => getComputedStyle(document.querySelector('.detail h2')).fontFamily);
 check('wa details: seal 名, mizuhiki divider, asanoha band, mincho heading', seal === '名' && hrW > 100 && band && serif.includes('Shippori'), `${seal} · ${hrW} · ${band} · ${serif.slice(0, 30)}`);
-await page.locator('#q').fill('A00110');
+await exploreTab(page); await page.locator('#q').fill('A00110');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1200);
-await page.getByRole('tab', { name: 'Overview' }).click();
+await placeTab(page); await page.getByRole('tab', { name: 'Overview' }).click();
 const ctxText = await page.locator('#pane-overview').innerText();
 check('unnamed viewpoint: located inside 金閣寺 (Kinkaku-ji), stated as a location, marked unverified', ctxText.includes('Inside the grounds of 金閣寺 (Kinkaku-ji)') && ctxText.includes('not what it is') && ctxText.includes('Unverified'), ctxText.replace(/\n/g, ' / ').slice(0, 220));
-await page.locator('#q').fill('A00191');
+await exploreTab(page); await page.locator('#q').fill('A00191');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1200);
 const a191 = await page.locator('aside.right').innerText();
 check('A00191 shows the English name of its own OSM record and says there is no Japanese name', a191.includes('Daiun-in') && a191.includes('No Japanese name in the source'));
-await page.locator('#q').fill('金閣寺道');
+await exploreTab(page); await page.locator('#q').fill('金閣寺道');
 await page.locator('.results button').first().click();
 await page.waitForTimeout(1200);
 const terms = await page.locator('#pane-overview').innerText();
@@ -615,16 +618,16 @@ await lp.mouse.move(5, 5);
 ls = await lmSeen();
 check('click on the symbol selects the record (details panel), and the selected symbol stays at any zoom', lmDetail.includes('金閣') && ls['lm-sel'].join() === 'A00265', JSON.stringify(ls['lm-sel']) + lmDetail.slice(0, 80));
 // search: an ordinary record gets its symbol even at prefecture zoom
-await lp.locator('#q').fill(lmImg.t3);
+await exploreTab(lp); await lp.locator('#q').fill(lmImg.t3);
 await lp.waitForTimeout(1500);
 ls = await lmSeen();
 check('search: the match shows its symbol at prefecture zoom, where ordinary places are otherwise dots', ls['lm-search'].join() === lmImg.t3 && ls['attractions-pt'].join() === lmImg.t3, JSON.stringify(ls['lm-search']));
-await lp.locator('#q').fill('');
-await lp.getByLabel('Temple').first().uncheck();
+await exploreTab(lp); await lp.locator('#q').fill('');
+await exploreTab(lp); await lp.getByLabel('Temple').first().uncheck();
 await lmGo([135.78, 35.0], 12.6);
 const lmCats = await lp.evaluate(() => [...new Set(window.__kyotoMap.queryRenderedFeatures({ layers: ['lm-iconic', 'lm-major'] }).map((f) => f.properties.category))]);
 check('category filter also hides the symbols of that category', lmCats.length > 0 && !lmCats.includes('temple'), lmCats.join());
-await lp.getByLabel('Temple').first().check();
+await exploreTab(lp); await lp.getByLabel('Temple').first().check();
 const lmHash = () => lp.evaluate(() => { const d = window.__kyotoMap.getImage('cat-temple').data.data; let h = 0; for (let i = 0; i < d.length; i += 7) h = (h * 31 + d[i]) | 0; return h; });
 const h1 = await lmHash();
 await lp.locator('.theme-toggle').first().click();
@@ -635,6 +638,168 @@ check('theme switch repaints the same symbols (no layer rebuilt, nothing blank)'
 await lp.screenshot({ path: `${out}/26-landmarks.png` });
 await lp.close();
 
+// 8y. layout, study area coverage, routes and the dark theme
+const rp = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const rpErr = []; rp.on('pageerror', (e) => rpErr.push(e.message));
+await rp.addInitScript(() => { try { localStorage.setItem('kyoto-gis-theme', 'dark'); if (!sessionStorage.getItem('fresh')) { sessionStorage.setItem('fresh', '1'); localStorage.removeItem('kyoto-gis-panel'); localStorage.removeItem('kyoto-gis-cinematic'); } } catch { /* */ } });
+await rp.goto(url);
+await rp.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.getLayer('route-line') && window.__kyotoMap.loaded(), null, { timeout: 30000 });
+await rp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+await rp.waitForTimeout(4000);
+const y_lay = () => rp.evaluate(() => { const m = window.__kyotoMap; const c = document.querySelector('.center').getBoundingClientRect(); const r = document.querySelector('aside.right').getBoundingClientRect(); return { map: Math.round(c.width), panel: Math.round(r.width), canvas: Math.round(m.getCanvas().getBoundingClientRect().width), center: m.getCenter().toArray().map((v) => +v.toFixed(5)).join(), z: +m.getZoom().toFixed(3) }; });
+const y_l0 = await y_lay();
+const y_darkBg = await rp.evaluate(() => [getComputedStyle(document.getElementById('dashboard')).backgroundColor, getComputedStyle(document.querySelector('.right .card')).backgroundColor, getComputedStyle(document.querySelector('.right .card')).boxShadow.includes('rgba(121, 215, 218')]);
+check('dark theme: charcoal page (#101416) and slightly lighter cards (#191F23), cards do not glow', y_darkBg[0] === 'rgb(16, 20, 22)' && y_darkBg[1] === 'rgb(25, 31, 35)' && !y_darkBg[2], JSON.stringify(y_darkBg));
+check('layout: map and one information panel side by side (no left sidebar); canvas matches the map width', y_l0.map > 780 && y_l0.panel >= 300 && Math.abs(y_l0.canvas - y_l0.map) <= 2 && !(await rp.locator('aside.left').count()), JSON.stringify(y_l0));
+const y_sb = await rp.locator('.splitter').boundingBox();
+await rp.mouse.move(y_sb.x + 6, y_sb.y + y_sb.height * 0.7);
+await rp.mouse.down();
+const y_mids = [];
+for (let i = 1; i <= 12; i++) { await rp.mouse.move(y_sb.x + 6 - i * 15, y_sb.y + y_sb.height * 0.7); await rp.waitForTimeout(20); y_mids.push(await y_lay()); }
+await rp.mouse.up();
+await rp.waitForTimeout(300);
+const y_l1 = await y_lay();
+check('splitter drag: widths change continuously with the pointer, the canvas follows every step, the view does not move', new Set(y_mids.map((x) => x.panel)).size >= 8 && y_mids.every((x) => Math.abs(x.canvas - x.map) <= 2) && y_l1.panel - y_l0.panel > 150 && y_l1.center === y_l0.center && y_l1.z === y_l0.z, JSON.stringify({ y_l0, y_l1, steps: y_mids.map((x) => x.panel).join(',') }));
+const y_sb2 = await rp.locator('.splitter').boundingBox();
+await rp.mouse.move(y_sb2.x + 6, y_sb2.y + y_sb2.height * 0.7); await rp.mouse.down(); await rp.mouse.move(y_sb2.x - 900, y_sb2.y + y_sb2.height * 0.7, { steps: 6 }); await rp.mouse.up();
+check('splitter drag keeps the map where it was', (await y_lay()).center === y_l0.center);
+const y_lmin = await y_lay();
+check('splitter limits: the map keeps at least 360 px when the panel is dragged wide', y_lmin.map >= 359, JSON.stringify(y_lmin));
+await rp.locator('.splitter').focus();
+await rp.keyboard.press('ArrowRight'); await rp.keyboard.press('ArrowRight');
+const y_lk = await y_lay();
+check('splitter keyboard: arrow keys resize; it is a focusable separator with a value', y_lk.panel < y_lmin.panel && (await rp.locator('.splitter').getAttribute('role')) === 'separator' && Number(await rp.locator('.splitter').getAttribute('aria-valuenow')) > 0, JSON.stringify(y_lk));
+const y_saved = await rp.evaluate(() => localStorage.getItem('kyoto-gis-panel'));
+await rp.reload();
+await rp.waitForFunction(() => window.__kyotoMap && window.__kyotoMap.loaded(), null, { timeout: 30000 });
+await rp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+await rp.waitForTimeout(2500);
+const y_lr = await y_lay();
+check('the split is remembered after a reload', y_saved && Math.abs(y_lr.panel - y_lk.panel) <= 2, JSON.stringify({ y_saved, y_lr, y_lk }));
+await rp.getByRole('button', { name: 'Expand the map' }).click(); await rp.waitForTimeout(500);
+const y_lc = await y_lay();
+await rp.getByRole('button', { name: 'Show the panel' }).first().click(); await rp.waitForTimeout(500);
+const y_lo = await y_lay();
+await rp.getByRole('button', { name: 'Reset the layout' }).click(); await rp.waitForTimeout(900);
+const y_ld = await y_lay();
+check('expand map / show panel / reset: map takes the width, panel comes back, default split restored', y_lc.panel === 0 && y_lc.map > 1400 && Math.abs(y_lc.canvas - y_lc.map) <= 2 && y_lo.panel === y_lr.panel && Math.abs(y_ld.panel - 605) <= 2, JSON.stringify({ y_lc, y_lo, y_ld }));
+
+// study area coverage
+const y_saText = await rp.locator('.study').innerText();
+check('study area: 26 municipalities covered (15 cities, 10 towns, 1 village), all full; "Municipalities", not "Cities"', /26\s*Municipalities covered/.test(y_saText) && y_saText.includes('15 cities · 10 towns · 1 village') && !/Cities covered/.test(y_saText), y_saText.replace(/\n/g, ' / ').slice(0, 160));
+await rp.getByRole('button', { name: 'Show coverage' }).click();
+await rp.waitForTimeout(700);
+const y_cg1 = await rp.evaluate(() => JSON.stringify(window.__kyotoMap.getPaintProperty('cov-line', 'line-gradient')));
+await rp.waitForTimeout(2600);
+const y_cov = await rp.evaluate(() => { const m = window.__kyotoMap; return { vis: m.getLayoutProperty('cov-line', 'visibility'), g: JSON.stringify(m.getPaintProperty('cov-line', 'line-gradient')), n: m.querySourceFeatures('coverage').length, multi: m.querySourceFeatures('coverage').every((f) => f.geometry.type === 'LineString'), study: m.getPaintProperty('outline-line', 'line-color'), admin: m.getPaintProperty('cov-line', 'line-gradient') }; });
+check('Show coverage: municipal boundaries are drawn progressively (step on line-progress), then held static', y_cov.vis === 'visible' && y_cg1.includes('step') && !y_cov.g.includes('step') && y_cov.n > 20, JSON.stringify({ y_cg1: y_cg1.slice(0, 60), g: y_cov.g.slice(0, 60), n: y_cov.n }));
+check('study area boundary (teal accent) and municipal boundaries (white) differ', /79d7da/i.test(y_cov.study) && /f2f6f7/i.test(JSON.stringify(y_cov.admin)), JSON.stringify({ study: y_cov.study }));
+await rp.screenshot({ path: `${out}/27-coverage-dark.png` });
+await rp.getByRole('button', { name: 'Hide coverage' }).click();
+check('Hide coverage hides the layers', (await rp.evaluate(() => window.__kyotoMap.getLayoutProperty('cov-line', 'visibility'))) === 'none');
+
+// routes: nothing without a start; then a real route; failure; rapid changes; cinematic
+await exploreTab(rp); await rp.locator('#q').fill('A00265'); await rp.locator('.results button').first().click();
+await rp.waitForTimeout(1500);
+const y_rc0 = await rp.locator('.route-card').innerText();
+const y_r0 = await rp.evaluate(() => window.__kyotoMap.querySourceFeatures('route').length);
+check('route: with no start chosen the card asks for one and nothing is drawn', y_rc0.includes('No start chosen') && y_rc0.includes('Nothing is drawn') && y_r0 === 0, y_rc0.replace(/\n/g, ' / ').slice(0, 120));
+await rp.getByRole('button', { name: 'Pick start on map' }).click();
+check('route: picking mode shows a prompt on the map', await rp.locator('.pick-bar').isVisible());
+await rp.keyboard.press('Escape');
+await rp.waitForTimeout(200);
+check('route: Esc cancels picking', !(await rp.locator('.pick-bar').count()));
+// start: Kyoto Station (picked from search via "Start from here")
+await exploreTab(rp); await rp.locator('#q').fill('S00019'); await rp.locator('.results button').first().click(); await rp.waitForTimeout(800);
+await rp.getByRole('button', { name: 'Start from here' }).click();
+const y_routeReqs = [];
+rp.on('request', (r) => { if (r.url().includes('routing.openstreetmap.de')) y_routeReqs.push(r.url()); });
+await exploreTab(rp); await rp.locator('#q').fill('A00560'); await rp.locator('.results button').first().click();
+await rp.waitForFunction(() => /Route distance|routing service|could not/i.test(document.querySelector('.route-card')?.innerText || ''), null, { timeout: 25000 });
+await rp.waitForTimeout(3500);
+const y_rc1 = await rp.locator('.route-card').innerText();
+const y_rmap = await rp.evaluate(() => { const m = window.__kyotoMap; const f = m.querySourceFeatures('route')[0]; return { n: f?.geometry.coordinates.length || (f ? 1 : 0), ends: [...new Set(m.querySourceFeatures('route-ends').map((x) => x.properties.kind))].sort().join(), tag: document.querySelector('.route-tag')?.innerText.replace(/\n/g, ' '), g: JSON.stringify(m.getPaintProperty('route-line', 'line-gradient')).includes('step'), pitch: m.getPitch(), callout: !!document.querySelector('.sel-callout') }; });
+const y_live = y_rc1.includes('Route distance');
+check('route: real service result — start and end named, mode, estimated travel time and route distance from the service, line drawn with both ends and a time tag', y_live ? (y_rc1.includes('京都') && y_rc1.includes('清水寺') && /\d+ min/.test(y_rc1) && /\d[\d.]* (km|m)/.test(y_rc1) && y_rc1.includes('Not a live ETA') && y_rmap.n > 10 && y_rmap.ends === 'end,start' && /min/.test(y_rmap.tag || '') && !y_rmap.g) : y_rc1.includes('No route is drawn'), JSON.stringify({ y_live, y_rmap, y_rc1: y_rc1.replace(/\n/g, ' / ').slice(0, 260), reqs: y_routeReqs.length }));
+check('route: plain view stays top-down; no photo callout covers the route', y_rmap.pitch === 0 && !y_rmap.callout, JSON.stringify(y_rmap));
+check('route: transit is offered only as unavailable, with the reason', (await rp.getByRole('button', { name: /^Transit/ }).isDisabled()) && (await rp.getByRole('button', { name: /^Transit/ }).getAttribute('title')).includes('no timetable'));
+await rp.screenshot({ path: `${out}/28-route-dark.png` });
+// failure: the service answers 503; no line, no straight-line figure
+await rp.route('**/routing.openstreetmap.de/**', (r) => r.fulfill({ status: 503, body: 'down' }));
+await rp.getByRole('radio', { name: 'Cycle' }).click();
+await rp.waitForTimeout(1200);
+const y_rc2 = await rp.locator('.route-card').innerText();
+const y_r2 = await rp.evaluate(() => window.__kyotoMap.querySourceFeatures('route').length);
+check('route failure: clear error, nothing drawn, no straight-line distance', y_rc2.includes('HTTP 503') && y_rc2.includes('no straight-line distance') && y_r2 === 0 && !/\d+(\.\d+)? km/.test(y_rc2), y_rc2.replace(/\n/g, ' / ').slice(0, 200));
+// rapid changes: a slow answer for the first place must not replace the later one
+let y_n = 0;
+await rp.route('**/routing.openstreetmap.de/**', async (r) => {
+  const slow = y_n++ === 0;
+  const to = r.request().url().split(';')[1].split('?')[0].split(',').map(Number);
+  const body = JSON.stringify({ code: 'Ok', routes: [{ distance: slow ? 1111 : 2222, duration: slow ? 600 : 1200, geometry: { type: 'LineString', coordinates: [[135.7588, 34.9858], [(135.7588 + to[0]) / 2, 34.99], to] } }], waypoints: [{ distance: 1 }, { distance: 1 }] });
+  if (slow) await new Promise((res) => setTimeout(res, 2500));
+  try { await r.fulfill({ status: 200, contentType: 'application/json', body, headers: { 'access-control-allow-origin': '*' } }); } catch { /* aborted by the app */ }
+});
+await rp.getByRole('radio', { name: 'Walk' }).click();
+await exploreTab(rp); await rp.locator('#q').fill('A00563'); await rp.locator('.results button').first().click();
+await rp.waitForTimeout(150);
+await exploreTab(rp); await rp.locator('#q').fill('A00540'); await rp.locator('.results button').first().click();
+await rp.waitForTimeout(4200);
+const y_rc3 = await rp.locator('.route-card').innerText();
+check('rapid clicks: the older, slower request is dropped; the card and the map show the latest place', y_rc3.includes('銀閣寺') && y_rc3.includes('2.22 km') && !y_rc3.includes('1.11 km'), y_rc3.replace(/\n/g, ' / ').slice(0, 160));
+// cinematic: real tilt (MapLibre pitch), remembered; Top-down returns to 2D
+await rp.locator('.map-tools .cine').click();
+await exploreTab(rp); await rp.locator('#q').fill('A00182'); await rp.locator('.results button').first().click();
+await rp.waitForTimeout(5500);
+const y_cine = await rp.evaluate(() => ({ pitch: window.__kyotoMap.getPitch(), bearing: window.__kyotoMap.getBearing(), saved: localStorage.getItem('kyoto-gis-cinematic') }));
+check('Cinematic view: the camera tilts after framing the route (real pitch, no CSS transform); the choice is remembered', y_cine.pitch > 30 && y_cine.saved === '1', JSON.stringify(y_cine));
+await rp.screenshot({ path: `${out}/29-cinematic.png` });
+await rp.getByRole('button', { name: 'Top-down' }).click();
+await rp.waitForTimeout(900);
+check('Top-down returns to a flat view', (await rp.evaluate(() => window.__kyotoMap.getPitch())) === 0);
+await rp.locator('.map-tools .cine').click();
+await rp.unroute('**/routing.openstreetmap.de/**');
+await rp.getByRole('button', { name: 'Clear start' }).click();
+await rp.waitForTimeout(1500);
+check('Clear start removes the route', (await rp.evaluate(() => window.__kyotoMap.queryRenderedFeatures({ layers: ['route-line', 'route-ends'] }).length)) === 0 && (await rp.locator('.route-card').innerText()).includes('No start chosen'));
+// points off: the density layer stays
+await exploreTab(rp);
+await rp.locator('label.switch', { hasText: 'Points' }).click();
+await rp.locator('.entry', { hasText: 'Attraction Density' }).click();
+await rp.getByRole('radio', { name: 'KDE result' }).click();
+await rp.waitForTimeout(1200);
+const y_pts = await rp.evaluate(() => { const m = window.__kyotoMap; return { pt: m.getLayoutProperty('attractions-pt', 'visibility'), sym: m.getLayoutProperty('lm-iconic', 'visibility'), kde: m.getLayoutProperty('kde-fill', 'visibility'), cells: m.queryRenderedFeatures({ layers: ['kde-fill'] }).length }; });
+check('Points switch off: attraction points and symbols hidden, KDE density still shown', y_pts.pt === 'none' && y_pts.sym === 'none' && y_pts.kde === 'visible' && y_pts.cells > 0, JSON.stringify(y_pts));
+await rp.getByRole('radio', { name: 'Off' }).click();
+await rp.locator('label.switch', { hasText: 'Points' }).click();
+// dark map symbols: white core with a category ring; transit icons repainted per theme
+const y_sym = await rp.evaluate(() => { const m = window.__kyotoMap; return { core: m.getPaintProperty('attractions-pt', 'circle-color'), ring: JSON.stringify(m.getPaintProperty('attractions-pt', 'circle-stroke-color')).slice(0, 40) }; });
+check('dark map: ordinary attraction dots have a white core and a category-coloured ring', /eef4f6/i.test(y_sym.core) && y_sym.ring.includes('match'), JSON.stringify(y_sym));
+// bento: drag a tile by its grip onto another; the others glide, it snaps into the slot, the order is kept
+await exploreTab(rp);
+const bOrder = () => rp.evaluate(() => [...document.querySelectorAll('#explore-panel .tile')].map((t) => t.dataset.tile).join());
+const bo0 = await bOrder();
+const bg = await rp.locator('[data-tile="study"] .tile-grip').boundingBox();
+const bt = await rp.locator('[data-tile="transit"]').boundingBox();
+await rp.mouse.move(bg.x + 5, bg.y + 8); await rp.mouse.down();
+let bGlide = false;
+for (let i = 1; i <= 20; i++) {
+  await rp.mouse.move(bg.x + 5 + (bt.x + bt.width / 2 - bg.x - 5) * i / 20, bg.y + 8 + (bt.y + bt.height / 2 - bg.y - 8) * i / 20); await rp.waitForTimeout(30);
+  if (!bGlide) bGlide = await rp.evaluate(() => [...document.querySelectorAll('#explore-panel .tile:not(.dragging)')].some((t) => t.getAnimations().length > 0));
+}
+const bFollow = await rp.evaluate(() => document.querySelector('[data-tile="study"]').style.transform);
+await rp.waitForTimeout(300); await rp.mouse.up(); await rp.waitForTimeout(500);
+const bo1 = await bOrder();
+check('bento: dragged tile follows the pointer, the others glide aside, on release it takes the new slot and keeps no offset', bo1 !== bo0 && bo1.split(',').indexOf('study') > bo0.split(',').indexOf('study') && bGlide && /translate/.test(bFollow) && !(await rp.evaluate(() => document.querySelector('[data-tile="study"]').style.transform)), JSON.stringify({ bo0, bo1, bGlide }));
+await rp.locator('[data-tile="cats"] .tile-grip').focus(); await rp.keyboard.press('ArrowUp'); await rp.waitForTimeout(400);
+const bo2 = await bOrder();
+check('bento: keyboard moves a tile with the arrow keys', bo2.split(',').indexOf('cats') === bo1.split(',').indexOf('cats') - 1, bo2);
+check('bento: the order is remembered', (await rp.evaluate(() => localStorage.getItem('kyoto-gis-bento-explore'))) === JSON.stringify(bo2.split(',')));
+const bCols = await rp.evaluate(() => getComputedStyle(document.querySelector('#explore-panel .bento')).gridTemplateColumns.split(' ').length);
+check('bento: uneven grid — two columns in the default panel, wide tiles span both', bCols === 2 && (await rp.evaluate(() => getComputedStyle(document.querySelector('[data-tile="analysis"]')).gridColumnStart)) === 'span 2', String(bCols));
+check('no page errors on the layout / route page', rpErr.length === 0, rpErr.join(' | '));
+await rp.close();
+
 // 9. phone layout
 const ph = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
 await ph.goto(url);
@@ -643,12 +808,12 @@ await ph.waitForTimeout(1500);
 const sw = await ph.evaluate(() => document.documentElement.scrollWidth);
 check('phone 390 px: no horizontal page scroll', sw <= 390, `scrollWidth ${sw}`);
 await ph.evaluate(() => document.getElementById('dashboard').scrollIntoView());
-check('phone: explore panel starts closed and the map fills the width', (await ph.locator('aside.left').isVisible()) === false && (await ph.evaluate(() => document.querySelector('.center').offsetWidth)) === 390);
+check('phone: explore panel starts closed and the map fills the width', (await ph.locator('#explore-panel').isVisible()) === false && (await ph.evaluate(() => document.querySelector('.center').offsetWidth)) === 390);
 await ph.locator('.nav-btn').click();
-await ph.locator('#q').fill('A00230');
+await exploreTab(ph); await ph.locator('#q').fill('A00230');
 await ph.locator('.results button').first().click();
 await ph.waitForTimeout(1500);
-const phs = await ph.evaluate(() => { const r = document.querySelector('aside.right').getBoundingClientRect(); const t = document.querySelector('.theme-toggle').getBoundingClientRect(); const x = document.querySelector('.detail .x:not(.hide-btn)').getBoundingClientRect(); const d = document.getElementById('dashboard').getBoundingClientRect(); return { sheetTop: r.top - d.top, sheetBottom: r.bottom - d.top, vh: d.height, leftShown: getComputedStyle(document.querySelector('aside.left')).display !== 'none', overlap: !(t.right < x.left || t.left > x.right || t.bottom < x.top || t.top > x.bottom), sw: document.documentElement.scrollWidth }; });
+const phs = await ph.evaluate(() => { const r = document.querySelector('aside.right').getBoundingClientRect(); const t = document.querySelector('.theme-toggle').getBoundingClientRect(); const x = document.querySelector('.detail .x:not(.hide-btn)').getBoundingClientRect(); const d = document.getElementById('dashboard').getBoundingClientRect(); return { sheetTop: r.top - d.top, sheetBottom: r.bottom - d.top, vh: d.height, leftShown: getComputedStyle(document.querySelector('#explore-panel')).display !== 'none', overlap: !(t.right < x.left || t.left > x.right || t.bottom < x.top || t.top > x.bottom), sw: document.documentElement.scrollWidth }; });
 check('phone: picking a result closes the drawer and opens a bottom sheet', !phs.leftShown && phs.sheetTop > phs.vh * 0.25 && Math.abs(phs.sheetBottom - phs.vh) < 2, JSON.stringify(phs));
 check('phone: theme switch does not cover the close button; still no horizontal scroll', !phs.overlap && phs.sw <= 390);
 const sbFree = await ph.evaluate(() => { const b = document.querySelector('.season-badge summary').getBoundingClientRect(); const ov = (r) => !(r.right <= b.left || r.left >= b.right || r.bottom <= b.top || r.top >= b.bottom); return { nav: ov(document.querySelector('.nav-btn').getBoundingClientRect()), toggle: ov(document.querySelector('.theme-toggle').getBoundingClientRect()), inView: b.left >= 0 && b.top >= 0 }; });

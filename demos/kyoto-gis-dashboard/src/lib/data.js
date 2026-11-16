@@ -44,6 +44,8 @@ const FILES = {
   relations: 'poi_relations.json',
   records: 'dsight_records.json',       // every Kyoto City DSIGHT_1.csv record and what was done with it
   geography: 'dsight_geography.geojson', // its place names, mountains and rivers that two sources place
+  coverage: 'study_area_coverage.json',   // municipalities the study area covers (scripts/study_area_coverage.py)
+  coverageLines: 'coverage_lines.geojson', // their boundary rings, one line per ring, for drawing
 };
 
 // Each file is loaded on its own so one failure is reported without hiding the others.
