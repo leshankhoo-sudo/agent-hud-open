@@ -3,13 +3,16 @@ import { SeasonDrift } from './Season.jsx';
 import { useScene } from './lib/depth.js';
 
 // "Explore Kyoto": one screen between the scroll intro and the dashboard.
-// Layout after a spatial-UI reference: title on top, a cover flow of tall photo cards in the middle
-// (the chosen one large, neighbours smaller and tucked behind), fact pills and a frosted bar below.
+// Layout after a spatial-UI reference: title on top, tall photo cards in depth on the section's backdrop
+// (Orbit: the chosen one low in the middle facing the viewer, the others spread out behind it, each
+// leaning its own way; Fan: held like a hand of cards; choosing a place gathers them into one stack and
+// spreads them out again; the row is endless), fact pills and a frosted bar below.
 // The backdrop is a soft, blurred copy of the chosen photo and cross-fades when the card changes.
 // Cards change by dragging, clicking a side card, the arrows, the dots or the arrow keys; the page
 // scroll is left alone. The middle card flips to show the photo credit. "Explore Kyoto" scrolls to
 // the dashboard and moves the map to that place.
 
+const LEAN = [-11, 8, -6, 13, -9, 6, -13];   // how far each card leans when it is not the chosen one (degrees)
 const reduceMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export default function Explore({ places, attractions, stops, near, onEnter }) {
@@ -17,7 +20,8 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
   useScene(root);
   const deck = useRef(null);
   const cards = useRef([]);
-  const anim = useRef({ shown: 0, target: 0, raf: 0, drag: null, skipClick: false });
+  const anim = useRef({ shown: 0, target: 0, raf: 0, drag: null, skipClick: false, mix: 0, mixTo: 0, vel: 0 });
+  const [mode, setMode] = useState('orbit');
   const [sel, setSel] = useState(0);
   const [seen, setSeen] = useState(false);
   const [flipped, setFlipped] = useState(false);
@@ -29,44 +33,99 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
   const p = places[sel];
   const stat = near ? near(p) : null;
 
-  // r is a fractional card index; --o is each card's signed offset from the middle
-  const place = (r) => {
+  // Where each card stands (after the spatial reference). r is a fractional card index (the row is endless);
+  // v is how fast it is turning, in cards per second; mix runs from 0 (Orbit) to 1 (Fan).
+  // Orbit: the cards stand on a ring seen from a little above; the chosen card is nearest.
+  // Fan: the cards are held like a hand of cards, turning about a point below them.
+  // Choosing a place turns the ring until that card is nearest.
+  const place = (r, v = 0, mix = anim.current.mix) => {
+    const W = deck.current?.clientWidth || 900, H = deck.current?.clientHeight || 420;
+    const g = Math.min(1, Math.abs(v) / 4.2), dir = Math.sign(v) || 1;
     cards.current.forEach((el, i) => {
       if (!el) return;
-      const o = i - r;
-      el.style.setProperty('--o', o.toFixed(3));
-      el.style.setProperty('--d', Math.abs(o).toFixed(3));
-      el.style.zIndex = String(20 - Math.round(Math.abs(o) * 2));
+      let o = (i - r) % n;
+      if (o > n / 2) o -= n; else if (o < -n / 2) o += n;
+      const d = Math.abs(o), d1 = Math.min(d, 1), sg = Math.sign(o);
+      const lean = LEAN[i % LEAN.length];
+      // orbit: a real ring in depth, seen from a little above. The chosen card is nearest, low in the middle;
+      // the others go round behind it, further away (so smaller, by perspective), higher and darker.
+      const th = o * ((Math.PI * 2) / n), co = Math.cos(th), si = Math.sin(th);
+      const R = W * 0.4 * (1 - 0.2 * g);
+      const ox = si * R, oz = (co - 1) * R * 1.1, oy = H * 0.06 - (1 - co) * H * 0.17;
+      const orz = lean * 0.55 * Math.min(1, d), ory = -si * 46, os = 1, obr = 0.5 + 0.5 * ((co + 1) / 2) ** 1.3;
+      // fan
+      const fx = o * W * 0.105, fy = H * (0.03 + d * d * 0.014), fz = -d * 46, frz = o * 10.5, fs = 0.86 - d1 * 0.05, fbr = 1 - Math.min(d, 2) * 0.2;
+      const L = (p, q) => p + (q - p) * mix;
+      let x = L(ox, fx), y = L(oy, fy), z = L(oz, fz), rz = L(orz, frz), ry = L(ory, 0), sc = L(os, fs), br = L(obr, fbr);
+      // while the ring turns fast it draws in a little and the cards blur
+      rz += g * dir * 9 * (0.4 + 0.6 * Math.abs(si)); ry += g * dir * 14 * co; sc *= 1 - 0.05 * g;   // cards lean and turn into the direction of travel
+      const st = el.style;
+      st.setProperty('--o', o.toFixed(3));
+      st.setProperty('--d', d.toFixed(3));
+      st.setProperty('--x', `${x.toFixed(1)}px`);
+      st.setProperty('--y', `${y.toFixed(1)}px`);
+      st.setProperty('--z', `${z.toFixed(1)}px`);
+      st.setProperty('--ry', `${ry.toFixed(2)}deg`);
+      st.setProperty('--rz', `${rz.toFixed(2)}deg`);
+      st.setProperty('--s', sc.toFixed(3));
+      st.setProperty('--br', br.toFixed(3));
+      st.setProperty('--bl', `${(g * (d < 0.5 ? 1.4 : 3.2)).toFixed(2)}px`);
+      st.setProperty('--op', '1');   // a card changing sides at the far end does so unseen
+      st.setProperty('--fy', `${(60 + 58 * mix).toFixed(0)}%`);
+      st.zIndex = String(Math.round(40 - d * 6 * (1 - mix) - d * 6 * mix));
+      el.classList.toggle('near', true);
     });
   };
-  // critically damped glide towards the target: no overshoot, no steps
+  // one loop however fast places are chosen; the turn is a spring, so it never queues or steps
   const run = () => {
     const a = anim.current;
     cancelAnimationFrame(a.raf);
     let last = performance.now();
     const step = (now) => {
-      const dt = Math.min(0.25, (now - last) / 1000); // real elapsed time, so the glide is not slower on a slow machine
+      const dt = Math.min(0.25, (now - last) / 1000); // real elapsed time, so the turn is not slower on a slow machine
       last = now;
-      const diff = a.target - a.shown;
-      if (reduceMotion() || Math.abs(diff) < 0.0015) { a.shown = a.target; place(a.shown); return; }
-      a.shown += diff * (1 - Math.exp(-dt * (a.drag ? 26 : 8.5))); // time-based, so it feels the same at any frame rate
-      place(a.shown);
+      const diff = a.target - a.shown, dm = a.mixTo - a.mix;
+      if (reduceMotion() || (Math.abs(diff) < 0.0012 && Math.abs(a.vel) < 0.012 && Math.abs(dm) < 0.002)) { a.shown = a.target; a.vel = 0; a.mix = a.mixTo; place(a.shown, 0); return; }
+      let vel;
+      if (a.drag) { const mv = diff * (1 - Math.exp(-dt * 26)); a.shown += mv; a.vel = 0; vel = 0; }
+      else {
+        // a slightly underdamped spring: the ring swings a touch past the card and settles back (the stopping pose)
+        const K = 46, C = 2 * Math.sqrt(K) * 0.6;
+        for (let left = dt; left > 0; left -= 0.012) { const h = Math.min(0.012, left); a.vel += ((a.target - a.shown) * K - a.vel * C) * h; a.shown += a.vel * h; }
+        vel = a.vel;
+      }
+      a.mix += dm * (1 - Math.exp(-dt * 6));
+      place(a.shown, vel);
       a.raf = requestAnimationFrame(step);
     };
     a.raf = requestAnimationFrame(step);
   };
+  const layout = (m) => { setMode(m); anim.current.mixTo = m === 'fan' ? 1 : 0; run(); };
   useEffect(() => { place(0); return () => cancelAnimationFrame(anim.current.raf); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
-    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { setSeen(true); io.disconnect(); } }, { threshold: 0.15 });
+    const io = new IntersectionObserver((es) => {
+      if (!es.some((e) => e.isIntersecting)) return;
+      setSeen(true); io.disconnect();
+      // entrance: the ring turns in from two places away and settles on the first card
+      const a = anim.current;
+      if (!reduceMotion() && a.shown === a.target) { a.shown = a.target - 2; run(); }
+    }, { threshold: 0.15 });
+    const fit = () => place(anim.current.shown, 0);
+    addEventListener('resize', fit);
     io.observe(root.current);
-    return () => io.disconnect();
-  }, []);
+    return () => { io.disconnect(); removeEventListener('resize', fit); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const mod = (k) => ((k % n) + n) % n;
   const choose = (i) => {
-    const k = Math.max(0, Math.min(n - 1, i));
+    const k = mod(i), a = anim.current;
     setSel(k);
     setFlipped(false);
-    anim.current.target = k;
+    // go the short way round the ring from wherever the turn is aimed now
+    const base = Math.round(a.target);
+    let d = k - mod(base);
+    if (d > n / 2) d -= n; else if (d < -n / 2) d += n;
+    a.target = base + d;
     run();
   };
   // drag the deck sideways; a short press is still a click
@@ -85,8 +144,8 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
       setDragging(true);
       deck.current.setPointerCapture?.(d.id);
     }
-    a.target = Math.max(-0.35, Math.min(n - 0.65, d.from - dx / d.step));
-    const k = Math.max(0, Math.min(n - 1, Math.round(a.target)));
+    a.target = d.from - dx / d.step;
+    const k = mod(Math.round(a.target));
     setSel((o) => (o === k ? o : k));
     run();
   };
@@ -97,7 +156,10 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
     setDragging(false);
     a.skipClick = true;
     setTimeout(() => { a.skipClick = false; }, 0);
-    choose(Math.round(a.target));
+    a.target = Math.round(a.target);
+    setSel(mod(a.target));
+    setFlipped(false);
+    run();
   };
   const key = (e) => {
     if (e.key === 'ArrowRight') { e.preventDefault(); choose(sel + 1); }
@@ -120,19 +182,23 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
             <p className="ex-eyebrow">EXPLORE KYOTO · 京都府</p>
             <h2 id="ex-title">Seven places.<br />One <em>prefecture.</em></h2>
           </div>
-          <div className="ex-stage-h">
-            <button type="button" className="ex-arrow" onClick={() => choose(sel - 1)} disabled={sel === 0} aria-label="Previous place">‹</button>
-            <div><b>Kyoto Prefecture</b><small>{String(sel + 1).padStart(2, '0')} / {String(n).padStart(2, '0')} · choose where to begin</small></div>
-            <button type="button" className="ex-arrow" onClick={() => choose(sel + 1)} disabled={sel === n - 1} aria-label="Next place">›</button>
-          </div>
           <span />
         </header>
 
         <div className={'ex-deck' + (dragging ? ' dragging' : '')} ref={deck} role="group" aria-label="Photo cards of the places. Drag sideways or use the arrow keys." tabIndex={-1}
           onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onKeyDown={key}>
+          <p className="ex-hint">{String(sel + 1).padStart(2, '0')} / {String(n).padStart(2, '0')} · Pick a card from the {mode}. Choose it to open the map there.</p>
+          <div className="ex-ctl" onPointerDown={(e) => e.stopPropagation()}>
+            <div className="ex-seg" role="group" aria-label="Card layout">
+              <button type="button" aria-pressed={mode === 'fan'} className={mode === 'fan' ? 'on' : ''} onClick={() => layout('fan')}>Fan</button>
+              <button type="button" aria-pressed={mode === 'orbit'} className={mode === 'orbit' ? 'on' : ''} onClick={() => layout('orbit')}>Orbit</button>
+            </div>
+            <button type="button" className="ex-arrow" onClick={() => choose(sel - 1)} aria-label="Previous place">←</button>
+            <button type="button" className="ex-arrow" onClick={() => choose(sel + 1)} aria-label="Next place">→</button>
+          </div>
           {places.map((q, i) => {
             const front = i === sel;
-            const close = Math.abs(i - sel) <= 2;
+            const close = true;   // every card is in view on the ring
             return (
               <figure key={q.key} ref={(el) => (cards.current[i] = el)} className={'ex-card' + (front ? ' front' : '') + (loaded[q.key] ? ' ready' : '')} style={{ '--c': q.color }} aria-hidden={!front}>
                 <button type="button" className={'ex-flip' + (front && flipped ? ' flipped' : '')} tabIndex={front ? 0 : -1} draggable={false}
@@ -143,7 +209,8 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
                       <img src={`${base}${q.src}`} width={q.width} height={q.height} decoding="async" draggable={false} alt={front ? `${q.en}, ${q.municipality.en}` : ''}
                         onLoad={() => setLoaded((o) => ({ ...o, [q.key]: true }))} onError={() => setFailed((o) => ({ ...o, [q.key]: true }))} />
                     )}
-                    <span className="ex-tab">{i + 1} / {n}</span>
+                    <span className="ex-tab">{String(i + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}</span>
+                    <span className="ex-kind">{q.tag}</span>
                     {failed[q.key] && <span className="ex-fallback">Photo could not be loaded</span>}
                     <span className="ex-cap"><strong lang="ja">{q.ja}</strong><span>{q.en}</span></span>
                     <span className="ex-turn" aria-hidden="true">↻ credit</span>

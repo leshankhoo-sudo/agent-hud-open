@@ -16,6 +16,7 @@ import Seam from './Seam.jsx';
 import Pager from './Pager.jsx';
 import Bento, { Tile, resetBento } from './Bento.jsx';
 import Koi from './Koi.jsx';
+import CursorLight from './CursorLight.jsx';
 import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
@@ -504,7 +505,7 @@ export default function App() {
     if (key === 'weather') { select({ id: 'S00019' }); setTab('weather'); } // Kyoto Station
     if (key === 'map') resetViewRef.current?.();
   };
-  const toggleUi = <><SeasonBadge auto={seasonAuto} mode={seasonMode} onMode={setSeasonMode} info={seasonInfo} /><MusicPlayer /><ThemeToggle theme={theme} onChange={setTheme} /><Pager theme={theme} /></>;
+  const toggleUi = <><CursorLight /><SeasonBadge auto={seasonAuto} mode={seasonMode} onMode={setSeasonMode} info={seasonInfo} /><MusicPlayer /><ThemeToggle theme={theme} onChange={setTheme} /><Pager theme={theme} /></>;
   // Opening: page 1 is the looping cherry video with the project introduction; page 2 is the season
   // story (depth parallax, KYOTO, the counts). Both are on screen before the data has loaded.
   const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });

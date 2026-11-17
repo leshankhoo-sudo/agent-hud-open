@@ -141,6 +141,19 @@ const exText = await page.locator('#explore').innerText();
 check('picking a place shows its name, municipality and photo credit', exText.includes('平等院') && exText.includes('Uji City') && exText.includes('Martin Falbisoner') && exText.includes('CC BY-SA 4.0') && /\d+ attractions? within 1 km/.test(exText));
 const ringA = await page.evaluate(() => ({ rot: +document.querySelectorAll('.ex-card')[3].style.getPropertyValue('--o'), side: +document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--o'), front: document.querySelector('.ex-card.front .ex-cap strong').innerText, bg: [...document.querySelectorAll('.ex-bg i')].findIndex((e) => e.classList.contains('on')), h: document.getElementById('explore').offsetHeight }));
 check('picking a place glides the card deck there and swaps the blurred backdrop; the section is one screen tall', Math.abs(ringA.rot) < 0.06 && Math.abs(ringA.side - 1) < 0.06 && ringA.front === '平等院' && ringA.bg === 3 && ringA.h <= 920, JSON.stringify(ringA));
+// the cards stand on a ring: neighbours are further back and turned away, the ring is endless, quick choices never queue
+const ringB = await page.evaluate(() => { const c = [...document.querySelectorAll('.ex-card')].map((e) => ({ z: parseFloat(e.style.getPropertyValue('--z')), ry: parseFloat(e.style.getPropertyValue('--ry')), op: +e.style.getPropertyValue('--op') })); return { front: c[3], side: c[4], far: c[6], persp: getComputedStyle(document.querySelector('.ex-deck')).perspective }; });
+check('explore scene: the chosen card faces the viewer in the middle; the others stand behind it, leaning and darker; all inside one perspective panel', Math.abs(ringB.front.z) < 1 && Math.abs(ringB.front.ry) < 1 && ringB.side.z < -60 && Math.abs(ringB.side.ry) > 8 && ringB.far.z < ringB.side.z - 200 && ringB.persp !== 'none', JSON.stringify(ringB));
+await page.locator('.ex-seg button').nth(0).click(); await page.waitForTimeout(1800);
+const fanA = await page.evaluate(() => ({ rz: parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--rz')), ry: parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--ry')), on: document.querySelector('.ex-seg .on').innerText }));
+await page.locator('.ex-seg button').nth(1).click(); await page.waitForTimeout(1800);
+check('explore scene: Fan holds the cards like a hand of cards, Orbit spreads them out again', fanA.on === 'Fan' && Math.abs(fanA.rz - 10.5) < 0.6 && Math.abs(fanA.ry) < 0.6 && (await page.evaluate(() => Math.abs(parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--ry'))))) > 8, JSON.stringify(fanA));
+for (let i = 0; i < 5; i++) { await page.locator('.ex-arrow').nth(1).click(); await page.waitForTimeout(50); }
+await page.waitForTimeout(2600);
+const ringC = await page.evaluate(() => { const cs = [...document.querySelectorAll('.ex-card')]; const f = cs.findIndex((e) => e.classList.contains('front')); return { f, o: +cs[f].style.getPropertyValue('--o'), card: cs[f].querySelector('.ex-cap span').innerText, bar: document.querySelector('.ex-place h3 span').innerText, dot: [...document.querySelectorAll('.ex-dot')].findIndex((d) => d.classList.contains('on')), bg: [...document.querySelectorAll('.ex-bg i')].findIndex((e) => e.classList.contains('on')), cta: document.querySelector('.ex-cta small').textContent }; });
+check('explore scene: five quick clicks from place 4 go round past the end to place 2; card, text, dot, backdrop and map button agree', ringC.f === 1 && Math.abs(ringC.o) < 0.06 && ringC.bar.includes(ringC.card) && ringC.dot === 1 && ringC.bg === 1 && ringC.cta.includes(ringC.card), JSON.stringify(ringC));
+await page.locator('.ex-dot').nth(3).click();
+await page.waitForTimeout(2500);
 const dk = await page.locator('.ex-deck').boundingBox();
 await page.mouse.move(dk.x + dk.width / 2, dk.y + dk.height / 2);
 await page.mouse.down();
@@ -830,6 +843,17 @@ const rip1 = await rp.evaluate(() => window.__koiRipples());
 await rp.waitForFunction(() => window.__koiRipples() === 0, null, { timeout: 15000 }).catch(() => {});
 const rip2 = await rp.evaluate(() => ({ n: window.__koiRipples(), pe: getComputedStyle(document.querySelector('.koi-ripples')).pointerEvents, z: +getComputedStyle(document.querySelector('.koi-layer')).zIndex < +getComputedStyle(document.querySelector('#explore-panel')).zIndex }));
 check('koi pond: thrown food sends ripples that overlap, fade away and stay under the cards', rip1 === 6 && rip2.n === 0 && rip2.pe === 'none' && rip2.z, `${rip1} ${JSON.stringify(rip2)}`);
+// site-wide pointer light and the closing scene
+await rp.mouse.move(500, 400); await rp.mouse.move(640, 470, { steps: 6 }); await rp.waitForTimeout(400);
+const cur = await rp.evaluate(() => ({ n: document.querySelectorAll('.cursor-light').length, pe: getComputedStyle(document.querySelector('.cursor-light')).pointerEvents, pos: getComputedStyle(document.querySelector('.cursor-light')).position, glow: window.__cursorLight?.glow, ring: window.__cursorLight?.ring, hit: document.elementFromPoint(640, 470)?.className !== 'cursor-light' }));
+check('pointer light: one fixed canvas for the whole page, follows the pointer after scrolling, takes no clicks', cur.n === 1 && cur.pe === 'none' && cur.pos === 'fixed' && cur.glow > 0.5 && Math.hypot(cur.ring.x - 640, cur.ring.y - 470) < 40 && cur.hit, JSON.stringify(cur));
+await rp.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' }));
+await rp.waitForFunction(() => document.querySelector('.swarm')?.dataset.s === '1', null, { timeout: 8000 }).catch(() => {});
+await rp.waitForTimeout(900);
+const sw1 = await rp.evaluate(() => { const s = document.querySelector('.swarm'); if (!s) return null; const f = document.querySelector('.outro-frame').getBoundingClientRect(); const g = s.querySelector('b.g').getBoundingClientRect(); return { step: s.dataset.s, n: s.querySelectorAll('i').length, guides: s.querySelectorAll('b').length, pe: getComputedStyle(s).pointerEvents, guideW: Math.round((g.width / f.width) * 100), spread: new Set([...s.querySelectorAll('i')].map((e) => Math.round(e.getBoundingClientRect().left / 40))).size }; });
+await rp.waitForFunction(() => !document.querySelector('.swarm'), null, { timeout: 12000 }).catch(() => {});
+const sw2 = await rp.evaluate(() => ({ gone: !document.querySelector('.swarm'), card: document.querySelector('.outro-card h2').innerText, on: document.querySelector('.outro').classList.contains('on'), closing: !!document.querySelector('.closing') }));
+check('closing page: a swarm of pointers frames the four panels and the card, takes no clicks, then leaves the finished page', sw1 && sw1.n === 16 && sw1.guides === 5 && sw1.pe === 'none' && sw1.guideW >= 20 && sw1.spread >= 6 && sw2.gone && sw2.on && /Kyoto Prefecture Tourism GIS/.test(sw2.card) && !sw2.closing, JSON.stringify({ sw1, sw2 }));
 check('no page errors on the layout / route page', rpErr.length === 0, rpErr.join(' | '));
 await rp.close();
 
