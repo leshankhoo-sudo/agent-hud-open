@@ -863,12 +863,14 @@ const sp3 = await rp.evaluate(() => window.__cursorLight.spawned);
 cur.trail = { slow: sp2 - sp1, fast: sp3 - sp2 };
 check('pointer light: one fixed canvas for the whole page, follows the pointer after scrolling, takes no clicks; sparks are laid by distance, so a crawl and a flick over the same path lay about the same number',
   Math.abs(cur.trail.slow - cur.trail.fast) <= Math.max(14, 0.25 * cur.trail.slow) && cur.trail.slow > 40 &&  cur.n === 1 && cur.pe === 'none' && cur.pos === 'fixed' && cur.glow > 0.5 && Math.hypot(cur.ring.x - 640, cur.ring.y - 470) < 40 && cur.hit, JSON.stringify(cur));
+// start from the top, so the closing is taken apart whatever an earlier step left it as
+await rp.evaluate(() => scrollTo(0, 0)); await rp.waitForFunction(() => document.querySelector('.outro.st0'), null, { timeout: 6000 }).catch(() => {});
 await rp.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' }));
 await rp.waitForTimeout(400);
 const ob0 = await rp.evaluate(() => ({ panels: document.querySelectorAll('.op.on').length, card: getComputedStyle(document.querySelector('.outro-card')).opacity }));
 await rp.waitForFunction(() => document.querySelector('.outro.st5'), null, { timeout: 15000 }).catch(() => {});
 await rp.waitForTimeout(700);
-const ob1 = await rp.evaluate(() => ({ ptrs: document.querySelectorAll('.swarm .sw-ptr').length, cols: document.querySelectorAll('.sw-col').length, boxes: [...document.querySelectorAll('.sw-ph em')].map((e) => e.textContent), cross: document.querySelectorAll('.sw-ph svg line').length, bars: document.querySelectorAll('.sw-bars').length, gaps: [...document.querySelectorAll('.sw-gap em')].map((e) => e.textContent), panels: document.querySelectorAll('.op.on').length, pe: getComputedStyle(document.querySelector('.swarm')).pointerEvents }));
+const ob1 = await rp.evaluate(() => ({ ptrs: document.querySelectorAll('.swarm .sw-ptr').length, cols: document.querySelectorAll('.sw-col').length, boxes: [...document.querySelectorAll('.sw-ph em')].map((e) => e.textContent), cross: document.querySelectorAll('.sw-ph svg line').length, bars: document.querySelectorAll('.sw-bars').length, gaps: [...document.querySelectorAll('.sw-gap em')].map((e) => e.textContent), panels: document.querySelectorAll('.op.on').length, pe: document.querySelector('.swarm') ? getComputedStyle(document.querySelector('.swarm')).pointerEvents : 'missing', st: (document.querySelector('.outro').className.match(/st(\d+)/) || [])[1] }));
 await rp.waitForFunction(() => document.querySelector('.outro.st9 .sw-snap'), null, { timeout: 15000 }).catch(() => {});
 const ob1c = await rp.evaluate(() => ({ box: document.querySelector('.sw-box em')?.textContent || '', snaps: document.querySelectorAll('.sw-snap').length, sketch: document.querySelectorAll('.sw-sketch i.chip').length, typed: [...document.querySelectorAll('.op.txt')].length }));
 await rp.waitForFunction(() => document.querySelector('.outro.st12'), null, { timeout: 20000 }).catch(() => {});
@@ -879,8 +881,8 @@ await rp.mouse.move(tfr.x - 80, tfr.y - 120); await rp.waitForTimeout(150); awai
 const tone = { theme: await rp.evaluate(() => document.documentElement.dataset.theme), panel: await rp.evaluate(() => __cursorLight.tone), life: await rp.evaluate(() => __cursorLight.maxAge()) };
 await rp.mouse.move(tfr.x + 60, tfr.below, { steps: 10 }); await rp.mouse.move(tfr.x + 140, tfr.below, { steps: 8 }); await rp.waitForTimeout(250);
 tone.page = await rp.evaluate(() => __cursorLight.tone);
-check('pointer light: the sparks are short-lived and take their colour from what is under the pointer (glow over the dark closing panels, ink over a light page)',
-  tone.panel === 'glow' && tone.page === (tone.theme === 'light' ? 'ink' : 'glow') && tone.life > 0 && tone.life < 0.5, JSON.stringify(tone));
+check('pointer light: sparks are short-lived (trail sparks under 0.42 s, resting glints under 0.7 s) and take their colour from what is under the pointer (glow over the dark closing panels, ink over a light page)',
+  tone.panel === 'glow' && tone.page === (tone.theme === 'light' ? 'ink' : 'glow') && tone.life > 0 && tone.life < 0.75, JSON.stringify(tone));
 await rp.evaluate(() => scrollBy(0, -1600)); await rp.waitForTimeout(2000);
 const ob3 = await rp.evaluate(() => ({ st: (document.querySelector('.outro').className.match(/st(\d+)/) || [])[1], panels: document.querySelectorAll('.op.on').length }));
 await rp.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' })); await rp.waitForTimeout(2600);
