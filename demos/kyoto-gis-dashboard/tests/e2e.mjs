@@ -854,15 +854,42 @@ await rp.waitForFunction(() => window.__koiRipples() === 0, null, { timeout: 150
 const rip2 = await rp.evaluate(() => ({ n: window.__koiRipples(), pe: getComputedStyle(document.querySelector('.koi-ripples')).pointerEvents, z: +getComputedStyle(document.querySelector('.koi-layer')).zIndex < +getComputedStyle(document.querySelector('#explore-panel')).zIndex }));
 check('koi pond: thrown food sends ripples that overlap, fade away and stay under the cards', rip1 === 6 && rip2.n === 0 && rip2.pe === 'none' && rip2.z, `${rip1} ${JSON.stringify(rip2)}`);
 // site-wide pointer light and the closing scene
-await rp.mouse.move(500, 400); await rp.mouse.move(640, 470, { steps: 6 }); await rp.waitForTimeout(400);
-const cur = await rp.evaluate(() => ({ n: document.querySelectorAll('.cursor-light').length, pe: getComputedStyle(document.querySelector('.cursor-light')).pointerEvents, pos: getComputedStyle(document.querySelector('.cursor-light')).position, glow: window.__cursorLight?.glow, ring: window.__cursorLight?.ring, hit: document.elementFromPoint(640, 470)?.className !== 'cursor-light' }));
-const sp0 = await rp.evaluate(() => window.__cursorLight.spawned); await rp.mouse.move(200, 300); await rp.waitForTimeout(600);
-const sp1 = await rp.evaluate(() => window.__cursorLight.spawned); await rp.mouse.move(800, 300, { steps: 80 }); await rp.waitForTimeout(500);
-const sp2 = await rp.evaluate(() => window.__cursorLight.spawned); await rp.mouse.move(200, 300, { steps: 6 }); await rp.waitForTimeout(500);
-const sp3 = await rp.evaluate(() => window.__cursorLight.spawned);
-cur.trail = { slow: sp2 - sp1, fast: sp3 - sp2 };
-check('pointer light: one fixed canvas for the whole page, follows the pointer after scrolling, takes no clicks; sparks are laid by distance, so a crawl and a flick over the same path lay about the same number',
-  Math.abs(cur.trail.slow - cur.trail.fast) <= Math.max(14, 0.25 * cur.trail.slow) && cur.trail.slow > 40 &&  cur.n === 1 && cur.pe === 'none' && cur.pos === 'fixed' && cur.glow > 0.5 && Math.hypot(cur.ring.x - 640, cur.ring.y - 470) < 40 && cur.hit, JSON.stringify(cur));
+const CL = (k) => rp.evaluate((k) => window.__cursorLight[k], k);
+const cur = await rp.evaluate(() => ({ n: document.querySelectorAll('.cursor-light').length, pe: getComputedStyle(document.querySelector('.cursor-light')).pointerEvents, pos: getComputedStyle(document.querySelector('.cursor-light')).position, hit: document.elementFromPoint(640, 470)?.className !== 'cursor-light', count: window.__cursorLight.count, pressed: document.querySelector('.fx-toggle').getAttribute('aria-pressed'), title: document.querySelector('.fx-toggle').title }));
+// slow: 300 px over ~1.2 s; fast: 700 px in a few events
+await rp.mouse.move(400, 470); await rp.waitForTimeout(400);
+for (let i = 1; i <= 40; i++) { await rp.mouse.move(400 + i * 7.5, 470); await rp.waitForTimeout(30); }
+cur.slow = { tail: Math.round(await CL('maxTail')), spread: Math.round(await CL('spread')), drawn: await CL('drawn') };
+await rp.waitForTimeout(500); await rp.mouse.move(1400, 300, { steps: 6 }); await rp.waitForTimeout(16);
+cur.fast = { tail: Math.round(await CL('maxTail')) };
+// rest: the flock keeps drifting round the pointer, with short tails, every particle still drawn
+await rp.waitForTimeout(2200); const fh1 = await CL('heads'); await rp.waitForTimeout(3200); const fh2 = await CL('heads');
+cur.rest = { rest: +(await CL('rest')).toFixed(2), spread: Math.round(await CL('spread')), tail: Math.round(await CL('maxTail')), drawn: await CL('drawn'), drift: Math.round(fh1.reduce((a, q, k) => a + Math.hypot(q[0] - fh2[k][0], q[1] - fh2[k][1]), 0) / fh1.length) };
+check('pointer light: one fixed canvas that takes no clicks; every particle has its own tail, long when the hand is fast, short when slow; resting, the flock keeps drifting round the pointer',
+  cur.n === 1 && cur.pe === 'none' && cur.pos === 'fixed' && cur.hit && cur.count >= 40 && cur.slow.drawn === cur.count && cur.slow.spread < 60 && cur.fast.tail > cur.slow.tail * 2 && cur.fast.tail <= 130
+  && cur.rest.rest > 0.9 && cur.rest.drawn === cur.count && cur.rest.drift > 8 && cur.rest.spread > 25 && cur.rest.spread < 140 && cur.rest.tail < 90, JSON.stringify(cur));
+// theme: the colours ease across without resetting the flock
+const th0 = await rp.evaluate(() => document.documentElement.dataset.theme);
+await rp.locator('.theme-toggle').first().click(); await rp.waitForFunction((t) => document.documentElement.dataset.theme !== t, th0, { timeout: 8000 }).catch(() => {}); await rp.waitForTimeout(1500);
+const thm = { from: th0, to: await rp.evaluate(() => document.documentElement.dataset.theme), mix: +(await CL('theme')).toFixed(2), spread: Math.round(await CL('spread')), drawn: await CL('drawn') };
+await rp.locator('.theme-toggle').first().click(); await rp.waitForFunction((t) => document.documentElement.dataset.theme === t, th0, { timeout: 8000 }).catch(() => {}); await rp.waitForTimeout(1500);
+check('pointer light: follows the theme switch (blended for dark, painted for light) and keeps the flock going through the change', thm.from !== thm.to && Math.abs(thm.mix - (thm.to === 'light' ? 1 : 0)) < 0.05 && thm.spread > 15 && thm.drawn >= cur.count, JSON.stringify(thm));
+// the toggle: off clears and stops it (also by keyboard), the choice is remembered on the next visit, and turning it on again binds nothing twice
+await rp.locator('.fx-toggle').click(); await rp.waitForTimeout(300);
+const fxOff = await rp.evaluate(() => { const c = document.querySelector('.cursor-light'); const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let a = 0; for (let i = 3; i < d.length; i += 4) a += d[i]; return { on: window.__cursorLight.on, running: window.__cursorLight.running, alpha: a, pressed: document.querySelector('.fx-toggle').getAttribute('aria-pressed'), title: document.querySelector('.fx-toggle').title, stored: localStorage.getItem('kyoto.cursorFx') }; });
+const npx = await browser.newContext({ viewport: { width: 1200, height: 800 }, storageState: await rp.context().storageState() }); const np = await npx.newPage(); await np.goto(url); await np.waitForSelector('.fx-toggle', { timeout: 30000 });
+const fxNext = await np.evaluate(() => ({ pressed: document.querySelector('.fx-toggle').getAttribute('aria-pressed'), on: !!window.__cursorLight?.on })); await npx.close();
+await rp.locator('.fx-toggle').focus(); await rp.keyboard.press('Enter'); await rp.waitForTimeout(200);
+await rp.mouse.move(700, 450, { steps: 5 }); await rp.waitForTimeout(400);
+const fxOn = await rp.evaluate(() => ({ on: window.__cursorLight.on, running: window.__cursorLight.running, drawn: window.__cursorLight.drawn, pressed: document.querySelector('.fx-toggle').getAttribute('aria-pressed'), stored: localStorage.getItem('kyoto.cursorFx') }));
+check('pointer light: the small toggle shows its state ("Cursor light: On/Off"), works by keyboard, clears the canvas when off, and is remembered',
+  cur.pressed === 'true' && cur.title === 'Cursor light: On' && fxOff.on === false && !fxOff.running && fxOff.alpha === 0 && fxOff.pressed === 'false' && fxOff.title === 'Cursor light: Off' && fxOff.stored === 'off'
+  && fxNext.pressed === 'false' && !fxNext.on && fxOn.on && fxOn.running && fxOn.drawn > 0 && fxOn.pressed === 'true' && fxOn.stored === 'on', JSON.stringify({ fxOff, fxNext, fxOn }));
+// an open popup is cut out of what it draws
+await rp.locator('.season-badge summary').click(); await rp.waitForTimeout(400); await rp.mouse.move(160, 170, { steps: 5 }); await rp.waitForTimeout(400);
+const fxCut = await CL('cut'); await rp.keyboard.press('Escape'); await rp.locator('.season-badge summary').click(); await rp.waitForTimeout(400);
+const fxCut0 = await CL('cut');
+check('pointer light: an open popup is cut out of the drawing, and nothing is cut once it closes', fxCut >= 1 && fxCut0 === 0, `${fxCut} ${fxCut0}`);
 // start from the top, so the closing is taken apart whatever an earlier step left it as
 await rp.evaluate(() => scrollTo(0, 0)); await rp.waitForFunction(() => document.querySelector('.outro.st0'), null, { timeout: 6000 }).catch(() => {});
 await rp.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' }));
@@ -876,13 +903,6 @@ const ob1c = await rp.evaluate(() => ({ box: document.querySelector('.sw-box em'
 await rp.waitForFunction(() => document.querySelector('.outro.st12'), null, { timeout: 20000 }).catch(() => {});
 await rp.waitForTimeout(1500);
 const ob2 = await rp.evaluate(() => ({ swarm: !!document.querySelector('.swarm'), panels: document.querySelectorAll('.op.on').length, card: getComputedStyle(document.querySelector('.outro-card')).opacity, chips: [...document.querySelectorAll('.oc-team li')].every((l) => getComputedStyle(l).opacity === '1'), btn: getComputedStyle(document.querySelector('.outro-card .ist-skip')).visibility }));
-const tfr = await rp.evaluate(() => { const r = document.querySelector('.op').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.bottom - 60, below: r.bottom + 30 }; });
-await rp.mouse.move(tfr.x - 80, tfr.y - 120); await rp.waitForTimeout(150); await rp.mouse.move(tfr.x, tfr.y, { steps: 10 }); await rp.waitForTimeout(250);
-const tone = { theme: await rp.evaluate(() => document.documentElement.dataset.theme), panel: await rp.evaluate(() => __cursorLight.tone), life: await rp.evaluate(() => __cursorLight.maxAge()) };
-await rp.mouse.move(tfr.x + 60, tfr.below, { steps: 10 }); await rp.mouse.move(tfr.x + 140, tfr.below, { steps: 8 }); await rp.waitForTimeout(250);
-tone.page = await rp.evaluate(() => __cursorLight.tone);
-check('pointer light: sparks are short-lived (trail sparks under 0.42 s, resting glints under 0.7 s) and take their colour from what is under the pointer (glow over the dark closing panels, ink over a light page)',
-  tone.panel === 'glow' && tone.page === (tone.theme === 'light' ? 'ink' : 'glow') && tone.life > 0 && tone.life < 0.75, JSON.stringify(tone));
 await rp.evaluate(() => scrollBy(0, -1600)); await rp.waitForTimeout(2000);
 const ob3 = await rp.evaluate(() => ({ st: (document.querySelector('.outro').className.match(/st(\d+)/) || [])[1], panels: document.querySelectorAll('.op.on').length }));
 await rp.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' })); await rp.waitForTimeout(2600);
@@ -937,6 +957,10 @@ const sbFree = await ph.evaluate(() => { const b = document.querySelector('.seas
 check('phone: season button sits top left without covering Explore or the theme switch', !sbFree.nav && !sbFree.toggle && sbFree.inView, JSON.stringify(sbFree));
 const muFree = await ph.evaluate(() => { const m = document.querySelector('.koto-stage').getBoundingClientRect(); const ov = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return !(r.right <= m.left || r.left >= m.right || r.bottom <= m.top || r.top >= m.bottom); }; return { toggle: ov('.theme-toggle'), badge: ov('.season-badge summary'), nav: ov('.nav-btn'), w: Math.round(m.width), right: Math.round(m.right) }; });
 check('phone: the music control sits beside the theme switch without covering it, the season button or Explore', !muFree.toggle && !muFree.badge && !muFree.nav && muFree.w < 100, JSON.stringify(muFree));
+const tp = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });   // a real touch phone
+await tp.goto(url); await tp.waitForSelector('.fx-toggle', { state: 'attached', timeout: 30000 }); await tp.touchscreen.tap(200, 400); await tp.waitForTimeout(400);
+const phFx = await tp.evaluate(() => ({ toggle: getComputedStyle(document.querySelector('.fx-toggle')).display, running: !!window.__cursorLight?.running })); await tp.close();
+check('phone: no pointer light on a touch screen, and its toggle is not shown', phFx.toggle === 'none' && !phFx.running, JSON.stringify(phFx));
 // opened on the phone (keyboard focus keeps it open; the longest chapter name), the control and its caption stay on screen
 await ph.evaluate(() => { const i = document.querySelector('.koto-range input'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, '0.46'); i.dispatchEvent(new Event('input', { bubbles: true })); });
 await ph.locator('.koto-range input').focus(); await ph.waitForTimeout(900);

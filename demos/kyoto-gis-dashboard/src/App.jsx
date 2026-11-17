@@ -16,7 +16,7 @@ import Seam from './Seam.jsx';
 import Pager from './Pager.jsx';
 import Bento, { Tile, resetBento } from './Bento.jsx';
 import Koi from './Koi.jsx';
-import CursorLight from './CursorLight.jsx';
+import CursorLight, { CursorFxToggle, cursorFxInitial, saveCursorFx } from './CursorLight.jsx';
 import Density3D from './Density3D.jsx';
 import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
@@ -102,6 +102,8 @@ const n0 = (v) => (v == null ? '—' : v.toLocaleString('en-US'));
 export default function App() {
   const [loaded, setLoaded] = useState(null);
   const [theme, setThemeState] = useState(initialTheme);
+  const [cursorFx, setCursorFxState] = useState(cursorFxInitial);   // pointer light on/off, remembered
+  const setCursorFx = (on) => { setCursorFxState(on); saveCursorFx(on); };
   const [cats, setCats] = useState(ATTRACTION_CATS.map((c) => c.key));
   const [types, setTypes] = useState(TRANSPORT_TYPES.map((t) => t.key));
   const [query, setQuery] = useState('');
@@ -513,7 +515,7 @@ export default function App() {
     if (key === 'weather') { select({ id: 'S00019' }); setTab('weather'); } // Kyoto Station
     if (key === 'map') resetViewRef.current?.();
   };
-  const toggleUi = <><CursorLight /><SeasonBadge auto={seasonAuto} mode={seasonMode} onMode={setSeasonMode} info={seasonInfo} /><MusicPlayer /><ThemeToggle theme={theme} onChange={setTheme} /><Pager theme={theme} /></>;
+  const toggleUi = <><CursorLight on={cursorFx} /><CursorFxToggle on={cursorFx} onChange={setCursorFx} /><SeasonBadge auto={seasonAuto} mode={seasonMode} onMode={setSeasonMode} info={seasonInfo} /><MusicPlayer /><ThemeToggle theme={theme} onChange={setTheme} /><Pager theme={theme} /></>;
   // Opening: page 1 is the looping cherry video with the project introduction; page 2 is the season
   // story (depth parallax, KYOTO, the counts). Both are on screen before the data has loaded.
   const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });

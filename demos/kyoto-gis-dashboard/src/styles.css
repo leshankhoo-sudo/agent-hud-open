@@ -1870,6 +1870,34 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
    Site-wide pointer light (CursorLight.jsx): one fixed canvas over the page, never in the way of input.
    ===================================================================== */
 .cursor-light { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 9990; pointer-events: none; }
+/* the pointer-light toggle: a small round icon in the top-right row, left of the music control (which grows
+   a little on hover, hence the gap). Lit head and tails when on; dimmed with a slash when off. Desktop only. */
+.fx-toggle { position: fixed; z-index: 60; top: max(13px, calc(env(safe-area-inset-top, 0px) + 5px)); right: calc(max(14px, env(safe-area-inset-right, 0px)) + 226px);
+  width: 30px; height: 30px; padding: 0; display: grid; place-items: center; border-radius: 50%; cursor: pointer;
+  color: var(--ink-2); background: color-mix(in srgb, var(--panel-solid) 72%, transparent); border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: color .25s, background .25s, border-color .25s, transform .2s; }
+.fx-toggle:hover { color: var(--ink); transform: scale(1.08); }
+.fx-toggle:focus-visible { outline: 2px solid var(--indigo-2); outline-offset: 3px; }
+.fx-toggle svg { width: 18px; height: 18px; overflow: visible; }
+.fx-toggle .fx-tail { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; opacity: .55; transition: opacity .25s; }
+.fx-toggle .fx-head { fill: currentColor; transition: fill .25s; }
+.fx-toggle .fx-glow { fill: currentColor; opacity: 0; transition: opacity .25s; }
+.fx-toggle .fx-off { stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; opacity: .8; transition: opacity .2s; }
+.fx-toggle.on { color: #b9d8ff; border-color: rgba(150, 200, 255, .45); }
+.fx-toggle.on .fx-tail { opacity: .9; }
+.fx-toggle.on .fx-head { fill: #fff; }
+.fx-toggle.on .fx-glow { opacity: .35; }
+.fx-toggle.on .fx-off { opacity: 0; }
+:root[data-theme='light'] .fx-toggle.on { color: #2a62c9; border-color: rgba(42, 98, 201, .35); }
+:root[data-theme='light'] .fx-toggle.on .fx-head { fill: #1d4fb5; }
+:root[data-theme='light'] .fx-toggle.on .fx-glow { fill: #63d4ea; opacity: .4; }
+@media (hover: none), (pointer: coarse) { .fx-toggle { display: none; } }
+/* the dashboard header keeps the controls' corner free; with the toggle there it needs one more slot */
+@media (hover: hover) and (pointer: fine) { .top { padding-right: calc(280px + env(safe-area-inset-right, 0px)); } }
+@media (hover: hover) and (pointer: fine) and (max-width: 760px) {
+  .fx-toggle { right: calc(max(14px, env(safe-area-inset-right, 0px)) + 180px); top: max(13px, env(safe-area-inset-top, 0px)); width: 28px; height: 28px; }
+  .top { padding-right: calc(232px + env(safe-area-inset-right, 0px)); }
+}
 
 /* =====================================================================
    Explore: one scene panel with the seven cards in depth (after the spatial reference; Explore.jsx writes
