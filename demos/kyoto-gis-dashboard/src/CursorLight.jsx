@@ -1,116 +1,135 @@
 import { useEffect, useRef } from 'react';
 
-// Site-wide pointer light (after the reference recording): a small ring that follows the pointer a
-// beat late, with a cloud of thin sparks. While the pointer moves the sparks string out behind it as
-// short streaks, like a comet tail that swings when the direction changes; when it stops they gather
-// and drift round the ring, then dim. One fixed canvas for the whole page: it takes no pointer events,
-// uses client coordinates (so scrolling never offsets it), sleeps when nothing moves, and is not
-// started on touch-only devices or with "reduce motion". Written for this project; no third-party code.
-// A 'cursor-burst' window event ({ detail: { x, y } }) throws a handful of small squares from a point.
-const N = 44;
+// Site-wide pointer light (after the reference recording): a small ring a beat behind the pointer, and a
+// trail of fine sparks behind it like a comet tail.
+// The trail follows the pointer-trail-emitter guide (MengTo, MIT): sparks are laid per distance travelled,
+// not per frame, so a flick and a crawl draw the same continuous ribbon; each frame's sparks are spread
+// along the segment the emitter covered; the emitter lags the pointer; sparks coast, curl and rise a
+// little before fading; a resting pointer keeps a faint breath (one spark about every 0.4 s).
+// One fixed canvas for the whole page: no pointer events, client coordinates (so scrolling never offsets
+// it), sleeps when nothing is left to draw. Not started on touch-only devices. With "reduce motion" the
+// ring and a small still cluster of sparks sit at the pointer, with no trail and nothing moving on its own.
+const N = 220;            // ring buffer of sparks
+const STEP = 7;           // px of travel per spark
+const CAP = 14;           // most sparks per frame (a jumping pointer must not spawn thousands)
+const IDLE = 0.42;        // s between sparks while the pointer rests
 
 export default function CursorLight() {
   const ref = useRef(null);
   useEffect(() => {
     const cv = ref.current;
-    if (!cv || matchMedia('(prefers-reduced-motion: reduce)').matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return undefined;
+    if (!cv || !matchMedia('(hover: hover) and (pointer: fine)').matches) return undefined;
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const ctx = cv.getContext('2d');
-    let w = 0, h = 0, dpr = 1, raf = 0, last = 0, seen = false, inside = false, lastMove = 0, glow = 0;
-    const ptr = { x: 0, y: 0 }, ring = { x: 0, y: 0, vx: 0, vy: 0 };
-    // every spark is a small spring that chases a point near the ring; stiffness differs, so they string out
-    const sp = Array.from({ length: N }, (_, i) => {
-      const r = (k) => { const x = Math.sin((i + 1) * 12.9898 * k) * 43758.5453; return x - Math.floor(x); };
-      return { x: 0, y: 0, px: 0, py: 0, vx: 0, vy: 0, k: 26 + r(1) * 150, c: 7 + r(2) * 9, a: r(3) * 6.283, rad: 5 + r(4) * 17, spin: (r(5) - 0.5) * 3.2, w: 0.6 + r(6) * 0.9, hot: r(7) > 0.72 };
-    });
-    const bits = [];   // squares thrown by a burst
+    let w = 0, h = 0, dpr = 1, raf = 0, last = 0, seen = false, inside = false, lastMove = 0, glow = 0, t = 0, idleAt = 0, live = 0, spawned = 0;
+    const ptr = { x: 0, y: 0 }, E = { x: 0, y: 0, lx: 0, ly: 0, acc: 0, i: 0 };
+    const P = Array.from({ length: N }, () => ({ x: 0, y: 0, vx: 0, vy: 0, age: 1, life: 1, s: 1, ph: 0, hot: false }));
     const fit = () => {
       dpr = Math.min(2, devicePixelRatio || 1);
       w = innerWidth; h = innerHeight;
       cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
     };
     const colours = () => (document.documentElement.dataset.theme === 'light'
-      ? { ring: '180, 84, 58', spark: '196, 92, 60', hot: '120, 52, 34', blend: 'source-over', gain: 0.85 }
+      ? { ring: '180, 84, 58', spark: '200, 96, 62', hot: '128, 54, 34', blend: 'source-over', gain: 0.85 }
       : { ring: '214, 246, 247', spark: '138, 226, 229', hot: '255, 255, 255', blend: 'lighter', gain: 1 });
+    const rnd = () => Math.random();
+    // take the slot before advancing the index, so a spark is born where it is owed
+    const spawn = (x, y, ux, uy, idle) => {
+      const i = E.i; E.i = (i + 1) % N; spawned++;
+      const p = P[i];
+      const lat = (rnd() - 0.5) * 2;
+      p.x = x + (rnd() - 0.5) * 5; p.y = y + (rnd() - 0.5) * 5;
+      // launched a little against the direction of travel, with a sideways spread
+      p.vx = -ux * 14 + -uy * lat * 30; p.vy = -uy * 14 + ux * lat * 30;
+      p.age = 0; p.life = idle ? 2.1 + rnd() * 1.3 : 0.9 + rnd() * 1.1;
+      p.s = 0.7 + rnd() * 1.1; p.ph = rnd() * 6.283; p.hot = rnd() > 0.72;
+    };
     const frame = (now) => {
       raf = 0;
-      const dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016);
-      last = now;
+      const dt = Math.min(1 / 30, last ? (now - last) / 1000 : 1 / 60);   // clamped, so a background tab does not jump
+      last = now; t += dt;
       const idle = (now - lastMove) / 1000;
-      const want = inside ? (idle < 2.2 ? 1 : 0.38) : 0;
-      glow += (want - glow) * (1 - Math.exp(-dt * (want > glow ? 9 : 2.2)));
-      // the ring follows a beat late
-      const k = 170, c = 22;
-      ring.vx += ((ptr.x - ring.x) * k - ring.vx * c) * dt; ring.vy += ((ptr.y - ring.y) * k - ring.vy * c) * dt;
-      ring.x += ring.vx * dt; ring.y += ring.vy * dt;
+      const want = inside ? 1 : 0;
+      glow += (want - glow) * (1 - Math.exp(-dt * (want > glow ? 9 : 2.4)));
+      // the emitter lags behind the pointer: that slack is what lets the trail open out
+      const k = still ? 1 : 1 - Math.exp(-16 * dt);
+      E.x += (ptr.x - E.x) * k; E.y += (ptr.y - E.y) * k;
+      if (!still && inside) {
+        const dx = E.x - E.lx, dy = E.y - E.ly, moved = Math.hypot(dx, dy);
+        const ux = moved > 1e-6 ? dx / moved : 0, uy = moved > 1e-6 ? dy / moved : 0;
+        E.acc += moved;
+        let n = 0;
+        // spend the distance in fixed steps, each spark at its own place along this frame's segment
+        while (E.acc >= STEP && n < CAP) {
+          E.acc -= STEP; n++;
+          const f = moved > 1e-6 ? Math.min(1, 1 - E.acc / moved) : 0;
+          spawn(E.lx + dx * f, E.ly + dy * f, ux, uy, false);
+        }
+        if (n === CAP) E.acc = 0;
+        if (idle > 0.15 && t - idleAt > IDLE) { idleAt = t; spawn(E.x, E.y, 0, -1, true); }   // a breath while resting
+      }
+      E.lx = E.x; E.ly = E.y;
       const C = colours();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
       ctx.globalCompositeOperation = C.blend;
-      ctx.lineCap = 'round';
-      let energy = Math.hypot(ring.vx, ring.vy);
-      for (const s of sp) {
-        s.a += s.spin * dt;
-        const tx = ring.x + Math.cos(s.a) * s.rad, ty = ring.y + Math.sin(s.a) * s.rad * 0.8;
-        s.vx += ((tx - s.x) * s.k - s.vx * s.c) * dt; s.vy += ((ty - s.y) * s.k - s.vy * s.c) * dt;
-        s.px = s.x; s.py = s.y;
-        s.x += s.vx * dt; s.y += s.vy * dt;
-        const v = Math.hypot(s.vx, s.vy);
-        energy += v / N;
-        if (glow < 0.01) continue;
-        // a streak along the direction of travel: long when fast, a dot when resting
-        const len = Math.min(26, 1.2 + v * 0.03), ux = v > 1 ? s.vx / v : 1, uy = v > 1 ? s.vy / v : 0;
-        const al = glow * C.gain * Math.min(1, 0.28 + v * 0.0022) * (s.hot ? 1 : 0.7);
-        ctx.strokeStyle = `rgba(${s.hot ? C.hot : C.spark}, ${al.toFixed(3)})`;
-        ctx.lineWidth = s.w;
-        ctx.beginPath(); ctx.moveTo(s.x - ux * len, s.y - uy * len); ctx.lineTo(s.x, s.y); ctx.stroke();
+      live = 0;
+      if (still) {
+        // a designed still: a few sparks resting round the ring, nothing moving on its own
+        for (let j = 0; j < 9; j++) {
+          const a = j * 0.698 + 0.4, r = 9 + (j % 3) * 5;
+          ctx.fillStyle = `rgba(${j % 3 ? C.spark : C.hot}, ${(0.55 * glow * C.gain).toFixed(3)})`;
+          ctx.beginPath(); ctx.arc(E.x + Math.cos(a) * r, E.y + Math.sin(a) * r * 0.8, 1.1, 0, 6.2832); ctx.fill();
+        }
+      } else {
+        for (const p of P) {
+          if (p.age >= p.life) continue;
+          p.age += dt;
+          if (p.age >= p.life) continue;
+          live++;
+          // coast (slow damping), curl and a small rise
+          const damp = 1 - 0.5 * dt;
+          p.vx = p.vx * damp + Math.sin(t * 1.3 + p.ph) * 22 * dt;
+          p.vy = p.vy * damp + Math.cos(t * 1.1 + p.ph * 1.7) * 18 * dt - 9 * dt;
+          p.x += p.vx * dt; p.y += p.vy * dt;
+          const u = p.age / p.life;
+          const op = (u < 0.12 ? u / 0.12 : u > 0.22 ? 1 - (u - 0.22) / 0.78 : 1) * 0.9 * C.gain;
+          const r = p.s * (1 + 0.55 * u);
+          ctx.fillStyle = `rgba(${p.hot ? C.hot : C.spark}, ${op.toFixed(3)})`;
+          ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 6.2832); ctx.fill();
+        }
       }
       if (glow > 0.01) {
         ctx.strokeStyle = `rgba(${C.ring}, ${(0.75 * glow * C.gain).toFixed(3)})`;
         ctx.lineWidth = 1.1;
-        ctx.beginPath(); ctx.arc(ring.x, ring.y, 7.5, 0, 6.2832); ctx.stroke();
+        ctx.beginPath(); ctx.arc(E.x, E.y, 7.5, 0, 6.2832); ctx.stroke();
       }
-      for (let i = bits.length - 1; i >= 0; i--) {
-        const b = bits[i];
-        b.t += dt;
-        if (b.t >= b.life) { bits.splice(i, 1); continue; }
-        b.vy += 260 * dt; b.vx *= 1 - 1.6 * dt; b.vy *= 1 - 1.2 * dt;
-        b.x += b.vx * dt; b.y += b.vy * dt;
-        const f = 1 - b.t / b.life;
-        ctx.fillStyle = `rgba(${b.hot ? C.hot : C.spark}, ${(f * 0.9 * C.gain).toFixed(3)})`;
-        ctx.fillRect(b.x - b.s / 2, b.y - b.s / 2, b.s, b.s);
-      }
-      // sleep once everything has settled or faded; the next pointer move wakes it
-      if (bits.length || glow > 0.012 && (energy > 6 || idle < 6) || Math.abs(want - glow) > 0.01) raf = requestAnimationFrame(frame);
+      const moving = Math.hypot(ptr.x - E.x, ptr.y - E.y) > 0.3;
+      // keep running while sparks live, the ring is catching up, the glow is changing, or the pointer rests inside (the breath)
+      if (!still && (live || moving || Math.abs(want - glow) > 0.01 || (inside && idle < 20))) raf = requestAnimationFrame(frame);
+      else if (still && Math.abs(want - glow) > 0.01) raf = requestAnimationFrame(frame);
       else { last = 0; if (glow <= 0.012) ctx.clearRect(0, 0, w, h); }
     };
     const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
     const move = (e) => {
       if (e.pointerType === 'touch') return;
       ptr.x = e.clientX; ptr.y = e.clientY;
-      if (!seen) { seen = true; ring.x = ptr.x; ring.y = ptr.y; for (const s of sp) { s.x = s.px = ptr.x; s.y = s.py = ptr.y; } }
+      if (!seen) { seen = true; E.x = E.lx = ptr.x; E.y = E.ly = ptr.y; }
       inside = true; lastMove = performance.now();
       kick();
     };
     const out = () => { inside = false; kick(); };
-    const burst = (e) => {
-      const { x, y } = e.detail || {};
-      if (typeof x !== 'number') return;
-      for (let i = 0; i < 70; i++) {
-        const a = Math.random() * 6.283, v = 90 + Math.random() * 330;
-        bits.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v * 0.8 - 70, s: 1.6 + Math.random() * 2.6, t: 0, life: 0.7 + Math.random() * 0.8, hot: Math.random() > 0.6 });
-      }
-      kick();
-    };
+    const vis = () => { if (document.hidden) { cancelAnimationFrame(raf); raf = 0; last = 0; } else kick(); };
     fit();
     addEventListener('resize', fit);
     addEventListener('pointermove', move, { passive: true });
     document.documentElement.addEventListener('pointerleave', out);
     addEventListener('blur', out);
-    addEventListener('cursor-burst', burst);
-    window.__cursorLight = { get glow() { return glow; }, get ring() { return { x: ring.x, y: ring.y }; }, get running() { return !!raf; }, get bits() { return bits.length; } };   // read by the automated tests
+    document.addEventListener('visibilitychange', vis);
+    window.__cursorLight = { get glow() { return glow; }, get ring() { return { x: E.x, y: E.y }; }, get running() { return !!raf; }, get sparks() { return live; }, get spawned() { return spawned; }, get still() { return still; } };   // read by the automated tests
     return () => {
       removeEventListener('resize', fit); removeEventListener('pointermove', move); document.documentElement.removeEventListener('pointerleave', out);
-      removeEventListener('blur', out); removeEventListener('cursor-burst', burst); cancelAnimationFrame(raf); delete window.__cursorLight;
+      removeEventListener('blur', out); document.removeEventListener('visibilitychange', vis); cancelAnimationFrame(raf); delete window.__cursorLight;
     };
   }, []);
   return <canvas ref={ref} className="cursor-light" aria-hidden="true" />;

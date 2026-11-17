@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { SeasonDrift } from './Season.jsx';
 import { useScene } from './lib/depth.js';
 
 // "Explore Kyoto": one screen between the scroll intro and the dashboard.
 // Layout after a spatial-UI reference: title on top, tall photo cards in depth on the section's backdrop
 // (Orbit: the chosen one low in the middle facing the viewer, the others spread out behind it, each
-// leaning its own way; Fan: held like a hand of cards; choosing a place gathers them into one stack and
+// leaning its own way, with text in a column on the left; Fan: held like a hand of cards, text below; choosing a place gathers them into one stack and
 // spreads them out again; the row is endless), fact pills and a frosted bar below.
 // The backdrop is a soft, blurred copy of the chosen photo and cross-fades when the card changes.
 // Cards change by dragging, clicking a side card, the arrows, the dots or the arrow keys; the page
@@ -20,7 +20,7 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
   useScene(root);
   const deck = useRef(null);
   const cards = useRef([]);
-  const anim = useRef({ shown: 0, target: 0, raf: 0, drag: null, skipClick: false, mix: 0, mixTo: 0, vel: 0 });
+  const anim = useRef({ shown: 0, target: 0, raf: 0, drag: null, skipClick: false, mix: 0, mixTo: 0, vel: 0, W: 0, H: 0, tx: 0, ty: 0, cx: 0, cy: 0 });
   const [mode, setMode] = useState('orbit');
   const [sel, setSel] = useState(0);
   const [seen, setSeen] = useState(false);
@@ -38,70 +38,129 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
   // Orbit: the cards stand on a ring seen from a little above; the chosen card is nearest.
   // Fan: the cards are held like a hand of cards, turning about a point below them.
   // Choosing a place turns the ring until that card is nearest.
-  const place = (r, v = 0, mix = anim.current.mix) => {
-    const W = deck.current?.clientWidth || 900, H = deck.current?.clientHeight || 420;
+  // Pointer orbit (after the add-mouse-driven-orbit guide, MengTo, MIT): one damped pointer value (cx, cy)
+  // turns the whole ring a little (the camera) and gives near cards more yaw, pitch and slide than far
+  // ones, so the scene pivots in depth instead of moving as one flat sheet.
+  const place = (r, v = 0) => {
+    const a = anim.current, mix = a.mix, W = a.W || 900, H = a.H || 420, cx = a.cx, cy = a.cy;
     const g = Math.min(1, Math.abs(v) / 4.2), dir = Math.sign(v) || 1;
+    const yaw = -cx * 0.17, cyw = Math.cos(yaw), syw = Math.sin(yaw);   // camera yaw about the ring's centre, radians
     cards.current.forEach((el, i) => {
       if (!el) return;
       let o = (i - r) % n;
       if (o > n / 2) o -= n; else if (o < -n / 2) o += n;
-      const d = Math.abs(o), d1 = Math.min(d, 1), sg = Math.sign(o);
+      const d = Math.abs(o), d1 = Math.min(d, 1);
       const lean = LEAN[i % LEAN.length];
-      // orbit: a real ring in depth, seen from a little above. The chosen card is nearest, low in the middle;
-      // the others go round behind it, further away (so smaller, by perspective), higher and darker.
+      // orbit: a ring in depth seen from a little above, turned by the camera yaw
       const th = o * ((Math.PI * 2) / n), co = Math.cos(th), si = Math.sin(th);
       const R = W * 0.4 * (1 - 0.2 * g);
-      const ox = si * R, oz = (co - 1) * R * 1.1, oy = H * 0.06 - (1 - co) * H * 0.17;
-      const orz = lean * 0.55 * Math.min(1, d), ory = -si * 46, os = 1, obr = 0.5 + 0.5 * ((co + 1) / 2) ** 1.3;
+      const rx0 = si * R, rz0 = co * R * 1.1;                           // position relative to the ring's centre
+      const rxp = rx0 * cyw + rz0 * syw, rzp = rz0 * cyw - rx0 * syw;   // after the camera yaw
+      const near = Math.max(0, Math.min(1, (rzp / (R * 1.1) + 1) / 2));  // 1 at the front of the ring, 0 at the back
+      const ox = rxp, oz = rzp - R * 1.1, oy = H * 0.06 - (1 - rzp / (R * 1.1)) * H * 0.17;
+      const orz = lean * 0.55 * d1, ory = -Math.sin(th - yaw) * 46, obr = 0.5 + 0.5 * near ** 1.3;
       // fan
       const fx = o * W * 0.105, fy = H * (0.03 + d * d * 0.014), fz = -d * 46, frz = o * 10.5, fs = 0.86 - d1 * 0.05, fbr = 1 - Math.min(d, 2) * 0.2;
-      const L = (p, q) => p + (q - p) * mix;
-      let x = L(ox, fx), y = L(oy, fy), z = L(oz, fz), rz = L(orz, frz), ry = L(ory, 0), sc = L(os, fs), br = L(obr, fbr);
-      // while the ring turns fast it draws in a little and the cards blur
-      rz += g * dir * 9 * (0.4 + 0.6 * Math.abs(si)); ry += g * dir * 14 * co; sc *= 1 - 0.05 * g;   // cards lean and turn into the direction of travel
+      // switching between Orbit and Fan: each card starts a little after the one before, and on the way it
+      // lifts, comes forward and twirls (bump is 0 at both ends, 1 half way)
+      const m = Math.max(0, Math.min(1, (mix - (i / Math.max(1, n - 1)) * 0.38) / 0.62)), ms = m * m * (3 - 2 * m);
+      const bump = Math.sin(Math.PI * m);
+      const L = (p, q) => p + (q - p) * ms;
+      let x = L(ox, fx), y = L(oy, fy), z = L(oz, fz), rz = L(orz, frz), ry = L(ory, 0), sc = L(1, fs), br = L(obr, fbr);
+      // layers answer the pointer by different amounts: near cards yaw, pitch and slide more than far ones
+      const depth = L(near, 1 - d1 * 0.5);
+      ry += cx * (1.7 + 1.5 * depth); const rxd = -cy * (2 + 2 * depth);
+      x -= cx * 26 * (0.45 + 0.55 * depth); y += cy * 16 * (0.45 + 0.55 * depth);
+      // turning fast: the cards lean and turn into the direction of travel
+      rz += g * dir * 9 * (0.4 + 0.6 * Math.abs(si)); ry += g * dir * 14 * co; sc *= 1 - 0.05 * g;
+      y -= H * 0.13 * bump; z += 170 * bump; rz += 26 * bump * (i % 2 ? 1 : -1); ry += 22 * bump * (o < 0 ? -1 : 1); sc *= 1 + 0.05 * bump;
+      const bl = Math.max(g > 0.04 ? g * (d < 0.5 ? 1.4 : 3.2) : 0, bump > 0.05 ? bump * 1.3 : 0);
+      const key = `${x.toFixed(1)}|${y.toFixed(1)}|${z.toFixed(1)}|${ry.toFixed(2)}|${rxd.toFixed(2)}|${rz.toFixed(2)}|${sc.toFixed(3)}|${br.toFixed(3)}|${bl.toFixed(2)}|${ms.toFixed(3)}`;
+      if (el._k === key) return;   // nothing changed: no style write
+      el._k = key;
       const st = el.style;
+      st.setProperty('--op', '1');
       st.setProperty('--o', o.toFixed(3));
       st.setProperty('--d', d.toFixed(3));
       st.setProperty('--x', `${x.toFixed(1)}px`);
       st.setProperty('--y', `${y.toFixed(1)}px`);
       st.setProperty('--z', `${z.toFixed(1)}px`);
       st.setProperty('--ry', `${ry.toFixed(2)}deg`);
+      st.setProperty('--rx', `${rxd.toFixed(2)}deg`);
       st.setProperty('--rz', `${rz.toFixed(2)}deg`);
       st.setProperty('--s', sc.toFixed(3));
-      st.setProperty('--br', br.toFixed(3));
-      st.setProperty('--bl', `${(g * (d < 0.5 ? 1.4 : 3.2)).toFixed(2)}px`);
-      st.setProperty('--op', '1');   // a card changing sides at the far end does so unseen
-      st.setProperty('--fy', `${(60 + 58 * mix).toFixed(0)}%`);
-      st.zIndex = String(Math.round(40 - d * 6 * (1 - mix) - d * 6 * mix));
-      el.classList.toggle('near', true);
+      st.setProperty('--dim', (1 - br).toFixed(3));   // darkening by an overlay's opacity, not a filter
+      st.setProperty('--bl', `${bl.toFixed(2)}px`);
+      el.classList.toggle('moving', bl > 0);           // the blur filter is only on while turning fast
+      st.setProperty('--fy', `${(60 + 58 * ms).toFixed(0)}%`);
+      st.zIndex = String(Math.round(40 - d * 6));
     });
   };
-  // one loop however fast places are chosen; the turn is a spring, so it never queues or steps
+  // One loop for everything that moves here: the turn (a spring, so choices never queue), the Orbit/Fan
+  // blend and the pointer orbit. It stops once all three have settled.
   const run = () => {
     const a = anim.current;
-    cancelAnimationFrame(a.raf);
-    let last = performance.now();
+    if (a.raf) return;
+    let last = 0;
     const step = (now) => {
-      const dt = Math.min(0.25, (now - last) / 1000); // real elapsed time, so the turn is not slower on a slow machine
+      const dt = Math.min(1 / 30, last ? (now - last) / 1000 : 1 / 60);   // clamped, so a background tab does not jump
       last = now;
+      const rm = reduceMotion();
+      // pointer orbit: 0.055 per 60 Hz frame, converted to the real frame time
+      const tx = rm ? 0.28 : a.tx, ty = rm ? -0.12 : a.ty;
+      const k = rm ? 1 : 1 - Math.pow(1 - 0.055, dt * 60);
+      a.cx += (tx - a.cx) * k; a.cy += (ty - a.cy) * k;
       const diff = a.target - a.shown, dm = a.mixTo - a.mix;
-      if (reduceMotion() || (Math.abs(diff) < 0.0012 && Math.abs(a.vel) < 0.012 && Math.abs(dm) < 0.002)) { a.shown = a.target; a.vel = 0; a.mix = a.mixTo; place(a.shown, 0); return; }
-      let vel;
-      if (a.drag) { const mv = diff * (1 - Math.exp(-dt * 26)); a.shown += mv; a.vel = 0; vel = 0; }
+      let vel = 0;
+      if (rm) { a.shown = a.target; a.vel = 0; a.mix = a.mixTo; }
+      else if (a.drag) { a.shown += diff * (1 - Math.exp(-dt * 26)); a.vel = 0; }
       else {
         // a slightly underdamped spring: the ring swings a touch past the card and settles back (the stopping pose)
         const K = 46, C = 2 * Math.sqrt(K) * 0.6;
         for (let left = dt; left > 0; left -= 0.012) { const h = Math.min(0.012, left); a.vel += ((a.target - a.shown) * K - a.vel * C) * h; a.shown += a.vel * h; }
         vel = a.vel;
       }
-      a.mix += dm * (1 - Math.exp(-dt * 6));
+      if (!rm) a.mix += Math.max(-dt / 1.1, Math.min(dt / 1.1, dm));   // an even 1.1 s sweep; each card eases its own share
+      const settled = Math.abs(a.target - a.shown) < 0.0012 && Math.abs(a.vel) < 0.012 && Math.abs(a.mixTo - a.mix) < 0.002
+        && Math.abs(tx - a.cx) < 0.001 && Math.abs(ty - a.cy) < 0.001 && !a.drag;
+      if (settled) { a.shown = a.target; a.vel = 0; a.mix = a.mixTo; a.cx = tx; a.cy = ty; place(a.shown, 0); a.raf = 0; return; }
       place(a.shown, vel);
       a.raf = requestAnimationFrame(step);
     };
     a.raf = requestAnimationFrame(step);
   };
-  const layout = (m) => { setMode(m); anim.current.mixTo = m === 'fan' ? 1 : 0; run(); };
-  useEffect(() => { place(0); return () => cancelAnimationFrame(anim.current.raf); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const flip = useRef(null);
+  const GLIDE = ['.ex-head', '.ex-place', '.ex-actions', '.ex-pills', '.ex-dots', '.ex-deck'];
+  const layout = (m) => {
+    if (m === mode) return;
+    if (!reduceMotion() && root.current) flip.current = GLIDE.map((q) => { const el = root.current.querySelector(q); return el && [el, el.getBoundingClientRect()]; }).filter(Boolean);
+    setMode(m); anim.current.mixTo = m === 'fan' ? 1 : 0; run();
+  };
+  useLayoutEffect(() => {
+    const was = flip.current; flip.current = null;
+    if (!was) return;
+    // the glass bar of the Fan layout fades in behind its text instead of appearing empty first
+    if (mode === 'fan') root.current.querySelector('.ex-bar')?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 260, easing: 'ease-out', fill: 'backwards' });
+    was.forEach(([el, r0], k) => {
+      const r1 = el.getBoundingClientRect(), dx = r0.left - r1.left, dy = r0.top - r1.top;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      el.animate([{ transform: `translate(${dx}px, ${dy}px)`, opacity: el.classList.contains('ex-deck') ? 1 : 0.35 }, { transform: 'none', opacity: 1 }],
+        { duration: 820, delay: el.classList.contains('ex-deck') ? 0 : 60 + k * 45, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' });
+    });
+  }, [mode]);
+  useEffect(() => {
+    const a = anim.current, dk = deck.current, sec = root.current;
+    // size read only when it changes, never per frame
+    const ro = new ResizeObserver(() => { a.W = dk.clientWidth; a.H = dk.clientHeight; for (const el of cards.current) if (el) el._k = ''; run(); });
+    ro.observe(dk);
+    // the pointer only records where it is (normalised to the window); the loop does the rest
+    const pm = (e) => { if (e.pointerType === 'touch') return; a.tx = (e.clientX / innerWidth) * 2 - 1; a.ty = (e.clientY / innerHeight) * 2 - 1; run(); };
+    const pl = () => { a.tx = 0; a.ty = 0; run(); };
+    sec.addEventListener('pointermove', pm, { passive: true });
+    sec.addEventListener('pointerleave', pl);
+    run();
+    return () => { ro.disconnect(); sec.removeEventListener('pointermove', pm); sec.removeEventListener('pointerleave', pl); cancelAnimationFrame(a.raf); a.raf = 0; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const io = new IntersectionObserver((es) => {
       if (!es.some((e) => e.isIntersecting)) return;
@@ -110,10 +169,8 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
       const a = anim.current;
       if (!reduceMotion() && a.shown === a.target) { a.shown = a.target - 2; run(); }
     }, { threshold: 0.15 });
-    const fit = () => place(anim.current.shown, 0);
-    addEventListener('resize', fit);
     io.observe(root.current);
-    return () => { io.disconnect(); removeEventListener('resize', fit); };
+    return () => io.disconnect();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const mod = (k) => ((k % n) + n) % n;
@@ -167,7 +224,7 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
   };
 
   return (
-    <section className={'explore' + (seen ? ' on' : '')} ref={root} id="explore" aria-labelledby="ex-title">
+    <section className={'explore ' + mode + (seen ? ' on' : '')} ref={root} id="explore" aria-labelledby="ex-title">
       <SeasonDrift count={12} />
       <div className="ex-bg" aria-hidden="true">
         {places.map((q, i) => <i key={q.key} className={i === sel ? 'on' : ''} style={{ backgroundColor: q.color, backgroundImage: `url(${base}${q.thumb})` }} />)}
@@ -241,6 +298,7 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
 
         <div className="ex-bar">
           <div className="ex-place" key={p.key} aria-live="polite">
+            <p className="ex-index" aria-hidden="true"><b>{String(sel + 1).padStart(2, '0')}</b><span>/ {String(n).padStart(2, '0')}</span></p>
             <span className="ex-tag">{p.tag}</span>
             <h3 lang="ja">{p.ja} <span lang="en">({p.en})</span></h3>
             <p className="ex-where" lang="ja">{p.municipality.ja} ({p.municipality.en})</p>

@@ -142,12 +142,21 @@ check('picking a place shows its name, municipality and photo credit', exText.in
 const ringA = await page.evaluate(() => ({ rot: +document.querySelectorAll('.ex-card')[3].style.getPropertyValue('--o'), side: +document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--o'), front: document.querySelector('.ex-card.front .ex-cap strong').innerText, bg: [...document.querySelectorAll('.ex-bg i')].findIndex((e) => e.classList.contains('on')), h: document.getElementById('explore').offsetHeight }));
 check('picking a place glides the card deck there and swaps the blurred backdrop; the section is one screen tall', Math.abs(ringA.rot) < 0.06 && Math.abs(ringA.side - 1) < 0.06 && ringA.front === '平等院' && ringA.bg === 3 && ringA.h <= 920, JSON.stringify(ringA));
 // the cards stand on a ring: neighbours are further back and turned away, the ring is endless, quick choices never queue
+await page.evaluate(() => document.getElementById('explore').dispatchEvent(new PointerEvent('pointerleave'))); await page.waitForTimeout(1800);   // pointer orbit back to centre
 const ringB = await page.evaluate(() => { const c = [...document.querySelectorAll('.ex-card')].map((e) => ({ z: parseFloat(e.style.getPropertyValue('--z')), ry: parseFloat(e.style.getPropertyValue('--ry')), op: +e.style.getPropertyValue('--op') })); return { front: c[3], side: c[4], far: c[6], persp: getComputedStyle(document.querySelector('.ex-deck')).perspective }; });
 check('explore scene: the chosen card faces the viewer in the middle; the others stand behind it, leaning and darker; all inside one perspective panel', Math.abs(ringB.front.z) < 1 && Math.abs(ringB.front.ry) < 1 && ringB.side.z < -60 && Math.abs(ringB.side.ry) > 8 && ringB.far.z < ringB.side.z - 200 && ringB.persp !== 'none', JSON.stringify(ringB));
-await page.locator('.ex-seg button').nth(0).click(); await page.waitForTimeout(1800);
+await page.locator('.ex-seg button').nth(0).click(); await page.evaluate(() => document.getElementById('explore').dispatchEvent(new PointerEvent('pointerleave')));
+await page.waitForFunction(() => Math.abs(parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--rz')) - 10.5) < 0.6, null, { timeout: 12000 }).catch(() => {});   // the switch is slower when frames are slow (software rendering)
 const fanA = await page.evaluate(() => ({ rz: parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--rz')), ry: parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--ry')), on: document.querySelector('.ex-seg .on').innerText }));
 await page.locator('.ex-seg button').nth(1).click(); await page.waitForTimeout(1800);
 check('explore scene: Fan holds the cards like a hand of cards, Orbit spreads them out again', fanA.on === 'Fan' && Math.abs(fanA.rz - 10.5) < 0.6 && Math.abs(fanA.ry) < 0.6 && (await page.evaluate(() => Math.abs(parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--ry'))))) > 8, JSON.stringify(fanA));
+// pointer orbit: moving the pointer turns the ring in depth, near cards more than far ones; it returns to centre on leave
+const dkb = await page.locator('.ex-deck').boundingBox();
+await page.mouse.move(dkb.x + dkb.width * 0.9, dkb.y + dkb.height * 0.2, { steps: 10 }); await page.waitForTimeout(1600);
+const orb = await page.evaluate(() => { const c = [...document.querySelectorAll('.ex-card')]; const f = c.findIndex((e) => e.classList.contains('front')); const g = (e, k) => parseFloat(e.style.getPropertyValue(k)); const back = c[(f + 3) % c.length]; return { fry: g(c[f], '--ry'), frx: g(c[f], '--rx'), bry: g(back, '--ry') - 0, dimF: +c[f].style.getPropertyValue('--dim'), filt: getComputedStyle(c[f]).filter.includes('blur') }; });
+await page.evaluate(() => document.getElementById('explore').dispatchEvent(new PointerEvent('pointerleave'))); await page.waitForTimeout(3200);
+const orb0 = await page.evaluate(() => { const c = [...document.querySelectorAll('.ex-card')]; const f = c.findIndex((e) => e.classList.contains('front')); return Math.abs(parseFloat(c[f].style.getPropertyValue('--ry'))) + Math.abs(parseFloat(c[f].style.getPropertyValue('--rx'))); });
+check('explore scene: the pointer turns the ring in depth (the front card yaws and pitches), with no blur at rest, and it returns to centre when the pointer leaves', Math.abs(orb.fry) > 2 && orb.frx > 0.5 && orb.dimF < 0.1 && !orb.filt && orb0 < 0.4, JSON.stringify({ orb, orb0 }));
 for (let i = 0; i < 5; i++) { await page.locator('.ex-arrow').nth(1).click(); await page.waitForTimeout(50); }
 await page.waitForTimeout(2600);
 const ringC = await page.evaluate(() => { const cs = [...document.querySelectorAll('.ex-card')]; const f = cs.findIndex((e) => e.classList.contains('front')); return { f, o: +cs[f].style.getPropertyValue('--o'), card: cs[f].querySelector('.ex-cap span').innerText, bar: document.querySelector('.ex-place h3 span').innerText, dot: [...document.querySelectorAll('.ex-dot')].findIndex((d) => d.classList.contains('on')), bg: [...document.querySelectorAll('.ex-bg i')].findIndex((e) => e.classList.contains('on')), cta: document.querySelector('.ex-cta small').textContent }; });
@@ -846,7 +855,13 @@ check('koi pond: thrown food sends ripples that overlap, fade away and stay unde
 // site-wide pointer light and the closing scene
 await rp.mouse.move(500, 400); await rp.mouse.move(640, 470, { steps: 6 }); await rp.waitForTimeout(400);
 const cur = await rp.evaluate(() => ({ n: document.querySelectorAll('.cursor-light').length, pe: getComputedStyle(document.querySelector('.cursor-light')).pointerEvents, pos: getComputedStyle(document.querySelector('.cursor-light')).position, glow: window.__cursorLight?.glow, ring: window.__cursorLight?.ring, hit: document.elementFromPoint(640, 470)?.className !== 'cursor-light' }));
-check('pointer light: one fixed canvas for the whole page, follows the pointer after scrolling, takes no clicks', cur.n === 1 && cur.pe === 'none' && cur.pos === 'fixed' && cur.glow > 0.5 && Math.hypot(cur.ring.x - 640, cur.ring.y - 470) < 40 && cur.hit, JSON.stringify(cur));
+const sp0 = await rp.evaluate(() => window.__cursorLight.spawned); await rp.mouse.move(200, 300); await rp.waitForTimeout(600);
+const sp1 = await rp.evaluate(() => window.__cursorLight.spawned); await rp.mouse.move(800, 300, { steps: 80 }); await rp.waitForTimeout(500);
+const sp2 = await rp.evaluate(() => window.__cursorLight.spawned); await rp.mouse.move(200, 300, { steps: 6 }); await rp.waitForTimeout(500);
+const sp3 = await rp.evaluate(() => window.__cursorLight.spawned);
+cur.trail = { slow: sp2 - sp1, fast: sp3 - sp2 };
+check('pointer light: one fixed canvas for the whole page, follows the pointer after scrolling, takes no clicks; sparks are laid by distance, so a crawl and a flick over the same path lay about the same number',
+  Math.abs(cur.trail.slow - cur.trail.fast) <= Math.max(14, 0.25 * cur.trail.slow) && cur.trail.slow > 40 &&  cur.n === 1 && cur.pe === 'none' && cur.pos === 'fixed' && cur.glow > 0.5 && Math.hypot(cur.ring.x - 640, cur.ring.y - 470) < 40 && cur.hit, JSON.stringify(cur));
 await rp.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' }));
 await rp.waitForFunction(() => document.querySelector('.swarm')?.dataset.s === '1', null, { timeout: 8000 }).catch(() => {});
 await rp.waitForTimeout(900);

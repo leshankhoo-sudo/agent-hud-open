@@ -94,7 +94,7 @@ export default function Outro({ manifest }) {
           <div className="swarm" data-s={swarm} aria-hidden="true">
             {PANELS.map((p, i) => <b key={p.k} className="g" style={{ '--i': i }}><em>{p.k} · {p.t}</em></b>)}
             <b className="c"><em>thank-you card</em></b>
-            {SWARM.map((m) => <i key={m.n} style={{ '--n': m.n, '--k': m.k, '--x1': `${m.x1}%`, '--y1': `${m.y1}%`, '--x2': `${m.x2}%`, '--y2': `${m.y2}%`, '--x3': `${m.x3}%`, '--y3': `${m.y3}%` }} />)}
+            {SWARM.map((m) => <i key={m.n} style={{ '--n': m.n, '--k': m.k, '--x1': m.x1.toFixed(2), '--y1': m.y1.toFixed(2), '--x2': m.x2.toFixed(2), '--y2': m.y2.toFixed(2), '--x3': m.x3.toFixed(2), '--y3': m.y3.toFixed(2) }} />)}
           </div>
         )}
         <div className="outro-card">
