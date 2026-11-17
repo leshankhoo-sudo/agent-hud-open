@@ -860,7 +860,7 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 .ex-bg i { position: absolute; inset: -8%; background-size: cover; background-position: center; filter: blur(34px) saturate(1.15); opacity: 0; transition: opacity .5s ease .9s; }
 /* the new backdrop fades in on top, and only then does the old one go, so the light never dips between the two */
 .ex-bg i.on { opacity: 1; z-index: 1; transition: opacity .9s ease 0s; }
-.ex-bg::after { content: ''; position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 40%, rgba(20, 17, 15, .28), rgba(20, 17, 15, .72)), linear-gradient(180deg, rgba(20, 17, 15, .55), rgba(20, 17, 15, .1) 30%, rgba(20, 17, 15, .6)); }
+.ex-bg::after { content: ''; position: absolute; inset: 0; z-index: 2; background: radial-gradient(120% 90% at 50% 40%, rgba(20, 17, 15, .28), rgba(20, 17, 15, .72)), linear-gradient(180deg, rgba(20, 17, 15, .55), rgba(20, 17, 15, .1) 30%, rgba(20, 17, 15, .6)); }
 .ex-inner { display: grid; align-content: center; justify-items: center; gap: clamp(8px, 1.5vh, 14px); padding: clamp(14px, 3vh, 30px) clamp(14px, 4vw, 56px) clamp(12px, 2.4vh, 24px); min-width: 0; }
 .ex-head { width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; gap: 16px; }
 .ex-eyebrow { margin: 0 0 6px; font: 500 10.5px var(--mono); letter-spacing: .26em; color: var(--glass-mute); }
@@ -960,6 +960,14 @@ details p { margin: 4px 0 2px; color: var(--ink-2); }
 :root[data-theme='light'] .explore { --glass: rgba(255, 255, 255, .62); --glass-line: rgba(255, 255, 255, .85); --glass-ink: #1f1f1f; --glass-ink2: rgba(31, 31, 31, .74); --glass-mute: rgba(31, 31, 31, .52); --warm: #b4543a; background: #ecebe8; }
 :root[data-theme='light'] .ex-bg i { filter: blur(34px) saturate(.8) brightness(1.15); }
 :root[data-theme='light'] .ex-bg::after { background: radial-gradient(120% 90% at 50% 40%, rgba(240, 239, 236, .5), rgba(240, 239, 236, .82)), linear-gradient(180deg, rgba(240, 239, 236, .8), rgba(240, 239, 236, .3) 30%, rgba(240, 239, 236, .78)); }
+/* the text column on the left must read over any photo (a dark tram, a yellow blur): a wash from the left
+   under the words, clearing towards the cards; on a phone the words sit under the cards, so the wash is even */
+.ex-bg::before { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; background: linear-gradient(90deg, rgba(20, 17, 15, .6) 0, rgba(20, 17, 15, .45) 30%, rgba(20, 17, 15, 0) 56%); }
+:root[data-theme='light'] .ex-bg::before { background: linear-gradient(90deg, rgba(240, 239, 236, .8) 0, rgba(240, 239, 236, .66) 30%, rgba(240, 239, 236, 0) 56%); }
+@media (max-width: 760px) {
+  .ex-bg::before { background: rgba(20, 17, 15, .45); }
+  :root[data-theme='light'] .ex-bg::before { background: rgba(240, 239, 236, .6); }
+}
 :root[data-theme='light'] .ex-card { filter: brightness(calc(1 - min(var(--d), 2) * .05)) drop-shadow(0 18px 24px rgba(60, 55, 50, .28)); }
 :root[data-theme='light'] .ex-bar { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 18px 40px rgba(60, 55, 50, .14); }
 :root[data-theme='light'] .ex-cta { background: #1f1f1f; color: #fff; border-color: #1f1f1f; }
@@ -1934,48 +1942,86 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
 @media (max-width: 760px) { .explore .ex-deck { height: clamp(280px, 46vh, 400px); } .ex-hint { max-width: 40%; font-size: 10.5px; } .ex-seg button { padding: 5px 9px; } }
 
 /* =====================================================================
-   Closing page built from empty (Outro.jsx STEPS). While .build: nothing shows until the swarm builds it.
-   Panels wipe in from the top after their selection box is drawn; titles type in; the card fades in and its
-   heading types; team names pop in one by one; the source line and the button come last.
+   Closing page built from empty, the way a page is laid out in a design tool (Outro.jsx STEPS; the section
+   carries st0..st12). Layout grid → placeholder boxes dragged out with their size → grey text bars and gap
+   measurements → pictures dropped in → text typed with a caret → the card framed with snap guides, sketched,
+   filled in → scaffolding gone. Steps backwards take it apart again.
    ===================================================================== */
-.outro.build .op { transform: none; opacity: 1; clip-path: inset(0 0 100% 0); transition: clip-path .55s cubic-bezier(.3, .7, .2, 1) .55s; }
+.outro.build .op { transform: none; opacity: 1; clip-path: inset(0 0 100% 0); transition: clip-path .6s cubic-bezier(.3, .7, .2, 1) calc(.3s + var(--i) * .22s); }
 .outro.build .op.on { clip-path: inset(0 0 0 0); }
 .outro.build .op canvas { transform: none; transition: none; }
 .outro.build .op-t { opacity: 1; transform: none; transition: none; }
 .outro.build .op-t > * { visibility: hidden; }
-.outro.build .op.on .op-t > * { visibility: visible; }
-.outro.build .op.on .op-t span { animation: swFade .3s 1s both; }
-.outro.build .op.on .op-t b { display: inline-block; white-space: nowrap; overflow: hidden; animation: swType .55s 1.05s steps(9) both; }
-.outro.build .op.on .op-t small { animation: swFade .5s 1.5s both; }
-.outro.build .outro-card { opacity: 0; transform: none; transition: opacity .45s .6s; }
+.outro.build .op.txt .op-t > * { visibility: visible; }
+.outro.build .op.txt .op-t span { animation: swFade .25s calc(var(--i) * .12s) both; }
+.outro.build .op.txt .op-t b { display: inline-block; vertical-align: bottom; white-space: nowrap; overflow: hidden; border-right: 2px solid transparent;
+  animation: swTypeW .55s calc(.1s + var(--i) * .12s) steps(8) both, swCaret .4s calc(.1s + var(--i) * .12s) step-end 3; }
+.outro.build .op.txt .op-t small { animation: swFade .5s calc(.6s + var(--i) * .12s) both; }
+.outro.build .outro-card { opacity: 0; transform: none; transition: opacity .4s .45s; }
 .outro.build .outro-card.on { opacity: 1; }
 .outro.build .outro-card > * { visibility: hidden; }
-.outro.build .outro-card.on .ist-eb, .outro.build .outro-card.on h2, .outro.build .outro-card.on .oc-by { visibility: visible; }
-.outro.build .outro-card.on h2 { animation: swType .8s .9s steps(14) both; }
-.outro.build .outro-card.on .ist-eb { animation: swFade .4s .7s both; }
-.outro.build .outro-card.on .oc-by { animation: swFade .4s 1.6s both; }
-.outro.build .outro-card .oc-team li { animation: none; opacity: 0; transform: scale(.6); transition: opacity .25s, transform .4s cubic-bezier(.2, 1.6, .4, 1); transition-delay: calc(.25s + var(--j) * .22s); }
-.outro.build .outro-card.chips .oc-team { visibility: visible; }
-.outro.build .outro-card.chips .oc-team li { opacity: 1; transform: none; }
+.outro.build .outro-card.fill .ist-eb, .outro.build .outro-card.fill h2, .outro.build .outro-card.fill .oc-by, .outro.build .outro-card.fill .oc-team { visibility: visible; }
+.outro.build .outro-card.fill .ist-eb { animation: swFade .3s both; }
+.outro.build .outro-card.fill h2 { animation: swType .8s .1s steps(16) both; }
+.outro.build .outro-card.fill .oc-by { animation: swFade .3s .4s both; }
+.outro.build .outro-card .oc-team li { animation: none; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .4s cubic-bezier(.2, 1.6, .4, 1); transition-delay: calc(.5s + var(--j) * .22s); }
+.outro.build .outro-card.fill .oc-team li { opacity: 1; transform: none; }
 .outro.build .outro-card.done .oc-src, .outro.build .outro-card.done .ist-skip { visibility: visible; animation: swFade .6s both; }
 @keyframes swType { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes swTypeW { from { max-width: 0; } to { max-width: 6em; } }
+@keyframes swCaret { 0% { border-right-color: #ff9a6b; } 50% { border-right-color: transparent; } }
 @keyframes swFade { from { opacity: 0; } }
-/* the overlay: guide lines, the selection box with its size tag, and the pointers */
+@keyframes swGrow { from { width: 0; height: 0; } }
+
 .swarm { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
-.sw-guides { position: absolute; left: 0; top: 0; overflow: visible; }
-.sw-guides line { stroke: #ff5a7a; stroke-width: 1; stroke-dasharray: 5 4; opacity: 0; transition: opacity .4s; }
-.sw-guides line.h { stroke: #5db4ff; }
-.swarm.s2 .sw-guides line, .swarm.s3 .sw-guides line, .swarm.s4 .sw-guides line, .swarm.s5 .sw-guides line, .swarm.s6 .sw-guides line, .swarm.s7 .sw-guides line, .swarm.s8 .sw-guides line { opacity: .75; animation: swPull .7s calc(var(--k) * .12s) cubic-bezier(.3, .7, .2, 1) both; }
-.sw-guides line { stroke-dashoffset: 0; }
-@keyframes swPull { from { stroke-dasharray: 0 2000; } to { stroke-dasharray: 5 4; } }
-.sw-box { position: absolute; border: 1.5px solid #5db4ff; background: rgba(93, 180, 255, .08); transform-origin: 0 0; animation: swDrag .6s cubic-bezier(.3, .7, .2, 1) both; }
-.sw-box::before, .sw-box::after { content: ''; position: absolute; width: 7px; height: 7px; background: #fff; border: 1.5px solid #5db4ff; }
-.sw-box::before { left: -5px; top: -5px; } .sw-box::after { right: -5px; bottom: -5px; }
-.sw-box em { position: absolute; right: 0; top: 100%; margin-top: 6px; padding: 1px 7px; border-radius: 3px; background: #2f8fe6; color: #fff; font: 600 10px var(--mono); font-style: normal; white-space: nowrap; animation: swFade .3s .5s both; }
-@keyframes swDrag { from { transform: scale(0); } }
-.swarm i { position: absolute; left: 0; top: 0; width: 13px; height: 17px; margin: -2px 0 0 -2px; background: var(--k, #fff); clip-path: polygon(0 0, 100% 62%, 52% 66%, 76% 100%, 58% 100%, 36% 72%, 0 96%); filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .5)); will-change: transform; transition: transform .6s cubic-bezier(.3, .8, .25, 1), opacity .4s; }
-.swarm.s3 i:first-of-type, .swarm.s4 i:first-of-type, .swarm.s5 i:first-of-type, .swarm.s6 i:first-of-type, .swarm.s7 i:first-of-type { transition-duration: .6s, .4s; transition-delay: 0s !important; }
-.swarm.s9 i { transition-duration: 1s, .9s; }
+.swarm > * { position: absolute; }
+/* the layout grid: one band per column, pulled down from the top */
+.sw-col { background: rgba(255, 90, 122, .07); box-shadow: inset 1px 0 rgba(255, 90, 122, .45), inset -1px 0 rgba(255, 90, 122, .45); animation: swPull .6s calc(var(--k) * .1s) cubic-bezier(.3, .7, .2, 1) both; transition: opacity .6s; }
+@keyframes swPull { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+/* placeholder boxes: dragged out from the top-left corner, a cross and the real size; outline only once the picture is in */
+.sw-ph { border: 1.5px solid #5db4ff; background: rgba(16, 24, 40, .62); animation: swGrow .6s calc(var(--k) * .04s) cubic-bezier(.3, .8, .25, 1) both; transition: background .4s, border-color .4s, opacity .6s; transition-delay: calc(.35s + var(--k) * .22s), calc(.35s + var(--k) * .22s), 0s; }
+.sw-ph svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sw-ph svg, .sw-ph em { transition: opacity .3s .5s; }
+@starting-style { .sw-ph svg, .sw-ph em { opacity: 0; } }
+.sw-ph line { stroke: rgba(255, 255, 255, .22); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.sw-ph em, .sw-box em { position: absolute; left: 6px; top: 6px; padding: 1px 7px; border-radius: 3px; background: #2f8fe6; color: #fff; font: 600 10px var(--mono); font-style: normal; white-space: nowrap; }
+.sw-box em { animation: swFade .3s .5s both; }
+.sw-ph::before, .sw-ph::after, .sw-box::before, .sw-box::after { content: ''; position: absolute; width: 7px; height: 7px; background: #fff; border: 1.5px solid #5db4ff; }
+.sw-ph::before, .sw-box::before { left: -5px; top: -5px; }
+.sw-ph::after, .sw-box::after { right: -5px; bottom: -5px; }
+.sw-ph.img { background: transparent; border-color: rgba(93, 180, 255, .45); }
+.sw-ph.img svg, .sw-ph.img em { opacity: 0; transition-delay: calc(.35s + var(--k) * .22s); }
+/* grey text bars, sketched where the words will go */
+.sw-bars { display: flex; flex-direction: column; justify-content: space-evenly; transition: opacity .3s calc(var(--k) * .12s + .3s); }
+.sw-bars i { height: 7px; border-radius: 4px; background: rgba(255, 255, 255, .26); transform-origin: 0 50%; animation: swBar .35s calc(var(--k) * .1s) cubic-bezier(.3, .7, .2, 1) both; }
+.sw-bars i:nth-child(1) { height: 5px; background: rgba(255, 154, 107, .55); }
+.sw-bars i:nth-child(2) { height: 12px; animation-delay: calc(var(--k) * .1s + .08s); }
+.sw-bars i:nth-child(3) { animation-delay: calc(var(--k) * .1s + .16s); }
+.sw-bars i:nth-child(4) { animation-delay: calc(var(--k) * .1s + .24s); }
+.sw-bars.go { opacity: 0; }
+@keyframes swBar { from { transform: scaleX(0); } }
+/* gap measurements between the panels */
+.sw-gap { height: 0; border-top: 1px solid #ff5a7a; animation: swBar .4s calc(.3s + var(--k) * .12s) both; transform-origin: 50% 50%; transition: opacity .5s; }
+.sw-gap::before, .sw-gap::after { content: ''; position: absolute; top: -5px; width: 1px; height: 9px; background: #ff5a7a; }
+.sw-gap::before { left: 0; }
+.sw-gap::after { right: 0; }
+.sw-gap em { position: absolute; left: 50%; bottom: 5px; translate: -50% 0; padding: 0 5px; border-radius: 3px; background: #ff5a7a; color: #fff; font: 600 10px/16px var(--mono); font-style: normal; animation: swFade .3s calc(.6s + var(--k) * .12s) both; }
+/* the card: a box dragged out, centre guides that snap, a sketch of its content */
+.sw-box { border: 1.5px solid #5db4ff; background: rgba(93, 180, 255, .06); animation: swGrow .6s .08s cubic-bezier(.3, .8, .25, 1) both; transition: opacity .6s; }
+.sw-box em { left: auto; top: auto; right: 0; bottom: 100%; margin-bottom: 6px; }
+.sw-snap { background: #ff5a7a; animation: swSnap .9s .55s both; }
+.sw-snap.v { top: 0; bottom: 0; width: 1px; }
+.sw-snap.h { left: 0; right: 0; height: 1px; }
+@keyframes swSnap { 0% { opacity: 0; } 15% { opacity: 1; } 30% { opacity: .2; } 45%, 100% { opacity: .7; } }
+.sw-sketch { inset: 0; }
+.sw-sketch i { position: absolute; border-radius: 6px; background: rgba(255, 255, 255, .16); transform-origin: 50% 50%; animation: swBar .4s .75s cubic-bezier(.3, .7, .2, 1) both; }
+.sw-sketch i.chip { border-radius: 999px; background: none; border: 1.5px dashed rgba(255, 215, 228, .5); animation: swFade .3s calc(.95s + var(--k) * .1s) both; }
+/* the scaffolding goes */
+.outro.st11 .sw-col, .outro.st11 .sw-ph, .outro.st11 .sw-box, .outro.st11 .sw-gap { opacity: 0; }
+/* the pointers */
+.sw-ptr { left: 0; top: 0; width: 13px; height: 17px; margin: -2px 0 0 -2px; background: var(--c, #fff); clip-path: polygon(0 0, 100% 62%, 52% 66%, 76% 100%, 58% 100%, 36% 72%, 0 96%); filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .5)); will-change: transform; transition: transform .6s cubic-bezier(.3, .8, .25, 1), opacity .4s; }
+.outro.st1 .sw-ptr { transition-duration: .9s, .5s; }
+.outro.st11 .sw-ptr { transition-duration: 1.1s, 1s; }
 @media (prefers-reduced-motion: reduce) { .swarm { display: none; } }
 
 /* =====================================================================
@@ -1991,6 +2037,9 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
 .d3-views { position: absolute; left: 38px; top: 54px; display: flex; padding: 3px; border-radius: 999px; pointer-events: auto; background: var(--d3-glass); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: inset 0 0 0 1px var(--d3-edge), 0 6px 18px rgba(0, 0, 0, .18); animation: d3In .5s var(--ez) both; }
 .d3-views button { border: 0; background: none; color: var(--d3-mute); font: 600 11.5px var(--sans); padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: background .25s, color .25s; }
 .d3-views button.on { background: var(--d3-ink); color: var(--bg); }
+.d3-views button.ico { font-size: 14px; padding: 2px 9px; }
+.d3-views button:disabled { opacity: .4; cursor: default; }
+.d3-views .sep { width: 1px; margin: 4px 4px; background: var(--d3-edge); }
 /* legend, bottom left */
 .d3-key { position: absolute; left: 38px; bottom: 30px; width: 240px; display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; padding: 10px 12px; border-radius: 12px; color: var(--d3-ink); font-size: 11px; background: var(--d3-glass); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: inset 0 0 0 1px var(--d3-edge); animation: d3In .6s .2s var(--ez) both; }
 .d3-key b { grid-column: 1 / 3; font-size: 11.5px; }

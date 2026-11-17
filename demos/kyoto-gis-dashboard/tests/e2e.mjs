@@ -866,29 +866,52 @@ check('pointer light: one fixed canvas for the whole page, follows the pointer a
 await rp.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' }));
 await rp.waitForTimeout(400);
 const ob0 = await rp.evaluate(() => ({ panels: document.querySelectorAll('.op.on').length, card: getComputedStyle(document.querySelector('.outro-card')).opacity }));
-await rp.waitForFunction(() => document.querySelector('.swarm.s4'), null, { timeout: 15000 }).catch(() => {});
-const ob1 = await rp.evaluate(() => ({ ptrs: document.querySelectorAll('.swarm i').length, box: !!document.querySelector('.sw-box em'), tag: document.querySelector('.sw-box em')?.textContent || '', guides: document.querySelectorAll('.sw-guides line').length, panels: document.querySelectorAll('.op.on').length, pe: getComputedStyle(document.querySelector('.swarm')).pointerEvents }));
-await rp.waitForFunction(() => document.querySelector('.outro.built'), null, { timeout: 20000 }).catch(() => {});
+await rp.waitForFunction(() => document.querySelector('.outro.st5'), null, { timeout: 15000 }).catch(() => {});
+await rp.waitForTimeout(700);
+const ob1 = await rp.evaluate(() => ({ ptrs: document.querySelectorAll('.swarm .sw-ptr').length, cols: document.querySelectorAll('.sw-col').length, boxes: [...document.querySelectorAll('.sw-ph em')].map((e) => e.textContent), cross: document.querySelectorAll('.sw-ph svg line').length, bars: document.querySelectorAll('.sw-bars').length, gaps: [...document.querySelectorAll('.sw-gap em')].map((e) => e.textContent), panels: document.querySelectorAll('.op.on').length, pe: getComputedStyle(document.querySelector('.swarm')).pointerEvents }));
+await rp.waitForFunction(() => document.querySelector('.outro.st9 .sw-snap'), null, { timeout: 15000 }).catch(() => {});
+const ob1c = await rp.evaluate(() => ({ box: document.querySelector('.sw-box em')?.textContent || '', snaps: document.querySelectorAll('.sw-snap').length, sketch: document.querySelectorAll('.sw-sketch i.chip').length, typed: [...document.querySelectorAll('.op.txt')].length }));
+await rp.waitForFunction(() => document.querySelector('.outro.st12'), null, { timeout: 20000 }).catch(() => {});
 await rp.waitForTimeout(1500);
 const ob2 = await rp.evaluate(() => ({ swarm: !!document.querySelector('.swarm'), panels: document.querySelectorAll('.op.on').length, card: getComputedStyle(document.querySelector('.outro-card')).opacity, chips: [...document.querySelectorAll('.oc-team li')].every((l) => getComputedStyle(l).opacity === '1'), btn: getComputedStyle(document.querySelector('.outro-card .ist-skip')).visibility }));
-check('closing page: starts empty; pointers pull guides and drag a sized box round each panel as it builds; then the card, the names and the button; the finished page stays', ob0.panels === 0 && +ob0.card === 0 && ob1.ptrs === 14 && ob1.box && / × /.test(ob1.tag) && ob1.guides === 4 && ob1.panels >= 1 && ob1.panels < 4 && ob1.pe === 'none' && !ob2.swarm && ob2.panels === 4 && +ob2.card === 1 && ob2.chips && ob2.btn === 'visible', JSON.stringify({ ob0, ob1, ob2 }));
+const tfr = await rp.evaluate(() => { const r = document.querySelector('.op').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.bottom - 60, below: r.bottom + 30 }; });
+await rp.mouse.move(tfr.x - 80, tfr.y - 120); await rp.waitForTimeout(150); await rp.mouse.move(tfr.x, tfr.y, { steps: 10 }); await rp.waitForTimeout(250);
+const tone = { theme: await rp.evaluate(() => document.documentElement.dataset.theme), panel: await rp.evaluate(() => __cursorLight.tone), life: await rp.evaluate(() => __cursorLight.maxAge()) };
+await rp.mouse.move(tfr.x + 60, tfr.below, { steps: 10 }); await rp.mouse.move(tfr.x + 140, tfr.below, { steps: 8 }); await rp.waitForTimeout(250);
+tone.page = await rp.evaluate(() => __cursorLight.tone);
+check('pointer light: the sparks are short-lived and take their colour from what is under the pointer (glow over the dark closing panels, ink over a light page)',
+  tone.panel === 'glow' && tone.page === (tone.theme === 'light' ? 'ink' : 'glow') && tone.life > 0 && tone.life < 0.5, JSON.stringify(tone));
+await rp.evaluate(() => scrollBy(0, -1600)); await rp.waitForTimeout(2000);
+const ob3 = await rp.evaluate(() => ({ st: (document.querySelector('.outro').className.match(/st(\d+)/) || [])[1], panels: document.querySelectorAll('.op.on').length }));
+await rp.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' })); await rp.waitForTimeout(2600);
+const ob4 = await rp.evaluate(() => ({ swarm: !!document.querySelector('.swarm'), st: +(document.querySelector('.outro').className.match(/st(\d+)/) || [])[1] }));
+const wh = (t) => /^\d+ × \d+$/.test(t);
+check('closing page: starts empty; pointers pull a column grid, drag out sized placeholders, sketch text bars and measure the gaps; snap guides frame the card; the finished page stays; scrolled back up it is taken apart and built again',
+  ob0.panels === 0 && +ob0.card === 0 && ob1.ptrs === 14 && ob1.cols === 4 && ob1.boxes.length === 4 && ob1.boxes.every(wh) && ob1.cross === 8 && ob1.bars === 4 && ob1.gaps.length === 3 && ob1.gaps.every((g) => +g > 0) && ob1.panels === 0 && ob1.pe === 'none'
+  && wh(ob1c.box) && ob1c.snaps === 2 && ob1c.sketch === 4 && ob1c.typed === 4
+  && !ob2.swarm && ob2.panels === 4 && +ob2.card === 1 && ob2.chips && ob2.btn === 'visible' && ob3.st === '0' && ob3.panels === 0 && ob4.swarm && ob4.st >= 2 && ob4.st < 12,
+  JSON.stringify({ ob0, ob1, ob1c, ob2, ob3, ob4 }));
 // 3D density: switched on next to Cinematic view, the surface rises from the project's density grid; a click on it opens a card with the data for that spot
 await rp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
 const d3before = await rp.evaluate(() => ({ pts: window.__kyotoMap.getLayoutProperty('attractions-pt', 'visibility') }));
 await rp.locator('.d3t').click();
 await rp.waitForFunction(() => document.querySelector('.d3.ready'), null, { timeout: 40000 }).catch(() => {});
 await rp.waitForTimeout(1200);
-const d3a = await rp.evaluate(() => ({ layer: !!window.__kyotoMap.getLayer('density-3d'), pitch: window.__kyotoMap.getPitch(), labels: [...document.querySelectorAll('.d3-lab span')].map((e) => e.textContent), views: document.querySelectorAll('.d3-views button').length, heat: window.__kyotoMap.getLayoutProperty('heat', 'visibility'), kde: window.__kyotoMap.getLayer('kde-fill') ? window.__kyotoMap.getLayoutProperty('kde-fill', 'visibility') : 'none', key: document.querySelector('.d3-key')?.innerText || '' }));
+const d3a = await rp.evaluate(() => ({ layer: !!window.__kyotoMap.getLayer('density-3d'), pitch: window.__kyotoMap.getPitch(), labels: [...document.querySelectorAll('.d3-lab span')].map((e) => e.textContent), views: document.querySelectorAll('.d3-views button:not(.ico):not([aria-pressed][title])').length, turnBtns: document.querySelectorAll('.d3-views button.ico').length, rot: window.__kyotoMap.dragRotate.isEnabled(), heat: window.__kyotoMap.getLayoutProperty('heat', 'visibility'), kde: window.__kyotoMap.getLayer('kde-fill') ? window.__kyotoMap.getLayoutProperty('kde-fill', 'visibility') : 'none', key: document.querySelector('.d3-key')?.innerText || '' }));
 const d3pt = await rp.evaluate(() => { const r = document.querySelector('.d3-lab').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.bottom + 10 }; });
 await rp.mouse.click(d3pt.x, d3pt.y); await rp.waitForTimeout(2600);
 const d3c = await rp.evaluate(() => { const c = document.querySelector('.d3-card'); return c ? { text: c.innerText, line: document.querySelector('.d3-line path').getAttribute('d') } : null; });
 check('3D density: the surface rises with view presets and short peak labels, the 2D density layers are off, and a click opens a glass card with the data for that spot',
-  d3a.layer && d3a.pitch > 40 && d3a.views === 3 && d3a.labels.length >= 3 && d3a.labels.includes('Higashiyama') && d3a.heat === 'none' && d3a.kde === 'none' && /records \/ km²/.test(d3a.key)
+  d3a.layer && d3a.pitch > 40 && d3a.views === 3 && d3a.turnBtns === 2 && d3a.rot && d3a.labels.length >= 3 && d3a.labels.includes('Higashiyama') && d3a.heat === 'none' && d3a.kde === 'none' && /records \/ km²/.test(d3a.key)
   && d3c && /records \/ km²/.test(d3c.text) && /denser than [\d.]+% of the prefecture/.test(d3c.text) && /attraction records? within 1 km/.test(d3c.text) && /transit stops? within 1 km/.test(d3c.text) && /^M/.test(d3c.line),
   JSON.stringify({ d3a, card: d3c && d3c.text.slice(0, 160) }));
-await rp.locator('.d3t').click(); await rp.waitForTimeout(2000);
-const d3off = await rp.evaluate(() => ({ layer: !!window.__kyotoMap.getLayer('density-3d'), pts: window.__kyotoMap.getLayoutProperty('attractions-pt', 'visibility'), overlay: !!document.querySelector('.d3') }));
-check('3D density: switching it off sinks the surface, removes the layer and puts the points back', !d3off.layer && !d3off.overlay && d3off.pts === d3before.pts, JSON.stringify({ d3before, d3off }));
+const b0 = await rp.evaluate(() => window.__kyotoMap.getBearing());
+await rp.locator('.d3-views button.ico').nth(1).click(); await rp.waitForTimeout(1400);
+const turned = await rp.evaluate((b0) => Math.round(((window.__kyotoMap.getBearing() - b0) % 360 + 540) % 360 - 180), b0);
+check('3D density: the camera turns (the turn button swings it 45°, and drag-rotate is on while the surface is up)', turned === 45 && d3a.rot, JSON.stringify({ b0, turned }));
+await rp.locator('.d3t').click(); await rp.waitForFunction(() => !document.querySelector('.d3'), null, { timeout: 8000 }).catch(() => {}); await rp.waitForTimeout(1300);
+const d3off = await rp.evaluate(() => ({ bearing: Math.round(window.__kyotoMap.getBearing()), rot: window.__kyotoMap.dragRotate.isEnabled(), layer: !!window.__kyotoMap.getLayer('density-3d'), pts: window.__kyotoMap.getLayoutProperty('attractions-pt', 'visibility'), overlay: !!document.querySelector('.d3') }));
+check('3D density: switching it off sinks the surface, removes the layer and puts the points back', !d3off.layer && !d3off.overlay && d3off.pts === d3before.pts && d3off.bearing === 0 && !d3off.rot, JSON.stringify({ d3before, d3off }));
 check('no page errors on the layout / route page', rpErr.length === 0, rpErr.join(' | '));
 await rp.close();
 

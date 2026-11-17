@@ -35,6 +35,7 @@ export default function Density3D({ mapRef, on, theme, d }) {
   const [view, setView] = useState('oblique');
   const [card, setCard] = useState(null);             // { lng, lat, h, info }
   const [labels, setLabels] = useState([]);
+  const [spin, setSpin] = useState(false);
   const L = useRef(null), S = useRef(null), mod = useRef(null);
   const labelEls = useRef([]), anchorEl = useRef(null), lineEl = useRef(null), cardEl = useRef(null), wrapEl = useRef(null);
   const T = themeOf(theme);
@@ -100,6 +101,28 @@ export default function Density3D({ mapRef, on, theme, d }) {
   }, [on]);
 
   useEffect(() => { if (L.current?.mat) { L.current.setTheme(theme); mapRef.current?.triggerRepaint(); } }, [theme, mapRef]);
+
+  // While the surface is up the camera can turn: right-drag or Ctrl-drag rotates it (two fingers on a phone),
+  // the arrow keys with Shift too. The flat map keeps its fixed north-up view, so this is undone afterwards.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !(phase === 'rising' || phase === 'ready')) return undefined;
+    map.dragRotate.enable(); map.touchZoomRotate.enableRotation(); map.keyboard.enableRotation();
+    return () => { map.dragRotate.disable(); map.touchZoomRotate.disableRotation(); map.keyboard.disableRotation(); };
+  }, [phase, mapRef]);
+  // a slow orbit round the prefecture; any drag, wheel or touch stops it
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !spin || phase !== 'ready' || reduce()) return undefined;
+    let raf = 0, last = 0;
+    const step = (now) => { const dt = last ? Math.min(0.05, (now - last) / 1000) : 0; last = now; map.setBearing(map.getBearing() + dt * 9); raf = requestAnimationFrame(step); };
+    raf = requestAnimationFrame(step);
+    const stop = (e) => { if (e.originalEvent) setSpin(false); };
+    for (const ev of ['dragstart', 'wheel', 'touchstart', 'rotatestart', 'mousedown']) map.on(ev, stop);
+    return () => { cancelAnimationFrame(raf); for (const ev of ['dragstart', 'wheel', 'touchstart', 'rotatestart', 'mousedown']) map.off(ev, stop); };
+  }, [spin, phase, mapRef]);
+  useEffect(() => { if (!on) setSpin(false); }, [on]);
+  const turn = (deg) => { const map = mapRef.current; if (!map) return; setSpin(false); map.easeTo({ bearing: map.getBearing() + deg, duration: reduce() ? 0 : 900 }); };
   useEffect(() => () => { const map = mapRef.current; if (map?.getLayer('density-3d')) map.removeLayer('density-3d'); }, [mapRef]);
 
   const shortAt = (p) => { const pr = muniAt(d.municipalities, p.lng, p.lat); if (!pr) return ''; const code = String(pr.N03_007); const en = d.pointMuni?.names_en?.[code] || d.namesEn?.municipalities?.[code]?.en; return en ? en.split(',')[0].replace(/ (Ward|City|Town|Village)$/, '') : [pr.N03_004, pr.N03_005].filter(Boolean).join(' '); };
@@ -191,13 +214,17 @@ export default function Density3D({ mapRef, on, theme, d }) {
       {(phase === 'rising' || phase === 'ready') && (
         <>
           <div className="d3-views" role="group" aria-label="3D view">
-            {VIEWS.map((v) => <button key={v.k} type="button" aria-pressed={view === v.k} className={view === v.k ? 'on' : ''} onClick={() => fly(v.k)}>{v.label}</button>)}
+            {VIEWS.map((v) => <button key={v.k} type="button" aria-pressed={view === v.k} className={view === v.k ? 'on' : ''} onClick={() => { setSpin(false); fly(v.k); }}>{v.label}</button>)}
+            <i className="sep" aria-hidden="true" />
+            <button type="button" className="ico" onClick={() => turn(-45)} aria-label="Turn left 45 degrees" title="Turn left">⟲</button>
+            <button type="button" className="ico" onClick={() => turn(45)} aria-label="Turn right 45 degrees" title="Turn right">⟳</button>
+            <button type="button" className={spin ? 'on' : ''} aria-pressed={spin} onClick={() => setSpin(!spin)} disabled={phase !== 'ready'} title="Orbit slowly round the prefecture">Orbit</button>
           </div>
           <div className="d3-key" aria-label="3D density legend">
             <b>Attraction density</b>
             <i style={{ background: `linear-gradient(90deg, ${(theme === 'light' ? ['#f4eff9', '#ddd1f4', '#a98ff0', '#d052b7', '#7c1863'] : ['#1a2229', '#1f5f6e', '#79d7da', '#fff0d4', '#ff8a5c']).join(', ')})` }} />
             <span>0</span><span>{S.current ? S.current.peak.toFixed(1) : ''} records / km²</span>
-            <small>Height in proportion to density (1 record/km² ≈ {S.current ? Math.round(28000 / S.current.peak / 100) / 10 : ''} km drawn) · ~250 m grid · kernel density, not visitor numbers{phase === 'ready' ? ' · click the surface' : ''}</small>
+            <small>Height in proportion to density (1 record/km² ≈ {S.current ? Math.round(28000 / S.current.peak / 100) / 10 : ''} km drawn) · ~250 m grid · kernel density, not visitor numbers{phase === 'ready' ? ' · click the surface · right-drag or Ctrl-drag to turn' : ''}</small>
           </div>
         </>
       )}
