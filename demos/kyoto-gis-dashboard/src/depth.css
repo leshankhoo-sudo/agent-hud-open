@@ -125,6 +125,7 @@
 .outro { background: none; -webkit-mask-image: none; mask-image: none; }
 .outro .op canvas { translate: calc(var(--mx, 0) * (var(--i) - 1.5) * -7px) calc(var(--my, 0) * -5px); }
 .outro .outro-card { translate: calc(-50% + var(--mx, 0) * 16px) calc(-50% + var(--my, 0) * 9px); }
+@media (max-width: 760px) { .outro .outro-card { translate: none; } }   /* on a phone the card sits in the flow under the panels, not centred over them */
 .outro .op-t { translate: calc(var(--mx, 0) * 6px) 0; }
 :root[data-theme='light'] .outro .ist-credit { color: var(--mute); }
 

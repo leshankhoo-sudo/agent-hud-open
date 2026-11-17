@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { SeasonDrift } from './Season.jsx';
 import { useScene } from './lib/depth.js';
 
@@ -74,7 +75,7 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
       // turning fast: the cards lean and turn into the direction of travel
       rz += g * dir * 9 * (0.4 + 0.6 * Math.abs(si)); ry += g * dir * 14 * co; sc *= 1 - 0.05 * g;
       y -= H * 0.13 * bump; z += 170 * bump; rz += 26 * bump * (i % 2 ? 1 : -1); ry += 22 * bump * (o < 0 ? -1 : 1); sc *= 1 + 0.05 * bump;
-      const bl = Math.max(g > 0.04 ? g * (d < 0.5 ? 1.4 : 3.2) : 0, bump > 0.05 ? bump * 1.3 : 0);
+      const bl = 0;   // no blur: switching a filter on and off made the cards flash
       const key = `${x.toFixed(1)}|${y.toFixed(1)}|${z.toFixed(1)}|${ry.toFixed(2)}|${rxd.toFixed(2)}|${rz.toFixed(2)}|${sc.toFixed(3)}|${br.toFixed(3)}|${bl.toFixed(2)}|${ms.toFixed(3)}`;
       if (el._k === key) return;   // nothing changed: no style write
       el._k = key;
@@ -91,7 +92,6 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
       st.setProperty('--s', sc.toFixed(3));
       st.setProperty('--dim', (1 - br).toFixed(3));   // darkening by an overlay's opacity, not a filter
       st.setProperty('--bl', `${bl.toFixed(2)}px`);
-      el.classList.toggle('moving', bl > 0);           // the blur filter is only on while turning fast
       st.setProperty('--fy', `${(60 + 58 * ms).toFixed(0)}%`);
       st.zIndex = String(Math.round(40 - d * 6));
     });
@@ -129,25 +129,17 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
     };
     a.raf = requestAnimationFrame(step);
   };
-  const flip = useRef(null);
-  const GLIDE = ['.ex-head', '.ex-place', '.ex-actions', '.ex-pills', '.ex-dots', '.ex-deck'];
+  // Switching layout: the browser's view transition morphs the deck and the text blocks from where they were
+  // to where the new layout puts them, so no frame shows them jumping. Without view transitions it switches
+  // straight away. The cards fly to their new places on their own (see place()).
   const layout = (m) => {
     if (m === mode) return;
-    if (!reduceMotion() && root.current) flip.current = GLIDE.map((q) => { const el = root.current.querySelector(q); return el && [el, el.getBoundingClientRect()]; }).filter(Boolean);
-    setMode(m); anim.current.mixTo = m === 'fan' ? 1 : 0; run();
+    anim.current.mixTo = m === 'fan' ? 1 : 0;
+    const go = () => flushSync(() => setMode(m));
+    if (!reduceMotion() && document.startViewTransition) document.startViewTransition(go);
+    else go();
+    run();
   };
-  useLayoutEffect(() => {
-    const was = flip.current; flip.current = null;
-    if (!was) return;
-    // the glass bar of the Fan layout fades in behind its text instead of appearing empty first
-    if (mode === 'fan') root.current.querySelector('.ex-bar')?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 260, easing: 'ease-out', fill: 'backwards' });
-    was.forEach(([el, r0], k) => {
-      const r1 = el.getBoundingClientRect(), dx = r0.left - r1.left, dy = r0.top - r1.top;
-      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
-      el.animate([{ transform: `translate(${dx}px, ${dy}px)`, opacity: el.classList.contains('ex-deck') ? 1 : 0.35 }, { transform: 'none', opacity: 1 }],
-        { duration: 820, delay: el.classList.contains('ex-deck') ? 0 : 60 + k * 45, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' });
-    });
-  }, [mode]);
   useEffect(() => {
     const a = anim.current, dk = deck.current, sec = root.current;
     // size read only when it changes, never per frame

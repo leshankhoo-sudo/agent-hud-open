@@ -1,0 +1,268 @@
+import { useEffect, useRef, useState } from 'react';
+import { ATTRACTION_CATS, recordLabel, muniLabel } from './lib/data.js';
+import { themeOf } from './lib/theme.js';
+
+// "3D density" on the dashboard map. Switched on next to Cinematic view, it raises the attraction
+// kernel density (~250 m grid, scripts/kde_surface.py) out of the map as one surface: the denser a
+// place, the higher and deeper in colour. No text while it rises. Afterwards the strongest peaks get a
+// quiet label (their municipality), and a click anywhere on the surface draws a line out to a small
+// glass card with what the data says about that spot. Three view presets turn the camera.
+// Three.js and the surface data load only the first time it is switched on.
+// Every number on the card is computed from the project's own data; distances are straight-line.
+
+const reduce = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const VIEWS = [
+  { k: 'oblique', label: 'Oblique', pitch: 58, bearing: -16 },
+  { k: 'top', label: 'Top', pitch: 0, bearing: 0 },
+  { k: 'low', label: 'Low', pitch: 60, bearing: 38 },
+];
+const fmt = (v) => (v >= 10 ? v.toFixed(1) : v >= 1 ? v.toFixed(2) : v.toFixed(3));
+const pct = (x) => (x > 0.99 ? (Math.floor(x * 1000) / 10).toFixed(1) : String(Math.floor(x * 100)));
+const kmFmt = (k) => (k < 1 ? `${Math.round(k * 1000)} m` : `${k.toFixed(1)} km`);
+
+// point in polygon (ray casting) for the municipality under a point
+function inRing(ring, x, y) { let c = false; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) { const [xi, yi] = ring[i], [xj, yj] = ring[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c; } return c; }
+function muniAt(muni, lng, lat) {
+  for (const f of muni?.features || []) {
+    const g = f.geometry, polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
+    if (polys.some((p) => inRing(p[0], lng, lat) && !p.slice(1).some((h) => inRing(h, lng, lat)))) return f.properties;
+  }
+  return null;
+}
+
+export default function Density3D({ mapRef, on, theme, d }) {
+  const [phase, setPhase] = useState('off');          // off · loading · rising · ready · leaving · error
+  const [view, setView] = useState('oblique');
+  const [card, setCard] = useState(null);             // { lng, lat, h, info }
+  const [labels, setLabels] = useState([]);
+  const L = useRef(null), S = useRef(null), mod = useRef(null);
+  const labelEls = useRef([]), anchorEl = useRef(null), lineEl = useRef(null), cardEl = useRef(null), wrapEl = useRef(null);
+  const T = themeOf(theme);
+
+  const fly = (k) => {
+    const map = mapRef.current, v = VIEWS.find((x) => x.k === k);
+    if (!map || !v) return;
+    setView(k);
+    const cam = map.cameraForBounds([[134.86, 34.7], [136.06, 35.79]], { padding: { top: 70, bottom: 50, left: 40, right: 40 } });
+    map.easeTo({ center: k === 'low' ? [135.62, 35.06] : cam.center, zoom: k === 'low' ? cam.zoom + 0.7 : cam.zoom + (k === 'top' ? 0 : 0.15), pitch: v.pitch, bearing: v.bearing, duration: reduce() ? 0 : 1700, essential: true });
+  };
+
+  // switch on / off
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return undefined;
+    let alive = true, raf = 0;
+    if (on) {
+      setPhase('loading');
+      (async () => {
+        try {
+          const m = mod.current || (mod.current = await import('./lib/density3d.js'));
+          if (!S.current) {
+            const r = await fetch(`${import.meta.env.BASE_URL}data/analysis/density_surface.json`);
+            if (!r.ok) throw new Error(`density_surface.json ${r.status}`);
+            S.current = m.decodeSurface(await r.json());
+          }
+          if (!alive) return;
+          if (L.current && map.getLayer('density-3d')) map.removeLayer('density-3d');
+          const layer = m.createDensityLayer(S.current, theme);
+          L.current = layer;
+          const before = ['attractions-pt', 'lm-minor', 'transport-pt'].find((id) => map.getLayer(id));
+          map.addLayer(layer, before);
+          fly('oblique');
+          setPhase('rising');
+          const t0 = performance.now(), dur = reduce() ? 0 : 2600;
+          const step = (now) => {
+            if (!alive) return;
+            layer.grow = dur ? Math.min(1, (now - t0) / dur) : 1;
+            map.triggerRepaint();
+            if (layer.grow < 1) raf = requestAnimationFrame(step);
+            else { setPhase('ready'); setLabels(m.peaks(S.current, 6).map((p) => ({ ...p, h: layer.heightOf(p.value), name: shortAt(p) }))); }
+          };
+          raf = requestAnimationFrame(step);
+        } catch (e) { if (alive) { console.error(e); setPhase('error'); } }
+      })();
+    } else if (L.current) {
+      // sink back down, then remove
+      setCard(null); setLabels([]);
+      setPhase('leaving');
+      const layer = L.current, t0 = performance.now(), dur = reduce() ? 0 : 900, g0 = layer.grow;
+      const step = (now) => {
+        const k = dur ? Math.min(1, (now - t0) / dur) : 1;
+        layer.grow = g0 * (1 - k); layer.fade = 1 - k * k;
+        map.triggerRepaint();
+        if (k < 1) raf = requestAnimationFrame(step);
+        else { if (map.getLayer('density-3d')) map.removeLayer('density-3d'); L.current = null; setPhase('off'); map.easeTo({ pitch: 0, bearing: 0, duration: reduce() ? 0 : 900 }); }
+      };
+      raf = requestAnimationFrame(step);
+    }
+    return () => { alive = false; cancelAnimationFrame(raf); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [on]);
+
+  useEffect(() => { if (L.current?.mat) { L.current.setTheme(theme); mapRef.current?.triggerRepaint(); } }, [theme, mapRef]);
+  useEffect(() => () => { const map = mapRef.current; if (map?.getLayer('density-3d')) map.removeLayer('density-3d'); }, [mapRef]);
+
+  const shortAt = (p) => { const pr = muniAt(d.municipalities, p.lng, p.lat); if (!pr) return ''; const code = String(pr.N03_007); const en = d.pointMuni?.names_en?.[code] || d.namesEn?.municipalities?.[code]?.en; return en ? en.split(',')[0].replace(/ (Ward|City|Town|Village)$/, '') : [pr.N03_004, pr.N03_005].filter(Boolean).join(' '); };
+  const nameAt = (p) => { const pr = muniAt(d.municipalities, p.lng, p.lat); return pr ? muniLabel(d.pointMuni, pr.N03_007) || [pr.N03_004, pr.N03_005].filter(Boolean).join(' ') : ''; };
+
+  // what the data says about one spot
+  const describe = (lng, lat) => {
+    const m = mod.current, Sx = S.current, here = { lng, lat };
+    const value = m.valueAt(Sx, lng, lat);
+    if (value == null) return null;
+    const near = [];
+    let total = 0;
+    const byCat = {};
+    for (const f of d.attractions?.features || []) {
+      const [x, y] = f.geometry.coordinates, k = m.km(here, { lng: x, lat: y });
+      if (k <= 1) { byCat[f.properties.category] = (byCat[f.properties.category] || 0) + 1; total++; if (f.properties.name || f.properties.name_en) near.push({ k, name: recordLabel(f.properties) }); }
+    }
+    near.sort((a, b) => a.k - b.k);
+    let stops = 0, nearest = null;
+    for (const f of d.transport?.features || []) {
+      const [x, y] = f.geometry.coordinates, k = m.km(here, { lng: x, lat: y });
+      if (k <= 1) stops++;
+      if (!nearest || k < nearest.k) nearest = { k, name: recordLabel(f.properties), type: f.properties.type };
+    }
+    return {
+      value, below: m.shareBelow(Sx, value), peak: Sx.peak,
+      muni: nameAt(here), line: m.transect(Sx, lng, lat, 10),
+      total, byCat, names: near.slice(0, 3), stops, nearest,
+    };
+  };
+
+  // click on the surface (only once it has risen)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || phase !== 'ready') return undefined;
+    const click = (e) => {
+      const hit = L.current?.pick(e.point.x, e.point.y);
+      if (!hit) { setCard(null); return; }
+      const info = describe(hit.lng, hit.lat);
+      setCard(info ? { ...hit, info, id: Date.now() } : null);
+    };
+    const key = (e) => { if (e.key === 'Escape') setCard(null); };
+    map.on('click', click);
+    addEventListener('keydown', key);
+    map.getCanvas().style.cursor = 'crosshair';
+    return () => { map.off('click', click); removeEventListener('keydown', key); map.getCanvas().style.cursor = ''; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
+  // keep labels, the anchor, the leader line and the card attached to the surface as the map moves
+  useEffect(() => {
+    const layer = L.current;
+    if (!layer) return undefined;
+    layer.onRender = () => {
+      const placed = [];
+      labels.forEach((p, i) => {
+        const el = labelEls.current[i], s = layer.project(p.lng, p.lat, p.h);
+        if (!el) return;
+        if (!s || placed.some((q) => Math.abs(q.x - s.x) < 110 && Math.abs(q.y - s.y) < 34)) { el.style.visibility = 'hidden'; return; }
+        placed.push(s);
+        el.style.transform = `translate(${s.x}px, ${s.y}px)`; el.style.visibility = '';
+      });
+      if (card && anchorEl.current && cardEl.current && wrapEl.current) {
+        const s = layer.project(card.lng, card.lat, card.h);
+        if (!s) { wrapEl.current.style.opacity = 0; return; }
+        wrapEl.current.style.opacity = '';
+        const W = wrapEl.current.clientWidth, H = wrapEl.current.clientHeight, cw = cardEl.current.offsetWidth || 300, ch = cardEl.current.offsetHeight || 320;
+        const right = s.x + 60 + cw < W - 12;                                    // open to the side with room
+        const ex = right ? s.x + 56 : s.x - 56, ey = Math.max(16 + 20, Math.min(H - ch + 20, s.y - 70));
+        anchorEl.current.style.transform = `translate(${s.x}px, ${s.y}px)`;
+        lineEl.current.setAttribute('d', `M${s.x},${s.y} L${s.x + (right ? 26 : -26)},${ey} L${ex},${ey}`);
+        cardEl.current.style.transform = `translate(${right ? ex : ex - cw}px, ${ey - 20}px)`;
+        cardEl.current.dataset.side = right ? 'r' : 'l';
+      }
+    };
+    mapRef.current?.triggerRepaint();
+    return () => { if (layer) layer.onRender = null; };
+  }, [labels, card, mapRef, phase]);
+
+  const shown = phase !== 'off';
+  if (!shown && !on) return null;
+  const i = card?.info;
+  const catList = i ? ATTRACTION_CATS.filter((c) => i.byCat[c.key]) : [];
+  const spark = i ? sparkPath(i.line, 220, 44) : null;
+  return (
+    <div className={'d3 ' + phase} ref={wrapEl} data-theme-variant={theme}>
+      {phase === 'loading' && <div className="d3-status" role="status">Raising the density surface…</div>}
+      {phase === 'error' && <div className="d3-status err" role="alert">The 3D density surface could not be loaded.</div>}
+      {(phase === 'rising' || phase === 'ready') && (
+        <>
+          <div className="d3-views" role="group" aria-label="3D view">
+            {VIEWS.map((v) => <button key={v.k} type="button" aria-pressed={view === v.k} className={view === v.k ? 'on' : ''} onClick={() => fly(v.k)}>{v.label}</button>)}
+          </div>
+          <div className="d3-key" aria-label="3D density legend">
+            <b>Attraction density</b>
+            <i style={{ background: `linear-gradient(90deg, ${(theme === 'light' ? ['#f4eff9', '#ddd1f4', '#a98ff0', '#d052b7', '#7c1863'] : ['#1a2229', '#1f5f6e', '#79d7da', '#fff0d4', '#ff8a5c']).join(', ')})` }} />
+            <span>0</span><span>{S.current ? S.current.peak.toFixed(1) : ''} records / km²</span>
+            <small>Height in proportion to density (1 record/km² ≈ {S.current ? Math.round(28000 / S.current.peak / 100) / 10 : ''} km drawn) · ~250 m grid · kernel density, not visitor numbers{phase === 'ready' ? ' · click the surface' : ''}</small>
+          </div>
+        </>
+      )}
+      {phase === 'ready' && labels.map((p, k) => (
+        <div key={k} className="d3-lab" ref={(el) => (labelEls.current[k] = el)} style={{ '--k': k }}><span translate="no">{p.name || '—'}</span><small>{fmt(p.value)}</small></div>
+      ))}
+      {card && i && (
+        <div className="d3-card-wrap" key={card.id}>
+          <svg className="d3-line" aria-hidden="true"><path ref={lineEl} d="" /></svg>
+          <i className="d3-anchor" ref={anchorEl} aria-hidden="true" />
+          <section className="d3-card" ref={cardEl} role="dialog" aria-label="About this spot">
+            <header>
+              <p>DENSITY · THIS SPOT</p>
+              <button type="button" className="x" onClick={() => setCard(null)} aria-label="Close">×</button>
+            </header>
+            <div className="d3-big">
+              <Gauge share={i.below} />
+              <div><b><Count to={i.value} /></b><span>records / km²</span><small>denser than {pct(i.below)}% of the prefecture</small></div>
+            </div>
+            {i.muni && <p className="d3-where">{i.muni}</p>}
+            <figure className="d3-cut">
+              <figcaption><span>W</span>Cross-section, 5 km east–west<span>E</span></figcaption>
+              <svg viewBox="0 0 220 44" preserveAspectRatio="none" aria-hidden="true"><path className="area" d={spark.area} /><path className="ln" d={spark.line} /><circle cx="110" cy={spark.yMid} r="3" /></svg>
+            </figure>
+            <div className="d3-cats">
+              <p><b>{i.total}</b> attraction record{i.total === 1 ? '' : 's'} within 1 km</p>
+              {i.total > 0 && <div className="bar">{catList.map((c, k) => <i key={c.key} style={{ flexGrow: i.byCat[c.key], background: T.cat[c.key], '--k': k }} title={`${c.label}: ${i.byCat[c.key]}`} />)}</div>}
+              {i.total > 0 && <ul>{catList.map((c) => <li key={c.key}><i style={{ background: T.cat[c.key] }} />{c.label} {i.byCat[c.key]}</li>)}</ul>}
+              {i.names.length > 0 && <ol>{i.names.map((x, k) => <li key={k} style={{ '--k': k }}>{x.name}<span>{kmFmt(x.k)}</span></li>)}</ol>}
+            </div>
+            <p className="d3-stops"><b>{i.stops}</b> transit stop{i.stops === 1 ? '' : 's'} within 1 km{i.nearest ? <> · nearest {i.nearest.name}, {kmFmt(i.nearest.k)}</> : null}</p>
+            <footer>Kernel density of attraction records (2 km radius). Not visitor numbers. Distances are straight-line.</footer>
+          </section>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// number that counts up to its value once
+function Count({ to }) {
+  const [v, setV] = useState(reduce() ? to : 0);
+  useEffect(() => {
+    if (reduce()) { setV(to); return undefined; }
+    let raf, t0;
+    const step = (now) => { t0 ??= now; const k = Math.min(1, (now - t0) / 900); setV(to * (1 - Math.pow(1 - k, 3))); if (k < 1) raf = requestAnimationFrame(step); };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [to]);
+  return fmt(v);
+}
+// ring that sweeps to the spot's share of the prefecture
+function Gauge({ share }) {
+  const r = 22, c = 2 * Math.PI * r;
+  return (
+    <svg className="d3-gauge" viewBox="0 0 56 56" aria-hidden="true">
+      <circle cx="28" cy="28" r={r} className="bg" />
+      <circle cx="28" cy="28" r={r} className="fg" style={{ '--len': c, '--to': c * (1 - share) }} />
+      <text x="28" y="31">{Math.floor(share * 100)}</text>
+    </svg>
+  );
+}
+function sparkPath(vals, w, h) {
+  const n = vals.length, max = Math.max(1e-6, ...vals.map((x) => x || 0));
+  const pts = vals.map((x, k) => [(k / (n - 1)) * w, h - 3 - ((x || 0) / max) * (h - 8)]);
+  const line = pts.map((p, k) => `${k ? 'L' : 'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join('');
+  return { line, area: `${line}L${w},${h}L0,${h}Z`, yMid: pts[(n - 1) / 2][1] };
+}

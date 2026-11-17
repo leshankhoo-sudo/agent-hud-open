@@ -17,6 +17,7 @@ import Pager from './Pager.jsx';
 import Bento, { Tile, resetBento } from './Bento.jsx';
 import Koi from './Koi.jsx';
 import CursorLight from './CursorLight.jsx';
+import Density3D from './Density3D.jsx';
 import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
@@ -150,6 +151,13 @@ export default function App() {
   const [tilted, setTilted] = useState(false);
   const [covShow, setCovShow] = useState({ on: false, token: 0 });
   const [pointsOn, setPointsOn] = useState(true);
+  // 3D density: while it is on, the 2D density layers and the points are switched off, and put back after
+  const [d3, setD3] = useState(false);
+  const d3prev = useRef(null);
+  const toggle3d = () => {
+    if (!d3) { d3prev.current = { densityMode, pointsOn }; setDensityMode('off'); setPointsOn(false); setD3(true); }
+    else { setD3(false); if (d3prev.current) { setDensityMode(d3prev.current.densityMode); setPointsOn(d3prev.current.pointsOn); } }
+  };
   const [panel, setPanel] = useState(null); // which analysis is expanded: 'density' | 'walk' | null
   const [tab, setTab] = useState('overview');
   const [legend, setLegend] = useState(false);
@@ -860,7 +868,7 @@ export default function App() {
         <i className="corner c1" /><i className="corner c2" /><i className="corner c3" /><i className="corner c4" />
         {core ? (
           <MapView theme={theme} data={d} cats={cats} types={types} query={query} densityMode={densityMode} basemap={basemap} selected={selForMap} active={dashSeen} focus={focus} onSelect={(s) => select(s, false)} onHover={setHover} onGeo={(id) => { setRecFocus(id); setSheet('records'); }} geoOn={geoOn} mapRef={mapRef} walkSet={walkSet} maxWalk={maxWalk} busRun={busRun} busHighlight={busHl?.ids} onBusProgress={setBusProg} busCtl={busCtl}
-            route={routeForMap} origin={origin} cinematic={cinematic} coverage={covBbox ? { ...covShow, bbox: covBbox } : null} pointsOn={pointsOn} padding={routePad} />
+            route={routeForMap} origin={origin} cinematic={cinematic} coverage={covBbox ? { ...covShow, bbox: covBbox } : null} pointsOn={pointsOn} padding={routePad} pickOff={d3} />
         ) : (
           <div className="alert big" role="alert"><b>Map data could not be loaded.</b>{failed.map(([k, v]) => <span key={k}>{v.file}: {v.error}</span>)}</div>
         )}
@@ -876,8 +884,12 @@ export default function App() {
           <button type="button" className={'cine' + (cinematic ? ' on' : '')} aria-pressed={cinematic} onClick={() => setCinematic(!cinematic)} title="Cinematic view: routes are framed with a gentle tilt. Off: top-down, no tilt or turn.">
             <i className="tg" aria-hidden="true" /><span>Cinematic view</span>
           </button>
+          <button type="button" className={'cine d3t' + (d3 ? ' on' : '')} aria-pressed={d3} onClick={toggle3d} title="3D density: raise the attraction kernel density out of the map. Click the surface to read a spot.">
+            <i className="tg" aria-hidden="true" /><span>3D density</span>
+          </button>
           {tilted && <button type="button" onClick={topDown} title="Back to a top-down view"><span>Top-down</span></button>}
         </div>
+        {core && <Density3D mapRef={mapRef} on={d3} theme={theme} d={d} />}
         {picking && <div className="pick-bar" role="status">Click a place on the map to set the route start. <button type="button" className="link" onClick={() => setPicking(false)}>Cancel</button></div>}
         {legend && (
           <div className="map-legend" id="map-legend" role="region" aria-label="Map legend">

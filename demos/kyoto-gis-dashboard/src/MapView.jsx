@@ -128,13 +128,13 @@ function lmLayer(id, filter, T, { minzoom = 0, k = 1, overlap = false, label = n
   };
 }
 
-export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, onGeo, geoOn = false, mapRef: externalRef, walkSet, maxWalk, busRun, busHighlight, onBusProgress, busCtl, route = null, origin = null, cinematic = false, coverage = null, pointsOn = true, padding = null }) {
+export default function MapView({ theme = 'dark', active = true, focus = null, data, cats, types, query, densityMode, basemap, selected, onSelect, onHover, onGeo, geoOn = false, mapRef: externalRef, walkSet, maxWalk, busRun, busHighlight, onBusProgress, busCtl, route = null, origin = null, cinematic = false, coverage = null, pointsOn = true, padding = null, pickOff = false }) {
   const el = useRef(null);
   const mapRef = useRef(null);
   const marker = useRef(null);
   const callout = useRef(null);
   const latest = useRef({});
-  latest.current = { onSelect, onHover, onGeo, cats, types, query, densityMode, active, theme, onBusProgress, cinematic, padding, pointsOn };
+  latest.current = { onSelect, onHover, onGeo, cats, types, query, densityMode, active, theme, onBusProgress, cinematic, padding, pointsOn, pickOff };
   const introPending = useRef(false);
   useEffect(() => {
     if (active && introPending.current && mapRef.current) { introPending.current = false; mapRef.current.resize(); intro(mapRef.current); }
@@ -185,6 +185,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
       if (map.getLayer('transport-hover')) map.setFilter('transport-hover', id && src === 'transport' ? ['==', ['get', 'id'], id] : NONE);
     };
     map.on('mousemove', (e) => {
+      if (latest.current.pickOff) return;   // no hover cards over the 3D surface (it sets its own cursor)
       const f = map.getLayer('attractions-pt') ? map.queryRenderedFeatures(e.point, { layers: interactive.filter((l) => map.getLayer(l)) }) : [];
       map.getCanvas().style.cursor = f.length ? 'pointer' : '';
       setHoverId(f.length && (f[0].source === 'attractions' || f[0].source === 'transport') ? f[0].properties.id : null, f[0]?.source);
@@ -192,6 +193,7 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
     });
     map.on('mouseout', () => { setHoverId(null); latest.current.onHover(null); });
     map.on('click', (e) => {
+      if (latest.current.pickOff) return;   // the 3D density surface handles clicks while it is on
       const pad = 4;
       const box = [[e.point.x - pad, e.point.y - pad], [e.point.x + pad, e.point.y + pad]];
       const a = map.queryRenderedFeatures(box, { layers: LM_PICK.filter((l) => map.getLayer(l)) });

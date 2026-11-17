@@ -244,7 +244,10 @@ export default function SeasonStory({ season = 'autumn', autoSeason = 'autumn', 
       fx.width = Math.round(fx.clientWidth * dpr); fx.height = Math.round(fx.clientHeight * dpr); S.dpr = dpr; S.sizedFor = S.season;
     };
     resize();
-    const ro = new ResizeObserver(() => { resize(); kick(); });
+    // a resize clears a canvas; draw again in the same frame so the cleared canvas is never shown (the cards
+    // change width while the chosen one grows, which used to flash every frame)
+    const redrawNow = () => { cancelAnimationFrame(raf); raf = 0; frame(performance.now()); };
+    const ro = new ResizeObserver(() => { resize(); redrawNow(); });
     SEASON_ORDER.forEach((k) => ro.observe(canv.current[k]));
     const onScroll = () => {
       const r = root.current.getBoundingClientRect();
@@ -315,7 +318,7 @@ export default function SeasonStory({ season = 'autumn', autoSeason = 'autumn', 
       if ((!reduce && visible && !document.hidden) || !settled) raf = requestAnimationFrame(frame);
     }
     function kick() { if (!raf && !dead) { last = performance.now(); raf = requestAnimationFrame(frame); } }
-    S.kick = () => { if (S.sizedFor !== S.season) resize(); kick(); };
+    S.kick = () => { if (S.sizedFor !== S.season) { resize(); redrawNow(); } kick(); };
     onScroll();
     return () => {
       dead = true; cancelAnimationFrame(raf); io.disconnect(); ro.disconnect();

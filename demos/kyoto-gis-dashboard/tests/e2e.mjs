@@ -137,6 +137,7 @@ check('explore: 7 place photos, each with author, licence, source and a checked 
 check('page order: video, seasons, explore, features, dashboard, credits; front photo loaded', ex.order.join('>') === 'top>seasons>explore>features>dashboard>credits' && ex.thumbs === 7 && ex.imgOk, ex.order.join('>'));
 await page.locator('.ex-dot').nth(3).click();
 await page.waitForTimeout(2500); // the deck glides to its place
+await page.waitForFunction(() => { const c = [...document.querySelectorAll('.ex-card')].find((e) => e.classList.contains('front')); return c && Math.abs(+c.style.getPropertyValue('--o')) < 0.02; }, null, { timeout: 15000 }).catch(() => {});   // until the deck has settled
 const exText = await page.locator('#explore').innerText();
 check('picking a place shows its name, municipality and photo credit', exText.includes('平等院') && exText.includes('Uji City') && exText.includes('Martin Falbisoner') && exText.includes('CC BY-SA 4.0') && /\d+ attractions? within 1 km/.test(exText));
 const ringA = await page.evaluate(() => ({ rot: +document.querySelectorAll('.ex-card')[3].style.getPropertyValue('--o'), side: +document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--o'), front: document.querySelector('.ex-card.front .ex-cap strong').innerText, bg: [...document.querySelectorAll('.ex-bg i')].findIndex((e) => e.classList.contains('on')), h: document.getElementById('explore').offsetHeight }));
@@ -148,7 +149,7 @@ check('explore scene: the chosen card faces the viewer in the middle; the others
 await page.locator('.ex-seg button').nth(0).click(); await page.evaluate(() => document.getElementById('explore').dispatchEvent(new PointerEvent('pointerleave')));
 await page.waitForFunction(() => Math.abs(parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--rz')) - 10.5) < 0.6, null, { timeout: 12000 }).catch(() => {});   // the switch is slower when frames are slow (software rendering)
 const fanA = await page.evaluate(() => ({ rz: parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--rz')), ry: parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--ry')), on: document.querySelector('.ex-seg .on').innerText }));
-await page.locator('.ex-seg button').nth(1).click(); await page.waitForTimeout(1800);
+await page.locator('.ex-seg button').nth(1).click(); await page.waitForTimeout(1800); await page.waitForFunction(() => Math.abs(parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--ry'))) > 8, null, { timeout: 12000 }).catch(() => {});
 check('explore scene: Fan holds the cards like a hand of cards, Orbit spreads them out again', fanA.on === 'Fan' && Math.abs(fanA.rz - 10.5) < 0.6 && Math.abs(fanA.ry) < 0.6 && (await page.evaluate(() => Math.abs(parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--ry'))))) > 8, JSON.stringify(fanA));
 // pointer orbit: moving the pointer turns the ring in depth, near cards more than far ones; it returns to centre on leave
 const dkb = await page.locator('.ex-deck').boundingBox();
@@ -158,11 +159,11 @@ await page.evaluate(() => document.getElementById('explore').dispatchEvent(new P
 const orb0 = await page.evaluate(() => { const c = [...document.querySelectorAll('.ex-card')]; const f = c.findIndex((e) => e.classList.contains('front')); return Math.abs(parseFloat(c[f].style.getPropertyValue('--ry'))) + Math.abs(parseFloat(c[f].style.getPropertyValue('--rx'))); });
 check('explore scene: the pointer turns the ring in depth (the front card yaws and pitches), with no blur at rest, and it returns to centre when the pointer leaves', Math.abs(orb.fry) > 2 && orb.frx > 0.5 && orb.dimF < 0.1 && !orb.filt && orb0 < 0.4, JSON.stringify({ orb, orb0 }));
 for (let i = 0; i < 5; i++) { await page.locator('.ex-arrow').nth(1).click(); await page.waitForTimeout(50); }
-await page.waitForTimeout(2600);
+await page.waitForTimeout(2600); await page.waitForFunction(() => { const c = [...document.querySelectorAll('.ex-card')].find((e) => e.classList.contains('front')); return c && Math.abs(+c.style.getPropertyValue('--o')) < 0.02; }, null, { timeout: 15000 }).catch(() => {});   // until the deck has settled
 const ringC = await page.evaluate(() => { const cs = [...document.querySelectorAll('.ex-card')]; const f = cs.findIndex((e) => e.classList.contains('front')); return { f, o: +cs[f].style.getPropertyValue('--o'), card: cs[f].querySelector('.ex-cap span').innerText, bar: document.querySelector('.ex-place h3 span').innerText, dot: [...document.querySelectorAll('.ex-dot')].findIndex((d) => d.classList.contains('on')), bg: [...document.querySelectorAll('.ex-bg i')].findIndex((e) => e.classList.contains('on')), cta: document.querySelector('.ex-cta small').textContent }; });
 check('explore scene: five quick clicks from place 4 go round past the end to place 2; card, text, dot, backdrop and map button agree', ringC.f === 1 && Math.abs(ringC.o) < 0.06 && ringC.bar.includes(ringC.card) && ringC.dot === 1 && ringC.bg === 1 && ringC.cta.includes(ringC.card), JSON.stringify(ringC));
 await page.locator('.ex-dot').nth(3).click();
-await page.waitForTimeout(2500);
+await page.waitForTimeout(2500); await page.waitForFunction(() => { const c = [...document.querySelectorAll('.ex-card')].find((e) => e.classList.contains('front')); return c && Math.abs(+c.style.getPropertyValue('--o')) < 0.02; }, null, { timeout: 15000 }).catch(() => {});   // until the deck has settled
 const dk = await page.locator('.ex-deck').boundingBox();
 await page.mouse.move(dk.x + dk.width / 2, dk.y + dk.height / 2);
 await page.mouse.down();
@@ -777,7 +778,7 @@ await rp.waitForTimeout(4200);
 const y_rc3 = await rp.locator('.route-card').innerText();
 check('rapid clicks: the older, slower request is dropped; the card and the map show the latest place', y_rc3.includes('銀閣寺') && y_rc3.includes('2.22 km') && !y_rc3.includes('1.11 km'), y_rc3.replace(/\n/g, ' / ').slice(0, 160));
 // cinematic: real tilt (MapLibre pitch), remembered; Top-down returns to 2D
-await rp.locator('.map-tools .cine').click();
+await rp.locator('.map-tools .cine:not(.d3t)').click();
 await exploreTab(rp); await rp.locator('#q').fill('A00182'); await rp.locator('.results button').first().click();
 await rp.waitForTimeout(7000);
 const y_cine = await rp.evaluate(() => ({ pitch: window.__kyotoMap.getPitch(), bearing: window.__kyotoMap.getBearing(), saved: localStorage.getItem('kyoto-gis-cinematic') }));
@@ -786,7 +787,7 @@ await rp.screenshot({ path: `${out}/29-cinematic.png` });
 await rp.getByRole('button', { name: 'Top-down' }).click();
 await rp.waitForTimeout(900);
 check('Top-down returns to a flat view', (await rp.evaluate(() => window.__kyotoMap.getPitch())) === 0);
-await rp.locator('.map-tools .cine').click();
+await rp.locator('.map-tools .cine:not(.d3t)').click();
 await rp.unroute('**/routing.openstreetmap.de/**');
 await rp.getByRole('button', { name: 'Clear start' }).click();
 await rp.waitForTimeout(1500);
@@ -863,12 +864,31 @@ cur.trail = { slow: sp2 - sp1, fast: sp3 - sp2 };
 check('pointer light: one fixed canvas for the whole page, follows the pointer after scrolling, takes no clicks; sparks are laid by distance, so a crawl and a flick over the same path lay about the same number',
   Math.abs(cur.trail.slow - cur.trail.fast) <= Math.max(14, 0.25 * cur.trail.slow) && cur.trail.slow > 40 &&  cur.n === 1 && cur.pe === 'none' && cur.pos === 'fixed' && cur.glow > 0.5 && Math.hypot(cur.ring.x - 640, cur.ring.y - 470) < 40 && cur.hit, JSON.stringify(cur));
 await rp.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' }));
-await rp.waitForFunction(() => document.querySelector('.swarm')?.dataset.s === '1', null, { timeout: 8000 }).catch(() => {});
-await rp.waitForTimeout(900);
-const sw1 = await rp.evaluate(() => { const s = document.querySelector('.swarm'); if (!s) return null; const f = document.querySelector('.outro-frame').getBoundingClientRect(); const g = s.querySelector('b.g').getBoundingClientRect(); return { step: s.dataset.s, n: s.querySelectorAll('i').length, guides: s.querySelectorAll('b').length, pe: getComputedStyle(s).pointerEvents, guideW: Math.round((g.width / f.width) * 100), spread: new Set([...s.querySelectorAll('i')].map((e) => Math.round(e.getBoundingClientRect().left / 40))).size }; });
-await rp.waitForFunction(() => !document.querySelector('.swarm'), null, { timeout: 12000 }).catch(() => {});
-const sw2 = await rp.evaluate(() => ({ gone: !document.querySelector('.swarm'), card: document.querySelector('.outro-card h2').innerText, on: document.querySelector('.outro').classList.contains('on'), closing: !!document.querySelector('.closing') }));
-check('closing page: a swarm of pointers frames the four panels and the card, takes no clicks, then leaves the finished page', sw1 && sw1.n === 16 && sw1.guides === 5 && sw1.pe === 'none' && sw1.guideW >= 20 && sw1.spread >= 6 && sw2.gone && sw2.on && /Kyoto Prefecture Tourism GIS/.test(sw2.card) && !sw2.closing, JSON.stringify({ sw1, sw2 }));
+await rp.waitForTimeout(400);
+const ob0 = await rp.evaluate(() => ({ panels: document.querySelectorAll('.op.on').length, card: getComputedStyle(document.querySelector('.outro-card')).opacity }));
+await rp.waitForFunction(() => document.querySelector('.swarm.s4'), null, { timeout: 15000 }).catch(() => {});
+const ob1 = await rp.evaluate(() => ({ ptrs: document.querySelectorAll('.swarm i').length, box: !!document.querySelector('.sw-box em'), tag: document.querySelector('.sw-box em')?.textContent || '', guides: document.querySelectorAll('.sw-guides line').length, panels: document.querySelectorAll('.op.on').length, pe: getComputedStyle(document.querySelector('.swarm')).pointerEvents }));
+await rp.waitForFunction(() => document.querySelector('.outro.built'), null, { timeout: 20000 }).catch(() => {});
+await rp.waitForTimeout(1500);
+const ob2 = await rp.evaluate(() => ({ swarm: !!document.querySelector('.swarm'), panels: document.querySelectorAll('.op.on').length, card: getComputedStyle(document.querySelector('.outro-card')).opacity, chips: [...document.querySelectorAll('.oc-team li')].every((l) => getComputedStyle(l).opacity === '1'), btn: getComputedStyle(document.querySelector('.outro-card .ist-skip')).visibility }));
+check('closing page: starts empty; pointers pull guides and drag a sized box round each panel as it builds; then the card, the names and the button; the finished page stays', ob0.panels === 0 && +ob0.card === 0 && ob1.ptrs === 14 && ob1.box && / × /.test(ob1.tag) && ob1.guides === 4 && ob1.panels >= 1 && ob1.panels < 4 && ob1.pe === 'none' && !ob2.swarm && ob2.panels === 4 && +ob2.card === 1 && ob2.chips && ob2.btn === 'visible', JSON.stringify({ ob0, ob1, ob2 }));
+// 3D density: switched on next to Cinematic view, the surface rises from the project's density grid; a click on it opens a card with the data for that spot
+await rp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+const d3before = await rp.evaluate(() => ({ pts: window.__kyotoMap.getLayoutProperty('attractions-pt', 'visibility') }));
+await rp.locator('.d3t').click();
+await rp.waitForFunction(() => document.querySelector('.d3.ready'), null, { timeout: 40000 }).catch(() => {});
+await rp.waitForTimeout(1200);
+const d3a = await rp.evaluate(() => ({ layer: !!window.__kyotoMap.getLayer('density-3d'), pitch: window.__kyotoMap.getPitch(), labels: [...document.querySelectorAll('.d3-lab span')].map((e) => e.textContent), views: document.querySelectorAll('.d3-views button').length, heat: window.__kyotoMap.getLayoutProperty('heat', 'visibility'), kde: window.__kyotoMap.getLayer('kde-fill') ? window.__kyotoMap.getLayoutProperty('kde-fill', 'visibility') : 'none', key: document.querySelector('.d3-key')?.innerText || '' }));
+const d3pt = await rp.evaluate(() => { const r = document.querySelector('.d3-lab').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.bottom + 10 }; });
+await rp.mouse.click(d3pt.x, d3pt.y); await rp.waitForTimeout(2600);
+const d3c = await rp.evaluate(() => { const c = document.querySelector('.d3-card'); return c ? { text: c.innerText, line: document.querySelector('.d3-line path').getAttribute('d') } : null; });
+check('3D density: the surface rises with view presets and short peak labels, the 2D density layers are off, and a click opens a glass card with the data for that spot',
+  d3a.layer && d3a.pitch > 40 && d3a.views === 3 && d3a.labels.length >= 3 && d3a.labels.includes('Higashiyama') && d3a.heat === 'none' && d3a.kde === 'none' && /records \/ km²/.test(d3a.key)
+  && d3c && /records \/ km²/.test(d3c.text) && /denser than [\d.]+% of the prefecture/.test(d3c.text) && /attraction records? within 1 km/.test(d3c.text) && /transit stops? within 1 km/.test(d3c.text) && /^M/.test(d3c.line),
+  JSON.stringify({ d3a, card: d3c && d3c.text.slice(0, 160) }));
+await rp.locator('.d3t').click(); await rp.waitForTimeout(2000);
+const d3off = await rp.evaluate(() => ({ layer: !!window.__kyotoMap.getLayer('density-3d'), pts: window.__kyotoMap.getLayoutProperty('attractions-pt', 'visibility'), overlay: !!document.querySelector('.d3') }));
+check('3D density: switching it off sinks the surface, removes the layer and puts the points back', !d3off.layer && !d3off.overlay && d3off.pts === d3before.pts, JSON.stringify({ d3before, d3off }));
 check('no page errors on the layout / route page', rpErr.length === 0, rpErr.join(' | '));
 await rp.close();
 
