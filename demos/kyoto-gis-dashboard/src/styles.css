@@ -1883,14 +1883,14 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
 .fx-toggle .fx-head { fill: currentColor; transition: fill .25s; }
 .fx-toggle .fx-glow { fill: currentColor; opacity: 0; transition: opacity .25s; }
 .fx-toggle .fx-off { stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; opacity: .8; transition: opacity .2s; }
-.fx-toggle.on { color: #b9d8ff; border-color: rgba(150, 200, 255, .45); }
+.fx-toggle.on { color: #f2cdbd; border-color: rgba(242, 190, 168, .45); }
 .fx-toggle.on .fx-tail { opacity: .9; }
-.fx-toggle.on .fx-head { fill: #fff; }
+.fx-toggle.on .fx-head { fill: #fff6ee; }
 .fx-toggle.on .fx-glow { opacity: .35; }
 .fx-toggle.on .fx-off { opacity: 0; }
-:root[data-theme='light'] .fx-toggle.on { color: #2a62c9; border-color: rgba(42, 98, 201, .35); }
-:root[data-theme='light'] .fx-toggle.on .fx-head { fill: #1d4fb5; }
-:root[data-theme='light'] .fx-toggle.on .fx-glow { fill: #63d4ea; opacity: .4; }
+:root[data-theme='light'] .fx-toggle.on { color: #6a5f5b; border-color: rgba(176, 84, 58, .4); }
+:root[data-theme='light'] .fx-toggle.on .fx-head { fill: #221e20; }
+:root[data-theme='light'] .fx-toggle.on .fx-glow { fill: #b0543a; opacity: .3; }
 @media (hover: none), (pointer: coarse) { .fx-toggle { display: none; } }
 /* the dashboard header keeps the controls' corner free; with the toggle there it needs one more slot */
 @media (hover: hover) and (pointer: fine) { .top { padding-right: calc(280px + env(safe-area-inset-right, 0px)); } }

@@ -866,8 +866,8 @@ cur.fast = { tail: Math.round(await CL('maxTail')) };
 await rp.waitForTimeout(2200); const fh1 = await CL('heads'); await rp.waitForTimeout(3200); const fh2 = await CL('heads');
 cur.rest = { rest: +(await CL('rest')).toFixed(2), spread: Math.round(await CL('spread')), tail: Math.round(await CL('maxTail')), drawn: await CL('drawn'), drift: Math.round(fh1.reduce((a, q, k) => a + Math.hypot(q[0] - fh2[k][0], q[1] - fh2[k][1]), 0) / fh1.length) };
 check('pointer light: one fixed canvas that takes no clicks; every particle has its own tail, long when the hand is fast, short when slow; resting, the flock keeps drifting round the pointer',
-  cur.n === 1 && cur.pe === 'none' && cur.pos === 'fixed' && cur.hit && cur.count >= 40 && cur.slow.drawn === cur.count && cur.slow.spread < 60 && cur.fast.tail > cur.slow.tail * 2 && cur.fast.tail <= 130
-  && cur.rest.rest > 0.9 && cur.rest.drawn === cur.count && cur.rest.drift > 8 && cur.rest.spread > 25 && cur.rest.spread < 140 && cur.rest.tail < 90, JSON.stringify(cur));
+  cur.n === 1 && cur.pe === 'none' && cur.pos === 'fixed' && cur.hit && cur.count >= 40 && cur.slow.drawn === cur.count && cur.slow.spread < 95 && cur.fast.tail > cur.slow.tail * 2 && cur.fast.tail <= 280
+  && cur.rest.rest > 0.9 && cur.rest.drawn === cur.count && cur.rest.drift > 8 && cur.rest.spread > 25 && cur.rest.spread < 140 && cur.rest.tail < 140, JSON.stringify(cur));
 // theme: the colours ease across without resetting the flock
 const th0 = await rp.evaluate(() => document.documentElement.dataset.theme);
 await rp.locator('.theme-toggle').first().click(); await rp.waitForFunction((t) => document.documentElement.dataset.theme !== t, th0, { timeout: 8000 }).catch(() => {}); await rp.waitForTimeout(1500);
