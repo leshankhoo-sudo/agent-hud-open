@@ -334,7 +334,7 @@ export default function App() {
     const p = hit.f.properties;
     const ph = d?.photos?.photos?.[s.id];
     setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, label: recordLabel(p), en: !!(p.name && englishPart(p.name, p.name_en)), sub: CATEGORY_LABEL[p.category],
-      photo: ph ? { src: `${import.meta.env.BASE_URL}${ph.src}`, related: ph.match === 'wikidata-related' ? ph.matched_label : null, credit: `${ph.artist} · ${ph.license}` } : null });
+      photo: ph ? { src: `${import.meta.env.BASE_URL}${ph.src}`, related: ph.match === 'wikidata-related' ? ph.matched_label : ph.match === 'site-contains' ? ph.site : null, credit: `${ph.artist} · ${ph.license}` } : null });
     openPanel('place');
     if (hit.layer !== 'attraction') setTab((t) => (t === 'walk' ? 'overview' : t));
     if (!d?.bus?.point_stops?.[s.id]) setTab((t) => (t === 'bus' ? 'overview' : t));
@@ -831,7 +831,7 @@ export default function App() {
                 {tabs.map(([k, l]) => <button key={k} type="button" role="tab" id={`tab-${k}`} aria-selected={curTab === k} aria-controls={`pane-${k}`} className={curTab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}
               </div>
               <div className="pane" role="tabpanel" id="pane-overview" aria-labelledby="tab-overview" hidden={curTab !== 'overview'}>
-                <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} onWalk={() => setTab('walk')} rel={d.relations} byId={byId} onOpen={(id) => select({ id })} recs={recById} onRecord={(id) => { setRecFocus(id); setSheet('records'); }} />
+                <Overview hit={selHit} pm={d.pointMuni} photos={d.photos} tourism={d.tourism} dup={dupOsm[sel.id]} walk={walk} ctx={d.context?.records?.[sel.id]} check={d.checks?.records?.[sel.id]} onWalk={() => setTab('walk')} rel={d.relations} byId={byId} onOpen={(id) => select({ id })} recs={recById} onRecord={(id) => { setRecFocus(id); setSheet('records'); }} />
               </div>
               {selStopKeys && (
                 <div className="pane" role="tabpanel" id="pane-bus" aria-labelledby="tab-bus" hidden={curTab !== 'bus'}>
@@ -1051,9 +1051,28 @@ const MATCH_TEXT = {
   // a site added by the POI audit: the Wikidata item that, with OpenStreetMap, confirmed where it is
   'site-wikidata': (p) => `Photo of Wikidata ${p.wikidata}${p.matched_label ? ` (${p.matched_label})` : ''}, the item that confirmed this site's location with OpenStreetMap`,
   // Commons search: the file names the place (title or category) AND was taken near the point
+  'site-contains': (p) => `Photo of ${p.site}${p.site_en ? ` (${p.site_en})` : ''}, the site this point lies in (Wikidata ${p.wikidata}, linked from that site's OpenStreetMap record). It shows the site, not this exact spot`,
+  'wikidata-checked': (p) => `Photo of Wikidata ${p.wikidata}, the item whose name and place confirm this record's name`,
+  'viewpoint-here': (p) => `Commons photo taken ${p.m} m from this viewpoint${p.shows ? `: ${p.shows}` : ''}; checked by eye`,
   'commons-search': (p) => `Commons photo taken ${p.distance_m} m from this point whose ${p.matched_label ? `category (${p.matched_label.slice(9)})` : 'file name'} names this place ("${p.matched_text}")`,
 };
-const BADGE = { 'wikidata-related': 'Related place', 'commons-geo': 'Nearby photo', 'commons-near': 'Nearby photo', 'osm-wikidata': 'Linked in OSM', 'osm-image': 'Linked in OSM', 'osm-commons': 'Linked in OSM', 'commons-search': 'Nearby photo' };
+const BADGE = { 'site-contains': 'Photo of the site', 'viewpoint-here': 'Taken here', 'wikidata-related': 'Related place', 'commons-geo': 'Nearby photo', 'commons-near': 'Nearby photo', 'osm-wikidata': 'Linked in OSM', 'osm-image': 'Linked in OSM', 'osm-commons': 'Linked in OSM', 'commons-search': 'Nearby photo' };
+
+// Which independent sources agree with the name (name_checks.json). For a record with no name, Wikidata
+// items close by are shown as what is near it, never as its name.
+const CHECK_BY = { wikidata: 'Wikidata', 'osm-wikidata': 'Wikidata link in OSM', 'kyoto-city': 'Kyoto City sightseeing list' };
+function NameCheck({ c }) {
+  const wd = (w) => <a href={`https://www.wikidata.org/wiki/${w.q}`} target="_blank" rel="noreferrer" lang="ja">{w.ja}</a>;
+  if (c.status === 'confirmed') return (
+    <div><dt>Name check</dt><dd>Confirmed by {c.by.map((b) => CHECK_BY[b]).join(' · ')}{c.wikidata && <> · {wd(c.wikidata)} <small className="muted">{c.wikidata.m} m</small></>}</dd></div>);
+  if (c.status === 'related') return (
+    <div><dt>Name check</dt><dd>A similar name on Wikidata: {wd(c.related)} <small className="muted">{c.related.m} m</small><small className="muted">Probably the same place under a fuller or shorter name; not confirmed.</small></dd></div>);
+  if (c.status === 'osm-only') return (
+    <div><dt>Name check</dt><dd>Only in OpenStreetMap so far<small className="muted">Not found on Wikidata or in the Kyoto City list; the name is as mapped in OpenStreetMap.</small></dd></div>);
+  if (c.candidates?.length) return (
+    <div><dt>Nearby</dt><dd>{c.candidates.map((w, i) => <span key={w.q}>{i > 0 && ' · '}{wd(w)} <small className="muted">{w.m} m</small></span>)}<small className="muted">Wikidata items close to this point. They tell what is nearby, not what this point is.</small></dd></div>);
+  return null;
+}
 
 // Top of the details panel: reliable photo (if any), name, category and where it is.
 // Study area summary: how many municipalities the study area covers, from a polygon intersection made by
@@ -1192,7 +1211,7 @@ function Summary({ hit, pm, photos, color, onClose, onBack }) {
 // How a containing OSM area is described: a location, never an identification of the point.
 const insidePhrase = (k) => (/temple|shrine|place of worship|church/.test(k) ? 'Inside the grounds of' : k === 'building' ? 'At' : 'Inside');
 
-function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk, rel, byId, onOpen, recs, onRecord }) {
+function Overview({ hit, pm, photos, tourism, dup, walk, ctx, check, onWalk, rel, byId, onOpen, recs, onRecord }) {
   const p = hit.f.properties;
   const [lon, lat] = hit.f.geometry.coordinates;
   const muniCode = pm?.points?.[p.id];
@@ -1213,6 +1232,7 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk, rel, byId,
             <small className="muted">OpenStreetMap area that contains this point. It tells where the point is, not what it is.</small>
           </dd></div>
         )}
+        {hit.layer === 'attraction' && check && <NameCheck c={check} />}
         {!p.name && ctx && (
           <div><dt>Record</dt><dd>{ctx.identity === 'osm_tags' ? <>OSM-tagged: {Object.keys(ctx.tags || {}).join(', ')}</> : 'Unverified: only a category tag in OpenStreetMap'}</dd></div>
         )}

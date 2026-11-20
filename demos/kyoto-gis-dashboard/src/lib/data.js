@@ -42,6 +42,7 @@ const FILES = {
   bus: 'bus/index.json',
   context: 'attraction_context.json',
   labels: 'attraction_labels.json',      // labels for records with no OSM name (scripts/label_unnamed.py)
+  checks: 'name_checks.json',            // each name checked against Wikidata and the Kyoto City list (scripts/crosscheck_names.py)
   relations: 'poi_relations.json',
   records: 'dsight_records.json',       // every Kyoto City DSIGHT_1.csv record and what was done with it
   geography: 'dsight_geography.geojson', // its place names, mountains and rivers that two sources place

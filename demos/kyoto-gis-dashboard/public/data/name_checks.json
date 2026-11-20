@@ -1,0 +1,5728 @@
+{
+ "meta": {
+  "built_at": "2026-11-20T19:24:21+00:00",
+  "sources": {
+   "wikidata": "https://query.wikidata.org/sparql (wikibase:box over Kyoto Prefecture, items with a Japanese label) with Japanese aliases (skos:altLabel) (retrieved 2026-11-20T06:57:36+00:00, CC0)",
+   "osm": "data/cache/osm_attraction_nodes.json (OSM API)",
+   "kyoto_city": "DSIGHT_1.csv, Kyoto City, CC BY 4.0 (public/data/dsight_records.json)"
+  },
+  "rules": [
+   "wikidata: an item within 300 m with the same Japanese name (its label or an alias).",
+   "osm-wikidata: the Wikidata link on the record's own OSM node, with the same name.",
+   "kyoto-city: the Kyoto City sightseeing list names this site.",
+   "Records with no name: Wikidata items within 100 m are candidates for review only, never used as the name.",
+   "Google Maps is not a source (its terms forbid copying its data); the review table links to it for checking by hand."
+  ],
+  "counts": {
+   "osm-only": 227,
+   "related": 20,
+   "unnamed": 218,
+   "confirmed": 174,
+   "by_wikidata": 150,
+   "by_osm-wikidata": 29,
+   "by_kyoto-city": 124,
+   "unnamed_with_candidates": 103
+  }
+ },
+ "records": {
+  "A00001": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00002": {
+   "related": {
+    "q": "Q11606372",
+    "ja": "経ヶ岬",
+    "en": "Cape Kyōgamisaki",
+    "m": 228
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00003": {
+   "status": "unnamed"
+  },
+  "A00004": {
+   "wikidata": {
+    "q": "Q64026339",
+    "ja": "琴引浜鳴き砂文化館",
+    "en": "Kotohikihama Singing Sand Museum",
+    "m": 8,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00005": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00006": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11387301",
+     "ja": "傘松公園",
+     "en": "Kasamatsu Park",
+     "m": 18
+    }
+   ]
+  },
+  "A00007": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00008": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00009": {
+   "status": "unnamed"
+  },
+  "A00010": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00011": {
+   "wikidata": {
+    "q": "Q11442700",
+    "ja": "天橋立ビューランド",
+    "en": "Amanohashidate View Land",
+    "m": 74,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00012": {
+   "status": "unnamed"
+  },
+  "A00013": {
+   "status": "unnamed"
+  },
+  "A00014": {
+   "wikidata": {
+    "q": "Q2969288",
+    "ja": "福知山城",
+    "en": "Fukuchiyama Castle",
+    "m": 8,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00015": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00016": {
+   "status": "unnamed"
+  },
+  "A00017": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00018": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00019": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q15229013",
+     "ja": "嵐山モンキーパークいわたやま",
+     "en": "Iwatayama Monkey Park",
+     "m": 28
+    }
+   ]
+  },
+  "A00020": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00021": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00022": {
+   "wikidata": {
+    "q": "Q139782410",
+    "ja": "与謝野町立江山文庫",
+    "en": "Kōzan Bunko",
+    "m": 14,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00023": {
+   "wikidata": {
+    "q": "Q104721135",
+    "ja": "亀岡市文化資料館",
+    "en": "Kameoka Museum of Culture",
+    "m": 23,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00024": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00025": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00026": {
+   "wikidata": {
+    "q": "Q18336820",
+    "ja": "京都ギリシアローマ美術館",
+    "en": "Kyoto Graeco-Roman Museum",
+    "m": 9,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00027": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00028": {
+   "wikidata": {
+    "q": "Q11374929",
+    "ja": "京都大学総合博物館",
+    "en": "Kyoto University Museum",
+    "m": 11,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00029": {
+   "wikidata": {
+    "q": "Q140268804",
+    "ja": "京都嵐山オルゴール博物館",
+    "en": "Kyoto Arashiyama Orgel Museum",
+    "m": 12,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00030": {
+   "wikidata": {
+    "q": "Q127596070",
+    "ja": "嵯峨美術大学・嵯峨美術短期大学附属博物館",
+    "en": "The Museum of Kyoto Saga University of Arts",
+    "m": 61,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00031": {
+   "wikidata": {
+    "q": "Q127503199",
+    "ja": "京都工芸繊維大学美術工芸資料館",
+    "en": "Kyoto Institute of Technology Museum and Archives",
+    "m": 11,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00032": {
+   "wikidata": {
+    "q": "Q11375001",
+    "ja": "京都市学校歴史博物館",
+    "en": "Kyoto Municipal Museum of School History",
+    "m": 6,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00033": {
+   "wikidata": {
+    "q": "Q6452125",
+    "ja": "京都市歴史資料館",
+    "en": "Kyoto City Library of Historical Documents",
+    "m": 9,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00034": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00035": {
+   "wikidata": {
+    "q": "Q11375124",
+    "ja": "京都市考古資料館",
+    "en": "Kyoto City Archaeological Museum",
+    "m": 11,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00036": {
+   "wikidata": {
+    "q": "Q11375242",
+    "ja": "京都府立堂本印象美術館",
+    "en": "Kyoto Prefectural Insho-Domoto Museum of Fine Arts",
+    "m": 3,
+    "via": "alias"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00037": {
+   "related": {
+    "q": "Q56062380",
+    "ja": "京都府立山城郷土資料館",
+    "en": "Kyoto Prefectural Yamashiro Regional Museum",
+    "m": 10
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00038": {
+   "related": {
+    "q": "Q858343",
+    "ja": "京都精華大学",
+    "en": "Kyoto Seika University",
+    "m": 53
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00039": {
+   "wikidata": {
+    "q": "Q6452114",
+    "ja": "京都芸術センター",
+    "en": "Kyoto Art Center",
+    "m": 14,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00040": {
+   "wikidata": {
+    "q": "Q127597163",
+    "ja": "京都芸術大学芸術館",
+    "en": "Kyoto University of Art and Design Gallery",
+    "m": 70,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00041": {
+   "wikidata": {
+    "q": "Q136472115",
+    "ja": "何必館・京都現代美術館",
+    "en": "Kahitsukan  Kyoto Museum of Contemporary Art",
+    "m": 20,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00042": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00043": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00044": {
+   "wikidata": {
+    "q": "Q104721022",
+    "ja": "博物館さがの人形の家",
+    "en": "Kyoto Japanese Folk Dolls Museum",
+    "m": 4,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00045": {
+   "wikidata": {
+    "q": "Q104721020",
+    "ja": "同志社大学歴史資料館",
+    "en": "Doshisha University Historical Museum",
+    "m": 294,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00046": {
+   "wikidata": {
+    "q": "Q104721107",
+    "ja": "城陽市歴史民俗資料館",
+    "en": "Jōyō City Historical and Folklore Reference Center",
+    "m": 79,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00047": {
+   "wikidata": {
+    "q": "Q139780566",
+    "ja": "大山崎町歴史資料館",
+    "en": "Ōyamazaki Town Historical Museum",
+    "m": 11,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00048": {
+   "wikidata": {
+    "q": "Q127602236",
+    "ja": "大西清右衛門美術館",
+    "en": "Onishi Seiwemon Museum",
+    "m": 6,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00049": {
+   "wikidata": {
+    "q": "Q21190901",
+    "ja": "大谷大学博物館",
+    "en": "Ōtani University Museum",
+    "m": 34,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00050": {
+   "wikidata": {
+    "q": "Q104721006",
+    "ja": "宇治市歴史資料館",
+    "en": "Uji History Museum",
+    "m": 10,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00051": {
+   "wikidata": {
+    "q": "Q5677900",
+    "ja": "宇治市源氏物語ミュージアム",
+    "en": "The Tale of Genji Museum",
+    "m": 47,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00052": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00053": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00054": {
+   "related": {
+    "q": "Q3329667",
+    "ja": "霊山歴史館",
+    "en": "Ryozen Museum of History",
+    "m": 15
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00055": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00056": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00057": {
+   "wikidata": {
+    "q": "Q125002905",
+    "ja": "楽美術館",
+    "en": "Raku Museum",
+    "m": 25,
+    "via": "alias"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00058": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00059": {
+   "related": {
+    "q": "Q11579925",
+    "ja": "白沙村荘",
+    "en": "Hakusasonsō",
+    "m": 59
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00060": {
+   "wikidata": {
+    "q": "Q11594325",
+    "ja": "福知山市佐藤太清記念美術館",
+    "en": "Fukuchiyama City Sato Taisei Memorial Art Museum",
+    "m": 10,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00061": {
+   "wikidata": {
+    "q": "Q11606115",
+    "ja": "細見美術館",
+    "en": "Hosomi Museum",
+    "m": 6,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00062": {
+   "wikidata": {
+    "q": "Q11615201",
+    "ja": "花園大学歴史博物館",
+    "en": "Hanazono University Historical Museum",
+    "m": 19,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00063": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00064": {
+   "wikidata": {
+    "q": "Q11622794",
+    "ja": "藤井斉成会有鄰館",
+    "en": "Yūrinkan Museum",
+    "m": 9,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00065": {
+   "wikidata": {
+    "q": "Q140288527",
+    "ja": "豊国神社宝物館",
+    "en": "Toyokuni Shrine Treasure Museum",
+    "m": 8,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00066": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00067": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00068": {
+   "wikidata": {
+    "q": "Q11665410",
+    "ja": "風俗博物館",
+    "en": "Costume Museum",
+    "m": 19,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00069": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00070": {
+   "wikidata": {
+    "q": "Q21019672",
+    "ja": "高麗美術館",
+    "en": "Koryo Museum of Art",
+    "m": 5,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00071": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00072": {
+   "wikidata": {
+    "q": "Q11559290",
+    "ja": "海軍記念館",
+    "en": "Navy Memorial Museum",
+    "m": 7,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00073": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11554121",
+     "ja": "河辺川",
+     "en": "Kawabe River",
+     "m": 95
+    }
+   ]
+  },
+  "A00074": {
+   "wikidata": {
+    "q": "Q1201304",
+    "ja": "京都タワー",
+    "en": "Kyoto Tower",
+    "m": 16,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00075": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11652982",
+     "ja": "長建寺",
+     "en": "Chōken-ji Temple",
+     "m": 94
+    }
+   ]
+  },
+  "A00076": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00077": {
+   "wikidata": {
+    "q": "Q3959661",
+    "ja": "掌美術館",
+    "en": "Shō Museum",
+    "m": 12,
+    "via": "alias"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00078": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00079": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00080": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00081": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00082": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00083": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00084": {
+   "related": {
+    "q": "Q17211497",
+    "ja": "きっづ光科学館ふぉとん",
+    "en": "The Kids' Science Museum of Photons",
+    "m": 12
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00085": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00086": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00087": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00088": {
+   "status": "unnamed"
+  },
+  "A00089": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q7108964",
+     "ja": "ケーブル八幡宮山上駅",
+     "en": "Cable-hachimangū-sanjō Station",
+     "m": 41
+    }
+   ]
+  },
+  "A00090": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00091": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00092": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00093": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00094": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00095": {
+   "status": "unnamed"
+  },
+  "A00096": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00097": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11432214",
+     "ja": "大井神社",
+     "en": "Oi Shrine (Kyoto)",
+     "m": 76
+    },
+    {
+     "q": "Q11561923",
+     "ja": "渡月橋",
+     "en": "Togetsu-kyō",
+     "m": 95
+    }
+   ]
+  },
+  "A00098": {
+   "status": "unnamed"
+  },
+  "A00099": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00100": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00101": {
+   "status": "unnamed"
+  },
+  "A00102": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q1004370",
+     "ja": "蹴上駅",
+     "en": "Keage Station",
+     "m": 90
+    },
+    {
+     "q": "Q17990723",
+     "ja": "蹴上インクライン",
+     "en": "Keage Incline",
+     "m": 94
+    }
+   ]
+  },
+  "A00103": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00104": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00105": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00106": {
+   "status": "unnamed"
+  },
+  "A00107": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q140571034",
+     "ja": "音羽の滝",
+     "en": "Otowa Fall",
+     "m": 29
+    },
+    {
+     "q": "Q221716",
+     "ja": "清水寺",
+     "en": "Kiyomizu-dera",
+     "m": 53
+    },
+    {
+     "q": "Q3276427",
+     "ja": "今年の漢字",
+     "en": "Kanji of the year",
+     "m": 53
+    }
+   ]
+  },
+  "A00108": {
+   "status": "unnamed"
+  },
+  "A00109": {
+   "status": "unnamed"
+  },
+  "A00110": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q270983",
+     "ja": "鹿苑寺",
+     "en": "Kinkaku-ji Temple",
+     "m": 63
+    },
+    {
+     "q": "Q126391445",
+     "ja": "鹿苑寺金閣",
+     "en": "Golden Pavilion",
+     "m": 66
+    }
+   ]
+  },
+  "A00111": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q270983",
+     "ja": "鹿苑寺",
+     "en": "Kinkaku-ji Temple",
+     "m": 16
+    },
+    {
+     "q": "Q126391445",
+     "ja": "鹿苑寺金閣",
+     "en": "Golden Pavilion",
+     "m": 20
+    }
+   ]
+  },
+  "A00112": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q270983",
+     "ja": "鹿苑寺",
+     "en": "Kinkaku-ji Temple",
+     "m": 78
+    },
+    {
+     "q": "Q126391445",
+     "ja": "鹿苑寺金閣",
+     "en": "Golden Pavilion",
+     "m": 80
+    }
+   ]
+  },
+  "A00113": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00114": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q257473",
+     "ja": "慈照寺",
+     "en": "Ginkaku-ji Temple",
+     "m": 31
+    },
+    {
+     "q": "Q107020582",
+     "ja": "慈照寺銀閣",
+     "en": "Silver Pavilion",
+     "m": 40
+    },
+    {
+     "q": "Q107020583",
+     "ja": "慈照寺東求堂",
+     "en": "Tōgu-dō",
+     "m": 54
+    }
+   ]
+  },
+  "A00115": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00116": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00117": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q986750",
+     "ja": "高山寺",
+     "en": "Kōzan-ji Temple",
+     "m": 8
+    },
+    {
+     "q": "Q107020577",
+     "ja": "高山寺石水院（五所堂）",
+     "en": "Sekisui-in, Kōzan-ji",
+     "m": 9
+    }
+   ]
+  },
+  "A00118": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11442700",
+     "ja": "天橋立ビューランド",
+     "en": "Amanohashidate View Land",
+     "m": 55
+    }
+   ]
+  },
+  "A00119": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00120": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00121": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q135179289",
+     "ja": "賀茂山口神社",
+     "en": "Kamo Yamaguchi (Sawada) Shrine",
+     "m": 76
+    }
+   ]
+  },
+  "A00122": {
+   "related": {
+    "q": "Q107020607",
+    "ja": "二条城二の丸御殿大広間",
+    "en": "Ōhiroma",
+    "m": 3
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00123": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00124": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11555353",
+     "ja": "法観寺",
+     "en": "Hōkan-ji Temple",
+     "m": 5
+    },
+    {
+     "q": "Q3571897",
+     "ja": "金剛寺",
+     "en": "Yasaka Kōshin-dō Temple",
+     "m": 46
+    },
+    {
+     "q": "Q11662837",
+     "ja": "青龍寺",
+     "en": "Seiryū-ji Temple",
+     "m": 61
+    }
+   ]
+  },
+  "A00125": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11422904",
+     "ja": "圓徳院",
+     "en": "Entoku-in",
+     "m": 5
+    },
+    {
+     "q": "Q11381937",
+     "ja": "住本寺",
+     "en": "Jūhon-ji Temple",
+     "m": 45
+    },
+    {
+     "q": "Q3959661",
+     "ja": "掌美術館",
+     "en": "Shō Museum",
+     "m": 47
+    }
+   ]
+  },
+  "A00126": {
+   "status": "unnamed"
+  },
+  "A00127": {
+   "status": "unnamed"
+  },
+  "A00128": {
+   "status": "unnamed"
+  },
+  "A00129": {
+   "status": "unnamed"
+  },
+  "A00130": {
+   "status": "unnamed"
+  },
+  "A00131": {
+   "status": "unnamed"
+  },
+  "A00132": {
+   "related": {
+    "q": "Q11534162",
+    "ja": "柳原銀行",
+    "en": "Bank of Yanagihara",
+    "m": 5
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00133": {
+   "status": "unnamed"
+  },
+  "A00134": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00135": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00136": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00137": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00138": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00139": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00140": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00141": {
+   "wikidata": {
+    "q": "Q11411174",
+    "ja": "古川町橋",
+    "en": "Furukawamachi Bridge",
+    "m": 52,
+    "via": "alias"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00142": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00143": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00144": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11492427",
+     "ja": "恵解山古墳",
+     "en": "Igenoyama Kofun",
+     "m": 39
+    }
+   ]
+  },
+  "A00145": {
+   "status": "unnamed"
+  },
+  "A00146": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q17193235",
+     "ja": "櫟谷宗像神社",
+     "en": "Ichitani Munakata Shrine",
+     "m": 64
+    }
+   ]
+  },
+  "A00147": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00148": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q135038786",
+     "ja": "神明社",
+     "en": "Shinmei-sha",
+     "m": 91
+    },
+    {
+     "q": "Q107020571",
+     "ja": "北野天満宮社殿",
+     "en": "Main Shrine, Kitano-tenmangu",
+     "m": 94
+    }
+   ]
+  },
+  "A00149": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q135038786",
+     "ja": "神明社",
+     "en": "Shinmei-sha",
+     "m": 80
+    },
+    {
+     "q": "Q107020571",
+     "ja": "北野天満宮社殿",
+     "en": "Main Shrine, Kitano-tenmangu",
+     "m": 84
+    }
+   ]
+  },
+  "A00150": {
+   "wikidata": {
+    "q": "Q11424695",
+    "ja": "地蔵院",
+    "en": "Jizō-in Temple",
+    "m": 109,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00151": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00152": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00153": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00154": {
+   "status": "unnamed"
+  },
+  "A00155": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q80622906",
+     "ja": "二寧坂",
+     "en": "Ninenzaka",
+     "m": 25
+    },
+    {
+     "q": "Q100166711",
+     "ja": "パークハイアット京都",
+     "en": "Park Hyatt Kyoto",
+     "m": 75
+    }
+   ]
+  },
+  "A00156": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00157": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00158": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11286067",
+     "ja": "イオンモールKYOTO",
+     "en": "AEON MALL KYOTO",
+     "m": 35
+    }
+   ]
+  },
+  "A00159": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00160": {
+   "status": "unnamed"
+  },
+  "A00161": {
+   "status": "unnamed"
+  },
+  "A00162": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00163": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q15229013",
+     "ja": "嵐山モンキーパークいわたやま",
+     "en": "Iwatayama Monkey Park",
+     "m": 21
+    }
+   ]
+  },
+  "A00164": {
+   "related": {
+    "q": "Q11264280",
+    "ja": "かやぶきの里・北村",
+    "en": "Kayabukinosato-Kitamura",
+    "m": 140
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00165": {
+   "status": "unnamed"
+  },
+  "A00166": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00167": {
+   "status": "unnamed"
+  },
+  "A00168": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00169": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00170": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00171": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q142139309",
+     "ja": "真乗院 (南禅寺)",
+     "en": "",
+     "m": 50
+    }
+   ]
+  },
+  "A00172": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00173": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00174": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00175": {
+   "wikidata": {
+    "q": "Q11590468",
+    "ja": "神泉苑",
+    "en": "Shinsen-en",
+    "m": 31,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00176": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00177": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00178": {
+   "status": "unnamed"
+  },
+  "A00179": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11064894",
+     "ja": "廬山寺",
+     "en": "Rozan-ji Temple",
+     "m": 45
+    },
+    {
+     "q": "Q11538748",
+     "ja": "梨木神社",
+     "en": "Nashinoki Shrine",
+     "m": 87
+    }
+   ]
+  },
+  "A00180": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00181": {
+   "related": {
+    "q": "Q135038313",
+    "ja": "大吉山",
+    "en": "",
+    "m": 155
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00182": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00183": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00184": {
+   "status": "unnamed"
+  },
+  "A00185": {
+   "status": "unnamed"
+  },
+  "A00186": {
+   "related": {
+    "q": "Q11449502",
+    "ja": "宇治橋",
+    "en": "Uji bridge",
+    "m": 75
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00187": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q111866371",
+     "ja": "ホテル ザ セレスティン京都祇園",
+     "en": "Hotel The Celestine Kyoto Gion",
+     "m": 60
+    },
+    {
+     "q": "Q85882834",
+     "ja": "禅居庵",
+     "en": "Zenkyo-an",
+     "m": 70
+    }
+   ]
+  },
+  "A00188": {
+   "status": "unnamed"
+  },
+  "A00189": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q132529270",
+     "ja": "京都絞り工芸館",
+     "en": "Kyoto Shibori Museum",
+     "m": 76
+    }
+   ]
+  },
+  "A00190": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11502342",
+     "ja": "新日吉神宮",
+     "en": "Imahie Jingū",
+     "m": 62
+    }
+   ]
+  },
+  "A00191": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q10938466",
+     "ja": "大雲院",
+     "en": "Daiun-in Temple",
+     "m": 2
+    }
+   ]
+  },
+  "A00192": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q85234429",
+     "ja": "未在",
+     "en": "Mizai",
+     "m": 40
+    },
+    {
+     "q": "Q11659439",
+     "ja": "雙林寺",
+     "en": "Sōrin-ji Temple",
+     "m": 61
+    },
+    {
+     "q": "Q11439141",
+     "ja": "大谷祖廟",
+     "en": "Ōtani Sobyō",
+     "m": 71
+    }
+   ]
+  },
+  "A00193": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11439104",
+     "ja": "大谷本廟",
+     "en": "Nishi Ōtani",
+     "m": 82
+    }
+   ]
+  },
+  "A00194": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q85234429",
+     "ja": "未在",
+     "en": "Mizai",
+     "m": 26
+    },
+    {
+     "q": "Q11653106",
+     "ja": "長楽寺",
+     "en": "Chōraku-ji Temple",
+     "m": 83
+    },
+    {
+     "q": "Q11439141",
+     "ja": "大谷祖廟",
+     "en": "Ōtani Sobyō",
+     "m": 87
+    }
+   ]
+  },
+  "A00195": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11614933",
+     "ja": "芬陀院",
+     "en": "Funda-in",
+     "m": 70
+    },
+    {
+     "q": "Q140420696",
+     "ja": "芬陀院南庭",
+     "en": "Funda-in Temple South Garden",
+     "m": 78
+    }
+   ]
+  },
+  "A00196": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00197": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00198": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00199": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q101034230",
+     "ja": "通天橋",
+     "en": "Tsūten-kyō",
+     "m": 76
+    }
+   ]
+  },
+  "A00200": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q3959661",
+     "ja": "掌美術館",
+     "en": "Shō Museum",
+     "m": 60
+    },
+    {
+     "q": "Q126036487",
+     "ja": "マインダー",
+     "en": "Mindar",
+     "m": 67
+    },
+    {
+     "q": "Q2702064",
+     "ja": "高台寺",
+     "en": "Kōdai-ji Temple",
+     "m": 85
+    }
+   ]
+  },
+  "A00201": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00202": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00203": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00204": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00205": {
+   "related": {
+    "q": "Q61094",
+    "ja": "平等院",
+    "en": "Byōdō-in Temple",
+    "m": 156
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00206": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00207": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00208": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00209": {
+   "status": "unnamed"
+  },
+  "A00210": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00211": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00212": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00213": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00214": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00215": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00216": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q3571897",
+     "ja": "金剛寺",
+     "en": "Yasaka Kōshin-dō Temple",
+     "m": 21
+    },
+    {
+     "q": "Q11555353",
+     "ja": "法観寺",
+     "en": "Hōkan-ji Temple",
+     "m": 44
+    },
+    {
+     "q": "Q11662837",
+     "ja": "青龍寺",
+     "en": "Seiryū-ji Temple",
+     "m": 79
+    }
+   ]
+  },
+  "A00217": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00218": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00219": {
+   "status": "unnamed"
+  },
+  "A00220": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00221": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00222": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00226": {
+   "status": "unnamed"
+  },
+  "A00227": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00228": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00229": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00230": {
+   "kyoto_city": [
+    "6000042"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00231": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00232": {
+   "related": {
+    "q": "Q98101174",
+    "ja": "東山山頂公園",
+    "en": "Higashiyama Summit Park",
+    "m": 110
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00233": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00234": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00235": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00236": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00237": {
+   "wikidata": {
+    "q": "Q11054653",
+    "ja": "嵯峨鳥居本",
+    "en": "Saga Toriimoto",
+    "m": 132,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "6000044"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00238": {
+   "related": {
+    "q": "Q1202239",
+    "ja": "京都御所",
+    "en": "Kyoto Imperial Palace",
+    "m": 132
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00239": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00240": {
+   "status": "unnamed"
+  },
+  "A00241": {
+   "status": "unnamed"
+  },
+  "A00242": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00243": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00244": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q17213145",
+     "ja": "京都八千代館",
+     "en": "Kyoto Yachiyokan",
+     "m": 32
+    },
+    {
+     "q": "Q131721046",
+     "ja": "a-cho",
+     "en": "A-cho",
+     "m": 57
+    },
+    {
+     "q": "Q11650427",
+     "ja": "錦天満宮",
+     "en": "Nishiki Tenmangū",
+     "m": 58
+    }
+   ]
+  },
+  "A00245": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00246": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00247": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q10938466",
+     "ja": "大雲院",
+     "en": "Daiun-in Temple",
+     "m": 28
+    }
+   ]
+  },
+  "A00248": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00249": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00250": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00251": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11149639",
+     "ja": "海住山寺",
+     "en": "Kaijūsen-ji Temple",
+     "m": 69
+    },
+    {
+     "q": "Q107020565",
+     "ja": "海住山寺五重塔",
+     "en": "Five-storied Pagoda, Kaijusenji",
+     "m": 93
+    }
+   ]
+  },
+  "A00252": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00253": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00254": {
+   "status": "unnamed"
+  },
+  "A00255": {
+   "status": "unnamed"
+  },
+  "A00256": {
+   "status": "unnamed"
+  },
+  "A00257": {
+   "status": "unnamed"
+  },
+  "A00258": {
+   "wikidata": {
+    "q": "Q1202239",
+    "ja": "京都御所",
+    "en": "Kyoto Imperial Palace",
+    "m": 246,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00259": {
+   "status": "unnamed"
+  },
+  "A00260": {
+   "wikidata": {
+    "q": "Q48764499",
+    "ja": "豪商 稲葉本家",
+    "en": "Gosyo Inaba Honke",
+    "m": 16,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00261": {
+   "status": "unnamed"
+  },
+  "A00262": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11561442",
+     "ja": "清閑寺",
+     "en": "Seikan-ji Temple",
+     "m": 10
+    }
+   ]
+  },
+  "A00263": {
+   "status": "unnamed"
+  },
+  "A00264": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q536881",
+     "ja": "先斗町",
+     "en": "Ponto-chō",
+     "m": 91
+    }
+   ]
+  },
+  "A00265": {
+   "wikidata": {
+    "q": "Q126391445",
+    "ja": "鹿苑寺金閣",
+    "en": "Golden Pavilion",
+    "m": 1,
+    "via": "alias"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00266": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q2702064",
+     "ja": "高台寺",
+     "en": "Kōdai-ji Temple",
+     "m": 54
+    },
+    {
+     "q": "Q142121530",
+     "ja": "月眞院",
+     "en": "",
+     "m": 55
+    },
+    {
+     "q": "Q140359427",
+     "ja": "高台寺庭園",
+     "en": "Kōdai-ji Temple Garden",
+     "m": 80
+    }
+   ]
+  },
+  "A00267": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00268": {
+   "status": "unnamed"
+  },
+  "A00269": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00270": {
+   "status": "unnamed"
+  },
+  "A00271": {
+   "status": "unnamed"
+  },
+  "A00272": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q169621",
+     "ja": "善峯寺",
+     "en": "Yoshimine-dera Temple",
+     "m": 76
+    }
+   ]
+  },
+  "A00273": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00274": {
+   "status": "unnamed"
+  },
+  "A00275": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00276": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q137373804",
+     "ja": "景徳陶家図",
+     "en": "Porcelain artisan from Jingdezhen",
+     "m": 16
+    },
+    {
+     "q": "Q136472115",
+     "ja": "何必館・京都現代美術館",
+     "en": "Kahitsukan  Kyoto Museum of Contemporary Art",
+     "m": 16
+    },
+    {
+     "q": "Q3147665",
+     "ja": "一力茶屋",
+     "en": "Ichiriki Chaya",
+     "m": 70
+    }
+   ]
+  },
+  "A00277": {
+   "status": "unnamed"
+  },
+  "A00278": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q5154082",
+     "ja": "京都中央郵便局",
+     "en": "Kyoto Central Post Office",
+     "m": 63
+    }
+   ]
+  },
+  "A00279": {
+   "status": "unnamed"
+  },
+  "A00280": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00281": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00282": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q80168396",
+     "ja": "傘松駅",
+     "en": "Kasamatsu Station",
+     "m": 25
+    }
+   ]
+  },
+  "A00283": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00284": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00285": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00286": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11442700",
+     "ja": "天橋立ビューランド",
+     "en": "Amanohashidate View Land",
+     "m": 70
+    }
+   ]
+  },
+  "A00287": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00288": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00289": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00290": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00291": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11442700",
+     "ja": "天橋立ビューランド",
+     "en": "Amanohashidate View Land",
+     "m": 50
+    }
+   ]
+  },
+  "A00292": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00293": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00294": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00295": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q69785213",
+     "ja": "弥栄会館",
+     "en": "Yasaka Hall",
+     "m": 88
+    },
+    {
+     "q": "Q85233431",
+     "ja": "前田",
+     "en": "Maeda",
+     "m": 91
+    }
+   ]
+  },
+  "A00297": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00298": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00299": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00300": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00301": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00302": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00303": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00304": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q108117552",
+     "ja": "大阪屋マーケット",
+     "en": "OSAKAYA MARKET",
+     "m": 71
+    },
+    {
+     "q": "Q108117472",
+     "ja": "チョップチョップバインミー",
+     "en": "Chop Chop Banh Mi",
+     "m": 77
+    },
+    {
+     "q": "Q11375343",
+     "ja": "京都府道15号",
+     "en": "Kyoto Prefectural Road Route 15",
+     "m": 88
+    }
+   ]
+  },
+  "A00305": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00306": {
+   "wikidata": {
+    "q": "Q714828",
+    "ja": "伏見稲荷大社",
+    "en": "Fushimi Inari-taisha",
+    "m": 128,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000033",
+    "1000034",
+    "10000013"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00307": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q15229013",
+     "ja": "嵐山モンキーパークいわたやま",
+     "en": "Iwatayama Monkey Park",
+     "m": 1
+    }
+   ]
+  },
+  "A00308": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00309": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00310": {
+   "wikidata": {
+    "q": "Q140069746",
+    "ja": "キモノフォレスト",
+    "en": "Kimono Forest",
+    "m": 7,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00311": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00312": {
+   "related": {
+    "q": "Q131932046",
+    "ja": "芦田家住宅（旧片岡家別荘）",
+    "en": "",
+    "m": 8
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00313": {
+   "wikidata": {
+    "q": "Q11594329",
+    "ja": "福知山市治水記念館",
+    "en": "Fukuchiyama City Chisui (Flood Control) Museum",
+    "m": 10,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00314": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00315": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00316": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00317": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q140272731",
+     "ja": "大覚寺霊宝館",
+     "en": "Daikaku-ji Reihōkan",
+     "m": 69
+    }
+   ]
+  },
+  "A00318": {
+   "status": "unnamed"
+  },
+  "A00319": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q140288358",
+     "ja": "ちいさな藍美術館",
+     "en": "The Little Indigo Museum",
+     "m": 96
+    }
+   ]
+  },
+  "A00320": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00321": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q169621",
+     "ja": "善峯寺",
+     "en": "Yoshimine-dera Temple",
+     "m": 81
+    }
+   ]
+  },
+  "A00322": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q169621",
+     "ja": "善峯寺",
+     "en": "Yoshimine-dera Temple",
+     "m": 91
+    }
+   ]
+  },
+  "A00323": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q169621",
+     "ja": "善峯寺",
+     "en": "Yoshimine-dera Temple",
+     "m": 87
+    },
+    {
+     "q": "Q140274237",
+     "ja": "善峯寺文殊寺宝館",
+     "en": "Yoshimine-dera Monju temple treasure hall",
+     "m": 98
+    }
+   ]
+  },
+  "A00324": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00325": {
+   "status": "unnamed"
+  },
+  "A00326": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00327": {
+   "status": "unnamed"
+  },
+  "A00328": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q100166711",
+     "ja": "パークハイアット京都",
+     "en": "Park Hyatt Kyoto",
+     "m": 17
+    },
+    {
+     "q": "Q126036487",
+     "ja": "マインダー",
+     "en": "Mindar",
+     "m": 50
+    },
+    {
+     "q": "Q80622906",
+     "ja": "二寧坂",
+     "en": "Ninenzaka",
+     "m": 78
+    }
+   ]
+  },
+  "A00329": {
+   "status": "unnamed"
+  },
+  "A00330": {
+   "wikidata": {
+    "q": "Q131431514",
+    "ja": "福知山市児童科学館",
+    "en": "Fukuchiyama Children's Science Museum",
+    "m": 5,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00331": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00332": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00333": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11387301",
+     "ja": "傘松公園",
+     "en": "Kasamatsu Park",
+     "m": 17
+    }
+   ]
+  },
+  "A00334": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11387301",
+     "ja": "傘松公園",
+     "en": "Kasamatsu Park",
+     "m": 20
+    }
+   ]
+  },
+  "A00335": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00336": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q17193235",
+     "ja": "櫟谷宗像神社",
+     "en": "Ichitani Munakata Shrine",
+     "m": 23
+    }
+   ]
+  },
+  "A00337": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00338": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00339": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q107020608",
+     "ja": "二条城二の丸御殿蘇鉄之間",
+     "en": "Sotetsu-no-ma",
+     "m": 9
+    },
+    {
+     "q": "Q107020607",
+     "ja": "二条城二の丸御殿大広間",
+     "en": "Ōhiroma",
+     "m": 24
+    },
+    {
+     "q": "Q107020609",
+     "ja": "二条城二の丸御殿黒書院",
+     "en": "Kuro-shoin",
+     "m": 27
+    }
+   ]
+  },
+  "A00340": {
+   "related": {
+    "q": "Q626535",
+    "ja": "本能寺",
+    "en": "Honnō-ji Temple",
+    "m": 65
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00341": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q1013399",
+     "ja": "元離宮二条城",
+     "en": "Nijō Castle",
+     "m": 80
+    },
+    {
+     "q": "Q107020610",
+     "ja": "二条城二の丸御殿白書院",
+     "en": "Shiro-shoin",
+     "m": 90
+    },
+    {
+     "q": "Q107020609",
+     "ja": "二条城二の丸御殿黒書院",
+     "en": "Kuro-shoin",
+     "m": 97
+    }
+   ]
+  },
+  "A00342": {
+   "status": "unnamed"
+  },
+  "A00343": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00344": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00345": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11442642",
+     "ja": "天授庵",
+     "en": "Tenju-an",
+     "m": 77
+    }
+   ]
+  },
+  "A00346": {
+   "status": "unnamed"
+  },
+  "A00347": {
+   "status": "unnamed"
+  },
+  "A00348": {
+   "status": "unnamed"
+  },
+  "A00349": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00350": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q101034230",
+     "ja": "通天橋",
+     "en": "Tsūten-kyō",
+     "m": 3
+    },
+    {
+     "q": "Q140506425",
+     "ja": "東福寺本坊庭園",
+     "en": "Tōfuku-ji Temple Honbō Garden",
+     "m": 49
+    },
+    {
+     "q": "Q107020630",
+     "ja": "龍吟庵方丈",
+     "en": "",
+     "m": 50
+    }
+   ]
+  },
+  "A00351": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q101034230",
+     "ja": "通天橋",
+     "en": "Tsūten-kyō",
+     "m": 40
+    },
+    {
+     "q": "Q140506425",
+     "ja": "東福寺本坊庭園",
+     "en": "Tōfuku-ji Temple Honbō Garden",
+     "m": 85
+    },
+    {
+     "q": "Q107020630",
+     "ja": "龍吟庵方丈",
+     "en": "",
+     "m": 86
+    }
+   ]
+  },
+  "A00352": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11060322",
+     "ja": "常寂光寺",
+     "en": "Jōjakkō-ji Temple",
+     "m": 34
+    }
+   ]
+  },
+  "A00353": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11060322",
+     "ja": "常寂光寺",
+     "en": "Jōjakkō-ji Temple",
+     "m": 91
+    }
+   ]
+  },
+  "A00354": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q140571034",
+     "ja": "音羽の滝",
+     "en": "Otowa Fall",
+     "m": 17
+    },
+    {
+     "q": "Q221716",
+     "ja": "清水寺",
+     "en": "Kiyomizu-dera",
+     "m": 22
+    },
+    {
+     "q": "Q3276427",
+     "ja": "今年の漢字",
+     "en": "Kanji of the year",
+     "m": 22
+    }
+   ]
+  },
+  "A00355": {
+   "status": "unnamed"
+  },
+  "A00356": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11060322",
+     "ja": "常寂光寺",
+     "en": "Jōjakkō-ji Temple",
+     "m": 65
+    }
+   ]
+  },
+  "A00357": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q3096514",
+     "ja": "二尊院",
+     "en": "Nison-in Temple",
+     "m": 60
+    }
+   ]
+  },
+  "A00358": {
+   "related": {
+    "q": "Q11434768",
+    "ja": "大岩山",
+    "en": "Mount Ōiwa",
+    "m": 162
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00359": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00360": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00361": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00362": {
+   "status": "unnamed"
+  },
+  "A00363": {
+   "status": "unnamed"
+  },
+  "A00364": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q55537320",
+     "ja": "新善光寺",
+     "en": "Shinzenkō-ji Temple",
+     "m": 98
+    }
+   ]
+  },
+  "A00365": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q98101174",
+     "ja": "東山山頂公園",
+     "en": "Higashiyama Summit Park",
+     "m": 32
+    }
+   ]
+  },
+  "A00366": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q31706159",
+     "ja": "大文字山",
+     "en": "Mount Daimonji",
+     "m": 21
+    }
+   ]
+  },
+  "A00367": {
+   "status": "unnamed"
+  },
+  "A00368": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00369": {
+   "status": "unnamed"
+  },
+  "A00370": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00371": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11526764",
+     "ja": "東岩倉の戦い",
+     "en": "Battle of Higashi-iwakura",
+     "m": 44
+    },
+    {
+     "q": "Q134487610",
+     "ja": "大日山",
+     "en": "Mount Dainichi",
+     "m": 53
+    }
+   ]
+  },
+  "A00372": {
+   "status": "unnamed"
+  },
+  "A00373": {
+   "status": "unnamed"
+  },
+  "A00374": {
+   "status": "unnamed"
+  },
+  "A00375": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q80158236",
+     "ja": "ケーブル比叡駅",
+     "en": "Cable Hiei Station",
+     "m": 46
+    },
+    {
+     "q": "Q115866238",
+     "ja": "ロープ比叡駅",
+     "en": "Rope Hiei Station",
+     "m": 94
+    }
+   ]
+  },
+  "A00376": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q100231049",
+     "ja": "フォーシーズンズホテル京都",
+     "en": "Four Seasons Hotel Kyoto",
+     "m": 90
+    }
+   ]
+  },
+  "A00377": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00378": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q115866238",
+     "ja": "ロープ比叡駅",
+     "en": "Rope Hiei Station",
+     "m": 16
+    },
+    {
+     "q": "Q80158236",
+     "ja": "ケーブル比叡駅",
+     "en": "Cable Hiei Station",
+     "m": 46
+    }
+   ]
+  },
+  "A00379": {
+   "status": "unnamed"
+  },
+  "A00380": {
+   "status": "unnamed"
+  },
+  "A00381": {
+   "status": "unnamed"
+  },
+  "A00382": {
+   "status": "unnamed"
+  },
+  "A00383": {
+   "status": "unnamed"
+  },
+  "A00384": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00385": {
+   "status": "unnamed"
+  },
+  "A00386": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00387": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00388": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00389": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00390": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00391": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00392": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00393": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00394": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00395": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00396": {
+   "status": "unnamed"
+  },
+  "A00397": {
+   "status": "unnamed"
+  },
+  "A00398": {
+   "status": "unnamed"
+  },
+  "A00399": {
+   "status": "unnamed"
+  },
+  "A00400": {
+   "status": "unnamed"
+  },
+  "A00401": {
+   "wikidata": {
+    "q": "Q58863572",
+    "ja": "花脊の三本杉",
+    "en": "Hanase no Sanbon-sugi",
+    "m": 20,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "osm-wikidata"
+   ]
+  },
+  "A00402": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00403": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00404": {
+   "status": "unnamed"
+  },
+  "A00405": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q85225413",
+     "ja": "京都𠮷兆嵐山本店",
+     "en": "Kyoto Kitcho Arashiyama",
+     "m": 62
+    }
+   ]
+  },
+  "A00406": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00407": {
+   "related": {
+    "q": "Q137917525",
+    "ja": "丹波生活衣館",
+    "en": "Fukuchiyama-city Tanba Seikatsui-kan",
+    "m": 7
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00408": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11356304",
+     "ja": "三津漁港",
+     "en": "Port of Mitsu",
+     "m": 57
+    }
+   ]
+  },
+  "A00409": {
+   "status": "unnamed"
+  },
+  "A00410": {
+   "status": "unnamed"
+  },
+  "A00411": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00412": {
+   "status": "unnamed"
+  },
+  "A00413": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11666843",
+     "ja": "養源院",
+     "en": "Yōgen-in Temple",
+     "m": 5
+    },
+    {
+     "q": "Q1072965",
+     "ja": "法住寺",
+     "en": "Hōjū-ji Temple",
+     "m": 83
+    },
+    {
+     "q": "Q3090571",
+     "ja": "法住寺合戦",
+     "en": "Siege of Hōjūjidono",
+     "m": 83
+    }
+   ]
+  },
+  "A00414": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00415": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q3080421",
+     "ja": "愛宕念仏寺",
+     "en": "Otagi Nenbutsu-ji Temple",
+     "m": 36
+    }
+   ]
+  },
+  "A00416": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q795048",
+     "ja": "渉成園",
+     "en": "Shōsei Garden",
+     "m": 54
+    }
+   ]
+  },
+  "A00417": {
+   "status": "unnamed"
+  },
+  "A00418": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00419": {
+   "status": "unnamed"
+  },
+  "A00420": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00421": {
+   "status": "unnamed"
+  },
+  "A00422": {
+   "status": "unnamed"
+  },
+  "A00423": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00424": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q134487407",
+     "ja": "九条山",
+     "en": "Mount Kujo",
+     "m": 77
+    }
+   ]
+  },
+  "A00425": {
+   "status": "unnamed"
+  },
+  "A00426": {
+   "status": "unnamed"
+  },
+  "A00427": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11599951",
+     "ja": "笠置山",
+     "en": "Kasagiyama",
+     "m": 43
+    },
+    {
+     "q": "Q11599954",
+     "ja": "笠置山の戦い",
+     "en": "Siege of Kasagi",
+     "m": 62
+    }
+   ]
+  },
+  "A00428": {
+   "status": "unnamed"
+  },
+  "A00429": {
+   "status": "unnamed"
+  },
+  "A00430": {
+   "status": "unnamed"
+  },
+  "A00431": {
+   "status": "unnamed"
+  },
+  "A00432": {
+   "status": "unnamed"
+  },
+  "A00433": {
+   "status": "unnamed"
+  },
+  "A00434": {
+   "status": "unnamed"
+  },
+  "A00435": {
+   "status": "unnamed"
+  },
+  "A00436": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00437": {
+   "status": "unnamed"
+  },
+  "A00438": {
+   "status": "unnamed"
+  },
+  "A00439": {
+   "status": "unnamed"
+  },
+  "A00440": {
+   "status": "unnamed"
+  },
+  "A00441": {
+   "status": "unnamed"
+  },
+  "A00442": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11537594",
+     "ja": "桑田神社",
+     "en": "Kuwada Shrine",
+     "m": 59
+    }
+   ]
+  },
+  "A00443": {
+   "status": "unnamed"
+  },
+  "A00444": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q115866717",
+     "ja": "比叡山頂駅",
+     "en": "",
+     "m": 54
+    }
+   ]
+  },
+  "A00445": {
+   "status": "unnamed"
+  },
+  "A00446": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00447": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00448": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00449": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00450": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00451": {
+   "status": "unnamed"
+  },
+  "A00452": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00453": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00454": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00455": {
+   "wikidata": {
+    "q": "Q11449502",
+    "ja": "宇治橋",
+    "en": "Uji bridge",
+    "m": 15,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00456": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00457": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q6404085",
+     "ja": "貴船口駅",
+     "en": "Kibuneguchi Station",
+     "m": 25
+    },
+    {
+     "q": "Q38278931",
+     "ja": "京都市立鞍馬小学校",
+     "en": "",
+     "m": 98
+    }
+   ]
+  },
+  "A00458": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00460": {
+   "status": "unnamed"
+  },
+  "A00461": {
+   "status": "unnamed"
+  },
+  "A00462": {
+   "wikidata": {
+    "q": "Q11375006",
+    "ja": "京都市平安京創生館",
+    "en": "Kyoto City Heiankyo Sosei-Kan Museum",
+    "m": 17,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00463": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q135178095",
+     "ja": "伴氏社（北野天満宮末社）",
+     "en": "Tomouchi-sha (Kitano Tenmangu Setsumatsusha)",
+     "m": 53
+    },
+    {
+     "q": "Q662176",
+     "ja": "北野天満宮",
+     "en": "Kitano Tenmangū",
+     "m": 53
+    },
+    {
+     "q": "Q11526330",
+     "ja": "東向観音寺",
+     "en": "Kannon-ji Temple, Kitano-tenmangu",
+     "m": 62
+    }
+   ]
+  },
+  "A00464": {
+   "status": "unnamed"
+  },
+  "A00465": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q143683",
+     "ja": "船岡山",
+     "en": "Mount Funaoka",
+     "m": 38
+    },
+    {
+     "q": "Q11632342",
+     "ja": "京都・大阪連続強盗殺人事件",
+     "en": "",
+     "m": 71
+    }
+   ]
+  },
+  "A00466": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00467": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11632526",
+     "ja": "護王神社",
+     "en": "Goō Shrine",
+     "m": 97
+    }
+   ]
+  },
+  "A00468": {
+   "status": "unnamed"
+  },
+  "A00469": {
+   "status": "unnamed"
+  },
+  "A00470": {
+   "status": "unnamed"
+  },
+  "A00471": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q97945331",
+     "ja": "京都精華学園中学校",
+     "en": "",
+     "m": 47
+    },
+    {
+     "q": "Q97945396",
+     "ja": "京都精華学園高等学校",
+     "en": "",
+     "m": 47
+    },
+    {
+     "q": "Q33122103",
+     "ja": "公益財団法人 京都技術科学センター",
+     "en": "Kyoto Technoscience Center",
+     "m": 57
+    }
+   ]
+  },
+  "A00472": {
+   "status": "unnamed"
+  },
+  "A00473": {
+   "status": "unnamed"
+  },
+  "A00474": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00475": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00476": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00477": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00478": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00479": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00480": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00481": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00482": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00483": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q2153263",
+     "ja": "祇園四条駅",
+     "en": "Gion-shijo Station",
+     "m": 23
+    },
+    {
+     "q": "Q11420007",
+     "ja": "四条大橋",
+     "en": "Shijō Bridge",
+     "m": 34
+    },
+    {
+     "q": "Q919524",
+     "ja": "南座",
+     "en": "Minami-za",
+     "m": 45
+    }
+   ]
+  },
+  "A00484": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11477255",
+     "ja": "嵐山温泉",
+     "en": "Arashiyama Onsen",
+     "m": 17
+    }
+   ]
+  },
+  "A00485": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00486": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00487": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00488": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00489": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q107020606",
+     "ja": "二条城二の丸御殿式台",
+     "en": "Shikidai",
+     "m": 18
+    },
+    {
+     "q": "Q107020607",
+     "ja": "二条城二の丸御殿大広間",
+     "en": "Ōhiroma",
+     "m": 27
+    },
+    {
+     "q": "Q107020605",
+     "ja": "二条城二の丸御殿遠侍及び車寄",
+     "en": "Tōzamurai and Kurumayose",
+     "m": 42
+    }
+   ]
+  },
+  "A00490": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00491": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00492": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11353186",
+     "ja": "一言寺",
+     "en": "Ichigon-ji Temple",
+     "m": 29
+    }
+   ]
+  },
+  "A00493": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q97180075",
+     "ja": "将軍塚",
+     "en": "Shōgunzuka",
+     "m": 28
+    },
+    {
+     "q": "Q97178890",
+     "ja": "華頂山",
+     "en": "Mount Kachō",
+     "m": 69
+    }
+   ]
+  },
+  "A00494": {
+   "status": "unnamed"
+  },
+  "A00495": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q608668",
+     "ja": "鞍馬寺",
+     "en": "Kurama-dera Temple",
+     "m": 24
+    }
+   ]
+  },
+  "A00496": {
+   "status": "unnamed"
+  },
+  "A00497": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q11604632",
+     "ja": "粟田神社",
+     "en": "Awata Shrine",
+     "m": 24
+    }
+   ]
+  },
+  "A00498": {
+   "status": "unnamed"
+  },
+  "A00499": {
+   "status": "unnamed"
+  },
+  "A00500": {
+   "wikidata": {
+    "q": "Q140508813",
+    "ja": "重森三玲庭園美術館",
+    "en": "Mirei Shigemori Garden Museum",
+    "m": 2,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00501": {
+   "status": "unnamed"
+  },
+  "A00502": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00503": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q3146371",
+     "ja": "法輪寺",
+     "en": "Hōrin-ji Temple",
+     "m": 55
+    },
+    {
+     "q": "Q11660652",
+     "ja": "電電宮",
+     "en": "Denden-gū",
+     "m": 57
+    }
+   ]
+  },
+  "A00504": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q107020605",
+     "ja": "二条城二の丸御殿遠侍及び車寄",
+     "en": "Tōzamurai and Kurumayose",
+     "m": 58
+    },
+    {
+     "q": "Q107020606",
+     "ja": "二条城二の丸御殿式台",
+     "en": "Shikidai",
+     "m": 89
+    }
+   ]
+  },
+  "A00505": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00506": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00507": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00508": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00509": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00510": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00511": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00512": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00513": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00514": {
+   "status": "unnamed"
+  },
+  "A00515": {
+   "related": {
+    "q": "Q11449502",
+    "ja": "宇治橋",
+    "en": "Uji bridge",
+    "m": 27
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00516": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00517": {
+   "related": {
+    "q": "Q801046",
+    "ja": "京都駅",
+    "en": "Kyōto Station",
+    "m": 39
+   },
+   "status": "related",
+   "by": []
+  },
+  "A00518": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q107020574",
+     "ja": "東寺御影堂",
+     "en": "Daishi Hall, Toji",
+     "m": 35
+    }
+   ]
+  },
+  "A00519": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00520": {
+   "wikidata": {
+    "q": "Q132529053",
+    "ja": "中信美術館",
+    "en": "Chūshin Art Museum",
+    "m": 11,
+    "via": "label"
+   },
+   "status": "confirmed",
+   "by": [
+    "wikidata"
+   ]
+  },
+  "A00521": {
+   "status": "unnamed"
+  },
+  "A00522": {
+   "status": "unnamed",
+   "candidates": [
+    {
+     "q": "Q110584231",
+     "ja": "甘南備山",
+     "en": "Mount Kannabi",
+     "m": 59
+    }
+   ]
+  },
+  "A00523": {
+   "status": "osm-only",
+   "by": []
+  },
+  "A00571": {
+   "wikidata": {
+    "q": "Q662176",
+    "ja": "北野天満宮",
+    "en": "Kitano Tenmangū",
+    "m": 117,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000001",
+    "1000153",
+    "2000017"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00540": {
+   "wikidata": {
+    "q": "Q257473",
+    "ja": "慈照寺",
+    "en": "Ginkaku-ji Temple",
+    "m": 29,
+    "via": "alias"
+   },
+   "kyoto_city": [
+    "1000002",
+    "1000003",
+    "2000042"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00560": {
+   "wikidata": {
+    "q": "Q221716",
+    "ja": "清水寺",
+    "en": "Kiyomizu-dera",
+    "m": 66,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000004",
+    "1000071",
+    "1000079"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00629": {
+   "wikidata": {
+    "q": "Q986750",
+    "ja": "高山寺",
+    "en": "Kōzan-ji Temple",
+    "m": 81,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000005"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00553": {
+   "wikidata": {
+    "q": "Q653319",
+    "ja": "三十三間堂",
+    "en": "Sanjūsangen-dō Temple",
+    "m": 14,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000006",
+    "1000007",
+    "1000008"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00564": {
+   "wikidata": {
+    "q": "Q1046403",
+    "ja": "東寺",
+    "en": "Tō-ji Temple",
+    "m": 71,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000020",
+    "1000021",
+    "1000022"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00600": {
+   "wikidata": {
+    "q": "Q701620",
+    "ja": "賀茂御祖神社",
+    "en": "Shimogamo Shrine",
+    "m": 234,
+    "via": "alias"
+   },
+   "kyoto_city": [
+    "1000010",
+    "2000066",
+    "2000067"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00594": {
+   "wikidata": {
+    "q": "Q11060322",
+    "ja": "常寂光寺",
+    "en": "Jōjakkō-ji Temple",
+    "m": 9,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000011"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00541": {
+   "wikidata": {
+    "q": "Q10934650",
+    "ja": "大報恩寺",
+    "en": "Daihōon-ji Temple",
+    "m": 24,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000012",
+    "1000049",
+    "1000078"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00596": {
+   "wikidata": {
+    "q": "Q901256",
+    "ja": "大徳寺",
+    "en": "Daitoku-ji Temple",
+    "m": 123,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000013",
+    "1000052",
+    "1000082"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00544": {
+   "wikidata": {
+    "q": "Q1157585",
+    "ja": "大覚寺",
+    "en": "Daikaku-ji Temple",
+    "m": 165,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000014",
+    "1000083",
+    "1000121"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00572": {
+   "wikidata": {
+    "q": "Q873645",
+    "ja": "知恩院",
+    "en": "Chion-in Temple",
+    "m": 37,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000015",
+    "1000016",
+    "1000218"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00591": {
+   "wikidata": {
+    "q": "Q2166743",
+    "ja": "東福寺",
+    "en": "Tōfuku-ji Temple",
+    "m": 218,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000017",
+    "1000018",
+    "1000019"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00563": {
+   "wikidata": {
+    "q": "Q1089767",
+    "ja": "南禅寺",
+    "en": "Nanzen-ji Temple",
+    "m": 147,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000024",
+    "1000025",
+    "2000073"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00579": {
+   "kyoto_city": [
+    "1000026",
+    "1000089",
+    "1000090"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00598": {
+   "wikidata": {
+    "q": "Q1202871",
+    "ja": "仁和寺",
+    "en": "Ninna-ji Temple",
+    "m": 152,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000027",
+    "1000028",
+    "1000029"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00630": {
+   "wikidata": {
+    "q": "Q1146038",
+    "ja": "西本願寺",
+    "en": "Nishi Hongan-ji Temple",
+    "m": 72,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000031",
+    "1000032",
+    "1000059"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00578": {
+   "wikidata": {
+    "q": "Q376288",
+    "ja": "妙心寺",
+    "en": "Myōshin-ji Temple",
+    "m": 29,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000035",
+    "1000036",
+    "1000037"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00559": {
+   "wikidata": {
+    "q": "Q692714",
+    "ja": "八坂神社",
+    "en": "Yasaka Shrine",
+    "m": 22,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000039",
+    "1000040"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00589": {
+   "wikidata": {
+    "q": "Q1440954",
+    "ja": "建仁寺",
+    "en": "Kennin-ji Temple",
+    "m": 124,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000043"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00588": {
+   "wikidata": {
+    "q": "Q2702064",
+    "ja": "高台寺",
+    "en": "Kōdai-ji Temple",
+    "m": 53,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000044",
+    "1000045",
+    "1000046"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00599": {
+   "wikidata": {
+    "q": "Q700448",
+    "ja": "賀茂別雷神社",
+    "en": "Kamigamo Shrine",
+    "m": 26,
+    "via": "alias"
+   },
+   "kyoto_city": [
+    "1000067",
+    "1000066",
+    "1000092"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00570": {
+   "wikidata": {
+    "q": "Q1075034",
+    "ja": "神護寺",
+    "en": "Jingo-ji Temple",
+    "m": 112,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000048",
+    "1000077",
+    "1000110"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00593": {
+   "wikidata": {
+    "q": "Q1060966",
+    "ja": "泉涌寺",
+    "en": "Sennyū-ji Temple",
+    "m": 53,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000050"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00534": {
+   "wikidata": {
+    "q": "Q11409172",
+    "ja": "即成院",
+    "en": "Sokujō-in Temple",
+    "m": 46,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000051"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00621": {
+   "kyoto_city": [
+    "1000053",
+    "1000054",
+    "1000085"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00568": {
+   "wikidata": {
+    "q": "Q3471686",
+    "ja": "三宝院",
+    "en": "Sanbō-in Temple",
+    "m": 9,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000055",
+    "1000123",
+    "1000124"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00555": {
+   "wikidata": {
+    "q": "Q709822",
+    "ja": "豊国神社",
+    "en": "Toyokuni Shrine",
+    "m": 59,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000061",
+    "1000099",
+    "1000128"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00526": {
+   "wikidata": {
+    "q": "Q11143738",
+    "ja": "法金剛院",
+    "en": "Hōkongō-in Temple",
+    "m": 8,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000062",
+    "1000098",
+    "1000172"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00533": {
+   "wikidata": {
+    "q": "Q710302",
+    "ja": "松尾大社",
+    "en": "Matsunoo Taisha",
+    "m": 35,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000063",
+    "1000103",
+    "1000104"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00545": {
+   "kyoto_city": [
+    "1000064"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00625": {
+   "wikidata": {
+    "q": "Q3080421",
+    "ja": "愛宕念仏寺",
+    "en": "Otagi Nenbutsu-ji Temple",
+    "m": 34,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000065",
+    "1000168"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00554": {
+   "wikidata": {
+    "q": "Q147286",
+    "ja": "京都国立博物館",
+    "en": "Kyoto National Museum",
+    "m": 20,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000068",
+    "1000069",
+    "1000169"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00567": {
+   "wikidata": {
+    "q": "Q11422904",
+    "ja": "圓徳院",
+    "en": "Entoku-in",
+    "m": 30,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000070"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00624": {
+   "kyoto_city": [
+    "1000072",
+    "2000036",
+    "2000037"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00569": {
+   "wikidata": {
+    "q": "Q3076920",
+    "ja": "広隆寺",
+    "en": "Kōryū-ji Temple",
+    "m": 115,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000073"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00587": {
+   "wikidata": {
+    "q": "Q1072538",
+    "ja": "三千院",
+    "en": "Sanzen-in Temple",
+    "m": 59,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000074"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00580": {
+   "wikidata": {
+    "q": "Q1089231",
+    "ja": "真正極楽寺",
+    "en": "Shinshōgokuraku-ji Temple",
+    "m": 121,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000076",
+    "1000175",
+    "1000176"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00585": {
+   "wikidata": {
+    "q": "Q534101",
+    "ja": "清凉寺",
+    "en": "Seiryō-ji Temple",
+    "m": 19,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000081",
+    "1000113",
+    "1000114"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00547": {
+   "wikidata": {
+    "q": "Q608668",
+    "ja": "鞍馬寺",
+    "en": "Kurama-dera Temple",
+    "m": 25,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000084"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00622": {
+   "kyoto_city": [
+    "1000086"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00595": {
+   "wikidata": {
+    "q": "Q3096514",
+    "ja": "二尊院",
+    "en": "Nison-in Temple",
+    "m": 50,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000091"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00556": {
+   "kyoto_city": [
+    "1000106",
+    "1000105"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00582": {
+   "wikidata": {
+    "q": "Q385141",
+    "ja": "平安神宮",
+    "en": "Heian Jingū",
+    "m": 83,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000096",
+    "1000097"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00615": {
+   "wikidata": {
+    "q": "Q11555272",
+    "ja": "法界寺",
+    "en": "Hōkai-ji Temple",
+    "m": 3,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000100",
+    "1000130"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00620": {
+   "wikidata": {
+    "q": "Q3076940",
+    "ja": "曼殊院",
+    "en": "Manshu-in Temple",
+    "m": 35,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000102",
+    "1000129",
+    "1000136"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00610": {
+   "wikidata": {
+    "q": "Q11666843",
+    "ja": "養源院",
+    "en": "Yōgen-in Temple",
+    "m": 46,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000108"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00532": {
+   "wikidata": {
+    "q": "Q1391664",
+    "ja": "六道珍皇寺",
+    "en": "Rokudōchinnō-ji Temple",
+    "m": 19,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000109"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00542": {
+   "wikidata": {
+    "q": "Q669494",
+    "ja": "春光院",
+    "en": "Shunkō-in",
+    "m": 53,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000111"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00635": {
+   "wikidata": {
+    "q": "Q11447007",
+    "ja": "妙蓮寺",
+    "en": "Myōren-ji Temple",
+    "m": 22,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000133",
+    "2000084"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00557": {
+   "wikidata": {
+    "q": "Q11090279",
+    "ja": "智積院",
+    "en": "Chishaku-in Temple",
+    "m": 43,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000134"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00627": {
+   "kyoto_city": [
+    "1000137",
+    "1000138",
+    "1000139"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00535": {
+   "wikidata": {
+    "q": "Q11628431",
+    "ja": "西明寺",
+    "en": "Saimyō-ji Temple",
+    "m": 16,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000143",
+    "1000144",
+    "1000145"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00528": {
+   "wikidata": {
+    "q": "Q11646439",
+    "ja": "金光寺",
+    "en": "Konkō-ji Temple",
+    "m": 37,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000170"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00606": {
+   "wikidata": {
+    "q": "Q705635",
+    "ja": "白峯神宮",
+    "en": "Shiramine Jingū",
+    "m": 14,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000149",
+    "2000047"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00611": {
+   "kyoto_city": [
+    "1000150"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00616": {
+   "kyoto_city": [
+    "1000151"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00552": {
+   "wikidata": {
+    "q": "Q57338123",
+    "ja": "雨宝院",
+    "en": "Uhō-in Temple",
+    "m": 18,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000152"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00551": {
+   "wikidata": {
+    "q": "Q1516753",
+    "ja": "西芳寺",
+    "en": "Saihō-ji Temple",
+    "m": 55,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000155"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00608": {
+   "kyoto_city": [
+    "1000156"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00581": {
+   "wikidata": {
+    "q": "Q1786709",
+    "ja": "相国寺",
+    "en": "Shōkoku-ji Temple",
+    "m": 68,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000158",
+    "1000159",
+    "1000160"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00638": {
+   "wikidata": {
+    "q": "Q11502277",
+    "ja": "新徳寺",
+    "en": "Shintoku-ji Temple",
+    "m": 0,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000164"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00601": {
+   "kyoto_city": [
+    "1000165",
+    "1000166"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00613": {
+   "wikidata": {
+    "q": "Q11477104",
+    "ja": "崇道神社",
+    "en": "Sudō Shrine",
+    "m": 4,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000171"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00632": {
+   "wikidata": {
+    "q": "Q11561286",
+    "ja": "清浄華院",
+    "en": "Shōjōke-in Temple",
+    "m": 19,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000173",
+    "1000174"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00644": {
+   "kyoto_city": [
+    "1000178"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00531": {
+   "wikidata": {
+    "q": "Q22119355",
+    "ja": "狸谷山不動院",
+    "en": "Tanukidanisan Fudō-in",
+    "m": 35,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000180"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00527": {
+   "wikidata": {
+    "q": "Q11653663",
+    "ja": "長講堂",
+    "en": "Chōkō-dō Temple",
+    "m": 15,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000181"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00546": {
+   "wikidata": {
+    "q": "Q11442642",
+    "ja": "天授庵",
+    "en": "Tenju-an",
+    "m": 19,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000182"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00539": {
+   "wikidata": {
+    "q": "Q11483471",
+    "ja": "平等寺",
+    "en": "Byōdō-ji Temple",
+    "m": 2,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000191",
+    "1000192",
+    "1000193"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00565": {
+   "wikidata": {
+    "q": "Q11624431",
+    "ja": "藤森神社",
+    "en": "Fujinomori Shrine",
+    "m": 114,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000194"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00524": {
+   "wikidata": {
+    "q": "Q11476122",
+    "ja": "峰定寺",
+    "en": "Bujō-ji Temple",
+    "m": 3,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000195",
+    "1000196",
+    "1000197"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00529": {
+   "wikidata": {
+    "q": "Q124482750",
+    "ja": "補陀洛寺",
+    "en": "Fudaraku-ji Temple",
+    "m": 35,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000200",
+    "1000201"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00561": {
+   "wikidata": {
+    "q": "Q2413893",
+    "ja": "佛光寺",
+    "en": "Bukkō-ji Temple",
+    "m": 17,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000202"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00602": {
+   "kyoto_city": [
+    "1000203"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00628": {
+   "wikidata": {
+    "q": "Q276779",
+    "ja": "貴船神社",
+    "en": "Kifune Shrine",
+    "m": 9,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000027",
+    "2000023",
+    "2000024"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00543": {
+   "wikidata": {
+    "q": "Q11536768",
+    "ja": "桂春院",
+    "en": "Keishun-in",
+    "m": 11,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000028"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00525": {
+   "wikidata": {
+    "q": "Q11640503",
+    "ja": "遍照寺",
+    "en": "Henjō-ji Temple",
+    "m": 14,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000204"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00566": {
+   "wikidata": {
+    "q": "Q11555353",
+    "ja": "法観寺",
+    "en": "Hōkan-ji Temple",
+    "m": 10,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000205"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00536": {
+   "wikidata": {
+    "q": "Q3146371",
+    "ja": "法輪寺",
+    "en": "Hōrin-ji Temple",
+    "m": 34,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000208",
+    "10000014",
+    "10000015"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00609": {
+   "wikidata": {
+    "q": "Q65275830",
+    "ja": "矢田寺",
+    "en": "Yata-dera Temple",
+    "m": 5,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000212"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00614": {
+   "kyoto_city": [
+    "1000213",
+    "1000214"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00548": {
+   "wikidata": {
+    "q": "Q11064894",
+    "ja": "廬山寺",
+    "en": "Rozan-ji Temple",
+    "m": 15,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "1000215",
+    "1000216",
+    "1000217"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00530": {
+   "wikidata": {
+    "q": "Q11353186",
+    "ja": "一言寺",
+    "en": "Ichigon-ji Temple",
+    "m": 26,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000002"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00639": {
+   "wikidata": {
+    "q": "Q11502342",
+    "ja": "新日吉神宮",
+    "en": "Imahie Jingū",
+    "m": 0,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000003",
+    "10000003"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00626": {
+   "wikidata": {
+    "q": "Q500955",
+    "ja": "今宮神社",
+    "en": "Imamiya Shrine",
+    "m": 11,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000004"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00636": {
+   "kyoto_city": [
+    "2000005"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00592": {
+   "wikidata": {
+    "q": "Q3594020",
+    "ja": "大原野神社",
+    "en": "Ōharano Shrine",
+    "m": 111,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000008",
+    "2000009",
+    "10000018"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00562": {
+   "kyoto_city": [
+    "2000031",
+    "10000009"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00575": {
+   "wikidata": {
+    "q": "Q772598",
+    "ja": "勧修寺",
+    "en": "Kajū-ji Temple",
+    "m": 5,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000016"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00618": {
+   "wikidata": {
+    "q": "Q6540880",
+    "ja": "御香宮神社",
+    "en": "Gokōnomiya Shrine",
+    "m": 91,
+    "via": "alias"
+   },
+   "kyoto_city": [
+    "2000032",
+    "2000033"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00631": {
+   "kyoto_city": [
+    "2000035"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00612": {
+   "kyoto_city": [
+    "2000038"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00642": {
+   "wikidata": {
+    "q": "Q134888240",
+    "ja": "曇華院",
+    "en": "Donge-in Temple",
+    "m": 0,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000039"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00623": {
+   "kyoto_city": [
+    "2000040"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00633": {
+   "wikidata": {
+    "q": "Q169621",
+    "ja": "善峯寺",
+    "en": "Yoshimine-dera Temple",
+    "m": 27,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000055"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00605": {
+   "wikidata": {
+    "q": "Q11424689",
+    "ja": "地蔵院",
+    "en": "Jizo-in Temple",
+    "m": 144,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000044"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00538": {
+   "wikidata": {
+    "q": "Q11405174",
+    "ja": "十輪寺",
+    "en": "Jūrin-ji Temple",
+    "m": 25,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000045"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00573": {
+   "wikidata": {
+    "q": "Q377386",
+    "ja": "青蓮院",
+    "en": "Shōren-in Temple",
+    "m": 25,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000046"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00586": {
+   "wikidata": {
+    "q": "Q11548940",
+    "ja": "水火天満宮",
+    "en": "Suika Tenmangū",
+    "m": 3,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000089"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00597": {
+   "wikidata": {
+    "q": "Q1058324",
+    "ja": "総見院",
+    "en": "Sōken-in",
+    "m": 42,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000057"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00641": {
+   "wikidata": {
+    "q": "Q11641865",
+    "ja": "道風神社",
+    "en": "Tofu Shrine",
+    "m": 0,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000069"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00640": {
+   "wikidata": {
+    "q": "Q11526269",
+    "ja": "東北院",
+    "en": "Tōhoku-in Temple",
+    "m": 0,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000070",
+    "2000071"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00643": {
+   "wikidata": {
+    "q": "Q17226256",
+    "ja": "平岡八幡宮",
+    "en": "Hiraoka Hachimangū",
+    "m": 0,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000075"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00637": {
+   "wikidata": {
+    "q": "Q738971",
+    "ja": "平野神社",
+    "en": "Hirano Shrine",
+    "m": 24,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000076"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00537": {
+   "wikidata": {
+    "q": "Q11452697",
+    "ja": "宝鏡寺",
+    "en": "Hōkyō-ji Temple",
+    "m": 3,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000077"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00577": {
+   "wikidata": {
+    "q": "Q11452598",
+    "ja": "宝泉院",
+    "en": "Hōsen-in Temple",
+    "m": 1,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000078"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00583": {
+   "wikidata": {
+    "q": "Q11555257",
+    "ja": "法然院",
+    "en": "Hōnen-in Temple",
+    "m": 23,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000079",
+    "2000080",
+    "2000081"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00558": {
+   "wikidata": {
+    "q": "Q11577577",
+    "ja": "由岐神社",
+    "en": "Yuki Shrine",
+    "m": 19,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000085"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00584": {
+   "wikidata": {
+    "q": "Q122833543",
+    "ja": "霊鑑寺",
+    "en": "Reikanji Temple",
+    "m": 29,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "2000086",
+    "2000087"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00634": {
+   "wikidata": {
+    "q": "Q123114982",
+    "ja": "大豊神社",
+    "en": "Ōtoyo Shrine",
+    "m": 13,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "10000001",
+    "10000002",
+    "10000011"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00590": {
+   "wikidata": {
+    "q": "Q17209556",
+    "ja": "菅大臣神社",
+    "en": "Kan Daijin Shrine",
+    "m": 30,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "10000004"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00574": {
+   "wikidata": {
+    "q": "Q85882834",
+    "ja": "禅居庵",
+    "en": "Zenkyo-an",
+    "m": 21,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "10000010"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00576": {
+   "wikidata": {
+    "q": "Q11354999",
+    "ja": "三宅八幡宮",
+    "en": "Miyake Hachimangū",
+    "m": 60,
+    "via": "alias"
+   },
+   "kyoto_city": [
+    "10000016"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00549": {
+   "wikidata": {
+    "q": "Q11450246",
+    "ja": "安井金比羅宮",
+    "en": "Yasui Kompira-gū",
+    "m": 50,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "10000017"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00607": {
+   "kyoto_city": [
+    "11000001"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00603": {
+   "kyoto_city": [
+    "11000002"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00617": {
+   "kyoto_city": [
+    "11000003"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00619": {
+   "wikidata": {
+    "q": "Q28608917",
+    "ja": "天皇の杜古墳",
+    "en": "Tenno-no-mori Kofun",
+    "m": 9,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "11000004"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  },
+  "A00604": {
+   "kyoto_city": [
+    "11000005"
+   ],
+   "status": "confirmed",
+   "by": [
+    "kyoto-city"
+   ]
+  },
+  "A00550": {
+   "wikidata": {
+    "q": "Q11625508",
+    "ja": "蛇塚古墳",
+    "en": "Hebizuka Kofun",
+    "m": 2,
+    "via": "label"
+   },
+   "kyoto_city": [
+    "11000006"
+   ],
+   "status": "confirmed",
+   "by": [
+    "wikidata",
+    "kyoto-city"
+   ]
+  }
+ }
+}
