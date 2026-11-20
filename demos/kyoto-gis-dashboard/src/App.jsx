@@ -21,7 +21,7 @@ import Density3D from './Density3D.jsx';
 import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
-import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
+import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, labelText, LABEL_NOTE, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
 import { nameTerms } from './lib/terms.js';
 import { themeOf, pointColor, initialTheme, rememberTheme } from './lib/theme.js';
 import { walkingAvailability, indexWalking, walkingCoverage, IDENTITIES, CUTOFF_M } from './lib/walking.js';
@@ -30,7 +30,7 @@ import { walkingAvailability, indexWalking, walkingCoverage, IDENTITIES, CUTOFF_
 // With "English first" on: English (日文). A record with no OSM name shows the English name of the same
 // OSM record if there is one, otherwise its fallback label.
 function NameEn({ p }) {
-  if (!p.name) return <>{p.name_en || p.display_name}</>;
+  if (!p.name) return <>{p.name_en || (p.label_kind ? labelText(p) : p.display_name)}</>;
   const en = englishPart(p.name, p.name_en);
   if (en && isEnglishFirst()) return <><span lang="en">{en}</span><span className="en" lang="ja"> ({p.name})</span></>;
   return <>{p.name}{en && <span className="en" lang="en"> ({en})</span>}</>;
@@ -533,7 +533,9 @@ export default function App() {
   const core = d.attractions && d.transport;
   const selHit = sel ? byId.get(sel.id) : null;
   const toggle = (arr, set, k) => set(arr.includes(k) ? arr.filter((x) => x !== k) : [...arr, k]);
-  const matches = query.trim() ? [...fa.slice(0, 40), ...ft.slice(0, 40)] : [];
+  // records with a name come first; a record only labelled by the site it lies in comes after the site itself
+  const nameRank = (p) => (p.name ? 0 : p.name_en ? 1 : 2);
+  const matches = query.trim() ? [...[...fa].sort((a, b) => nameRank(a.properties) - nameRank(b.properties)).slice(0, 40), ...ft.slice(0, 40)] : [];
   const resetView = () => mapRef.current?.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900 });
   resetViewRef.current = resetView;
   const isAttr = selHit?.layer === 'attraction';
@@ -1160,7 +1162,7 @@ function Summary({ hit, pm, photos, color, onClose, onBack }) {
           {p.name ? (englishPart(p.name, p.name_en) && isEnglishFirst()
             ? <><Decode lang="en" text={p.name_en} /> <span className="en" lang="ja">({p.name})</span></>
             : <>{p.name}{p.name_en && englishPart(p.name, p.name_en) && <> <Decode className="en" lang="en" text={`(${p.name_en})`} /></>}</>)
-            : p.name_en ? <span lang="en">{p.name_en}</span> : <span className="muted">{p.display_name}</span>}
+            : p.name_en ? <span lang="en">{p.name_en}</span> : p.label_kind ? <span lang={p.label_kind === 'name' ? (p.label_lang || 'und') : undefined}>{labelText(p)}</span> : <span className="muted">{p.display_name}</span>}
         </h2>
         <button className="x" type="button" onClick={onClose} aria-label="Clear selection">×</button>
       </header>
@@ -1177,6 +1179,7 @@ function Summary({ hit, pm, photos, color, onClose, onBack }) {
       ) : null}
       <div className="place-meta">
         <span className="kind"><i className="hanko" style={{ '--c': color }} aria-hidden="true" lang="ja">{SEAL[p.category] || '印'}</i>{CATEGORY_LABEL[p.category]}</span>
+        {!p.name && !p.name_en && p.label_kind && <span className="noname" title={LABEL_NOTE[p.label_kind]}>No name in OpenStreetMap</span>}
         <p className="where" lang="ja">
           <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M8 14.5s4.5-4.2 4.5-8A4.5 4.5 0 0 0 3.500 6.5c0 3.800 4.500 8 4.500 8z" fill="none" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="6.4" r="1.6" fill="currentColor" /></svg>
           {muniCode ? muniLabel(pm, muniCode) : 'Outside the prefecture boundary polygons'}
@@ -1201,7 +1204,7 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk, rel, byId,
     <div className="ov">
       {!p.name && (p.name_en
         ? <p className="xs limit">No Japanese name in the source. The English name comes from the same OpenStreetMap record (name:en).</p>
-        : <p className="xs limit">This record has no name in the source. The label above is a fallback, not an official name.</p>)}
+        : <p className="xs limit">{LABEL_NOTE[p.label_kind] || 'This record has no name in the source. The label above is a fallback, not an official name.'}{p.label_basis && <span className="muted"> Source: {p.label_basis}.</span>}</p>)}
       <dl className="kv">
         <div><dt>Category</dt><dd>{CATEGORY_LABEL[p.category]}</dd></div>
         {ctx?.inside?.length > 0 && (
@@ -1272,7 +1275,7 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, onWalk, rel, byId,
 const KIND_EN = { building: 'building', object: 'cultural object', 'guardian figure': 'guardian figure', 'named tree': 'named tree', 'burial mound': 'burial mound', 'cultural property': 'cultural property' };
 function SiteLinks({ p, rel, byId, onOpen, recs, onRecord }) {
   if (!rel) return null;
-  const name = (id) => { const h = byId.get(id); return h ? (h.f.properties.name || h.f.properties.name_en || h.f.properties.display_name) : id; };
+  const name = (id) => { const h = byId.get(id); return h ? recordLabel(h.f.properties) : id; };
   const parent = rel.child_of?.[p.id];
   const here = rel.parents?.[p.id];
   const group = rel.groups?.find((g) => g.ids.includes(p.id));
@@ -1447,7 +1450,7 @@ function Records({ data, geo, byId, focus, onOpen, onShow, onClose }) {
   useEffect(() => { if (focus) { setQ(''); setF('all'); setN(1000); setTimeout(() => focusRef.current?.scrollIntoView({ block: 'center' }), 60); } }, [focus]);
   const qq = q.trim().toLowerCase();
   const list = data.records.filter((r) => (f === 'all' || r.outcome === f) && (!qq || [r.name, r.kana, r.other_name, r.id, r.description, r.address].some((v) => (v || '').toLowerCase().includes(qq))));
-  const name = (id) => { const h = byId.get(id); return h ? (h.f.properties.name || h.f.properties.display_name) : id; };
+  const name = (id) => { const h = byId.get(id); return h ? recordLabel(h.f.properties) : id; };
   return (
     <div className="sheet" role="dialog" aria-label="Kyoto City records">
       <header className="sheet-h">

@@ -2183,3 +2183,6 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
   .status .btn.lang-order span { font-size: 10px; }
   .brand h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }   /* the title stays for screen readers; the intro page shows it in full */
 }
+
+/* a record with no OSM name: its title is a label (attraction_labels.json), said plainly next to the category */
+.place-meta .noname { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 11px; letter-spacing: .02em; color: var(--ink-2); border: 1px dashed var(--line); background: color-mix(in srgb, var(--panel-solid) 70%, transparent); cursor: help; white-space: nowrap; }

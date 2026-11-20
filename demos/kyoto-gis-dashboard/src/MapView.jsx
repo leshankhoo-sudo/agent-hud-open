@@ -1045,7 +1045,7 @@ function applyFilters(map, { cats, types, query, densityMode, theme }) {
   // the same matching as the result list (lib/data.js): names, English name, other names, IDs
   const qf = /^[\x00-\x7f]+$/.test(q) ? q.normalize('NFKD').replace(/[^a-z0-9]/g, '') : '';
   const qExpr = q
-    ? ['any', ['in', q, ['downcase', ['coalesce', ['get', 'name'], '']]], ['in', q, ['downcase', ['get', 'display_name']]], ['in', q, ['downcase', ['coalesce', ['get', 'name_en'], '']]], ['==', ['downcase', ['get', 'id']], q], ['==', ['get', 'osm_id'], q],
+    ? ['any', ['in', q, ['downcase', ['coalesce', ['get', 'name'], '']]], ['in', q, ['downcase', ['get', 'display_name']]], ['in', q, ['downcase', ['coalesce', ['get', 'label'], '']]], ['in', q, ['downcase', ['coalesce', ['get', 'name_en'], '']]], ['==', ['downcase', ['get', 'id']], q], ['==', ['get', 'osm_id'], q],
       ['in', q, ['downcase', ['coalesce', ['get', 'search_text'], '']]],
       ...(qf.length >= 3 ? [['in', qf, ['downcase', ['coalesce', ['get', 'search_text'], '']]]] : [])]
     : true;

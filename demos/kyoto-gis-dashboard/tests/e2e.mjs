@@ -261,6 +261,9 @@ const srcCounts = await page.evaluate(() => {
   return { a: m.getSource('attractions')._data.features.length, t: m.getSource('transport')._data.features.length };
 });
 check('map sources hold 639 attractions (523 raw - 5 merged duplicates + 121 verified CSV sites) and 5,479 stops', srcCounts.a === 639 && srcCounts.t === 5479, JSON.stringify(srcCounts));
+const lab = await page.evaluate(() => { const f = window.__kyotoMap.getSource('attractions')._data.features.map((x) => x.properties); const un = f.filter((p) => !p.name);
+  return { unnamed: un.length, en: un.filter((p) => p.name_en).length, labelled: un.filter((p) => p.label_kind).length, bare: un.filter((p) => !p.name_en && !p.label_kind).length, kinds: [...new Set(un.map((p) => p.label_kind).filter(Boolean))].sort().join(','), nameKept: un.every((p) => p.name === '' || p.name == null) }; });
+check('every attraction shows a name: 218 with no OSM name get the English name of the same record (47) or a label with its basis (171); the name field stays empty', lab.unnamed === 218 && lab.en === 47 && lab.labelled === 171 && lab.bare === 0 && lab.kinds === 'address,desc,muni,name,place' && lab.nameKept, JSON.stringify(lab));
 check('basemap tiles load', tiles.ok > 0 && tiles.fail === 0, `${tiles.ok} ok, ${tiles.fail} failed`);
 
 const counts = async () => page.evaluate(() => [...document.querySelectorAll('.count .v')].map((e) => e.textContent.replace(/\s/g, '')));

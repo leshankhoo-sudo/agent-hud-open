@@ -558,3 +558,15 @@ kyoto-gis-dashboard/
 - **检查方式**：无头浏览器在软件渲染下只有约 10 帧/秒，Playwright 的虚拟时钟实测也会跳帧（帧间隔 8–152 ms），截图都不准。所以比对时接管页面的帧循环，每帧精确推进 1/60 秒、每帧一个鼠标事件，和真实 60 Hz 屏幕一致，再和视频按同一比例（视频里网页约缩小一半）并排对比。按这个校准：快速移动（1200 px/s）时头部沿路径散开约 140 px、尾巴最长约 200 px，和视频里光丝群的尺寸一致。
 - **慢机器不再慢动作**：以前每帧最多只推进 1/30 秒，帧率低时动画会变成慢动作；现在每帧最多推进 1/15 秒，并拆成不超过 1/120 秒的小步计算弹簧，在 15 帧/秒以上都按真实时间运动。
 - Windows ZIP：`Kyoto-GIS-Dashboard-Windows-2026-11-19.zip`（704 个文件，76.6 MB），解压后用自带启动服务器跑浏览器测试 168/168 通过。在线预览链接更新到第 33 版。
+
+## 6y. 2026-11-20：没有名字的景点全部补上可显示的名称（不编造）
+
+- **问题**：639 个景点里有 218 个在 OpenStreetMap 上本来就没有名字（用 OSM API 线上数据核对过，至今仍为空），界面原来显示成 “Unnamed viewpoint (A00003)”。其中 47 个已经显示同一条 OSM 记录里的英文名（name:en），剩下 171 个没有。
+- **做法**（`scripts/label_unnamed.py` → `public/data/attraction_labels.json`，审核表在 `public/data/analysis/attraction_labels_review.csv`），按顺序：
+  1. 同一条 OSM 记录里的其他语言名称（name:ja、name:zh、name:ko、name:es、name:fr）：9 个，例如 大成古墳群展望台、京友禪體驗工坊。
+  2. 同一条记录的描述标签：3 个，例如 “Viewpoint: 飛龍観回廊”。
+  3. 位于某个有名字的 OSM 区域内（寺院、神社、公园等，按空间包含判断，不是按名字猜）：74 个，例如 “Viewpoint at 伏見稲荷大社 (Fushimi Inari-taisha)”。有多层区域时用主要场所，不用里面的建筑。
+  4. 国土地理院（GSI）逆地理编码得到的町名，且 GSI 返回的市区町村代码必须和我们自己的 N03 边界判断一致：82 个，例如 “Viewpoint · 字蒲入, Ine Town, Yosa District”。
+  5. 以上都没有时只写所在市区町村：3 个（都是 GSI 和 N03 在区界附近不一致的点，所以不用 GSI 的町名）。
+- **原始数据不改**：`name` 字段仍是空的，`display_name` 和 ID 不变；标签是加载时另外合并的新字段（`label_kind`、`label_basis` 等），`manifest.json` 里记录了各类数量。
+- **界面**：地点卡片标题显示标签，旁边有 “No name in OpenStreetMap” 的小标记，悬停说明来源；“More about this place” 里写明依据。搜索也能搜到标签（例如搜 金閣寺 会找到金阁寺院内的观景点）；有正式名称的记录排在只有标签的记录前面。

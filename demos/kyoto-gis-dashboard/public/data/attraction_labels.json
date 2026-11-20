@@ -1,0 +1,1209 @@
+{
+ "meta": {
+  "built_at": "2026-11-20T06:33:51+00:00",
+  "scope": "attraction records with an empty OSM name and no English name of their own",
+  "rules": [
+   "The records are not changed: name stays empty, display_name and IDs stay as they are.",
+   "name: a name in another language on the same OSM record. desc: its description tag.",
+   "place: the point lies inside that named OSM area (a location relationship, not an identification).",
+   "address: the town from the GSI reverse geocoder, used only when its municipality code matches the MLIT N03 join.",
+   "muni: the municipality alone. Nothing is translated, romanised or invented."
+  ],
+  "counts": {
+   "address": 82,
+   "place": 74,
+   "desc": 3,
+   "name": 9,
+   "muni": 3
+  },
+  "records": 171,
+  "sources": {
+   "osm_tags": "data/cache/osm_attraction_nodes.json (OSM API)",
+   "inside": "public/data/attraction_context.json",
+   "gsi": "data/cache/gsi_reverse_unnamed.json (GSI reverse geocoder)",
+   "municipality": "public/data/point_municipality.json"
+  },
+  "licence": "OpenStreetMap contributors (ODbL); GSI reverse geocoder (国土地理院)"
+ },
+ "labels": {
+  "A00003": {
+   "kind": "address",
+   "text": "丹後町袖志",
+   "muni": "26212",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kyotango City"
+  },
+  "A00006": {
+   "kind": "place",
+   "text": "傘松公園",
+   "text_en": "Kasamatsu Park",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"傘松公園\" (park; Overpass is_in)"
+  },
+  "A00009": {
+   "kind": "place",
+   "text": "伏見稲荷大社",
+   "text_en": "Fushimi Inari-taisha",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"伏見稲荷大社\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00012": {
+   "kind": "address",
+   "text": "字蒲入",
+   "muni": "26463",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ine Town, Yosa District"
+  },
+  "A00013": {
+   "kind": "address",
+   "text": "字蒲入",
+   "muni": "26463",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ine Town, Yosa District"
+  },
+  "A00016": {
+   "kind": "address",
+   "text": "字瀬崎",
+   "muni": "26202",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Maizuru City"
+  },
+  "A00019": {
+   "kind": "place",
+   "text": "嵐山モンキーパークいわたやま",
+   "text_en": "Monkey Park Iwatayama",
+   "site_kind": "zoo",
+   "basis": "inside the named OSM area \"嵐山モンキーパークいわたやま\" (zoo; Overpass is_in)"
+  },
+  "A00073": {
+   "kind": "place",
+   "text": "引揚記念公園",
+   "text_en": "",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"引揚記念公園\" (park; Overpass is_in)"
+  },
+  "A00075": {
+   "kind": "address",
+   "text": "東柳町",
+   "muni": "26109",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Fushimi Ward, Kyoto City"
+  },
+  "A00088": {
+   "kind": "address",
+   "text": "字平田",
+   "muni": "26463",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ine Town, Yosa District"
+  },
+  "A00089": {
+   "kind": "address",
+   "text": "八幡平ノ山",
+   "muni": "26210",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Yawata City"
+  },
+  "A00095": {
+   "kind": "address",
+   "text": "字成相寺",
+   "muni": "26205",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Miyazu City"
+  },
+  "A00097": {
+   "kind": "address",
+   "text": "嵯峨天龍寺造路町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00098": {
+   "kind": "place",
+   "text": "広沢池",
+   "text_en": "Hirosawa-no-ike Pond",
+   "site_kind": "lake or pond",
+   "basis": "inside the named OSM area \"広沢池\" (lake or pond; Overpass is_in)"
+  },
+  "A00101": {
+   "kind": "address",
+   "text": "嵯峨亀ノ尾町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00102": {
+   "kind": "address",
+   "text": "南禅寺福地町",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00106": {
+   "kind": "place",
+   "text": "清水寺",
+   "text_en": "Kiyomizu-dera",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"清水寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00107": {
+   "kind": "place",
+   "text": "清水寺",
+   "text_en": "Kiyomizu-dera",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"清水寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00108": {
+   "kind": "place",
+   "text": "伏見稲荷大社",
+   "text_en": "Fushimi Inari-taisha",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"伏見稲荷大社\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00109": {
+   "kind": "place",
+   "text": "伏見稲荷大社",
+   "text_en": "Fushimi Inari-taisha",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"伏見稲荷大社\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00110": {
+   "kind": "place",
+   "text": "金閣寺",
+   "text_en": "Kinkaku-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"金閣寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00111": {
+   "kind": "place",
+   "text": "金閣寺",
+   "text_en": "Kinkaku-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"金閣寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00112": {
+   "kind": "place",
+   "text": "金閣寺",
+   "text_en": "Kinkaku-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"金閣寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00114": {
+   "kind": "place",
+   "text": "銀閣寺",
+   "text_en": "Ginkaku-ji temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"銀閣寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00117": {
+   "kind": "place",
+   "text": "高山寺",
+   "text_en": "Kousanji Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"高山寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00118": {
+   "kind": "desc",
+   "text": "飛龍観回廊",
+   "basis": "OSM description of the same record"
+  },
+  "A00121": {
+   "kind": "address",
+   "text": "上賀茂本山",
+   "muni": "26101",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kita Ward, Kyoto City"
+  },
+  "A00124": {
+   "kind": "place",
+   "text": "法観寺",
+   "text_en": "Hōkan Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"法観寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00125": {
+   "kind": "place",
+   "text": "圓徳院",
+   "text_en": "Entokuin",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"圓徳院\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00126": {
+   "kind": "place",
+   "text": "仁和寺",
+   "text_en": "Ninna temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"仁和寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00127": {
+   "kind": "place",
+   "text": "仁和寺",
+   "text_en": "Ninna temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"仁和寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00128": {
+   "kind": "address",
+   "text": "東笠取",
+   "muni": "26204",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Uji City"
+  },
+  "A00129": {
+   "kind": "address",
+   "text": "醍醐醍醐山",
+   "muni": "26109",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Fushimi Ward, Kyoto City"
+  },
+  "A00130": {
+   "kind": "place",
+   "text": "上醍醐",
+   "text_en": "Kami Daigo",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"上醍醐\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00131": {
+   "kind": "place",
+   "text": "清水寺",
+   "text_en": "Kiyomizu-dera",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"清水寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00133": {
+   "kind": "address",
+   "text": "梅ケ畑高雄町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00144": {
+   "kind": "place",
+   "text": "恵解山古墳公園",
+   "text_en": "Igenoyama Tumulus Park",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"恵解山古墳公園\" (park; Overpass is_in)"
+  },
+  "A00145": {
+   "kind": "address",
+   "text": "調子一丁目",
+   "muni": "26209",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Nagaokakyo City"
+  },
+  "A00146": {
+   "kind": "address",
+   "text": "嵯峨中ノ島町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00148": {
+   "kind": "place",
+   "text": "北野天満宮",
+   "text_en": "Kitano Tenman Shrine",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"北野天満宮\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00149": {
+   "kind": "place",
+   "text": "北野天満宮",
+   "text_en": "Kitano Tenman Shrine",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"北野天満宮\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00154": {
+   "kind": "address",
+   "text": "浄土寺大山町",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00160": {
+   "kind": "address",
+   "text": "松室北松尾山",
+   "muni": "26111",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Nishikyo Ward, Kyoto City"
+  },
+  "A00161": {
+   "kind": "address",
+   "text": "嵐山元録山町",
+   "muni": "26111",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Nishikyo Ward, Kyoto City"
+  },
+  "A00165": {
+   "kind": "address",
+   "text": "御陵田山町",
+   "muni": "26110",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Yamashina Ward, Kyoto City"
+  },
+  "A00167": {
+   "kind": "desc",
+   "text": "大阪平野一望",
+   "basis": "OSM description of the same record"
+  },
+  "A00184": {
+   "kind": "address",
+   "text": "宇治",
+   "muni": "26204",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Uji City"
+  },
+  "A00185": {
+   "kind": "address",
+   "text": "宇治",
+   "muni": "26204",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Uji City"
+  },
+  "A00189": {
+   "kind": "name",
+   "text": "京友禪體驗工坊",
+   "lang": "zh",
+   "basis": "OSM name:zh of the same record (Chinese)"
+  },
+  "A00199": {
+   "kind": "place",
+   "text": "臥雲橋",
+   "text_en": "Bridge of Reclining Clouds",
+   "site_kind": "building",
+   "basis": "inside the named OSM area \"臥雲橋\" (building; Overpass is_in)"
+  },
+  "A00209": {
+   "kind": "address",
+   "text": "字円明寺",
+   "muni": "26303",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Oyamazaki Town, Otokuni District"
+  },
+  "A00219": {
+   "kind": "name",
+   "text": "기온거리",
+   "lang": "ko",
+   "basis": "OSM name:ko of the same record (Korean)"
+  },
+  "A00240": {
+   "kind": "address",
+   "text": "一乗寺大谷",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00241": {
+   "kind": "desc",
+   "text": "view on Kyoto",
+   "basis": "OSM description of the same record"
+  },
+  "A00251": {
+   "kind": "place",
+   "text": "海住山寺",
+   "text_en": "Kaijusen-ji Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"海住山寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00254": {
+   "kind": "address",
+   "text": "城山台八丁目",
+   "muni": "26214",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kizugawa City"
+  },
+  "A00255": {
+   "kind": "address",
+   "text": "城山台八丁目",
+   "muni": "26214",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kizugawa City"
+  },
+  "A00256": {
+   "kind": "address",
+   "text": "城山台八丁目",
+   "muni": "26214",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kizugawa City"
+  },
+  "A00257": {
+   "kind": "address",
+   "text": "城山台八丁目",
+   "muni": "26214",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kizugawa City"
+  },
+  "A00259": {
+   "kind": "address",
+   "text": "西笠取",
+   "muni": "26204",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Uji City"
+  },
+  "A00262": {
+   "kind": "place",
+   "text": "清閑寺",
+   "text_en": "Seikanji Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"清閑寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00266": {
+   "kind": "place",
+   "text": "高台寺",
+   "text_en": "Kōdai-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"高台寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00268": {
+   "kind": "place",
+   "text": "嵐山公園",
+   "text_en": "Arashiyama Park",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"嵐山公園\" (park; Overpass is_in)"
+  },
+  "A00271": {
+   "kind": "place",
+   "text": "善峯寺",
+   "text_en": "Yoshimine Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"善峯寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00272": {
+   "kind": "place",
+   "text": "善峯寺",
+   "text_en": "Yoshimine Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"善峯寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00274": {
+   "kind": "place",
+   "text": "善峯寺",
+   "text_en": "Yoshimine Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"善峯寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00277": {
+   "kind": "address",
+   "text": "字弓木",
+   "muni": "26465",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Yosano Town, Yosa District"
+  },
+  "A00278": {
+   "kind": "name",
+   "text": "Location de voiture",
+   "lang": "fr",
+   "basis": "OSM name:fr of the same record (French)"
+  },
+  "A00279": {
+   "kind": "place",
+   "text": "大内峠一字観公園",
+   "text_en": "",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"大内峠一字観公園\" (park; Overpass is_in)"
+  },
+  "A00282": {
+   "kind": "address",
+   "text": "字大垣",
+   "muni": "26205",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Miyazu City"
+  },
+  "A00286": {
+   "kind": "place",
+   "text": "天橋立ビューランド",
+   "text_en": "Amanohashidate View Land",
+   "site_kind": "theme park",
+   "basis": "inside the named OSM area \"天橋立ビューランド\" (theme park; Overpass is_in)"
+  },
+  "A00291": {
+   "kind": "place",
+   "text": "天橋立ビューランド",
+   "text_en": "Amanohashidate View Land",
+   "site_kind": "theme park",
+   "basis": "inside the named OSM area \"天橋立ビューランド\" (theme park; Overpass is_in)"
+  },
+  "A00317": {
+   "kind": "place",
+   "text": "大覚寺",
+   "text_en": "Daikaku-ji Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"大覚寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00319": {
+   "kind": "address",
+   "text": "美山町北",
+   "muni": "26213",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Nantan City"
+  },
+  "A00321": {
+   "kind": "place",
+   "text": "善峯寺",
+   "text_en": "Yoshimine Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"善峯寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00322": {
+   "kind": "place",
+   "text": "善峯寺",
+   "text_en": "Yoshimine Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"善峯寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00323": {
+   "kind": "place",
+   "text": "善峯寺",
+   "text_en": "Yoshimine Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"善峯寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00325": {
+   "kind": "place",
+   "text": "松の平",
+   "text_en": "",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"松の平\" (park; Overpass is_in)"
+  },
+  "A00333": {
+   "kind": "place",
+   "text": "傘松公園",
+   "text_en": "Kasamatsu Park",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"傘松公園\" (park; Overpass is_in)"
+  },
+  "A00334": {
+   "kind": "place",
+   "text": "傘松公園",
+   "text_en": "Kasamatsu Park",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"傘松公園\" (park; Overpass is_in)"
+  },
+  "A00336": {
+   "kind": "place",
+   "text": "櫟谷宗像神社社",
+   "text_en": "Ichitani Munakata Shrine",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"櫟谷宗像神社社\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00345": {
+   "kind": "place",
+   "text": "南禅寺",
+   "text_en": "Nanzen-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"南禅寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00346": {
+   "kind": "address",
+   "text": "網野町浜詰",
+   "muni": "26212",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kyotango City"
+  },
+  "A00347": {
+   "kind": "address",
+   "text": "網野町浜詰",
+   "muni": "26212",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kyotango City"
+  },
+  "A00350": {
+   "kind": "place",
+   "text": "東福寺",
+   "text_en": "Tōfuku-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"東福寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00351": {
+   "kind": "place",
+   "text": "東福寺",
+   "text_en": "Tōfuku-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"東福寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00352": {
+   "kind": "place",
+   "text": "常寂光寺",
+   "text_en": "Jōjakkō-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"常寂光寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00353": {
+   "kind": "place",
+   "text": "常寂光寺",
+   "text_en": "Jōjakkō-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"常寂光寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00354": {
+   "kind": "place",
+   "text": "清水寺",
+   "text_en": "Kiyomizu-dera",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"清水寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00355": {
+   "kind": "address",
+   "text": "字瀬崎",
+   "muni": "26202",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Maizuru City"
+  },
+  "A00356": {
+   "kind": "place",
+   "text": "常寂光寺",
+   "text_en": "Jōjakkō-ji",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"常寂光寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00357": {
+   "kind": "place",
+   "text": "二尊院",
+   "text_en": "Nison-in Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"二尊院\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00362": {
+   "kind": "place",
+   "text": "伏見稲荷大社",
+   "text_en": "Fushimi Inari-taisha",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"伏見稲荷大社\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00363": {
+   "kind": "place",
+   "text": "伏見稲荷大社",
+   "text_en": "Fushimi Inari-taisha",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"伏見稲荷大社\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00364": {
+   "kind": "address",
+   "text": "泉涌寺山内町",
+   "muni": "26105",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Higashiyama Ward, Kyoto City"
+  },
+  "A00365": {
+   "kind": "place",
+   "text": "東山山頂公園",
+   "text_en": "Higashiyama Mount Peak Park",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"東山山頂公園\" (park; Overpass is_in)"
+  },
+  "A00366": {
+   "kind": "address",
+   "text": "鹿ケ谷大黒谷町",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00367": {
+   "kind": "name",
+   "text": "大成古墳群展望台",
+   "lang": "ja",
+   "basis": "OSM name:ja of the same record (Japanese)"
+  },
+  "A00369": {
+   "kind": "address",
+   "text": "大江町内宮",
+   "muni": "26201",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Fukuchiyama City"
+  },
+  "A00371": {
+   "kind": "muni",
+   "muni": "26103",
+   "basis": "municipality from the MLIT N03 point-in-polygon join (GSI gave 26110 −, not used)",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00372": {
+   "kind": "address",
+   "text": "一乗寺松原町",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00373": {
+   "kind": "address",
+   "text": "修学院梅谷",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00374": {
+   "kind": "address",
+   "text": "修学院丸子青良ケ谷",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00375": {
+   "kind": "address",
+   "text": "八瀬野瀬町",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00376": {
+   "kind": "place",
+   "text": "智積院",
+   "text_en": "Chishaku-in",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"智積院\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00378": {
+   "kind": "address",
+   "text": "八瀬野瀬町",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00379": {
+   "kind": "address",
+   "text": "嵯峨清滝大谷町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00380": {
+   "kind": "address",
+   "text": "静市市原町",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00381": {
+   "kind": "address",
+   "text": "上賀茂十三石山",
+   "muni": "26101",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kita Ward, Kyoto City"
+  },
+  "A00382": {
+   "kind": "address",
+   "text": "大宮釈迦谷",
+   "muni": "26101",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kita Ward, Kyoto City"
+  },
+  "A00383": {
+   "kind": "address",
+   "text": "鷹峯堂ノ庭町",
+   "muni": "26101",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kita Ward, Kyoto City"
+  },
+  "A00385": {
+   "kind": "place",
+   "text": "才の神の藤",
+   "text_en": "",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"才の神の藤\" (park; Overpass is_in)"
+  },
+  "A00396": {
+   "kind": "address",
+   "text": "保津町",
+   "muni": "26206",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kameoka City"
+  },
+  "A00397": {
+   "kind": "address",
+   "text": "保津町",
+   "muni": "26206",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kameoka City"
+  },
+  "A00398": {
+   "kind": "address",
+   "text": "保津町",
+   "muni": "26206",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kameoka City"
+  },
+  "A00399": {
+   "kind": "address",
+   "text": "嵯峨亀ノ尾町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00400": {
+   "kind": "address",
+   "text": "字野原",
+   "muni": "26202",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Maizuru City"
+  },
+  "A00405": {
+   "kind": "address",
+   "text": "嵯峨天龍寺芒ノ馬場町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00408": {
+   "kind": "address",
+   "text": "網野町三津",
+   "muni": "26212",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kyotango City"
+  },
+  "A00409": {
+   "kind": "address",
+   "text": "佐山西ノ口",
+   "muni": "26322",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kumiyama Town, Kuse District"
+  },
+  "A00410": {
+   "kind": "address",
+   "text": "佐山南代",
+   "muni": "26322",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kumiyama Town, Kuse District"
+  },
+  "A00413": {
+   "kind": "address",
+   "text": "三十三間堂廻り",
+   "muni": "26105",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Higashiyama Ward, Kyoto City"
+  },
+  "A00415": {
+   "kind": "place",
+   "text": "愛宕念仏寺",
+   "text_en": "Otagi Nenbutsu Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"愛宕念仏寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00416": {
+   "kind": "place",
+   "text": "渉成園",
+   "text_en": "Shosei Garden",
+   "site_kind": "garden",
+   "basis": "inside the named OSM area \"渉成園\" (garden; Overpass is_in)"
+  },
+  "A00417": {
+   "kind": "address",
+   "text": "−",
+   "muni": "26110",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Yamashina Ward, Kyoto City"
+  },
+  "A00419": {
+   "kind": "address",
+   "text": "加茂町岩船",
+   "muni": "26214",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kizugawa City"
+  },
+  "A00421": {
+   "kind": "address",
+   "text": "嵯峨小倉山町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00422": {
+   "kind": "address",
+   "text": "大字北稲八間",
+   "muni": "26366",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Seika Town, Soraku District"
+  },
+  "A00424": {
+   "kind": "address",
+   "text": "日ノ岡夷谷町",
+   "muni": "26110",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Yamashina Ward, Kyoto City"
+  },
+  "A00425": {
+   "kind": "address",
+   "text": "大字笠置",
+   "muni": "26364",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kasagi Town, Soraku District"
+  },
+  "A00426": {
+   "kind": "address",
+   "text": "大字笠置",
+   "muni": "26364",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kasagi Town, Soraku District"
+  },
+  "A00427": {
+   "kind": "address",
+   "text": "大字笠置",
+   "muni": "26364",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kasagi Town, Soraku District"
+  },
+  "A00428": {
+   "kind": "address",
+   "text": "字成相寺",
+   "muni": "26205",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Miyazu City"
+  },
+  "A00429": {
+   "kind": "address",
+   "text": "嵯峨亀山町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00431": {
+   "kind": "name",
+   "text": "santuario mitsurugisha",
+   "lang": "es",
+   "basis": "OSM name:es of the same record (Spanish)"
+  },
+  "A00432": {
+   "kind": "name",
+   "text": "gozandani hohaisho",
+   "lang": "es",
+   "basis": "OSM name:es of the same record (Spanish)"
+  },
+  "A00433": {
+   "kind": "name",
+   "text": "santuario suehiro",
+   "lang": "es",
+   "basis": "OSM name:es of the same record (Spanish)"
+  },
+  "A00434": {
+   "kind": "name",
+   "text": "ichi no mine",
+   "lang": "es",
+   "basis": "OSM name:es of the same record (Spanish)"
+  },
+  "A00435": {
+   "kind": "muni",
+   "muni": "26109",
+   "basis": "municipality from the MLIT N03 point-in-polygon join (GSI gave 26105 本町十五丁目, not used)",
+   "muni_en": "Fushimi Ward, Kyoto City"
+  },
+  "A00437": {
+   "kind": "place",
+   "text": "最高区配水地",
+   "text_en": "",
+   "site_kind": "lake or pond",
+   "basis": "inside the named OSM area \"最高区配水地\" (lake or pond; Overpass is_in)"
+  },
+  "A00438": {
+   "kind": "address",
+   "text": "厨子奥花鳥町",
+   "muni": "26110",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Yamashina Ward, Kyoto City"
+  },
+  "A00440": {
+   "kind": "place",
+   "text": "記念広場",
+   "text_en": "",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"記念広場\" (park; Overpass is_in)"
+  },
+  "A00441": {
+   "kind": "address",
+   "text": "嵯峨野宮ノ元町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00442": {
+   "kind": "address",
+   "text": "篠町山本",
+   "muni": "26206",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kameoka City"
+  },
+  "A00443": {
+   "kind": "name",
+   "text": "つえ屋",
+   "lang": "ja",
+   "basis": "OSM name:ja of the same record (Japanese)"
+  },
+  "A00444": {
+   "kind": "place",
+   "text": "ガーデン ミュージアム 比叡",
+   "text_en": "Garden Museum Hiei",
+   "site_kind": "museum",
+   "basis": "inside the named OSM area \"ガーデン ミュージアム 比叡\" (museum; Overpass is_in)"
+  },
+  "A00445": {
+   "kind": "place",
+   "text": "ガーデン ミュージアム 比叡",
+   "text_en": "Garden Museum Hiei",
+   "site_kind": "museum",
+   "basis": "inside the named OSM area \"ガーデン ミュージアム 比叡\" (museum; Overpass is_in)"
+  },
+  "A00451": {
+   "kind": "muni",
+   "muni": "26110",
+   "basis": "municipality from the MLIT N03 point-in-polygon join (GSI gave 26105 粟田口華頂町, not used)",
+   "muni_en": "Yamashina Ward, Kyoto City"
+  },
+  "A00457": {
+   "kind": "place",
+   "text": "貴船口駅(Kibuneguchi Station)",
+   "text_en": "Kibuneguchi Station",
+   "site_kind": "building",
+   "basis": "inside the named OSM area \"貴船口駅(Kibuneguchi Station)\" (building; Overpass is_in)"
+  },
+  "A00460": {
+   "kind": "address",
+   "text": "大字白栖",
+   "muni": "26365",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Wazuka Town, Soraku District"
+  },
+  "A00461": {
+   "kind": "address",
+   "text": "大字白栖",
+   "muni": "26365",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Wazuka Town, Soraku District"
+  },
+  "A00463": {
+   "kind": "place",
+   "text": "北野天満宮",
+   "text_en": "Kitano Tenman Shrine",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"北野天満宮\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00464": {
+   "kind": "address",
+   "text": "御室双岡町",
+   "muni": "26108",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Ukyo Ward, Kyoto City"
+  },
+  "A00465": {
+   "kind": "place",
+   "text": "船岡山公園",
+   "text_en": "Funaokayama Park",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"船岡山公園\" (park; Overpass is_in)"
+  },
+  "A00483": {
+   "kind": "address",
+   "text": "川端町",
+   "muni": "26105",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Higashiyama Ward, Kyoto City"
+  },
+  "A00484": {
+   "kind": "place",
+   "text": "風風の湯",
+   "text_en": "Fufunoyu",
+   "site_kind": "building",
+   "basis": "inside the named OSM area \"風風の湯\" (building; Overpass is_in)"
+  },
+  "A00489": {
+   "kind": "place",
+   "text": "二条城",
+   "text_en": "Nijō Castle",
+   "site_kind": "visitor site",
+   "basis": "inside the named OSM area \"二条城\" (visitor site; Overpass is_in)"
+  },
+  "A00492": {
+   "kind": "address",
+   "text": "醍醐一言寺裏町",
+   "muni": "26109",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Fushimi Ward, Kyoto City"
+  },
+  "A00493": {
+   "kind": "place",
+   "text": "西展望台",
+   "text_en": "Shōgunzaka Western Observation Deck",
+   "site_kind": "building",
+   "basis": "inside the named OSM area \"西展望台\" (building; Overpass is_in)"
+  },
+  "A00494": {
+   "kind": "address",
+   "text": "松ケ崎東山",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00495": {
+   "kind": "place",
+   "text": "鞍馬寺",
+   "text_en": "Kurama-dera",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"鞍馬寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00496": {
+   "kind": "place",
+   "text": "知恩院",
+   "text_en": "Chion-in",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"知恩院\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00497": {
+   "kind": "place",
+   "text": "粟田神社",
+   "text_en": "Awata-jinjya",
+   "site_kind": "Shinto shrine",
+   "basis": "inside the named OSM area \"粟田神社\" (Shinto shrine; Overpass is_in)"
+  },
+  "A00498": {
+   "kind": "address",
+   "text": "修学院尺羅ケ谷四明ケ嶽",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00499": {
+   "kind": "address",
+   "text": "修学院尺羅ケ谷四明ケ嶽",
+   "muni": "26103",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Sakyo Ward, Kyoto City"
+  },
+  "A00501": {
+   "kind": "place",
+   "text": "あらかし公園",
+   "text_en": "",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"あらかし公園\" (park; Overpass is_in)"
+  },
+  "A00503": {
+   "kind": "address",
+   "text": "嵐山中尾下町",
+   "muni": "26111",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Nishikyo Ward, Kyoto City"
+  },
+  "A00514": {
+   "kind": "place",
+   "text": "東部公園",
+   "text_en": "",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"東部公園\" (park; Overpass is_in)"
+  },
+  "A00518": {
+   "kind": "place",
+   "text": "東寺",
+   "text_en": "To-ji Temple",
+   "site_kind": "Buddhist temple",
+   "basis": "inside the named OSM area \"東寺\" (Buddhist temple; Overpass is_in)"
+  },
+  "A00521": {
+   "kind": "place",
+   "text": "井根山公園",
+   "text_en": "",
+   "site_kind": "park",
+   "basis": "inside the named OSM area \"井根山公園\" (park; Overpass is_in)"
+  },
+  "A00522": {
+   "kind": "address",
+   "text": "薪甘南備山",
+   "muni": "26211",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Kyotanabe City"
+  }
+ }
+}

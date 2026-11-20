@@ -1,0 +1,172 @@
+﻿id,osm_id,category,label_kind,text,text_en,municipality_en,basis
+A00003,562648015,viewpoint,address,丹後町袖志,,Kyotango City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00006,720256669,viewpoint,place,傘松公園,Kasamatsu Park,,"inside the named OSM area ""傘松公園"" (park; Overpass is_in)"
+A00009,749327432,viewpoint,place,伏見稲荷大社,Fushimi Inari-taisha,,"inside the named OSM area ""伏見稲荷大社"" (Shinto shrine; Overpass is_in)"
+A00012,847889883,viewpoint,address,字蒲入,,"Ine Town, Yosa District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00013,847889885,viewpoint,address,字蒲入,,"Ine Town, Yosa District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00016,910536177,viewpoint,address,字瀬崎,,Maizuru City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00019,1212123735,viewpoint,place,嵐山モンキーパークいわたやま,Monkey Park Iwatayama,,"inside the named OSM area ""嵐山モンキーパークいわたやま"" (zoo; Overpass is_in)"
+A00073,1435052713,viewpoint,place,引揚記念公園,,,"inside the named OSM area ""引揚記念公園"" (park; Overpass is_in)"
+A00075,1621848983,viewpoint,address,東柳町,,"Fushimi Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00088,2722650624,viewpoint,address,字平田,,"Ine Town, Yosa District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00089,2784781505,viewpoint,address,八幡平ノ山,,Yawata City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00095,2815277818,viewpoint,address,字成相寺,,Miyazu City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00097,2854305106,viewpoint,address,嵯峨天龍寺造路町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00098,2854305122,viewpoint,place,広沢池,Hirosawa-no-ike Pond,,"inside the named OSM area ""広沢池"" (lake or pond; Overpass is_in)"
+A00101,3004516173,viewpoint,address,嵯峨亀ノ尾町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00102,3233974299,viewpoint,address,南禅寺福地町,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00106,3467694619,viewpoint,place,清水寺,Kiyomizu-dera,,"inside the named OSM area ""清水寺"" (Buddhist temple; Overpass is_in)"
+A00107,3475118096,viewpoint,place,清水寺,Kiyomizu-dera,,"inside the named OSM area ""清水寺"" (Buddhist temple; Overpass is_in)"
+A00108,3494101787,viewpoint,place,伏見稲荷大社,Fushimi Inari-taisha,,"inside the named OSM area ""伏見稲荷大社"" (Shinto shrine; Overpass is_in)"
+A00109,3494102024,viewpoint,place,伏見稲荷大社,Fushimi Inari-taisha,,"inside the named OSM area ""伏見稲荷大社"" (Shinto shrine; Overpass is_in)"
+A00110,3537286851,viewpoint,place,金閣寺,Kinkaku-ji,,"inside the named OSM area ""金閣寺"" (Buddhist temple; Overpass is_in)"
+A00111,3537375396,viewpoint,place,金閣寺,Kinkaku-ji,,"inside the named OSM area ""金閣寺"" (Buddhist temple; Overpass is_in)"
+A00112,3540488353,viewpoint,place,金閣寺,Kinkaku-ji,,"inside the named OSM area ""金閣寺"" (Buddhist temple; Overpass is_in)"
+A00114,3591682919,viewpoint,place,銀閣寺,Ginkaku-ji temple,,"inside the named OSM area ""銀閣寺"" (Buddhist temple; Overpass is_in)"
+A00117,3666640431,viewpoint,place,高山寺,Kousanji Temple,,"inside the named OSM area ""高山寺"" (Buddhist temple; Overpass is_in)"
+A00118,3689747276,viewpoint,desc,飛龍観回廊,,,OSM description of the same record
+A00121,3710127914,viewpoint,address,上賀茂本山,,"Kita Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00124,3752787070,viewpoint,place,法観寺,Hōkan Temple,,"inside the named OSM area ""法観寺"" (Buddhist temple; Overpass is_in)"
+A00125,3752885628,viewpoint,place,圓徳院,Entokuin,,"inside the named OSM area ""圓徳院"" (Buddhist temple; Overpass is_in)"
+A00126,3794334578,viewpoint,place,仁和寺,Ninna temple,,"inside the named OSM area ""仁和寺"" (Buddhist temple; Overpass is_in)"
+A00127,3797579042,viewpoint,place,仁和寺,Ninna temple,,"inside the named OSM area ""仁和寺"" (Buddhist temple; Overpass is_in)"
+A00128,3931904262,viewpoint,address,東笠取,,Uji City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00129,3962948759,viewpoint,address,醍醐醍醐山,,"Fushimi Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00130,3979075898,viewpoint,place,上醍醐,Kami Daigo,,"inside the named OSM area ""上醍醐"" (Buddhist temple; Overpass is_in)"
+A00131,4000585592,viewpoint,place,清水寺,Kiyomizu-dera,,"inside the named OSM area ""清水寺"" (Buddhist temple; Overpass is_in)"
+A00133,4102670115,viewpoint,address,梅ケ畑高雄町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00144,4273144996,viewpoint,place,恵解山古墳公園,Igenoyama Tumulus Park,,"inside the named OSM area ""恵解山古墳公園"" (park; Overpass is_in)"
+A00145,4273214089,viewpoint,address,調子一丁目,,Nagaokakyo City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00146,4278396510,viewpoint,address,嵯峨中ノ島町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00148,4314501406,viewpoint,place,北野天満宮,Kitano Tenman Shrine,,"inside the named OSM area ""北野天満宮"" (Shinto shrine; Overpass is_in)"
+A00149,4314501446,viewpoint,place,北野天満宮,Kitano Tenman Shrine,,"inside the named OSM area ""北野天満宮"" (Shinto shrine; Overpass is_in)"
+A00154,4411208590,viewpoint,address,浄土寺大山町,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00160,4605178896,attraction,address,松室北松尾山,,"Nishikyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00161,4605180389,attraction,address,嵐山元録山町,,"Nishikyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00165,4723794995,viewpoint,address,御陵田山町,,"Yamashina Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00167,4770497121,viewpoint,desc,大阪平野一望,,,OSM description of the same record
+A00184,4921633023,viewpoint,address,宇治,,Uji City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00185,4921633024,viewpoint,address,宇治,,Uji City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00189,4966399522,attraction,name,京友禪體驗工坊,,,OSM name:zh of the same record (Chinese)
+A00199,5118914756,viewpoint,place,臥雲橋,Bridge of Reclining Clouds,,"inside the named OSM area ""臥雲橋"" (building; Overpass is_in)"
+A00209,5320394467,viewpoint,address,字円明寺,,"Oyamazaki Town, Otokuni District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00219,5464510921,attraction,name,기온거리,,,OSM name:ko of the same record (Korean)
+A00240,5744244375,viewpoint,address,一乗寺大谷,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00241,5744244964,viewpoint,desc,view on Kyoto,,,OSM description of the same record
+A00251,5982571407,viewpoint,place,海住山寺,Kaijusen-ji Temple,,"inside the named OSM area ""海住山寺"" (Buddhist temple; Overpass is_in)"
+A00254,6050969728,viewpoint,address,城山台八丁目,,Kizugawa City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00255,6050969738,viewpoint,address,城山台八丁目,,Kizugawa City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00256,6050969778,viewpoint,address,城山台八丁目,,Kizugawa City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00257,6050971313,viewpoint,address,城山台八丁目,,Kizugawa City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00259,6128145343,viewpoint,address,西笠取,,Uji City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00262,6189906186,viewpoint,place,清閑寺,Seikanji Temple,,"inside the named OSM area ""清閑寺"" (Buddhist temple; Overpass is_in)"
+A00266,6222358041,viewpoint,place,高台寺,Kōdai-ji,,"inside the named OSM area ""高台寺"" (Buddhist temple; Overpass is_in)"
+A00268,6341311886,viewpoint,place,嵐山公園,Arashiyama Park,,"inside the named OSM area ""嵐山公園"" (park; Overpass is_in)"
+A00271,6342496039,viewpoint,place,善峯寺,Yoshimine Temple,,"inside the named OSM area ""善峯寺"" (Buddhist temple; Overpass is_in)"
+A00272,6342536413,viewpoint,place,善峯寺,Yoshimine Temple,,"inside the named OSM area ""善峯寺"" (Buddhist temple; Overpass is_in)"
+A00274,6355813537,viewpoint,place,善峯寺,Yoshimine Temple,,"inside the named OSM area ""善峯寺"" (Buddhist temple; Overpass is_in)"
+A00277,6431886180,viewpoint,address,字弓木,,"Yosano Town, Yosa District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00278,6433376185,attraction,name,Location de voiture,,,OSM name:fr of the same record (French)
+A00279,6435093729,viewpoint,place,大内峠一字観公園,,,"inside the named OSM area ""大内峠一字観公園"" (park; Overpass is_in)"
+A00282,6442050150,viewpoint,address,字大垣,,Miyazu City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00286,6442715615,viewpoint,place,天橋立ビューランド,Amanohashidate View Land,,"inside the named OSM area ""天橋立ビューランド"" (theme park; Overpass is_in)"
+A00291,6442803237,viewpoint,place,天橋立ビューランド,Amanohashidate View Land,,"inside the named OSM area ""天橋立ビューランド"" (theme park; Overpass is_in)"
+A00317,7005686716,viewpoint,place,大覚寺,Daikaku-ji Temple,,"inside the named OSM area ""大覚寺"" (Buddhist temple; Overpass is_in)"
+A00319,7093098577,viewpoint,address,美山町北,,Nantan City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00321,7178359741,viewpoint,place,善峯寺,Yoshimine Temple,,"inside the named OSM area ""善峯寺"" (Buddhist temple; Overpass is_in)"
+A00322,7178359755,viewpoint,place,善峯寺,Yoshimine Temple,,"inside the named OSM area ""善峯寺"" (Buddhist temple; Overpass is_in)"
+A00323,7178359776,viewpoint,place,善峯寺,Yoshimine Temple,,"inside the named OSM area ""善峯寺"" (Buddhist temple; Overpass is_in)"
+A00325,7215836712,viewpoint,place,松の平,,,"inside the named OSM area ""松の平"" (park; Overpass is_in)"
+A00333,7261474993,viewpoint,place,傘松公園,Kasamatsu Park,,"inside the named OSM area ""傘松公園"" (park; Overpass is_in)"
+A00334,7261474994,viewpoint,place,傘松公園,Kasamatsu Park,,"inside the named OSM area ""傘松公園"" (park; Overpass is_in)"
+A00336,7273694149,viewpoint,place,櫟谷宗像神社社,Ichitani Munakata Shrine,,"inside the named OSM area ""櫟谷宗像神社社"" (Shinto shrine; Overpass is_in)"
+A00345,7813581896,viewpoint,place,南禅寺,Nanzen-ji,,"inside the named OSM area ""南禅寺"" (Buddhist temple; Overpass is_in)"
+A00346,7944302775,viewpoint,address,網野町浜詰,,Kyotango City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00347,7944360308,viewpoint,address,網野町浜詰,,Kyotango City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00350,8308469073,viewpoint,place,東福寺,Tōfuku-ji,,"inside the named OSM area ""東福寺"" (Buddhist temple; Overpass is_in)"
+A00351,8378650512,viewpoint,place,東福寺,Tōfuku-ji,,"inside the named OSM area ""東福寺"" (Buddhist temple; Overpass is_in)"
+A00352,8591800011,viewpoint,place,常寂光寺,Jōjakkō-ji,,"inside the named OSM area ""常寂光寺"" (Buddhist temple; Overpass is_in)"
+A00353,8700019833,viewpoint,place,常寂光寺,Jōjakkō-ji,,"inside the named OSM area ""常寂光寺"" (Buddhist temple; Overpass is_in)"
+A00354,8817872743,viewpoint,place,清水寺,Kiyomizu-dera,,"inside the named OSM area ""清水寺"" (Buddhist temple; Overpass is_in)"
+A00355,8867485285,viewpoint,address,字瀬崎,,Maizuru City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00356,8910996340,viewpoint,place,常寂光寺,Jōjakkō-ji,,"inside the named OSM area ""常寂光寺"" (Buddhist temple; Overpass is_in)"
+A00357,8993716101,viewpoint,place,二尊院,Nison-in Temple,,"inside the named OSM area ""二尊院"" (Buddhist temple; Overpass is_in)"
+A00362,9673171297,viewpoint,place,伏見稲荷大社,Fushimi Inari-taisha,,"inside the named OSM area ""伏見稲荷大社"" (Shinto shrine; Overpass is_in)"
+A00363,9673171303,viewpoint,place,伏見稲荷大社,Fushimi Inari-taisha,,"inside the named OSM area ""伏見稲荷大社"" (Shinto shrine; Overpass is_in)"
+A00364,9696458556,viewpoint,address,泉涌寺山内町,,"Higashiyama Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00365,9706484859,viewpoint,place,東山山頂公園,Higashiyama Mount Peak Park,,"inside the named OSM area ""東山山頂公園"" (park; Overpass is_in)"
+A00366,9717801301,viewpoint,address,鹿ケ谷大黒谷町,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00367,9751338532,viewpoint,name,大成古墳群展望台,,,OSM name:ja of the same record (Japanese)
+A00369,9772852729,viewpoint,address,大江町内宮,,Fukuchiyama City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00371,9788618675,viewpoint,muni,,,"Sakyo Ward, Kyoto City","municipality from the MLIT N03 point-in-polygon join (GSI gave 26110 −, not used)"
+A00372,9822826635,viewpoint,address,一乗寺松原町,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00373,9836581200,viewpoint,address,修学院梅谷,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00374,9858450793,viewpoint,address,修学院丸子青良ケ谷,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00375,9858654732,viewpoint,address,八瀬野瀬町,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00376,9881169080,viewpoint,place,智積院,Chishaku-in,,"inside the named OSM area ""智積院"" (Buddhist temple; Overpass is_in)"
+A00378,10105413434,viewpoint,address,八瀬野瀬町,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00379,10220777419,viewpoint,address,嵯峨清滝大谷町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00380,10278240762,viewpoint,address,静市市原町,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00381,10281473155,viewpoint,address,上賀茂十三石山,,"Kita Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00382,10292382798,viewpoint,address,大宮釈迦谷,,"Kita Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00383,10292583964,viewpoint,address,鷹峯堂ノ庭町,,"Kita Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00385,10593372645,viewpoint,place,才の神の藤,,,"inside the named OSM area ""才の神の藤"" (park; Overpass is_in)"
+A00396,10705489903,viewpoint,address,保津町,,Kameoka City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00397,10705494617,viewpoint,address,保津町,,Kameoka City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00398,10705494676,viewpoint,address,保津町,,Kameoka City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00399,10741137005,viewpoint,address,嵯峨亀ノ尾町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00400,10757429761,viewpoint,address,字野原,,Maizuru City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00405,10829067605,viewpoint,address,嵯峨天龍寺芒ノ馬場町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00408,10892565151,viewpoint,address,網野町三津,,Kyotango City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00409,10948388903,viewpoint,address,佐山西ノ口,,"Kumiyama Town, Kuse District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00410,10948388904,viewpoint,address,佐山南代,,"Kumiyama Town, Kuse District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00413,11082181476,museum,address,三十三間堂廻り,,"Higashiyama Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00415,11147753008,viewpoint,place,愛宕念仏寺,Otagi Nenbutsu Temple,,"inside the named OSM area ""愛宕念仏寺"" (Buddhist temple; Overpass is_in)"
+A00416,11250678085,viewpoint,place,渉成園,Shosei Garden,,"inside the named OSM area ""渉成園"" (garden; Overpass is_in)"
+A00417,11279029634,viewpoint,address,−,,"Yamashina Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00419,11340994922,viewpoint,address,加茂町岩船,,Kizugawa City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00421,11381014163,viewpoint,address,嵯峨小倉山町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00422,11432734331,viewpoint,address,大字北稲八間,,"Seika Town, Soraku District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00424,11659227840,viewpoint,address,日ノ岡夷谷町,,"Yamashina Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00425,11757332320,viewpoint,address,大字笠置,,"Kasagi Town, Soraku District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00426,11757332321,viewpoint,address,大字笠置,,"Kasagi Town, Soraku District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00427,11757453893,viewpoint,address,大字笠置,,"Kasagi Town, Soraku District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00428,11764492501,viewpoint,address,字成相寺,,Miyazu City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00429,11821166169,viewpoint,address,嵯峨亀山町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00431,11824611169,attraction,name,santuario mitsurugisha,,,OSM name:es of the same record (Spanish)
+A00432,11824611170,attraction,name,gozandani hohaisho,,,OSM name:es of the same record (Spanish)
+A00433,11824611171,attraction,name,santuario suehiro,,,OSM name:es of the same record (Spanish)
+A00434,11824620669,attraction,name,ichi no mine,,,OSM name:es of the same record (Spanish)
+A00435,11861165328,viewpoint,muni,,,"Fushimi Ward, Kyoto City","municipality from the MLIT N03 point-in-polygon join (GSI gave 26105 本町十五丁目, not used)"
+A00437,11888155846,viewpoint,place,最高区配水地,,,"inside the named OSM area ""最高区配水地"" (lake or pond; Overpass is_in)"
+A00438,11888155847,viewpoint,address,厨子奥花鳥町,,"Yamashina Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00440,11899014950,viewpoint,place,記念広場,,,"inside the named OSM area ""記念広場"" (park; Overpass is_in)"
+A00441,11919654070,attraction,address,嵯峨野宮ノ元町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00442,11974721769,attraction,address,篠町山本,,Kameoka City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00443,12105551661,museum,name,つえ屋,,,OSM name:ja of the same record (Japanese)
+A00444,12123947852,viewpoint,place,ガーデン ミュージアム 比叡,Garden Museum Hiei,,"inside the named OSM area ""ガーデン ミュージアム 比叡"" (museum; Overpass is_in)"
+A00445,12124012458,viewpoint,place,ガーデン ミュージアム 比叡,Garden Museum Hiei,,"inside the named OSM area ""ガーデン ミュージアム 比叡"" (museum; Overpass is_in)"
+A00451,12293284933,viewpoint,muni,,,"Yamashina Ward, Kyoto City","municipality from the MLIT N03 point-in-polygon join (GSI gave 26105 粟田口華頂町, not used)"
+A00457,12428178458,viewpoint,place,貴船口駅(Kibuneguchi Station),Kibuneguchi Station,,"inside the named OSM area ""貴船口駅(Kibuneguchi Station)"" (building; Overpass is_in)"
+A00460,12473100284,viewpoint,address,大字白栖,,"Wazuka Town, Soraku District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00461,12473113035,viewpoint,address,大字白栖,,"Wazuka Town, Soraku District",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00463,12638666552,viewpoint,place,北野天満宮,Kitano Tenman Shrine,,"inside the named OSM area ""北野天満宮"" (Shinto shrine; Overpass is_in)"
+A00464,12679372793,viewpoint,address,御室双岡町,,"Ukyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00465,12747848894,viewpoint,place,船岡山公園,Funaokayama Park,,"inside the named OSM area ""船岡山公園"" (park; Overpass is_in)"
+A00483,12860318502,viewpoint,address,川端町,,"Higashiyama Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00484,12925548240,viewpoint,place,風風の湯,Fufunoyu,,"inside the named OSM area ""風風の湯"" (building; Overpass is_in)"
+A00489,13006284570,viewpoint,place,二条城,Nijō Castle,,"inside the named OSM area ""二条城"" (visitor site; Overpass is_in)"
+A00492,13033314388,viewpoint,address,醍醐一言寺裏町,,"Fushimi Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00493,13124263329,viewpoint,place,西展望台,Shōgunzaka Western Observation Deck,,"inside the named OSM area ""西展望台"" (building; Overpass is_in)"
+A00494,13260786581,viewpoint,address,松ケ崎東山,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00495,13264169397,viewpoint,place,鞍馬寺,Kurama-dera,,"inside the named OSM area ""鞍馬寺"" (Buddhist temple; Overpass is_in)"
+A00496,13266078082,viewpoint,place,知恩院,Chion-in,,"inside the named OSM area ""知恩院"" (Buddhist temple; Overpass is_in)"
+A00497,13316892240,viewpoint,place,粟田神社,Awata-jinjya,,"inside the named OSM area ""粟田神社"" (Shinto shrine; Overpass is_in)"
+A00498,13316950221,viewpoint,address,修学院尺羅ケ谷四明ケ嶽,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00499,13316950222,viewpoint,address,修学院尺羅ケ谷四明ケ嶽,,"Sakyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00501,13349618245,viewpoint,place,あらかし公園,,,"inside the named OSM area ""あらかし公園"" (park; Overpass is_in)"
+A00503,13610776201,viewpoint,address,嵐山中尾下町,,"Nishikyo Ward, Kyoto City",town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join
+A00514,14088957423,viewpoint,place,東部公園,,,"inside the named OSM area ""東部公園"" (park; Overpass is_in)"
+A00518,14145368568,attraction,place,東寺,To-ji Temple,,"inside the named OSM area ""東寺"" (Buddhist temple; Overpass is_in)"
+A00521,14257185302,viewpoint,place,井根山公園,,,"inside the named OSM area ""井根山公園"" (park; Overpass is_in)"
+A00522,14264667127,viewpoint,address,薪甘南備山,,Kyotanabe City,town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join

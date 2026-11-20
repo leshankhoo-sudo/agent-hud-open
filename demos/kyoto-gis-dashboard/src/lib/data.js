@@ -41,6 +41,7 @@ const FILES = {
   explore: 'explore_places.json',
   bus: 'bus/index.json',
   context: 'attraction_context.json',
+  labels: 'attraction_labels.json',      // labels for records with no OSM name (scripts/label_unnamed.py)
   relations: 'poi_relations.json',
   records: 'dsight_records.json',       // every Kyoto City DSIGHT_1.csv record and what was done with it
   geography: 'dsight_geography.geojson', // its place names, mountains and rivers that two sources place
@@ -67,6 +68,7 @@ export async function loadAll(base = import.meta.env.BASE_URL) {
   );
   applyEnglishNames(out);
   applyContext(out);
+  applyLabels(out);
   applyLandmarks(out);
   return { data: out, status };
 }
@@ -112,6 +114,21 @@ export function applyContext(data) {
   return data;
 }
 
+// Records with no OSM name and no English name of their own: a label, and what it rests on
+// (attraction_labels.json). The original fields stay as they are; label_* are new fields.
+export function applyLabels(data) {
+  const L = data?.labels?.labels;
+  if (!L) return data;
+  for (const f of data.attractions?.features || []) {
+    const p = f.properties, l = L[p.id];
+    if (!l || p.name || p.name_en) continue;
+    p.label_kind = l.kind; p.label_basis = l.basis; p.label_text = l.text || ''; p.label_text_en = l.text_en || '';
+    p.label_lang = l.lang || ''; p.label_muni_en = l.muni_en || '';
+    p.label = [l.text, l.text_en, l.muni_en].filter(Boolean).join(' ');   // what search looks at
+  }
+  return data;
+}
+
 // Name order: 「日文 (English)」 by default; 「English (日文)」 when the visitor picks English first.
 let englishFirst = false;
 export const setEnglishFirst = (v) => { englishFirst = !!v; };
@@ -128,8 +145,28 @@ export const withEnglish = (ja, en) => {
   if (!e) return ja || en || '';
   return englishFirst ? `${e} (${ja})` : `${ja} (${e})`;
 };
-// A record with no OSM name but an English name on the same OSM record shows that English name.
-export const recordLabel = (p) => (p.name ? withEnglish(p.name, p.name_en) : p.name_en || p.display_name);
+// A label for a record with no OSM name: its name in another language, its description, the named site it
+// lies in, or its town / municipality, always with the category so it never reads as an official name.
+export const labelText = (p) => {
+  const cat = CATEGORY_LABEL[p.category] || 'Place';
+  switch (p.label_kind) {
+    case 'name': return p.label_text;
+    case 'desc': return `${cat}: ${p.label_text}`;
+    case 'place': return `${cat} at ${withEnglish(p.label_text, p.label_text_en)}`;
+    case 'address': return `${cat} · ${p.label_text}${p.label_muni_en ? `, ${p.label_muni_en}` : ''}`;
+    case 'muni': return `${cat} · ${p.label_muni_en || 'Kyoto Prefecture'}`;
+    default: return p.display_name;
+  }
+};
+export const LABEL_NOTE = {
+  name: 'No main name in OpenStreetMap. This is its name in another language on the same record.',
+  desc: 'No name in OpenStreetMap. This is the description on the same record, not a name.',
+  place: 'No name in OpenStreetMap. Labelled by the named site it lies in, which tells where it is, not what it is.',
+  address: 'No name in OpenStreetMap. Labelled by its town from the GSI address of the point.',
+  muni: 'No name in OpenStreetMap. Labelled by the municipality it lies in.',
+};
+// A record with no OSM name shows the English name of the same OSM record, else its label.
+export const recordLabel = (p) => (p.name ? withEnglish(p.name, p.name_en) : p.name_en || (p.label_kind ? labelText(p) : p.display_name));
 export const muniLabel = (pm, code) => (code && pm?.names?.[code] ? withEnglish(pm.names[code], pm.names_en?.[code]) : '');
 
 export function countBy(features, key) {
@@ -151,7 +188,7 @@ export function filterTransport(features, types, query = '') {
 export const foldLatin = (s) => (s || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 function matches(f, q) {
   const p = f.properties;
-  if ((p.name || '').toLowerCase().includes(q) || (p.display_name || '').toLowerCase().includes(q) || (p.name_en || '').toLowerCase().includes(q) || p.id.toLowerCase() === q || p.osm_id === q) return true;
+  if ((p.name || '').toLowerCase().includes(q) || (p.display_name || '').toLowerCase().includes(q) || (p.name_en || '').toLowerCase().includes(q) || (p.label || '').toLowerCase().includes(q) || p.id.toLowerCase() === q || p.osm_id === q) return true;
   if ((p.search_text || '').toLowerCase().includes(q)) return true;
   if ((p.merged_ids || []).some((x) => x.toLowerCase() === q)) return true;   // a merged duplicate's ID opens the record that keeps it
   const qf = foldLatin(q);

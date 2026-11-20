@@ -22,7 +22,20 @@
   "unnamed": 218,
   "raw_records": 523,
   "merged_duplicates": 5,
-  "added_from_dsight": 121
+  "added_from_dsight": 121,
+  "unnamed_display": {
+   "english_name_same_record": 47,
+   "labelled": 171,
+   "by_basis": {
+    "address": 82,
+    "place": 74,
+    "desc": 3,
+    "name": 9,
+    "muni": 3
+   },
+   "file": "attraction_labels.json",
+   "note": "Labels are shown for records with no OSM name; the name field itself stays empty."
+  }
  },
  "transport": {
   "records": 5479,
