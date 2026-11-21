@@ -36,6 +36,7 @@ const FILES = {
   kdeMeta: 'analysis/density_kde_meta.json',
   walkReport: 'analysis/walking_prefecture_report.json',
   photos: 'photos.json',
+  sort: 'sort_story.json',               // the records behind the map, for 'Sort the data' (scripts/sort_story.py)
   namesEn: 'names_en.json',
   tourism: 'tourism_stats.json',
   explore: 'explore_places.json',

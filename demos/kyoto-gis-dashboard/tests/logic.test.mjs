@@ -22,8 +22,8 @@ test('record counts match data_inventory.json (the raw package; the map layer is
 });
 
 test('filter counts', () => {
-  // 523 raw records - 5 merged duplicates + 121 sites added from DSIGHT_1.csv (see data/audit)
-  assert.equal(filterAttractions(A, ['attraction', 'viewpoint', 'museum', 'castle', 'temple', 'shrine', 'garden']).length, 639);
+  // 523 raw records - 5 merged duplicates - 13 that are not places to visit + 121 sites added from DSIGHT_1.csv (see data/audit)
+  assert.equal(filterAttractions(A, ['attraction', 'viewpoint', 'museum', 'castle', 'temple', 'shrine', 'garden']).length, 626);
   assert.equal(filterAttractions(A, ['museum']).length, 101);
   assert.equal(filterAttractions(A, ['castle', 'museum']).length, 121);
   assert.equal(filterAttractions(A, []).length, 0);
@@ -36,7 +36,7 @@ test('filter counts', () => {
 });
 
 test('IDs are kept and unique, coordinates are [lon, lat] inside Kyoto Prefecture bounds', () => {
-  assert.equal(new Set(A.map((f) => f.properties.id)).size, 639);
+  assert.equal(new Set(A.map((f) => f.properties.id)).size, 626);
   assert.equal(new Set(T.map((f) => f.properties.id)).size, 5479);
   for (const f of [...A, ...T]) {
     const [lon, lat] = f.geometry.coordinates;
@@ -119,7 +119,7 @@ test('walking pilot results: 19 records, bus and rail separate, no zero or strai
   assert.equal(cov.within + cov.beyond + cov.noRoute + cov.notComputed, 19);
 });
 
-test('walking prefecture: all 639 records, reasons kept apart, pilot rows reproduced, no straight-line substitutes', () => {
+test('walking prefecture: all 626 records on the map, reasons kept apart, pilot rows reproduced, no straight-line substitutes', () => {
   const w = J('walking_routes_prefecture.geojson');
   const a = walkingAvailability(w);
   assert.equal(a.available, true);
@@ -157,6 +157,8 @@ test('walking prefecture: all 639 records, reasons kept apart, pilot rows reprod
   for (const f of pilot.features) {
     const p = f.properties;
     if (p.attraction_id === 'A00172') continue;
+    // a pilot record that later left the map (not a place to visit) has no prefecture row any more
+    if (!idx.byAttraction.has(p.attraction_id)) { assert.ok(J('poi_relations.json').not_sights[p.attraction_id], p.attraction_id); continue; }
     const q = idx.byAttraction.get(p.attraction_id)[p.stop_type];
     assert.equal(q.stop_id, p.stop_id);
     assert.ok(Math.abs(q.distance_m - p.distance_m) < 0.5, `${p.attraction_id} ${p.stop_type}`);
@@ -236,7 +238,10 @@ test('photos: real files, free licences, credits; name matches only for named re
   const ph = J('photos.json');
   const A = J('attractions.geojson').features;
   const named = new Set(A.filter((f) => (f.properties.name || '').trim()).map((f) => f.properties.id));
-  assert.equal(ph.named_records, named.size);
+  // the photo search ran before 13 records left the map (not places to visit); none of them has a photo
+  const out = J('poi_relations.json').not_sights;
+  assert.equal(ph.named_records, named.size + Object.keys(out).length);
+  for (const id of Object.keys(out)) assert.ok(!ph.photos[id], `${id} left the map but has a photo`);
   assert.equal(Object.keys(ph.photos).length, ph.with_photo);
   const osm = J('../../data/cache/osm_attraction_nodes.json').nodes;
   const byId = Object.fromEntries(A.map((f) => [f.properties.id, f.properties]));
@@ -246,13 +251,19 @@ test('photos: real files, free licences, credits; name matches only for named re
       const t = osm[byId[id].osm_id].tags;
       for (const [k, v] of Object.entries(p.osm_tags)) assert.equal(t[k], v, `${id} ${k}`);
       if (p.match === 'osm-wikidata') assert.equal((t.wikidata || '').split(';')[0] || p.wikidata, p.wikidata);
+    } else if (p.match === 'viewpoint-here') {      // taken within 40 m of a viewpoint, checked by eye
+      assert.equal(byId[id].category, 'viewpoint', id); assert.ok(p.m <= 40 && p.shows, id);
+    } else if (p.match === 'nearby-checked') {      // taken within 60 m (80 m for a viewpoint) and shows this place, checked by eye
+      assert.ok(p.m <= (byId[id].category === 'viewpoint' ? 80 : 60) && p.shows, id);
+    } else if (p.match === 'site-contains') {       // no name: the photo of the named OSM site it lies in, by the site's own Wikidata link
+      assert.ok(!(byId[id].name || '').trim() && p.site && /^Q\d+$/.test(p.wikidata), id);
     } else assert.ok(named.has(id), `${id} has no name`);
     assert.ok(existsSync(new URL('../public/' + p.src, import.meta.url)), p.src);
     assert.match(p.license, /^(CC0|Public domain|CC BY(-SA)? [\d.]+)$/);
     assert.ok(!/\b(NC|ND)\b/.test(p.license));
     assert.ok(p.artist && p.page.startsWith('https://commons.wikimedia.org/'));
-    assert.ok(p.distance_m == null ? p.match.startsWith('osm-') : p.distance_m <= (['osm-wikidata', 'site-wikidata'].includes(p.match) ? 1000 : p.match === 'commons-near' ? 150 : 300));
-    assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo', 'osm-wikidata', 'osm-image', 'osm-commons', 'commons-near', 'site-wikidata', 'commons-search'].includes(p.match));
+    if (!['viewpoint-here', 'nearby-checked', 'site-contains', 'wikidata-checked'].includes(p.match)) assert.ok(p.distance_m == null ? p.match.startsWith('osm-') : p.distance_m <= (['osm-wikidata', 'site-wikidata'].includes(p.match) ? 1000 : p.match === 'commons-near' ? 150 : 300), id);
+    assert.ok(['wikidata-exact', 'wikidata-related', 'commons-geo', 'osm-wikidata', 'osm-image', 'osm-commons', 'commons-near', 'site-wikidata', 'commons-search', 'viewpoint-here', 'nearby-checked', 'site-contains', 'wikidata-checked'].includes(p.match), p.match);
     if (p.match === 'commons-search') assert.ok(p.matched_text && p.distance_m <= 300, id);   // names the place AND was taken near it
     if (p.match === 'site-wikidata') assert.equal(byId[id].wikidata, p.wikidata);
   }
@@ -437,12 +448,14 @@ test('POI audit: raw records untouched; confirmed duplicates merged with a point
   const pm = J('point_municipality.json');
   assert.equal(raw.length, 523);
   const ids = new Set(A.map((f) => f.properties.id));
-  // every raw record is either on the map or merged into one that is
+  // every raw record is on the map, merged into one that is, or left out as not a place to visit (with evidence)
   for (const f of raw) {
     const id = f.properties.id;
     if (rel.merged[id]) { assert.ok(!ids.has(id), id); assert.ok(ids.has(rel.merged[id].into), id); assert.ok(rel.merged[id].evidence.length > 40); }
+    else if (rel.not_sights[id]) { assert.ok(!ids.has(id), id); assert.ok(rel.not_sights[id].evidence.length > 20, id); }
     else assert.ok(ids.has(id), `${id} missing`);
   }
+  assert.equal(Object.keys(rel.not_sights).length, 13);
   assert.deepEqual(Object.keys(rel.merged).sort(), ['A00223', 'A00224', 'A00225', 'A00296', 'A00459']);
   const added = A.filter((f) => f.properties.dsight_ids);
   assert.equal(added.length, 121);
@@ -534,7 +547,7 @@ test('landmark symbols: 15 iconic records exist, levels come from data fields, e
   const data = { attractions: { features: structuredClone(A) }, photos: J('photos.json') };
   applyLandmarks(data);
   const F = data.attractions.features;
-  assert.equal(F.length, 639);                                   // nothing is dropped
+  assert.equal(F.length, 626);                                   // nothing is dropped
   const byId = new Map(F.map((f) => [f.properties.id, f.properties]));
   assert.equal(Object.keys(ICONIC).length, 15);
   assert.equal(new Set(Object.values(ICONIC).map((v) => v.icon)).size, 15);
@@ -555,7 +568,9 @@ test('landmark symbols: 15 iconic records exist, levels come from data fields, e
     if (q.lm_tier === 3) assert.ok(!q.wikidata && !data.photos.photos[q.id], q.id);
   }
   assert.equal(n[1], 15);
-  assert.ok(n[2] > 100 && n[3] > 300, JSON.stringify(n));
+  // level 2 needs a Wikidata link or a photo, so it grows as photos are added (330 photos: 15 / 332 / 279)
+  assert.equal(n[1] + n[2] + n[3], F.length);
+  assert.ok(n[2] > 100 && n[3] > 200, JSON.stringify(n));
 });
 
 // ---------- study area coverage: polygon intersection, one level, rings drawn separately ----------
@@ -597,4 +612,45 @@ test('route: only the service result is used; failures raise, nothing is estimat
     const r = await fetchRoute([135.1, 35.0], [135.2, 35.1], 'bike');
     assert.equal(r.distance_m, 1234); assert.equal(r.duration_s, 900); assert.deepEqual(r.snap_m, [3, 120]);
   } finally { globalThis.fetch = real; }
+});
+
+test('sort the data: every record once, real counts, the timeline stays inside 15 s', async () => {
+  const { buildPlan, goldenSphere, project, rng, along, arcMid, flightEase, DURATION, PHASES } = await import('../src/lib/sortMotion.js');
+  const st = J('sort_story.json');
+  const raw = JSON.parse(readFileSync(new URL('../data/raw/attractions.geojson', import.meta.url), 'utf8')).features;
+  const rel = J('poi_relations.json');
+  const ph = J('photos.json').photos;
+  // 523 OSM + 121 city sites = 644; 5 merged, 13 left out, 626 on the map, in 6 categories
+  assert.equal(st.rows.length, 644);
+  assert.equal(new Set(st.rows.map((r) => r[0])).size, 644);
+  assert.deepEqual([st.counts.osm_records, st.counts.city_list_added, st.counts.start, st.counts.merged, st.counts.left_out, st.counts.on_map], [523, 121, 644, 5, 13, 626]);
+  const byCat = {};
+  for (const r of st.rows) if (r[3] === 'map') byCat[r[1]] = (byCat[r[1]] || 0) + 1;
+  assert.deepEqual(byCat, Object.fromEntries(Object.entries(countBy(A, 'category'))));
+  assert.equal(Object.values(st.counts.by_category).reduce((a, b) => a + b, 0), A.length);
+  for (const r of st.rows) {
+    const [id, , cell, status, source] = r;
+    if (status === 'map') assert.ok(A.some((f) => f.properties.id === id), id);
+    if (status === 'merged') assert.ok(rel.merged[id], id);
+    if (status === 'left_out') assert.ok(rel.not_sights[id], id);
+    assert.equal(source === 'osm', raw.some((f) => f.properties.id === id), id);
+    assert.equal(cell >= 0, !!ph[id], `${id} photo cell`);
+  }
+  assert.equal(st.counts.with_photo, Object.keys(ph).length);
+  assert.equal(st.atlas.count, st.rows.filter((r) => r[2] >= 0).length);
+  // plan: each record leaves the sphere exactly once, in story order, before the end of the sort phase
+  const plan = buildPlan(st.rows, DURATION, rng(3));
+  assert.equal(plan.events.length, 644);
+  assert.equal(new Set(plan.events.map((e) => e.id)).size, 644);
+  const last = (k) => Math.max(...plan.events.filter((e) => e.kind === k).map((e) => e.t));
+  const first = (k) => Math.min(...plan.events.filter((e) => e.kind === k).map((e) => e.t));
+  assert.ok(last('merge') < first('leftOut') && last('leftOut') < first('sort'));
+  assert.ok(last('sort') <= PHASES.sortEnd * DURATION + 1 && last('sort') + 1050 < DURATION);
+  // geometry: points on the unit sphere; depth maps to size and opacity; the arc lands on its target
+  for (const p of goldenSphere(644)) assert.ok(Math.abs(Math.hypot(p.x, p.y, p.z) - 1) < 1e-9);
+  const q = project({ x: 0, y: 0, z: 1 }, 0, 0);
+  assert.ok(Math.abs(q.depth - 1) < 1e-9 && Math.abs(q.scale - 1.2) < 1e-9);
+  const a = { x: 0, y: 0 }, b = { x: 300, y: 120 }, m = arcMid(a, b, rng(9));
+  const end = along(a, m, b, flightEase(1));
+  assert.ok(Math.abs(end.x - b.x) < 1e-6 && Math.abs(end.y - b.y) < 1e-6 && Math.abs(end.rot) < 1e-9);
 });

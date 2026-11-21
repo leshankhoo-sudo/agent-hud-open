@@ -66,6 +66,7 @@ python3 scripts/fetch_names_en.py               # 英文名称（OSM name:en / W
 python3 scripts/fetch_explore_photos.py         # Explore Kyoto 区块的照片（Wikimedia Commons，需联网）
 python3 scripts/prepare_bus_routes.py           # 巴士路线目录、走法和票价（读取 data/raw/bus_package）
 python3 scripts/prepare_tourism_stats.py        # 参观人次统计（读取 data/raw/documents 里的 Excel）
+python3 scripts/sort_story.py                   # 「Sort the data」背面用的记录清单和缩略图集（在 poi_reconcile 和照片脚本之后跑）
 ```
 
 道路资料（5 个 GeoJSON 分片，约 80 MB）**没有放进仓库，也不会加载进浏览器**。请把 `Kyoto_Roads_GeoJSON.zip` 解压到任意文件夹，再把路径传给脚本。
@@ -600,3 +601,22 @@ kyoto-gis-dashboard/
   - 体验类（MAIKOYA 茶道、Samurai Ninja Museum、teamLab 等）和名字奇怪但确实存在的地点（C58 113 蒸汽机车、beach、撮り鉄 等）保留；另外 9 个可能也是商店但 OSM 信息不足的（ニューラッキー、メトロ、らんらんらん綾部店 等）暂时保留，等确认。
 - **被截短的名称**：A00303 的 OSM `name` 只有「天」，同一条记录的 `name:ja` 是「天鷲絨美術館」（2026-11-21 用 OSM API 再读一次，仍是如此）。界面改为显示完整名称，`name` 字段本身不变，卡片里说明来源（`attraction_labels.json` 的 `full_names`，由 `scripts/label_unnamed.py` 生成；规则只认“name 是 name:ja 的开头”这一种情况，全部 626 条里只有这一个）。
 - **水火天満宮的照片没有加**：Commons 上那张（File:Suika.jpg）标的是 “Copyrighted free use”，但细看来源写的是 “suikaHP”（神社官网），作者 “suika”，没有任何授权记录（VRT），很可能是从官网直接转来的，许可证说法无法核实，所以不用。
+
+## 7b. 2026-11-21：dashboard 可以翻面「Sort the data」、地图工具改成侧边栏
+
+- **地图工具侧边栏**（`src/MapRail.jsx`）：Study area、Legend、Cinematic view、3D density、Top-down 不再横排在地图上方，改成贴在地图左边的一条细栏，平时只有图标。鼠标移上去或用键盘聚焦时会展开，文字一个接一个滑出；鼠标所在的图标会稍微放大，并有一块墨色底跟着移动。开着的开关在图标角上亮一个小灯。Legend 和 3D 视角按钮移到侧边栏右边，不和它重叠。
+- **翻面**：标题栏新增 “Sort the data” 按钮，dashboard 右下角也有一个翻起的纸角（第一次滚到 dashboard 时会自己翻起一下作提示），点按钮或纸角、或者往左上拖纸角都可以翻面。标题栏不动，下面的地图、分隔条和右侧面板绕同一条竖轴整体翻过去（前半段翻到侧面，再换背面翻进来）。“Back to the map”、纸角或 Data & Sources 等按钮都会翻回地图。
+- **背面：数据是怎么整理出来的**（`src/SortStage.jsx`、`src/lib/sortMotion.js`）
+  - 一开始，644 个记录组成一个悬浮转动的球：523 条 OpenStreetMap 原始记录加上京都市名单补进来的 121 个景点。有照片的 330 个显示照片缩略图，其余显示分类颜色加印章字（景、名、館、寺、社、城）。
+  - 鼠标移动时球会朝鼠标方向转、倾斜，鼠标附近的图块会变大、往外让开；也可以拖动让球转起来，带惯性。
+  - **双击球才开始**（单击不会；手机上双击也可以；键盘按 Enter）。分类槽从球心弹出：左边 Viewpoint、Attraction、Museum 和 Merged，右边 Temple、Shrine、Castle 和 Left out。
+  - 之后约 15 秒依次播放：5 个重复记录先飞向它所重复的那条记录并撞在一起，再进入 Merged；13 个不是景点的记录进入 Left out；626 个地图上的景点逐个沿弧线飞进 6 个分类（Viewpoint 243、Attraction 146、Museum 101、Temple 89、Shrine 27、Castle 20）。
+  - 标题栏同时显示 6 个计数：records checked、merged、left out、sorted onto the map、with a photo、categories。每一位数字像机械计数器一样实时往上滚。
+  - 结束时盖下朱红「済」印章，樱花瓣从印章处散开，显示 “626 places sorted”。之后每个分类槽都可以滚动查看全部记录；Replay 可以重播。
+  - **点任何一个图块**，会显示这个地点：照片（含作者和许可证）、类别、所在市区町村、最近的公交站和车站（按道路的步行时间和距离，来自已有的步行分析）、数据来源；“Show on map” 会翻回地图并选中它。Merged 的记录显示它被合并到哪一条以及证据，Left out 的记录显示原因。
+  - 数据全部来自新文件 `public/data/sort_story.json`（`scripts/sort_story.py` 生成，读 `data/raw/attractions.geojson`、`attractions.geojson`、`poi_relations.json`、`photos.json`）。缩略图集 `public/photos/sort-atlas.webp`（330 张，约 300 KB）由同一脚本生成。没有任何推断或补造的数据。
+  - 动效参考 GitHub 项目 [kairothq/claude-photo-sorter](https://github.com/kairothq/claude-photo-sorter)（Divy Kairoth，MIT 许可）：借用了球面排列（黄金角螺旋、近大远小）和三点弧线飞入文件夹的算法，其余为本项目重写；Data & Sources 页里有署名。
+  - 背面不在屏幕上或没有翻过去时，动画暂停；“减少动态效果”模式下翻面改成淡入淡出，双击直接显示整理好的结果，没有飞行和花瓣。手机上背面改成上下排列。
+- **顺带修正**：
+  - Data & Sources 里的照片统计改成 “330 of the 626 records on the map”，并列出全部取得方式；之前写的是 639，且漏了 “在现场拍摄并逐张目视确认” 等几类。
+  - 逻辑测试（`npm test`）有 6 项还停留在 639 条、旧的照片匹配规则，现在已经按 626 条和新的规则更新，并新增一项检查 `sort_story.json` 与动画时间线。

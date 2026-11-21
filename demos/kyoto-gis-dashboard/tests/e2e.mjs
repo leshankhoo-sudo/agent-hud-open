@@ -992,6 +992,138 @@ await ph.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0);
 await ph.waitForTimeout(700);
 await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
 
+// ---------- map tools rail, and "Sort the data" on the back of the dashboard ----------
+{
+  const sp = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const spErr = []; sp.on('pageerror', (e) => spErr.push(e.message));
+  const u = new URL(url); u.searchParams.set('sortspeed', '3');   // the 15 s sort runs in 5 s here
+  await sp.goto(u.href);
+  await sp.waitForSelector('.sort-btn', { timeout: 60000 });
+  await sp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+  // record whether the corner turns up by itself (it does so once, a moment after the dashboard is first seen)
+  await sp.evaluate(() => { window.__peeked = false; const t = setInterval(() => { if (document.querySelector('.curl.front.peek')) { window.__peeked = true; clearInterval(t); } }, 80); setTimeout(() => clearInterval(t), 9000); });
+  await sp.waitForTimeout(2500);
+  // rail: a slim column on the map's left edge that unfolds on hover with its labels
+  const rail0 = await sp.evaluate(() => { const r = document.querySelector('.map-tools.rail').getBoundingClientRect(), m = document.querySelector('.center').getBoundingClientRect(); return { w: r.width, h: r.height, left: r.left - m.left, top: r.top - m.top, n: document.querySelectorAll('.map-tools.rail button').length }; });
+  await sp.locator('.map-tools.rail button').nth(1).hover(); await sp.waitForTimeout(800);
+  const rail1 = await sp.evaluate(() => { const r = document.querySelector('.map-tools.rail').getBoundingClientRect(); const s = [...document.querySelectorAll('.map-tools.rail button > span')].map((x) => +getComputedStyle(x).opacity); return { w: r.width, labels: s, ink: document.querySelector('.rail-ink').classList.contains('on') }; });
+  check('map tools: a slim rail on the map edge (not a row across the top) that unfolds with labels on hover', rail0.w < 60 && rail0.h > rail0.w * 3 && rail0.left < 30 && rail0.n >= 4 && rail1.w > 150 && rail1.labels.every((o) => o > 0.9) && rail1.ink, JSON.stringify({ rail0, rail1 }));
+  await sp.locator('.map-tools.rail button', { hasText: 'Legend' }).click(); await sp.waitForTimeout(500);
+  const lg = await sp.evaluate(() => { const a = document.querySelector('.map-tools.rail').getBoundingClientRect(), b = document.querySelector('.map-legend').getBoundingClientRect(); return { gap: b.left - a.left, overlapX: b.left < a.left + 46 }; });
+  check('map tools: the legend opens beside the rail, not under it', !lg.overlapX, JSON.stringify(lg));
+  await sp.locator('.map-legend .x').click();
+  await sp.mouse.move(700, 500);
+  // the corner turned up once by itself, and it turns the dashboard over
+  await sp.waitForFunction(() => window.__peeked, null, { timeout: 6000 }).catch(() => {});
+  const peeked = await sp.evaluate(() => window.__peeked);
+  const curlPos = await sp.evaluate(() => { const c = document.querySelector('.curl.front').getBoundingClientRect(), d = document.getElementById('dashboard').getBoundingClientRect(); return { right: Math.round(d.right - c.right), bottom: Math.round(d.bottom - c.bottom) }; });
+  check('flip: the bottom-right corner turns up once to show the dashboard can be turned over', peeked && curlPos.right <= 1 && curlPos.bottom <= 1, JSON.stringify({ peeked, curlPos }));
+  // turn over: the map and the panel turn as one; the header stays and shows rolling counters
+  const before = await sp.evaluate(() => ({ top: document.querySelector('#dashboard .top').getBoundingClientRect().top, y: scrollY }));
+  await sp.locator('.sort-btn').click();
+  const mid = await sp.evaluate(() => new Promise((res) => setTimeout(() => res(['.center', '.right', '.sort-back'].map((s) => { const el = document.querySelector('#dashboard > ' + s); return { s, t: getComputedStyle(el).transform !== 'none', anims: el.getAnimations().length }; })), 250)));
+  await sp.waitForTimeout(1400);
+  const back = await sp.evaluate(() => {
+    const app = document.getElementById('dashboard'), e = window.__kyotoSort;
+    const vis = (s) => getComputedStyle(app.querySelector(':scope > ' + s)).visibility;
+    const ins = document.querySelector('.sort-in').getBoundingClientRect(), md = document.querySelector('.sc-mid').getBoundingClientRect();
+    return { cls: app.className, center: vis('.center'), right: vis('.right'), back: vis('.sort-back'), top: app.querySelector('.top').getBoundingClientRect().top, y: scrollY,
+      counters: [...document.querySelectorAll('.sort-counts .count')].map((c) => c.dataset.k), ghost: [...document.querySelectorAll('.top .status .btn.ghost')].filter((b) => b.offsetParent).length,
+      tiles: e.tiles.length, alive: e.tiles.filter((t) => t.alive).length, inMid: e.geo.cx > md.left - ins.left && e.geo.cx < md.right - ins.left, R: e.geo.R, cards: getComputedStyle(document.querySelector('.sc-card')).visibility, hint: !!document.querySelector('.sc-hint') };
+  });
+  check('flip: the map and the panel turn over together (3D, both halves animated); the header stays where it was', mid.filter((x) => x.s !== '.sort-back').every((x) => x.t || x.anims) && back.cls.includes('face-back') && back.center === 'hidden' && back.right === 'hidden' && back.back === 'visible' && Math.abs(back.top - before.top) < 2 && back.y === before.y, JSON.stringify({ mid, back, before }));
+  check('sort: the back shows all 644 records as one floating sphere, no slots yet, a double-click hint, and 6 counters in the header', back.tiles === 644 && back.alive === 644 && back.inMid && back.R > 120 && back.cards === 'hidden' && back.hint && back.counters.join() === 'checked,merged,leftOut,sorted,withPhoto,cats' && back.ghost === 0, JSON.stringify(back));
+  // the pointer steers and magnifies the sphere
+  const g = await sp.evaluate(() => window.__kyotoSort.geo), box = await sp.locator('.sort-in').boundingBox();
+  await sp.mouse.move(box.x + g.cx, box.y + g.cy + g.R * 0.8, { steps: 6 }); await sp.waitForTimeout(1800);
+  const steer = await sp.evaluate(() => { const e = window.__kyotoSort; return { tilt: e.tilt, lens: Math.max(...e.tiles.map((t) => t.lens)) }; });
+  check('sort: the sphere follows the pointer (tilts toward it) and swells the tiles under it', steer.tilt > 0.2 && steer.lens > 0.3, JSON.stringify(steer));
+  // one click does nothing; a double-click starts the sort, the slots spring out of the sphere
+  await sp.mouse.click(box.x + g.cx, box.y + g.cy); await sp.waitForTimeout(500);
+  const single = await sp.evaluate(() => window.__kyotoSort.mode);
+  await sp.mouse.dblclick(box.x + g.cx, box.y + g.cy);
+  const pop = await sp.evaluate(() => new Promise((res) => setTimeout(() => res({ mode: window.__kyotoSort.mode, anims: [...document.querySelectorAll('.sc-card')].filter((c) => c.getAnimations().length).length, cards: document.querySelectorAll('.sc-card').length }), 120)));
+  check('sort: a single click does not start it; a double-click on the sphere does, and the 8 slots spring out of it', single === 'idle' && pop.mode === 'run' && pop.cards === 8 && pop.anims >= 6, JSON.stringify({ single, pop }));
+  // counters roll while records land
+  const rolling = await sp.evaluate(() => new Promise((res) => setTimeout(() => { const strips = [...document.querySelectorAll('.sort-counts [data-k=checked] .odo-strip')].map((s) => s.style.transform); res({ c: { ...window.__kyotoSort.counts }, strips }); }, 2400)));
+  check('sort: header counters roll digit by digit while the records fly', rolling.c.checked > 0 && rolling.c.checked < 644 && rolling.strips.length === 3 && rolling.strips.some((t) => /translateY\(-\d/.test(t)), JSON.stringify(rolling));
+  await sp.waitForFunction(() => window.__kyotoSort.mode === 'done', null, { timeout: 15000 });
+  await sp.waitForTimeout(300);
+  const done = await sp.evaluate(() => {
+    const e = window.__kyotoSort, cnt = (k) => document.querySelectorAll(`.sc-card[data-k=${k}] .slot:not(.empty)`).length;
+    const st = {}; for (const k of ['viewpoint', 'attraction', 'museum', 'temple', 'shrine', 'castle', 'merged', 'left_out']) st[k] = cnt(k);
+    return { counts: e.counts, st, hdr: [...document.querySelectorAll('.sort-counts .count .sr-only')].map((s) => s.textContent).join(), seal: !!document.querySelector('.sc-done.anim .hanko-big'), petals: e.petals.length, cardN: document.querySelector('.sc-card[data-k=viewpoint] .sc-n .sr-only').textContent, replay: !document.querySelector('.sc-bar .btn.ghost').disabled };
+  });
+  check('sort: ends with the real counts (644 checked, 5 merged, 13 left out, 626 sorted, 330 with a photo, 6 categories) and every record in its slot', JSON.stringify(done.counts) === JSON.stringify({ checked: 644, merged: 5, leftOut: 13, sorted: 626, withPhoto: 330, cats: 6 }) && JSON.stringify(done.st) === JSON.stringify({ viewpoint: 243, attraction: 146, museum: 101, temple: 89, shrine: 27, castle: 20, merged: 5, left_out: 13 }) && done.hdr === '644,5,13,626,330,6' && done.cardN === '243', JSON.stringify(done));
+  check('sort: the finish is a vermilion 済 seal with petals; Replay becomes available', done.seal && done.petals > 50 && done.replay, JSON.stringify(done));
+  await sp.screenshot({ path: `${out}/14-sort-done.png` });
+  // a slot opens its place: area, nearest stop, source; Show on map turns back and selects it
+  const sid = await sp.evaluate(() => document.querySelector('.sc-card[data-k=temple] .slot').dataset.id);
+  await sp.locator('.sc-card[data-k=temple] .slot').first().click(); await sp.waitForTimeout(500);
+  const card = await sp.evaluate(() => { const c = document.querySelector('.sort-card'); return c && { name: c.querySelector('h3').textContent, dts: [...c.querySelectorAll('dt')].map((d) => d.textContent), photo: !!c.querySelector('img'), credit: c.querySelector('figcaption')?.textContent || '' }; });
+  check('sort: a tile opens its place with the area, nearest bus stop and station, source, and the photo credit', card && card.dts.includes('Area') && card.dts.includes('Nearest bus stop') && card.dts.includes('Source') && (!card.photo || /Photo: .+ · /.test(card.credit)), JSON.stringify(card));
+  await sp.locator('.sort-card .btn', { hasText: 'Show on map' }).click();
+  await sp.waitForFunction(() => !document.getElementById('dashboard').className.includes('face-back'), null, { timeout: 5000 }).catch(() => {});
+  await sp.waitForTimeout(1500);
+  const shown = await sp.evaluate(() => ({ cls: document.getElementById('dashboard').className, center: getComputedStyle(document.querySelector('#dashboard > .center')).visibility, title: document.querySelector('.detail .place-h h2, .detail h2')?.textContent || '', counts: !!document.querySelector('.top .counts:not(.sort-counts)') }));
+  check('sort: Show on map turns the dashboard back and selects that place', !shown.cls.includes('face-back') && shown.center === 'visible' && shown.title.includes(card.name.split(' (')[0]) && shown.counts, JSON.stringify({ sid, shown, name: card.name }));
+  // back again: the result is still there; Replay runs it again from the sphere
+  await sp.locator('.curl.front').click(); await sp.waitForTimeout(1500);
+  const kept = await sp.evaluate(() => window.__kyotoSort.mode);
+  await sp.locator('.sc-bar .btn.ghost', { hasText: 'Replay' }).click(); await sp.waitForTimeout(300);
+  const again = await sp.evaluate(() => ({ mode: window.__kyotoSort.mode, alive: window.__kyotoSort.tiles.filter((t) => t.alive).length }));
+  await sp.waitForFunction(() => window.__kyotoSort.mode === 'done', null, { timeout: 15000 }).catch(() => {});
+  const again2 = await sp.evaluate(() => ({ ...window.__kyotoSort.counts }));
+  check('sort: turning over again keeps the result; Replay sorts all 644 again', kept === 'done' && again.mode === 'run' && again.alive > 600 && again2.sorted === 626 && again2.checked === 644, JSON.stringify({ kept, again, again2 }));
+  // a sheet from the header belongs to the map: it turns the dashboard back
+  await sp.locator('.sc-bar .btn:not(.ghost)').click(); await sp.waitForTimeout(1500);
+  const front = await sp.evaluate(() => document.getElementById('dashboard').className.includes('face-back'));
+  check('sort: Back to the map turns it back; no page errors on the way', !front && spErr.length === 0, spErr.join(' | '));
+  // light theme: the back follows it
+  const th0 = await sp.evaluate(() => document.documentElement.dataset.theme);
+  await sp.locator('.theme-toggle').first().click(); await sp.waitForFunction((t) => document.documentElement.dataset.theme !== t, th0, { timeout: 8000 }).catch(() => {}); await sp.waitForTimeout(1500);
+  if ((await sp.evaluate(() => document.documentElement.dataset.theme)) !== 'light') { await sp.locator('.theme-toggle').first().click(); await sp.waitForTimeout(2500); }
+  await sp.locator('.sort-btn').click(); await sp.waitForTimeout(1500);
+  const lt = await sp.evaluate(() => ({ theme: document.documentElement.dataset.theme, bg: getComputedStyle(document.querySelector('.sort-back')).backgroundColor }));
+  await sp.screenshot({ path: `${out}/15-sort-light.png` });
+  check('sort: the back follows the light theme', lt.theme === 'light' && /rgb\(2[2-5]\d, 2[2-5]\d, 2[0-5]\d\)/.test(lt.bg), JSON.stringify(lt));
+  await sp.close();
+
+  // reduced motion: no turning or flying; a double-click shows the sorted result at once
+  const rctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  const rm = await rctx.newPage();
+  await rm.goto(url); await rm.waitForSelector('.sort-btn', { timeout: 60000 });
+  await rm.evaluate(() => document.getElementById('dashboard').scrollIntoView()); await rm.waitForTimeout(1500);
+  await rm.locator('.sort-btn').click(); await rm.waitForTimeout(700);
+  const rg = await rm.evaluate(() => window.__kyotoSort.geo), rb = await rm.locator('.sort-in').boundingBox();
+  await rm.mouse.dblclick(rb.x + rg.cx, rb.y + rg.cy); await rm.waitForTimeout(400);
+  const rmd = await rm.evaluate(() => ({ mode: window.__kyotoSort.mode, sorted: window.__kyotoSort.counts.sorted, anim: !!document.querySelector('.sc-done.anim'), seal: !!document.querySelector('.hanko-big'), petals: window.__kyotoSort.petals.length }));
+  check('sort, reduced motion: the result appears at once with the seal, no flying and no petals', rmd.mode === 'done' && rmd.sorted === 626 && rmd.seal && !rmd.anim && rmd.petals === 0, JSON.stringify(rmd));
+  await rctx.close();
+
+  // phone: the back stacks (sphere above, slots below), no sideways scroll, double-tap works
+  const pctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const pp = await pctx.newPage();
+  const pu = new URL(url); pu.searchParams.set('sortspeed', '4');
+  await pp.goto(pu.href); await pp.waitForSelector('.sort-btn', { timeout: 60000 });
+  await pp.evaluate(() => document.getElementById('dashboard').scrollIntoView()); await pp.waitForTimeout(1500);
+  await pp.locator('.sort-btn').tap(); await pp.waitForTimeout(1500);
+  const hint0 = await pp.evaluate(() => document.querySelector('.sc-hint')?.textContent || '');
+  const pg = await pp.evaluate(() => window.__kyotoSort.geo), pbx = await pp.locator('.sort-in').boundingBox();
+  await pp.evaluate(() => { window.__taps = []; const el = document.querySelector('.sort-in'); for (const t of ['pointerdown', 'pointerup', 'pointercancel']) el.addEventListener(t, (e) => window.__taps.push(`${t}:${Math.round(e.timeStamp)}`), true); });
+  // two touch taps 150 ms apart, sent inside the page: the test driver alone can take over 600 ms between taps on a loaded machine
+  await pp.evaluate(async ({ x, y }) => {
+    const el = document.querySelector('.sort-in'), o = { bubbles: true, cancelable: true, pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x, clientY: y };
+    const tap = () => { el.dispatchEvent(new PointerEvent('pointerdown', o)); el.dispatchEvent(new PointerEvent('pointerup', o)); };
+    tap(); await new Promise((r) => setTimeout(r, 150)); tap();
+  }, { x: pbx.x + pg.cx, y: pbx.y + pg.cy });
+  await pp.waitForTimeout(700);
+  const pl = await pp.evaluate(() => { const m = document.querySelector('.sc-mid').getBoundingClientRect(), l = document.querySelector('.sc-col.l').getBoundingClientRect(); return { mode: window.__kyotoSort.mode, stacked: l.top >= m.bottom - 1, sw: document.documentElement.scrollWidth, back: getComputedStyle(document.querySelector('.sort-back')).visibility, counters: getComputedStyle(document.querySelector('.sort-counts')).display, hint: document.querySelector('.sc-hint')?.textContent || '' }; });
+  await pp.screenshot({ path: `${out}/16-sort-phone.png` });
+  check('sort, phone: the back stacks the sphere above the slots, the counters show, a double-tap starts it, no sideways scroll', pl.back === 'visible' && pl.stacked && pl.mode !== 'idle' && pl.sw <= 390 && pl.counters === 'flex' && /Double-tap/.test(hint0), JSON.stringify({ pl, hint0, taps: await pp.evaluate(() => window.__taps) }));
+  await pctx.close();
+}
+
 check('no page errors', errors.length === 0, errors.join(' | '));
 await browser.close();
 const failed = results.filter((r) => !r.ok).length;

@@ -18,6 +18,8 @@ import Bento, { Tile, resetBento } from './Bento.jsx';
 import Koi from './Koi.jsx';
 import CursorLight, { CursorFxToggle, cursorFxInitial, saveCursorFx } from './CursorLight.jsx';
 import Density3D from './Density3D.jsx';
+import MapRail from './MapRail.jsx';
+import SortStage, { SortCounters, makeSortBus } from './SortStage.jsx';
 import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
@@ -339,6 +341,108 @@ export default function App() {
     if (hit.layer !== 'attraction') setTab((t) => (t === 'walk' ? 'overview' : t));
     if (!d?.bus?.point_stops?.[s.id]) setTab((t) => (t === 'bus' ? 'overview' : t));
   };
+
+  // ---------- turn the dashboard over: "Sort the data" (SortStage.jsx) ----------
+  // The header stays; the map, the splitter and the panel turn over as one card, about one axis through
+  // the middle of the area they cover. Two halves: the front turns edge-on, then the back turns in.
+  const [face, setFace] = useState('front');   // the side that is showing
+  const [side, setSide] = useState('front');   // the side being turned to (the header follows this at once)
+  const [flipping, setFlipping] = useState(false);
+  const [curlPeek, setCurlPeek] = useState(false);
+  const sortBus = useMemo(() => makeSortBus(), []);
+  const sortSpeed = useMemo(() => { const v = parseFloat(new URLSearchParams(location.search).get('sortspeed')); return v > 0 ? v : 1; }, []);
+  const flipBusy = useRef(false);
+  const flipTo = async (back) => {
+    const app = appRef.current;
+    if (!app || flipBusy.current || !d?.sort || (back ? face === 'back' : face === 'front')) return;
+    flipBusy.current = true;
+    setSide(back ? 'back' : 'front');
+    const backEl = app.querySelector(':scope > .sort-back');
+    const front = [...app.querySelectorAll(':scope > .center, :scope > .splitter, :scope > .right')].filter((el) => getComputedStyle(el).display !== 'none');
+    const outEls = back ? front : [backEl], inEls = back ? [backEl] : front;
+    const frames = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    if (reduceMotion()) {
+      await Promise.all(outEls.map((el) => el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' }).finished));
+      setFace(back ? 'back' : 'front'); await frames();
+      outEls.forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+      await Promise.all(inEls.map((el) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160 }).finished));
+    } else {
+      setFlipping(true);
+      const all = [...front, backEl];
+      const U = all.reduce((u, el) => { const r = el.getBoundingClientRect(); return { l: Math.min(u.l, r.left), t: Math.min(u.t, r.top), r: Math.max(u.r, r.right), b: Math.max(u.b, r.bottom) }; }, { l: 1e9, t: 1e9, r: -1e9, b: -1e9 });
+      const cx = (U.l + U.r) / 2, cy = (U.t + U.b) / 2;
+      all.forEach((el) => { const r = el.getBoundingClientRect(); el.style.transformOrigin = `${cx - r.left}px ${cy - r.top}px`; });
+      const P = 'perspective(2400px)', dir = back ? -1 : 1;
+      await Promise.all(outEls.map((el) => el.animate([
+        { transform: `${P} rotateY(0deg)`, filter: 'brightness(1)' },
+        { transform: `${P} rotateY(${90 * dir}deg) scale(.9)`, filter: 'brightness(.45)' },
+      ], { duration: 430, easing: 'cubic-bezier(.55, .06, .8, .4)', fill: 'forwards' }).finished));
+      setFace(back ? 'back' : 'front'); await frames();
+      outEls.forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+      await Promise.all(inEls.map((el) => el.animate([
+        { transform: `${P} rotateY(${-90 * dir}deg) scale(.9)`, filter: 'brightness(.45)' },
+        { transform: `${P} rotateY(0deg) scale(1)`, filter: 'brightness(1)' },
+      ], { duration: 640, easing: 'cubic-bezier(.18, .9, .3, 1.06)' }).finished));
+      all.forEach((el) => { el.style.transformOrigin = ''; });
+      setFlipping(false);
+    }
+    flipBusy.current = false;
+    if (!back) requestAnimationFrame(resizeMap);
+  };
+  // a sheet opened from the header (or the landing page) belongs to the map side
+  useEffect(() => { if (sheet && face === 'back') flipTo(false); }, [sheet]); // eslint-disable-line react-hooks/exhaustive-deps
+  // the first time the dashboard is on screen, the corner turns up once to show it can be turned over
+  useEffect(() => {
+    if (!dashSeen || reduceMotion()) return;
+    const a = setTimeout(() => setCurlPeek(true), 1600), b = setTimeout(() => setCurlPeek(false), 4200);
+    return () => { clearTimeout(a); clearTimeout(b); };
+  }, [dashSeen]);
+  const curlDrag = useRef(null);
+  const curlDown = (e) => { curlDrag.current = { x: e.clientX, y: e.clientY }; e.currentTarget.setPointerCapture?.(e.pointerId); e.currentTarget.classList.add('drag'); };
+  const curlMove = (e, back) => {
+    const s0 = curlDrag.current;
+    if (!s0) return;
+    if (s0.x - e.clientX + (s0.y - e.clientY) > 60) { curlDrag.current = null; e.currentTarget.classList.remove('drag'); flipTo(back); }
+  };
+  const curlUp = (e) => { curlDrag.current = null; e.currentTarget.classList.remove('drag'); };
+
+  // what a slot on the back says about its record: only fields the data has
+  const sortName = (id) => { const h = byId.get(id); if (h) return recordLabel(h.f.properties); return d?.sort?.merged?.[id]?.name || d?.sort?.left_out?.[id]?.name || id; };
+  const sortRows = useMemo(() => new Map((d?.sort?.rows || []).map((r) => [r[0], r])), [d]);
+  const walkText = (r) => {
+    const st = r.stop_id ? byId.get(r.stop_id)?.f.properties : null;
+    const sn = st ? recordLabel(st) : '';
+    if (r.route_status === 'ok' && r.reason === 'same_access_point') return `${sn} · at the same street point`;
+    if (r.route_status === 'ok') return `${sn} · ${Math.max(1, Math.round(r.duration_min))} min walk by road (${fmtDistance(r.distance_m)})`;
+    if (r.reason === 'no_stop_within_cutoff') return 'None within 3 km by road';
+    if (r.reason === 'isolated_network') return 'Not linked to the wider road network';
+    if (r.reason === 'attraction_too_far_from_network') return 'Too far from any road to route';
+    return 'Not calculated';
+  };
+  const describeSort = (id) => {
+    const row = sortRows.get(id);
+    if (!row) return null;
+    const [, cat, , status, source] = row;
+    const ph = d?.photos?.photos?.[id];
+    const info = { id, cat, status, name: sortName(id), mapId: status === 'map' ? id : null,
+      source: source === 'city' ? 'Kyoto City site list (DSIGHT_1.csv), placed with OpenStreetMap' : 'OpenStreetMap record',
+      photo: ph ? { src: `${import.meta.env.BASE_URL}${ph.src}`, artist: ph.artist, license: ph.license, alt: ph.description || ph.title || '' } : null };
+    if (status === 'map') {
+      const code = d.pointMuni?.points?.[id];
+      info.area = code ? muniLabel(d.pointMuni, code) : 'Outside the prefecture boundary polygons';
+      const w = walkIndex?.byAttraction.get(id);
+      if (w) info.walk = ['bus', 'rail'].filter((k) => w[k]).map((k) => ({ k, text: walkText(w[k]) }));
+    } else if (status === 'merged') {
+      const m = d.sort.merged[id];
+      info.merged = { into: m.into, intoName: sortName(m.into), evidence: m.evidence };
+      info.mapId = m.into;
+    } else {
+      const m = d.sort.left_out[id];
+      info.leftOut = { kind: m.kind === 'business' ? 'a business' : m.kind, evidence: m.evidence };
+    }
+    return info;
+  };
+  const sortShow = async (id) => { await flipTo(false); select({ id }); };
   // ---------- map | panel split ----------
   const resizeMap = () => mapRef.current?.resize();
   // a short eased change (open, close, reset); dragging itself follows the pointer with no transition
@@ -546,7 +650,7 @@ export default function App() {
   const densityLabel = densityMode === 'kde' ? 'KDE layer on' : densityMode === 'heat' ? 'Heatmap on' : 'Off';
   const anStatus = [densityMode === 'kde' && 'KDE on', densityMode === 'heat' && 'Heatmap on', walkShow && 'Walking routes shown', busRun && `Bus ${busRun.route.number} shown`, busHl && `Bus ${busHl.route.number} stops`].filter(Boolean);
   const pilotName = walk.pilotInfo?.name;
-  const cls = 'app' + (introDone ? '' : dashSeen ? ' intro' : ' waiting') + (rightOpen ? '' : ' no-right') + (selHit ? ' has-sel' : '') + (picking ? ' picking' : '');
+  const cls = 'app' + (introDone ? '' : dashSeen ? ' intro' : ' waiting') + (rightOpen ? '' : ' no-right') + (selHit ? ' has-sel' : '') + (picking ? ' picking' : '') + (face === 'back' ? ' face-back' : '') + (side === 'back' ? ' side-back' : '') + (flipping ? ' flipping' : '');
   const cov = d.coverage;
   const covBbox = bboxOf(d.coverageLines);
   const toggleCoverage = () => setCovShow((c) => ({ on: !c.on, token: c.token + 1 }));
@@ -575,6 +679,7 @@ export default function App() {
             <p>京都府 · university GIS prototype</p>
           </div>
         </div>
+        {side === 'back' && d.sort ? <SortCounters bus={sortBus} story={d.sort} /> : (
         <div className="counts" aria-live="polite">
           <div className="count" title="Preliminary OpenStreetMap records, not official counts">
             <span className="v"><Rolling value={fa.length} /><small> / {A.length.toLocaleString('en-US')}</small></span>
@@ -585,8 +690,15 @@ export default function App() {
             <span className="k">transit stops shown</span>
           </div>
         </div>
+        )}
         <nav className="status" aria-label="Panels">
           {failed.length > 0 && <Chip label={`${failed.length} data file(s) failed to load`} />}
+          {d.sort && (
+            <button className={'btn sort-btn' + (side === 'back' ? ' on' : '')} type="button" onClick={() => flipTo(side !== 'back')} aria-pressed={side === 'back'} title={side === 'back' ? 'Turn back to the map' : 'Turn the dashboard over and sort the 644 records'}>
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M4 7.5a6.5 6.5 0 0 1 11.3-2.6M16 12.5a6.5 6.5 0 0 1-11.3 2.6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /><path d="M15.6 2.2v3h-3M4.4 17.8v-3h3" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span className="full">{side === 'back' ? 'Back to the map' : 'Sort the data'}</span><span className="short" aria-hidden="true">{side === 'back' ? 'Map' : 'Sort'}</span>
+            </button>
+          )}
           <button className={'btn ghost lang-order' + (enFirst ? ' on' : '')} type="button" onClick={toggleEnFirst} aria-pressed={enFirst} title="Name order: English first, Japanese in brackets"><span aria-hidden="true">{enFirst ? 'EN' : '日'}</span>English first</button>
           <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'journeys' ? null : 'journeys')} aria-expanded={sheet === 'journeys'}><span className="full">Journeys & Fares</span><span className="short" aria-hidden="true">Fares</span></button>
           <button className="btn ghost" type="button" onClick={() => setSheet(sheet === 'sources' ? null : 'sources')} aria-expanded={sheet === 'sources'}><span className="full">Data & Sources</span><span className="short" aria-hidden="true">Sources</span></button>
@@ -876,23 +988,7 @@ export default function App() {
         ) : (
           <div className="alert big" role="alert"><b>Map data could not be loaded.</b>{failed.map(([k, v]) => <span key={k}>{v.file}: {v.error}</span>)}</div>
         )}
-        <div className="map-tools">
-          <button type="button" onClick={resetView} title="Back to the whole study area">
-            <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M3 8V3h5M17 8V3h-5M3 12v5h5M17 12v5h-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" /></svg>
-            <span>Study area</span>
-          </button>
-          <button type="button" onClick={() => setLegend(!legend)} aria-expanded={legend} aria-controls="map-legend">
-            <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><circle cx="5" cy="5" r="2" fill="currentColor" /><circle cx="5" cy="10" r="2" fill="currentColor" opacity=".6" /><circle cx="5" cy="15" r="2" fill="currentColor" opacity=".35" /><path d="M10 5h7M10 10h7M10 15h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-            <span>Legend</span>
-          </button>
-          <button type="button" className={'cine' + (cinematic ? ' on' : '')} aria-pressed={cinematic} onClick={() => setCinematic(!cinematic)} title="Cinematic view: routes are framed with a gentle tilt. Off: top-down, no tilt or turn.">
-            <i className="tg" aria-hidden="true" /><span>Cinematic view</span>
-          </button>
-          <button type="button" className={'cine d3t' + (d3 ? ' on' : '')} aria-pressed={d3} onClick={toggle3d} title="3D density: raise the attraction kernel density out of the map. Click the surface to read a spot.">
-            <i className="tg" aria-hidden="true" /><span>3D density</span>
-          </button>
-          {tilted && <button type="button" onClick={topDown} title="Back to a top-down view"><span>Top-down</span></button>}
-        </div>
+        <MapRail legend={legend} setLegend={setLegend} cinematic={cinematic} setCinematic={setCinematic} d3={d3} toggle3d={toggle3d} tilted={tilted} topDown={topDown} resetView={resetView} />
         {core && <Density3D mapRef={mapRef} on={d3} theme={theme} d={d} />}
         {picking && <div className="pick-bar" role="status">Click a place on the map to set the route start. <button type="button" className="link" onClick={() => setPicking(false)}>Cancel</button></div>}
         {legend && (
@@ -959,7 +1055,17 @@ export default function App() {
           onShow={(f) => { setSheet(null); setGeoOn(true); mapRef.current?.flyTo({ center: f.geometry.coordinates, zoom: 14, duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 1200, essential: true }); }}
           onClose={() => setSheet(null)} />}
       </main>
-
+      {d.sort && (
+        <>
+          <SortStage story={d.sort} colors={T.cat} theme={theme} shown={face === 'back'} bus={sortBus} describe={describeSort} nameOf={sortName} onShowOnMap={sortShow} onBack={() => flipTo(false)} speed={sortSpeed} />
+          {['front', 'back'].map((k) => (
+            <button key={k} type="button" className={'curl ' + k + (k === 'front' && curlPeek ? ' peek' : '')} onClick={() => flipTo(k === 'front')} onPointerDown={curlDown} onPointerMove={(e) => curlMove(e, k === 'front')} onPointerUp={curlUp} onPointerCancel={curlUp}
+              aria-label={k === 'front' ? 'Turn the dashboard over: sort the data' : 'Turn back to the map'}>
+              <span className="lab">{k === 'front' ? 'Turn over · Sort the data' : 'Back to the map'}</span>
+            </button>
+          ))}
+        </>
+      )}
     </div>
     <Seam mark="結" ja="結び" en="Closing" />
     <Outro manifest={d.manifest} />
@@ -1527,7 +1633,7 @@ function Sources({ d, status, walk, failed, onClose, onRecords }) {
       <div className="sheet-meta">
         <Chip ok={!failed.length} label={failed.length ? `${failed.length} file(s) failed` : 'Map data loaded'} />
         <Chip ok={!!d.kde} label={d.kde ? 'Density: KDE computed' : 'Density: missing'} />
-        {d.photos && <Chip ok label={`Photos: ${d.photos.with_photo} of ${d.photos.named_records} named`} />}
+        {d.photos && <Chip ok label={`Photos: ${d.photos.with_photo} of ${d.attractions?.features.length ?? d.photos.records} places`} />}
         <Chip ok={walk.available && !walk.pilot} warn={!walk.available || walk.pilot} label={!walk.available ? 'Walking: not calculated' : walk.pilot ? `Walking: pilot only (${walk.scopeIds.size} records)` : `Walking: prefecture (${walk.scopeIds.size} records)`} />
         <Clock />
       </div>
@@ -1552,6 +1658,7 @@ function Sources({ d, status, walk, failed, onClose, onRecords }) {
         <section>
           <h3>Koi pond background</h3>
           <p>The koi swimming behind the panel are drawn by <a href="https://github.com/pursurer/ascii-koi" target="_blank" rel="noreferrer">ASCII Koi</a> by pursurer (MIT licence), used unchanged. Decoration only: it carries no data.</p>
+          <p>"Sort the data" (the back of the dashboard) adapts the sphere layout and the arc flight into folders from <a href="https://github.com/kairothq/claude-photo-sorter" target="_blank" rel="noreferrer">Claude photo sorter</a> by Divy Kairoth (MIT licence), rewritten for this project. Every tile is a real record from sort_story.json: 523 OpenStreetMap records and 121 Kyoto City sites, of which 5 were merged and 13 left out.</p>
         </section>
         <section>
           <h3>Sample journeys & fares</h3>
@@ -1574,7 +1681,7 @@ function Sources({ d, status, walk, failed, onClose, onRecords }) {
         {d.photos && (
           <section>
             <h3>Attraction photos</h3>
-            <p className="xs">Wikidata (P18) and Wikimedia Commons, retrieved {d.photos.retrieved_at.replace('T', ' ').replace('Z', ' UTC')}. {d.photos.with_photo} of {d.photos.records ?? d.photos.named_records} records have a photo: {d.photos.by_match['wikidata-exact'] + (d.photos.by_match['site-wikidata'] || 0)} Wikidata items of the place itself, {d.photos.by_match['wikidata-related']} related places, {(d.photos.by_match['osm-wikidata'] || 0) + (d.photos.by_match['osm-image'] || 0) + (d.photos.by_match['osm-commons'] || 0)} linked from the record's own OpenStreetMap entry, {(d.photos.by_match['commons-geo'] || 0) + (d.photos.by_match['commons-near'] || 0)} Commons photos taken nearby that name the place. Records without a name get a photo only through their own OpenStreetMap link. Only CC0, public-domain, CC BY and CC BY-SA files are used; each photo shows its author and licence.</p>
+            <p className="xs">Wikidata (P18) and Wikimedia Commons, retrieved {d.photos.retrieved_at.replace('T', ' ').replace('Z', ' UTC')}. {d.photos.with_photo} of the {d.attractions?.features.length ?? d.photos.records} records on the map have a photo: {(() => { const m = d.photos.by_match, n = (...k) => k.reduce((t, x) => t + (m[x] || 0), 0); return <>{n('wikidata-exact', 'site-wikidata', 'wikidata-checked')} Wikidata items of the place itself, {n('wikidata-related')} related places, {n('osm-wikidata', 'osm-image', 'osm-commons')} linked from the record's own OpenStreetMap entry, {n('commons-geo', 'commons-near', 'commons-search')} Commons photos taken nearby that name the place, {n('viewpoint-here', 'nearby-checked')} Commons photos taken at the spot (within 40 m of a viewpoint, or 60–80 m of a place) and checked by eye, and {n('site-contains')} records with no name that show the named site they lie in. </>; })()}Only CC0, public-domain, CC BY and CC BY-SA files are used; each photo shows its author and licence.</p>
           </section>
         )}
         {d.namesEn?.meta && (
