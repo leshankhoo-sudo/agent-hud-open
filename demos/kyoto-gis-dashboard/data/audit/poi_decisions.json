@@ -271,5 +271,86 @@
    "site": "白峯神宮",
    "evidence": "the description of 精大明神像 begins 白峯神宮"
   }
+ ],
+ "not_sights_about": "Records whose own OpenStreetMap tags show a business or a service counter, not a place to visit. Reviewed 2026-11-21 from the tags of each record's OSM node (data/cache/osm_attraction_nodes.json). They stay in data/raw with their IDs and fields; scripts/poi_reconcile.py leaves them out of the map layer and lists them in poi_relations.json under not_sights. Records that are paid experiences (tea ceremony, samurai museum, teamLab) or real places with odd names are kept.",
+ "not_sights": [
+  {
+   "id": "A00253",
+   "name": "カラオケSKY",
+   "kind": "business",
+   "evidence": "name:en Karaoke SKY; opening hours to 02:00, phone, website karaokesky.jp/shop/nodagawa: a karaoke shop"
+  },
+  {
+   "id": "A00315",
+   "name": "ビリヤードセブン",
+   "kind": "business",
+   "evidence": "the name says billiards (ビリヤード); no other tag"
+  },
+  {
+   "id": "A00235",
+   "name": "サンケイボウル",
+   "kind": "business",
+   "evidence": "name:en Sankei Bowling; opening hours, phone, address 国道9号 2346: a bowling alley"
+  },
+  {
+   "id": "A00234",
+   "name": "Durham 800",
+   "kind": "business",
+   "evidence": "same address as サンケイボウル (国道9号 2346), opening hours and phone only: a business in that building"
+  },
+  {
+   "id": "A00239",
+   "name": "スタジアム2001",
+   "kind": "business",
+   "evidence": "name:en Pachinko Slot Stadium 2001, branch 京都八幡店, website p-world.co.jp: a pachinko hall"
+  },
+  {
+   "id": "A00233",
+   "name": "プラザアピア峰山",
+   "kind": "business",
+   "evidence": "address, phone and opening hours to 02:00 only: a late-night business, nothing tagged to visit"
+  },
+  {
+   "id": "A00140",
+   "name": "Green Peace Hotel",
+   "kind": "business",
+   "evidence": "the name says hotel; no other tag"
+  },
+  {
+   "id": "A00210",
+   "name": "若狭ダイビングサービス",
+   "kind": "business",
+   "evidence": "name:en Wakasa Diving Service, phone, website wakasa-ds.net: a diving shop"
+  },
+  {
+   "id": "A00509",
+   "name": "Stamp Point №3",
+   "kind": "stamp point",
+   "evidence": "a stamp-rally point; carries fixme 'Location isn’t precise, but it’s there somewhere'"
+  },
+  {
+   "id": "A00510",
+   "name": "Stamp Point №1",
+   "kind": "stamp point",
+   "evidence": "a stamp-rally point, about 20 m from №2; no other tag"
+  },
+  {
+   "id": "A00511",
+   "name": "Stamp Point №2",
+   "kind": "stamp point",
+   "evidence": "a stamp-rally point, about 20 m from №1; no other tag"
+  },
+  {
+   "id": "A00516",
+   "name": "御朱印所",
+   "kind": "service counter",
+   "evidence": "name:es Oficina de Goshuin, fee=yes, indoor=yes: the counter selling goshuin stamps; the name does not say which temple or shrine"
+  },
+  {
+   "id": "A00519",
+   "name": "御朱印所",
+   "kind": "service counter",
+   "evidence": "name:es Oficina de Goshuin, fee=yes: the counter selling goshuin stamps; the name does not say which temple or shrine"
+  }
  ]
 }

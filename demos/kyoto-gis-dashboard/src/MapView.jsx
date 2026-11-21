@@ -109,8 +109,8 @@ const ptStroke = (T) => (T.ptCore ? ['interpolate', ['linear'], ['zoom'], 7, 0.9
 const lmText = (T) => ({ 'text-color': T.base.label, 'text-halo-color': T.base.halo, 'text-halo-width': 1.5, 'text-halo-blur': 0.4 });
 // name under the symbol: Japanese from `from`, with the English name on a second line from `en`
 const lmLabel = (from, en) => ({
-  'text-field': ['step', ['zoom'], '', from, ['coalesce', ['get', 'name'], ''],
-    en, ['case', ['has', 'name_en'], ['format', ['coalesce', ['get', 'name'], ''], {}, '\n', {}, ['get', 'name_en'], { 'font-scale': 0.82 }], ['coalesce', ['get', 'name'], '']]],
+  'text-field': ['step', ['zoom'], '', from, ['coalesce', ['get', 'name_full'], ['get', 'name'], ''],
+    en, ['case', ['has', 'name_en'], ['format', ['coalesce', ['get', 'name_full'], ['get', 'name'], ''], {}, '\n', {}, ['get', 'name_en'], { 'font-scale': 0.82 }], ['coalesce', ['get', 'name_full'], ['get', 'name'], '']]],
   'text-font': ['Noto Sans Regular'], 'text-size': ['interpolate', ['linear'], ['zoom'], 9, 10.5, 15, 12.5], 'text-anchor': 'top', 'text-max-width': 9, 'text-line-height': 1.25,
   'text-offset': ['case', isIconic, ['literal', [0, 0.35]], ['literal', [0, 1.05]]], 'text-optional': true, 'text-padding': 3,
 });
@@ -1045,7 +1045,7 @@ function applyFilters(map, { cats, types, query, densityMode, theme }) {
   // the same matching as the result list (lib/data.js): names, English name, other names, IDs
   const qf = /^[\x00-\x7f]+$/.test(q) ? q.normalize('NFKD').replace(/[^a-z0-9]/g, '') : '';
   const qExpr = q
-    ? ['any', ['in', q, ['downcase', ['coalesce', ['get', 'name'], '']]], ['in', q, ['downcase', ['get', 'display_name']]], ['in', q, ['downcase', ['coalesce', ['get', 'label'], '']]], ['in', q, ['downcase', ['coalesce', ['get', 'name_en'], '']]], ['==', ['downcase', ['get', 'id']], q], ['==', ['get', 'osm_id'], q],
+    ? ['any', ['in', q, ['downcase', ['coalesce', ['get', 'name'], '']]], ['in', q, ['downcase', ['get', 'display_name']]], ['in', q, ['downcase', ['coalesce', ['get', 'label'], '']]], ['in', q, ['coalesce', ['get', 'name_full'], '']], ['in', q, ['downcase', ['coalesce', ['get', 'name_en'], '']]], ['==', ['downcase', ['get', 'id']], q], ['==', ['get', 'osm_id'], q],
       ['in', q, ['downcase', ['coalesce', ['get', 'search_text'], '']]],
       ...(qf.length >= 3 ? [['in', qf, ['downcase', ['coalesce', ['get', 'search_text'], '']]]] : [])]
     : true;

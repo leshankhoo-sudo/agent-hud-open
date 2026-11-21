@@ -113,6 +113,16 @@ def main():
         labels[p['id']] = lab
         review.append([p['id'], p['osm_id'], p['category'], lab['kind'], lab.get('text', ''), lab.get('text_en', ''), lab.get('muni_en', ''), lab['basis']])
 
+    # Named records whose name tag is cut short: the same OSM record's name:ja begins with the name and
+    # goes on (e.g. name 天, name:ja 天鷲絨美術館). The longer form is shown; the name field stays as it is.
+    full = {}
+    for f in A:
+        p = f['properties']
+        n = (p.get('name') or '').strip()
+        ja = ((nodes.get(p['osm_id']) or {}).get('tags', {}).get('name:ja') or '').strip()
+        if n and ja != n and ja.startswith(n):
+            full[p['id']] = {'text': ja, 'basis': f'OSM name:ja of the same record; its name tag "{n}" is the start of it, cut short'}
+
     os.makedirs(CACHE, exist_ok=True)
     with open(GSI_CACHE, 'w', encoding='utf-8') as fh:
         json.dump({'source': GSI_URL.split('?')[0], 'retrieved_at': datetime.now(timezone.utc).isoformat(timespec='seconds'), 'answers': gsi}, fh, ensure_ascii=False, indent=1)
@@ -137,6 +147,7 @@ def main():
             'licence': 'OpenStreetMap contributors (ODbL); GSI reverse geocoder (国土地理院)',
         },
         'labels': labels,
+        'full_names': full,
     }
     with open(os.path.join(DATA, 'attraction_labels.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, ensure_ascii=False, indent=1)

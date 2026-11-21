@@ -10,9 +10,9 @@
   "walking_routes.geojson": "match"
  },
  "attractions": {
-  "records": 639,
+  "records": 626,
   "by_category": {
-   "attraction": 159,
+   "attraction": 146,
    "viewpoint": 243,
    "museum": 101,
    "castle": 20,
@@ -35,7 +35,8 @@
    },
    "file": "attraction_labels.json",
    "note": "Labels are shown for records with no OSM name; the name field itself stays empty."
-  }
+  },
+  "not_sights": 13
  },
  "transport": {
   "records": 5479,
@@ -75,7 +76,7 @@
   "raw_package_status": "NOT_CALCULATED"
  },
  "point_municipality": {
-  "joined": 6118,
+  "joined": 6105,
   "outside_all_polygons": 0
  },
  "journeys": {

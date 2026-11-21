@@ -59,13 +59,13 @@
   "largest_component_nodes": 1267995,
   "small_component_threshold_vertices": 1000
  },
- "attractions": 639,
+ "attractions": 626,
  "attractions_by_identity": {
-  "named": 421,
+  "named": 408,
   "unverified": 166,
   "osm_tags": 52
  },
- "attractions_near_prefecture_boundary": 63,
+ "attractions_near_prefecture_boundary": 62,
  "boundary_rule": "flagged when a road vertex outside Kyoto Prefecture (original N03 polygons) is closer in a straight line than the walking result (or than the 3 km cut-off when no stop was found); the coast has no roads outside, so it is never flagged",
  "stops_considered": {
   "rail": 248,
@@ -96,18 +96,18 @@
  ],
  "results": {
   "bus:failed:attraction_too_far_from_network": 4,
-  "bus:ok": 605,
+  "bus:ok": 592,
   "bus:ok:same_access_point": 1,
   "bus:unreachable:isolated_network": 12,
   "bus:unreachable:no_stop_within_cutoff": 17,
   "rail:failed:attraction_too_far_from_network": 4,
-  "rail:ok": 523,
+  "rail:ok": 511,
   "rail:ok:same_access_point": 1,
   "rail:unreachable:isolated_network": 12,
-  "rail:unreachable:no_stop_within_cutoff": 99
+  "rail:unreachable:no_stop_within_cutoff": 98
  },
- "ok_rows_with_flags": 710,
- "ok_rows_with_steps": 397,
+ "ok_rows_with_flags": 693,
+ "ok_rows_with_steps": 394,
  "points_attached_to_main_network_instead_of_fragment": {
   "attractions": 33,
   "stops": 52
@@ -160,5 +160,21 @@
   "Stops outside Kyoto Prefecture are not in the data; records near the boundary are flagged.",
   "A reachable stop says nothing about how often it is served.",
   "Results are not checked record by record."
- ]
+ ],
+ "records_left_out_after_routing": [
+  "A00140",
+  "A00210",
+  "A00233",
+  "A00234",
+  "A00235",
+  "A00239",
+  "A00253",
+  "A00315",
+  "A00509",
+  "A00510",
+  "A00511",
+  "A00516",
+  "A00519"
+ ],
+ "records_left_out_note": "Records that left the map layer after the routing run (merged duplicates or not-a-sight decisions, data/audit/poi_decisions.json). Their rows were dropped by scripts/walking_keep_map_records.py; every other record's route is unchanged, since each record is routed on its own."
 }

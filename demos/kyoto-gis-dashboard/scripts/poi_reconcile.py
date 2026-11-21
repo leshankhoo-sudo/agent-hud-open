@@ -18,6 +18,9 @@ Outputs
     public/data/manifest.json           attraction counts
 
 Rules
+    - A record whose own OSM tags show a business or a service counter, not a place to visit
+      (poi_decisions.json not_sights), is left out of the map layer the same way: it stays in data/raw
+      with its ID and fields and is listed under "not_sights" with the evidence.
     - A merged record is not deleted anywhere: it stays in data/raw and is listed under "merged" with
       the record that keeps it; its ID still opens that record.
     - An added site keeps the Japanese name of its OSM feature; the CSV's names are kept as aliases
@@ -98,10 +101,11 @@ def build():
     for d in dec["duplicates"]:
         keep_info[d["keep"]].append({"merged": d["merge"], "evidence": d["evidence"]})
 
+    not_sights = {x["id"]: x for x in dec.get("not_sights", [])}
     feats = []
     for f in raw["features"]:
         p = f["properties"]
-        if p["id"] in merged:
+        if p["id"] in merged or p["id"] in not_sights:
             continue
         g = {"type": "Feature", "geometry": f["geometry"], "properties": dict(p)}
         c, basis = refine(p["category"], (nodes.get(p["osm_id"]) or {}).get("tags", {}), p["name"])
@@ -151,7 +155,7 @@ def build():
     for key, pid in parent_of_site.items():
         s = site_by_key[key]
         for h in s["dashboard"]:
-            if h["relation"] == "part of the site" and h["id"] not in merged and h["id"] != pid:
+            if h["relation"] == "part of the site" and h["id"] not in merged and h["id"] not in not_sights and h["id"] != pid:
                 parents[pid]["children"].append(h["id"])
                 child_of[h["id"]] = pid
     for x in audit["records"]:
@@ -162,6 +166,8 @@ def build():
     groups = [{"name": g["name"], "ids": g["ids"], "note": g["note"]} for g in dec["related_groups"]]
     rel = {"about": "Built by scripts/poi_reconcile.py from data/audit. merged: record -> record that keeps it. parents: a site and what belongs to it (dashboard records and DSIGHT_1.csv records, which are buildings, objects and trees of that site, without points of their own). groups: separate features of one place.",
            "merged": {k: {"into": v, "evidence": next(d["evidence"] for d in dec["duplicates"] if k in d["merge"])} for k, v in merged.items()},
+           "not_sights": {k: {"name": v["name"], "kind": v["kind"], "evidence": v["evidence"]} for k, v in not_sights.items()},
+           "not_sights_about": dec.get("not_sights_about", ""),
            "parents": dict(parents), "child_of": child_of, "groups": groups,
            "possible_duplicates": dec["possible_duplicates"], "distinct": dec["distinct"],
            "csv": {"file": "DSIGHT_1.csv", **audit["summary"]["csv"]},
@@ -205,9 +211,10 @@ def main():
     # manifest counts
     m = J(os.path.join(OUT, "manifest.json"))
     ps = [f["properties"] for f in fc["features"]]
-    m["attractions"] = {"records": len(ps), "by_category": dict(collections.Counter(p["category"] for p in ps)),
+    # keys other steps add (unnamed_display from scripts/label_unnamed.py) are kept
+    m["attractions"] = {**m.get("attractions", {}), "records": len(ps), "by_category": dict(collections.Counter(p["category"] for p in ps)),
                         "unnamed": sum(1 for p in ps if not (p.get("name") or "").strip()),
-                        "raw_records": len(raw_ids), "merged_duplicates": len(rel["merged"]),
+                        "raw_records": len(raw_ids), "merged_duplicates": len(rel["merged"]), "not_sights": len(rel["not_sights"]),
                         "added_from_dsight": sum(1 for p in ps if p.get("dsight_ids"))}
     m["point_municipality"] = {"joined": sum(1 for v in pm["points"].values() if v), "outside_all_polygons": sum(1 for v in pm["points"].values() if not v)}
     json.dump(m, open(os.path.join(OUT, "manifest.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
@@ -243,6 +250,8 @@ def checklist(fc, rel):
     for d in dec["duplicates"]:
         for m in d["merge"]:
             rows.append(["dashboard record", m, raw[m]["name"], f"osm node {raw[m]['osm_id']}", d["keep"], "A Confirmed Duplicate: merged", d["evidence"], f"merged into {d['keep']} (kept in data/raw)"])
+    for x in dec.get("not_sights", []):
+        rows.append(["dashboard record", x["id"], x["name"], f"osm node {raw[x['id']]['osm_id']}", "", f"Not a sight: {x['kind']}", x["evidence"], "left out of the map layer (kept in data/raw)"])
     for g in dec["possible_duplicates"]:
         rows.append(["dashboard records", " ".join(g["ids"]), g["name"], "", "", "B Possible Duplicate: kept", g["note"], "kept, flagged on the card"])
     for g in dec["related_groups"]:

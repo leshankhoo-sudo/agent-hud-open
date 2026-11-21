@@ -1,6 +1,6 @@
 {
  "meta": {
-  "built_at": "2026-11-20T19:24:21+00:00",
+  "built_at": "2026-11-21T08:46:11+00:00",
   "sources": {
    "wikidata": "https://query.wikidata.org/sparql (wikibase:box over Kyoto Prefecture, items with a Japanese label) with Japanese aliases (skos:altLabel) (retrieved 2026-11-20T06:57:36+00:00, CC0)",
    "osm": "data/cache/osm_attraction_nodes.json (OSM API)",
@@ -14,7 +14,7 @@
    "Google Maps is not a source (its terms forbid copying its data); the review table links to it for checking by hand."
   ],
   "counts": {
-   "osm-only": 227,
+   "osm-only": 214,
    "related": 20,
    "unnamed": 218,
    "confirmed": 174,
@@ -1162,10 +1162,6 @@
    "status": "osm-only",
    "by": []
   },
-  "A00140": {
-   "status": "osm-only",
-   "by": []
-  },
   "A00141": {
    "wikidata": {
     "q": "Q11411174",
@@ -1687,10 +1683,6 @@
   "A00209": {
    "status": "unnamed"
   },
-  "A00210": {
-   "status": "osm-only",
-   "by": []
-  },
   "A00211": {
    "status": "osm-only",
    "by": []
@@ -1795,18 +1787,6 @@
    "status": "related",
    "by": []
   },
-  "A00233": {
-   "status": "osm-only",
-   "by": []
-  },
-  "A00234": {
-   "status": "osm-only",
-   "by": []
-  },
-  "A00235": {
-   "status": "osm-only",
-   "by": []
-  },
   "A00236": {
    "status": "osm-only",
    "by": []
@@ -1836,10 +1816,6 @@
     "m": 132
    },
    "status": "related",
-   "by": []
-  },
-  "A00239": {
-   "status": "osm-only",
    "by": []
   },
   "A00240": {
@@ -1928,10 +1904,6 @@
    ]
   },
   "A00252": {
-   "status": "osm-only",
-   "by": []
-  },
-  "A00253": {
    "status": "osm-only",
    "by": []
   },
@@ -2353,10 +2325,6 @@
    ]
   },
   "A00314": {
-   "status": "osm-only",
-   "by": []
-  },
-  "A00315": {
    "status": "osm-only",
    "by": []
   },
@@ -3662,18 +3630,6 @@
    "status": "osm-only",
    "by": []
   },
-  "A00509": {
-   "status": "osm-only",
-   "by": []
-  },
-  "A00510": {
-   "status": "osm-only",
-   "by": []
-  },
-  "A00511": {
-   "status": "osm-only",
-   "by": []
-  },
   "A00512": {
    "status": "osm-only",
    "by": []
@@ -3693,10 +3649,6 @@
     "m": 27
    },
    "status": "related",
-   "by": []
-  },
-  "A00516": {
-   "status": "osm-only",
    "by": []
   },
   "A00517": {
@@ -3719,10 +3671,6 @@
      "m": 35
     }
    ]
-  },
-  "A00519": {
-   "status": "osm-only",
-   "by": []
   },
   "A00520": {
    "wikidata": {

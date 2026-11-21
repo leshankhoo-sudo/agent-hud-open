@@ -72,7 +72,7 @@ const story = await page.evaluate(async () => {
 });
 check('page 2: four season cards, each drawn with WebGL (no fallback)', story.ok);
 check('page 2: the card of the season it is now is the highlighted one, marked "Now in Kyoto"', story.on.length === 1 && story.on[0] === story.season && story.now === 1, JSON.stringify({ on: story.on, season: story.season }));
-check('page 2: story lines appear with the scroll, counts roll up to the data totals', story.lines0 < 0.2 && story.lines1 > 0.9 && story.nums.join('|') === '639|5,479', JSON.stringify({ l0: story.lines0, l1: story.lines1, nums: story.nums }));
+check('page 2: story lines appear with the scroll, counts roll up to the data totals', story.lines0 < 0.2 && story.lines1 > 0.9 && story.nums.join('|') === '626|5,479', JSON.stringify({ l0: story.lines0, l1: story.lines1, nums: story.nums }));
 check('page 2: "Now in Kyoto" line follows the season; image source stated as unverified', story.pill.toLowerCase().includes(story.season) && story.credit.includes('Pinterest') && story.credit.includes('illustrative'), story.pill.replace(/\n/g, ' '));
 const other = story.season === 'winter' ? 'spring' : 'winter';
 await page.locator(`.scard-pick[aria-label="Use the ${other} theme"]`).click();
@@ -260,7 +260,17 @@ const srcCounts = await page.evaluate(() => {
   const m = window.__kyotoMap;
   return { a: m.getSource('attractions')._data.features.length, t: m.getSource('transport')._data.features.length };
 });
-check('map sources hold 639 attractions (523 raw - 5 merged duplicates + 121 verified CSV sites) and 5,479 stops', srcCounts.a === 639 && srcCounts.t === 5479, JSON.stringify(srcCounts));
+check('map sources hold 626 attractions (523 raw - 5 merged duplicates - 13 not sights + 121 verified CSV sites) and 5,479 stops', srcCounts.a === 626 && srcCounts.t === 5479, JSON.stringify(srcCounts));
+const ns = await page.evaluate(async () => {
+  const f = window.__kyotoMap.getSource('attractions')._data.features.map((x) => x.properties);
+  const rel = await (await fetch('data/poi_relations.json')).json(); const w = await (await fetch('data/walking_routes_prefecture.geojson')).json();
+  const kde = await (await fetch('data/analysis/density_kde_meta.json')).json(); const ids = Object.keys(rel.not_sights || {});
+  const ten = f.find((p) => p.id === 'A00303');
+  return { n: ids.length, offMap: ids.every((id) => !f.some((p) => p.id === id)), offWalk: ids.every((id) => !w.attraction_ids.includes(id) && !w.features.some((x) => x.properties.attraction_id === id)),
+    evidence: ids.every((id) => rel.not_sights[id].evidence && rel.not_sights[id].kind), kde: JSON.stringify(kde).includes('626 records'), ten: ten && ten.name === '天' && ten.name_full === '天鷲絨美術館' };
+});
+check('13 records whose own OSM tags show a business or service counter are left out of the map, walking results and density (each with its evidence); a cut-short name shows the full name:ja of the same record, the name field unchanged',
+  ns.n === 13 && ns.offMap && ns.offWalk && ns.evidence && ns.kde && ns.ten, JSON.stringify(ns));
 const lab = await page.evaluate(() => { const f = window.__kyotoMap.getSource('attractions')._data.features.map((x) => x.properties); const un = f.filter((p) => !p.name);
   return { unnamed: un.length, en: un.filter((p) => p.name_en).length, labelled: un.filter((p) => p.label_kind).length, bare: un.filter((p) => !p.name_en && !p.label_kind).length, kinds: [...new Set(un.map((p) => p.label_kind).filter(Boolean))].sort().join(','), nameKept: un.every((p) => p.name === '' || p.name == null) }; });
 check('every attraction shows a name: 218 with no OSM name get the English name of the same record (47) or a label with its basis (171); the name field stays empty', lab.unnamed === 218 && lab.en === 47 && lab.labelled === 171 && lab.bare === 0 && lab.kinds === 'address,desc,muni,name,place' && lab.nameKept, JSON.stringify(lab));
@@ -271,14 +281,14 @@ const xc = await page.evaluate(async () => {
   return { n: r.length, confirmed: c.meta.counts.confirmed, unnamedClean: r.filter((x) => x.status === 'unnamed').every((x) => !x.by && !x.wikidata), statuses: [...new Set(r.map((x) => x.status))].sort().join(','),
     photos: Object.keys(ph.photos).length, here: here.length, hereOk: here.every((v) => v.m <= 40 && v.shows && v.license && v.artist), near: near.length, nearOk: near.every((v) => v.m <= 80 && v.shows && v.license && v.artist), files: ok.every(Boolean) };
 });
-check('names cross-checked for all 639 (Wikidata, the OSM link, the Kyoto City list; nearby items never used as a name), and viewpoint photos taken within 40 m, each with what it shows, credit and licence',
-  xc.n === 639 && xc.confirmed >= 170 && xc.unnamedClean && xc.statuses === 'confirmed,osm-only,related,unnamed' && xc.photos >= 280 && xc.here >= 100 && xc.hereOk && xc.near >= 40 && xc.nearOk && xc.photos >= 325 && xc.files, JSON.stringify(xc));
+check('names cross-checked for all 626 (Wikidata, the OSM link, the Kyoto City list; nearby items never used as a name), and viewpoint photos taken within 40 m, each with what it shows, credit and licence',
+  xc.n === 626 && xc.confirmed >= 170 && xc.unnamedClean && xc.statuses === 'confirmed,osm-only,related,unnamed' && xc.photos >= 280 && xc.here >= 100 && xc.hereOk && xc.near >= 40 && xc.nearOk && xc.photos >= 325 && xc.files, JSON.stringify(xc));
 check('basemap tiles load', tiles.ok > 0 && tiles.fail === 0, `${tiles.ok} ok, ${tiles.fail} failed`);
 
 const counts = async () => page.evaluate(() => [...document.querySelectorAll('.count .v')].map((e) => e.textContent.replace(/\s/g, '')));
 await page.waitForTimeout(700);
 let c = await counts();
-check('top counts at start', c[0] === '639/639' && c[1] === '5,479/5,479', c.join(' | '));
+check('top counts at start', c[0] === '626/626' && c[1] === '5,479/5,479', c.join(' | '));
 
 // 2. map position: known points render where their coordinates are
 const pos = await page.evaluate(async () => {
@@ -301,7 +311,7 @@ await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 
 await exploreTab(page); await page.getByLabel('Viewpoint').uncheck();
 await page.waitForTimeout(800);
 c = await counts();
-check('uncheck Viewpoint → 396 attractions', c[0] === '396/639', c[0]);
+check('uncheck Viewpoint → 383 attractions', c[0] === '383/626', c[0]);
 await exploreTab(page); await page.getByLabel('Bus').uncheck();
 await page.waitForTimeout(800);
 c = await counts();
@@ -336,7 +346,7 @@ await page.waitForTimeout(1800);
 await placeTab(page); await page.getByRole('tab', { name: 'Walking Routes' }).click();
 const walkText = await page.locator('.walk').innerText();
 check('Kinkaku-ji (outside the old pilot) now shows network walking distances', /\d+ m · ≈[\d.]+ min walk/.test(walkText) && !walkText.includes('Pilot result'), walkText.replace(/\n/g, ' / ').slice(0, 200));
-check('walking entry shows the prefecture record count', (await exploreTab(page), await openFold(page, 'Analysis'), await page.locator('#explore-panel').innerText()).includes('639 records'));
+check('walking entry shows the prefecture record count', (await exploreTab(page), await openFold(page, 'Analysis'), await page.locator('#explore-panel').innerText()).includes('626 records'));
 await placeTab(page); await page.getByRole('tab', { name: 'Overview' }).click();
 await page.locator('.tech summary').click();
 const ovText = await page.locator('#pane-overview').innerText();
@@ -446,9 +456,9 @@ const zt = await page.locator('.walk').innerText();
 check('A00453 and its station share a street point: shown as "Next to this place", not as 0 m', zt.includes('Next to this place') && !/\b0 m\b/.test(zt), zt.replace(/\n/g, ' / ').slice(0, 220));
 await exploreTab(page); await openFold(page, 'Analysis'); await page.locator('.entry', { hasText: 'Walking Access' }).click();
 const cov = await page.locator('.cov').innerText();
-check('coverage counts named + OSM-tagged records by default (473 = 421 named + 52 OSM-tagged), five states listed', cov.includes('of 473 records') && cov.includes('within 3 km on foot') && cov.includes('Not connected to the street network'), cov.replace(/\n/g, ' / '));
+check('coverage counts named + OSM-tagged records by default (460 = 408 named + 52 OSM-tagged), five states listed', cov.includes('of 460 records') && cov.includes('within 3 km on foot') && cov.includes('Not connected to the street network'), cov.replace(/\n/g, ' / '));
 await page.getByRole('button', { name: /^Unverified/ }).click();
-check('including unverified records raises the denominator to 639', (await page.locator('.cov').innerText()).includes('of 639 records'));
+check('including unverified records raises the denominator to 626', (await page.locator('.cov').innerText()).includes('of 626 records'));
 await page.getByRole('button', { name: /^Unverified/ }).click();
 await exploreTab(page); await page.locator('#q').fill('');
 await page.getByRole('button', { name: 'Show routes on map' }).click();
@@ -540,8 +550,8 @@ await page.keyboard.press('Escape');
 await page.locator('.status').getByRole('button', { name: 'Data & Sources' }).click();
 await page.waitForTimeout(900);
 const st = await page.locator('.sheet').innerText();
-check('sources panel holds the status chips and visitor statistics', st.includes('Map data loaded') && st.includes('Walking: prefecture (639 records)') && st.includes('Visitor statistics'));
-check('sources panel: OSM, N03, Open-Meteo, hash check, quality notes', st.includes('ODbL') && st.includes('N03') && st.includes('Open-Meteo') && st.includes('all match') && st.includes('2771085349'));
+check('sources panel holds the status chips and visitor statistics', st.includes('Map data loaded') && st.includes('Walking: prefecture (626 records)') && st.includes('Visitor statistics'));
+check('sources panel: OSM, N03, Open-Meteo, hash check, quality notes, the 13 records left out of the map', st.includes('ODbL') && st.includes('N03') && st.includes('Open-Meteo') && st.includes('all match') && st.includes('2771085349') && st.includes('Left out of the map: 13 records'));
 await page.screenshot({ path: `${out}/07-sources.png` });
 await page.keyboard.press('Escape');
 
@@ -632,7 +642,7 @@ const lmImg = await lp.evaluate(() => { const m = window.__kyotoMap; const fs = 
 check('landmark symbols: 15 building symbols and 7 category symbols are registered once as map images; no record points at a missing one', lmImg.lm === 15 && lmImg.cat === 7 && lmImg.missing.length === 0, JSON.stringify(lmImg));
 await lmGo(null);
 let ls = await lmSeen();
-check('whole prefecture: only iconic symbols are drawn (the rest collide away), yet every record keeps its dot', ls['lm-iconic'].length >= 3 && ls['lm-major'].length === 0 && ls['lm-minor'].length === 0 && ls['attractions-pt'].length === 639, JSON.stringify({ i: ls['lm-iconic'].length, pt: ls['attractions-pt'].length }));
+check('whole prefecture: only iconic symbols are drawn (the rest collide away), yet every record keeps its dot', ls['lm-iconic'].length >= 3 && ls['lm-major'].length === 0 && ls['lm-minor'].length === 0 && ls['attractions-pt'].length === 626, JSON.stringify({ i: ls['lm-iconic'].length, pt: ls['attractions-pt'].length }));
 await lmGo([135.78, 35.0], 12.6);
 ls = await lmSeen();
 check('city zoom: more iconic symbols and the major places as category symbols; ordinary places stay dots', ls['lm-iconic'].length >= 8 && ls['lm-major'].length >= 20 && ls['lm-minor'].length === 0, JSON.stringify({ i: ls['lm-iconic'].length, M: ls['lm-major'].length }));

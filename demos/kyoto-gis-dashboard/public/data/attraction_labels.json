@@ -1,6 +1,6 @@
 {
  "meta": {
-  "built_at": "2026-11-20T06:33:51+00:00",
+  "built_at": "2026-11-21T08:47:26+00:00",
   "scope": "attraction records with an empty OSM name and no English name of their own",
   "rules": [
    "The records are not changed: name stays empty, display_name and IDs stay as they are.",
@@ -1204,6 +1204,12 @@
    "muni": "26211",
    "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
    "muni_en": "Kyotanabe City"
+  }
+ },
+ "full_names": {
+  "A00303": {
+   "text": "天鷲絨美術館",
+   "basis": "OSM name:ja of the same record; its name tag \"天\" is the start of it, cut short"
   }
  }
 }

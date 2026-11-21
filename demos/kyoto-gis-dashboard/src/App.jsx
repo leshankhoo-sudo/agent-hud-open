@@ -21,7 +21,7 @@ import Density3D from './Density3D.jsx';
 import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
-import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, labelText, LABEL_NOTE, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
+import { loadAll, ATTRACTION_CATS, TRANSPORT_TYPES, CATEGORY_LABEL, countBy, filterAttractions, filterTransport, recordLabel, shownName, labelText, LABEL_NOTE, muniLabel, englishPart, muniTourism, setEnglishFirst, isEnglishFirst } from './lib/data.js';
 import { nameTerms } from './lib/terms.js';
 import { themeOf, pointColor, initialTheme, rememberTheme } from './lib/theme.js';
 import { walkingAvailability, indexWalking, walkingCoverage, IDENTITIES, CUTOFF_M } from './lib/walking.js';
@@ -32,8 +32,8 @@ import { walkingAvailability, indexWalking, walkingCoverage, IDENTITIES, CUTOFF_
 function NameEn({ p }) {
   if (!p.name) return <>{p.name_en || (p.label_kind ? labelText(p) : p.display_name)}</>;
   const en = englishPart(p.name, p.name_en);
-  if (en && isEnglishFirst()) return <><span lang="en">{en}</span><span className="en" lang="ja"> ({p.name})</span></>;
-  return <>{p.name}{en && <span className="en" lang="en"> ({en})</span>}</>;
+  if (en && isEnglishFirst()) return <><span lang="en">{en}</span><span className="en" lang="ja"> ({shownName(p)})</span></>;
+  return <>{shownName(p)}{en && <span className="en" lang="en"> ({en})</span>}</>;
 }
 
 // "English first" name order, remembered per browser (storage may be unavailable).
@@ -1180,8 +1180,8 @@ function Summary({ hit, pm, photos, color, onClose, onBack }) {
         <button className="back" type="button" onClick={onBack} aria-label="Back to Explore"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M10 3L5 8l5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg><span>Explore</span></button>
         <h2 lang={p.name ? 'ja' : 'en'} key={p.id + (isEnglishFirst() ? 'en' : 'ja')}>
           {p.name ? (englishPart(p.name, p.name_en) && isEnglishFirst()
-            ? <><Decode lang="en" text={p.name_en} /> <span className="en" lang="ja">({p.name})</span></>
-            : <>{p.name}{p.name_en && englishPart(p.name, p.name_en) && <> <Decode className="en" lang="en" text={`(${p.name_en})`} /></>}</>)
+            ? <><Decode lang="en" text={p.name_en} /> <span className="en" lang="ja">({shownName(p)})</span></>
+            : <>{shownName(p)}{p.name_en && englishPart(p.name, p.name_en) && <> <Decode className="en" lang="en" text={`(${p.name_en})`} /></>}</>)
             : p.name_en ? <span lang="en">{p.name_en}</span> : p.label_kind ? <span lang={p.label_kind === 'name' ? (p.label_lang || 'und') : undefined}>{labelText(p)}</span> : <span className="muted">{p.display_name}</span>}
         </h2>
         <button className="x" type="button" onClick={onClose} aria-label="Clear selection">×</button>
@@ -1225,6 +1225,7 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, check, onWalk, rel
       {!p.name && (p.name_en
         ? <p className="xs limit">No Japanese name in the source. The English name comes from the same OpenStreetMap record (name:en).</p>
         : <p className="xs limit">{LABEL_NOTE[p.label_kind] || 'This record has no name in the source. The label above is a fallback, not an official name.'}{p.label_basis && <span className="muted"> Source: {p.label_basis}.</span>}</p>)}
+      {p.name_full && <p className="xs limit name-full">The name tag in OpenStreetMap reads <span lang="ja">「{p.name}」</span>, cut short. The full name shown comes from the same record (name:ja).</p>}
       <dl className="kv">
         <div><dt>Category</dt><dd>{CATEGORY_LABEL[p.category]}</dd></div>
         {ctx?.inside?.length > 0 && (
@@ -1616,6 +1617,13 @@ function Sources({ d, status, walk, failed, onClose, onRecords }) {
             <li>Railway entrances or platforms are not merged into stations. Stops near the prefecture edge need review before network analysis.</li>
             <li>Japanese names are kept as supplied; English names are added only from verifiable sources, never invented.</li>
           </ul>
+          {d.relations?.not_sights && Object.keys(d.relations.not_sights).length > 0 && (
+            <details className="more-d not-sights">
+              <summary>Left out of the map: {Object.keys(d.relations.not_sights).length} records that are not places to visit</summary>
+              <p className="xs muted">Their own OpenStreetMap tags show a business or a service counter. They stay in the raw data with their IDs and fields; only the map layer, counts and analyses leave them out.</p>
+              <ul className="xs">{Object.entries(d.relations.not_sights).map(([id, x]) => <li key={id}><span className="mono">{id}</span> <span lang="ja">{x.name}</span> · {x.kind}: {x.evidence}</li>)}</ul>
+            </details>
+          )}
         </section>
         <section>
           <h3>Build & file status</h3>

@@ -120,8 +120,11 @@ export function applyContext(data) {
 export function applyLabels(data) {
   const L = data?.labels?.labels;
   if (!L) return data;
+  const full = data.labels.full_names || {};
   for (const f of data.attractions?.features || []) {
-    const p = f.properties, l = L[p.id];
+    const p = f.properties, l = L[p.id], fn = full[p.id];
+    // a name tag cut short: the same record's name:ja is shown instead (name itself is not changed)
+    if (fn && p.name && fn.text.startsWith(p.name)) { p.name_full = fn.text; p.name_full_basis = fn.basis; }
     if (!l || p.name || p.name_en) continue;
     p.label_kind = l.kind; p.label_basis = l.basis; p.label_text = l.text || ''; p.label_text_en = l.text_en || '';
     p.label_lang = l.lang || ''; p.label_muni_en = l.muni_en || '';
@@ -167,7 +170,8 @@ export const LABEL_NOTE = {
   muni: 'No name in OpenStreetMap. Labelled by the municipality it lies in.',
 };
 // A record with no OSM name shows the English name of the same OSM record, else its label.
-export const recordLabel = (p) => (p.name ? withEnglish(p.name, p.name_en) : p.name_en || (p.label_kind ? labelText(p) : p.display_name));
+export const shownName = (p) => p.name_full || p.name;
+export const recordLabel = (p) => (p.name ? withEnglish(shownName(p), p.name_en) : p.name_en || (p.label_kind ? labelText(p) : p.display_name));
 export const muniLabel = (pm, code) => (code && pm?.names?.[code] ? withEnglish(pm.names[code], pm.names_en?.[code]) : '');
 
 export function countBy(features, key) {
@@ -189,7 +193,7 @@ export function filterTransport(features, types, query = '') {
 export const foldLatin = (s) => (s || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 function matches(f, q) {
   const p = f.properties;
-  if ((p.name || '').toLowerCase().includes(q) || (p.display_name || '').toLowerCase().includes(q) || (p.name_en || '').toLowerCase().includes(q) || (p.label || '').toLowerCase().includes(q) || p.id.toLowerCase() === q || p.osm_id === q) return true;
+  if ((p.name || '').toLowerCase().includes(q) || (p.name_full || '').toLowerCase().includes(q) || (p.display_name || '').toLowerCase().includes(q) || (p.name_en || '').toLowerCase().includes(q) || (p.label || '').toLowerCase().includes(q) || p.id.toLowerCase() === q || p.osm_id === q) return true;
   if ((p.search_text || '').toLowerCase().includes(q)) return true;
   if ((p.merged_ids || []).some((x) => x.toLowerCase() === q)) return true;   // a merged duplicate's ID opens the record that keeps it
   const qf = foldLatin(q);

@@ -1,7 +1,7 @@
 {
  "analysis": "Kernel density of preliminary attraction point records",
- "computed_at": "2026-11-16T09:25:14+00:00",
- "input": "public/data/attractions.geojson (639 records after the POI audit, weight 1 each; unnamed records included; confirmed duplicates merged)",
+ "computed_at": "2026-11-21T08:45:39+00:00",
+ "input": "public/data/attractions.geojson (626 records after the POI audit, weight 1 each; unnamed records included; confirmed duplicates merged)",
  "crs": "EPSG:6674 JGD2011 / Japan Plane Rectangular CS VI (metres)",
  "kernel": "quartic (biweight): K(u) = 3/pi * (1-u^2)^2 for u<1",
  "search_radius_m": 2000.0,
@@ -10,11 +10,11 @@
  "extent": "cells whose centre is inside the dissolved raw N03 Kyoto Prefecture boundary",
  "edge_correction": "none (values near the prefecture edge are biased low)",
  "cells_in_extent": 18446,
- "cells_written": 4313,
+ "cells_written": 4198,
  "cells_written_rule": "cells with total density >= 0.01 records/km^2",
  "prefecture_area_km2_projected": 4611.5,
- "points_inside_dissolved_boundary": 639,
- "check_sum_density_x_cell_area": 615.1,
+ "points_inside_dissolved_boundary": 626,
+ "check_sum_density_x_cell_area": 602.3,
  "check_note": "Sum of density x cell area should be close to the number of points; differences come from edge loss, the 500 m grid and points outside the boundary.",
  "categories": [
   "attraction",
@@ -25,6 +25,6 @@
   "shrine",
   "garden"
  ],
- "max_total_density": 16.165,
+ "max_total_density": 15.935,
  "not_a_measure_of": "visitor numbers, crowding or popularity"
 }
