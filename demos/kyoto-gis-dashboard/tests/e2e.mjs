@@ -266,13 +266,13 @@ const lab = await page.evaluate(() => { const f = window.__kyotoMap.getSource('a
 check('every attraction shows a name: 218 with no OSM name get the English name of the same record (47) or a label with its basis (171); the name field stays empty', lab.unnamed === 218 && lab.en === 47 && lab.labelled === 171 && lab.bare === 0 && lab.kinds === 'address,desc,muni,name,place' && lab.nameKept, JSON.stringify(lab));
 const xc = await page.evaluate(async () => {
   const c = await (await fetch('data/name_checks.json')).json(); const ph = await (await fetch('data/photos.json')).json();
-  const r = Object.values(c.records), here = Object.values(ph.photos).filter((v) => v.match === 'viewpoint-here');
+  const r = Object.values(c.records), here = Object.values(ph.photos).filter((v) => v.match === 'viewpoint-here'), near = Object.values(ph.photos).filter((v) => v.match === 'nearby-checked');
   const sample = here.slice(0, 6); const ok = await Promise.all(sample.map((v) => fetch(v.src).then((x) => x.ok && (x.headers.get('content-type') || '').includes('image'))));
   return { n: r.length, confirmed: c.meta.counts.confirmed, unnamedClean: r.filter((x) => x.status === 'unnamed').every((x) => !x.by && !x.wikidata), statuses: [...new Set(r.map((x) => x.status))].sort().join(','),
-    photos: Object.keys(ph.photos).length, here: here.length, hereOk: here.every((v) => v.m <= 40 && v.shows && v.license && v.artist), files: ok.every(Boolean) };
+    photos: Object.keys(ph.photos).length, here: here.length, hereOk: here.every((v) => v.m <= 40 && v.shows && v.license && v.artist), near: near.length, nearOk: near.every((v) => v.m <= 80 && v.shows && v.license && v.artist), files: ok.every(Boolean) };
 });
 check('names cross-checked for all 639 (Wikidata, the OSM link, the Kyoto City list; nearby items never used as a name), and viewpoint photos taken within 40 m, each with what it shows, credit and licence',
-  xc.n === 639 && xc.confirmed >= 170 && xc.unnamedClean && xc.statuses === 'confirmed,osm-only,related,unnamed' && xc.photos >= 280 && xc.here >= 100 && xc.hereOk && xc.files, JSON.stringify(xc));
+  xc.n === 639 && xc.confirmed >= 170 && xc.unnamedClean && xc.statuses === 'confirmed,osm-only,related,unnamed' && xc.photos >= 280 && xc.here >= 100 && xc.hereOk && xc.near >= 40 && xc.nearOk && xc.photos >= 325 && xc.files, JSON.stringify(xc));
 check('basemap tiles load', tiles.ok > 0 && tiles.fail === 0, `${tiles.ok} ok, ${tiles.fail} failed`);
 
 const counts = async () => page.evaluate(() => [...document.querySelectorAll('.count .v')].map((e) => e.textContent.replace(/\s/g, '')));

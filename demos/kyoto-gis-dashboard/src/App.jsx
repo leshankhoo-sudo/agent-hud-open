@@ -1053,10 +1053,11 @@ const MATCH_TEXT = {
   // Commons search: the file names the place (title or category) AND was taken near the point
   'site-contains': (p) => `Photo of ${p.site}${p.site_en ? ` (${p.site_en})` : ''}, the site this point lies in (Wikidata ${p.wikidata}, linked from that site's OpenStreetMap record). It shows the site, not this exact spot`,
   'wikidata-checked': (p) => `Photo of Wikidata ${p.wikidata}, the item whose name and place confirm this record's name`,
+  'nearby-checked': (p) => `Commons photo taken ${p.m} m from this point${p.shows ? `, showing ${p.shows}` : ''}; checked by eye`,
   'viewpoint-here': (p) => `Commons photo taken ${p.m} m from this viewpoint${p.shows ? `: ${p.shows}` : ''}; checked by eye`,
   'commons-search': (p) => `Commons photo taken ${p.distance_m} m from this point whose ${p.matched_label ? `category (${p.matched_label.slice(9)})` : 'file name'} names this place ("${p.matched_text}")`,
 };
-const BADGE = { 'site-contains': 'Photo of the site', 'viewpoint-here': 'Taken here', 'wikidata-related': 'Related place', 'commons-geo': 'Nearby photo', 'commons-near': 'Nearby photo', 'osm-wikidata': 'Linked in OSM', 'osm-image': 'Linked in OSM', 'osm-commons': 'Linked in OSM', 'commons-search': 'Nearby photo' };
+const BADGE = { 'site-contains': 'Photo of the site', 'viewpoint-here': 'Taken here', 'nearby-checked': 'Taken nearby', 'wikidata-related': 'Related place', 'commons-geo': 'Nearby photo', 'commons-near': 'Nearby photo', 'osm-wikidata': 'Linked in OSM', 'osm-image': 'Linked in OSM', 'osm-commons': 'Linked in OSM', 'commons-search': 'Nearby photo' };
 
 // Which independent sources agree with the name (name_checks.json). For a record with no name, Wikidata
 // items close by are shown as what is near it, never as its name.

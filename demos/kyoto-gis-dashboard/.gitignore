@@ -10,3 +10,4 @@ __pycache__/
 
 # previews made for checking viewpoint photos by eye (scripts/fetch_photos_sites.py --dry-run)
 data/cache/viewpoint_photo_review/
+data/cache/nearby_photo_review/
