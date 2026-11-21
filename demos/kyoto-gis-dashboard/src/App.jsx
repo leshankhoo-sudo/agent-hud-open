@@ -83,6 +83,23 @@ function Rolling({ value }) {
   return <>{shown.toLocaleString('en-US')}</>;
 }
 
+// One bus route variant (data/bus/variants/<id>.json). The online preview can hold only a limited number of
+// files, so its build packs all variants into data/bus/variants.json (scripts/pack_preview.py); the content is the same.
+let packedVariants = null;
+async function fetchBusVariant(id) {
+  const base = import.meta.env.BASE_URL;
+  if (import.meta.env.VITE_TARGET === 'artifact') {
+    packedVariants = packedVariants || fetch(`${base}data/bus/variants.json`).then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
+    let all;
+    try { all = await packedVariants; } catch (e) { packedVariants = null; throw e; }
+    if (!all[id]) throw new Error(`variant ${id} missing`);
+    return all[id];
+  }
+  const r = await fetch(`${base}data/bus/variants/${id}.json`);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
 const isPhone = () => typeof innerWidth === 'number' && innerWidth <= 760;
 // Map and side panel share the width; the panel's share is remembered. Limits keep both usable.
 const PANEL_KEY = 'kyoto-gis-panel-v2', CINE_KEY = 'kyoto-gis-cinematic';
@@ -280,9 +297,7 @@ export default function App() {
     try {
       let v = busCache.current.get(variantId);
       if (!v) {
-        const r = await fetch(`${import.meta.env.BASE_URL}data/bus/variants/${variantId}.json`);
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        v = await r.json();
+        v = await fetchBusVariant(variantId);
         busCache.current.set(variantId, v);
       }
       if (token !== busToken.current) return; // a newer choice was made meanwhile
