@@ -3,9 +3,9 @@ import maplibregl from 'maplibre-gl';
 import * as TP from './lib/trip.js';
 import { fetchRoute, fetchTable, fmtDuration, fmtDistance, ROUTE_SERVICE } from './lib/route.js';
 import { getWeather, describeCode } from './lib/weather.js';
-import { CATEGORY_LABEL, recordLabel } from './lib/data.js';
+import { CATEGORY_LABEL, ATTRACTION_CATS, recordLabel } from './lib/data.js';
 import { ICONIC } from './lib/landmarks.js';
-import { OFFLINE_PREVIEW } from './MapView.jsx';
+import { OFFLINE_PREVIEW, basemapStyle } from './MapView.jsx';
 import './trip.css';
 
 // "Plan your trip": a second dashboard for the visitor's own plan. It covers the GIS dashboard (the
@@ -27,7 +27,7 @@ const SCENE_BOARD = {
   'winter-day': [1192, 285, 1413, 468], 'winter-night': [1232, 302, 1424, 492],
 };
 const SCENE = { w: 1536, h: 864, focusX: 0.62 };
-const sceneFor = (iso, theme) => { const k = `${seasonWord(iso)}-${theme === 'light' ? 'day' : 'night'}`; return { key: k, src: `${BASE}trip/hero-${k}.webp`, board: SCENE_BOARD[k] }; }
+const sceneFor = (iso, theme, pick) => { const k = `${pick || seasonWord(iso)}-${theme === 'light' ? 'day' : 'night'}`; return { key: k, src: `${BASE}trip/hero-${k}.webp`, board: SCENE_BOARD[k] }; }
 const MODE_TEXT = { foot: 'Walk', bike: 'Cycle', car: 'Drive', bus: 'Bus' };
 const NUM = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'];
 const seasonWord = (iso) => { const m = +iso.slice(5, 7); return m >= 3 && m <= 5 ? 'spring' : m >= 6 && m <= 8 ? 'summer' : m >= 9 && m <= 11 ? 'autumn' : 'winter'; };
@@ -70,6 +70,52 @@ function WxIcon({ icon, night, s = 30 }) {
   return <svg viewBox="0 0 40 40" width={s} height={s} aria-hidden="true">{body || <circle cx="20" cy="20" r="3" fill="currentColor" opacity=".5" />}</svg>;
 }
 
+// A soft mist of light inside the glass cards that drifts toward the pointer and fades when it leaves
+// (stronger in the dark theme, see trip.css). Only custom properties are written; the loop runs only
+// while something is still moving, and not at all with "reduce motion".
+function useMist(ref) {
+  useEffect(() => {
+    const root = ref.current;
+    if (!root || reduce()) return undefined;
+    let ptr = null, raf = 0, last = 0;
+    const st = new WeakMap();
+    const frame = (now) => {
+      raf = 0;
+      const dt = last ? Math.min(80, now - last) : 16;
+      last = now;
+      const kp = 1 - Math.exp(-dt / 140), ko = 1 - Math.exp(-dt / 320);
+      let moving = false;
+      for (const c of root.querySelectorAll('.tp-card, .tp-strip')) {
+        const r = c.getBoundingClientRect();
+        if (r.width < 2) continue;
+        let s = st.get(c);
+        if (!s) { s = { x: r.width / 2, y: r.height / 2, o: 0 }; st.set(c, s); }
+        let want = 0;
+        if (ptr) {
+          const dx = Math.max(r.left - ptr.x, 0, ptr.x - r.right), dy = Math.max(r.top - ptr.y, 0, ptr.y - r.bottom);
+          want = Math.max(0, 1 - Math.hypot(dx, dy) / 160);
+          if (want > 0) {
+            const tx = ptr.x - r.left, ty = ptr.y - r.top;
+            if (s.o < 0.02) { s.x = tx; s.y = ty; } else { const ex = tx - s.x, ey = ty - s.y; s.x += ex * kp; s.y += ey * kp; if (Math.hypot(ex, ey) > 0.5) moving = true; }
+          }
+        }
+        const d = want - s.o;
+        if (Math.abs(d) > 0.004) { s.o += d * ko; moving = true; } else if (!want && s.o) s.o = 0;
+        c.style.setProperty('--mx', `${s.x.toFixed(1)}px`);
+        c.style.setProperty('--my', `${s.y.toFixed(1)}px`);
+        c.style.setProperty('--mo', s.o.toFixed(3));
+      }
+      if (moving) raf = requestAnimationFrame(frame); else last = 0;
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+    const mv = (e) => { if (e.pointerType === 'touch') return; ptr = { x: e.clientX, y: e.clientY }; kick(); };
+    const lv = () => { ptr = null; kick(); };
+    root.addEventListener('pointermove', mv, { passive: true });
+    root.addEventListener('pointerleave', lv);
+    return () => { root.removeEventListener('pointermove', mv); root.removeEventListener('pointerleave', lv); cancelAnimationFrame(raf); };
+  }, [ref]);
+}
+
 // ---------- the scene ----------
 // Where the image's pixels land in a box of w x h with object-fit: cover at focus x.
 function coverRect(w, h, fx = 0.5) {
@@ -94,12 +140,13 @@ function useScenePhoto(ph) {
     setUrl(null);
     if (!ph) return undefined;
     const local = `${BASE}${ph.src}`;
-    if (!ph.file || OFFLINE_PREVIEW) { setUrl(local); return undefined; }
+    setUrl(local);   // the local copy at once; the sharper Commons file replaces it when it arrives
+    if (!ph.file || OFFLINE_PREVIEW) return undefined;
     let live = true;
     const img = new Image();
-    const t = setTimeout(() => { if (live) setUrl((u) => u || local); }, 4000);
-    img.onload = () => { if (live) { clearTimeout(t); setUrl(img.src); } };
-    img.onerror = () => { if (live) { clearTimeout(t); setUrl(local); } };
+    const t = 0;
+    img.onload = () => { if (live) setUrl(img.src); };
+    img.onerror = () => {};
     img.src = TP.commonsUrl(ph.file, 1920);
     return () => { live = false; clearTimeout(t); };
   }, [ph?.file, ph?.src]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -120,8 +167,8 @@ function Ema({ day, i, active, style, kind, onPick, dragging }) {
   );
 }
 
-function Scene({ trip, active, onPick, onAddDay, photo, photoInfo, board, hint, dragging, theme, strip = null, children }) {
-  const sc = sceneFor(trip.days[Math.min(active, trip.days.length - 1)].date, theme);
+function Scene({ trip, active, onPick, onAddDay, photo, photoInfo, board, hint, dragging, theme, seasonPick, strip = null, children }) {
+  const sc = sceneFor(trip.days[Math.min(active, trip.days.length - 1)].date, theme, seasonPick);
   const ref = useRef(null);
   const box = useBox(ref);
   const url = useScenePhoto(board ? null : photo);
@@ -169,9 +216,10 @@ function Scene({ trip, active, onPick, onAddDay, photo, photoInfo, board, hint, 
       ))}
       {strip != null && box.w > 760 && pos[strip] && (() => {
         // a thin thread from the open day's ema down to the top of its strip (strip box as in trip.css)
-        const rail = innerWidth <= 1180 ? 96 : 112, sw = Math.min(470, box.w * 0.44);
-        const x1 = pos[strip].left + pos[strip].width / 2, y1 = pos[strip].top + 4, x2 = rail + 30 + sw - 46, y2 = box.h * 0.07 + 2;
-        return <svg className="tp-thread" width={box.w} height={box.h} aria-hidden="true"><path d={`M${x1} ${y1} C${x1} ${y1 + 90} ${x2 + 60} ${y2 - 60} ${x2} ${y2}`} pathLength="1" /><circle cx={x2} cy={y2} r="3.5" /></svg>;
+        const rail = innerWidth <= 1180 ? 96 : 112, sw = Math.min(440, box.w * 0.42);
+        const x1 = pos[strip].left + pos[strip].width / 2, y1 = pos[strip].top + 3, x2 = rail + 30 + sw - 2, y2 = box.h * 0.1 + 40;
+        const sag = Math.max(60, Math.abs(x1 - x2) * 0.25);
+        return <svg key={strip} className="tp-thread" width={box.w} height={box.h} aria-hidden="true"><path d={`M${x1} ${y1} C${x1 - 10} ${y1 + sag} ${x2 + 80} ${y2 + sag * 0.6} ${x2} ${y2}`} pathLength="1" /><circle cx={x1} cy={y1} r="2.6" className="knot" /><circle cx={x2} cy={y2} r="4.5" className="ring" /></svg>;
       })()}
       {board && hint && box.w > 0 && <span className="tp-hint" style={{ left: rect.x + rect.w / 2, top: rect.y + rect.h + 10 }}>Click an ema to plan that day</span>}
       {showPhoto && photoInfo && <p className="tp-credit">{photoInfo.badge && <b>{photoInfo.badge} · </b>}Photo: {photoInfo.artist || 'unknown author'} · {photoInfo.license} · Wikimedia Commons</p>}
@@ -182,76 +230,121 @@ function Scene({ trip, active, onPick, onAddDay, photo, photoInfo, board, hint, 
 }
 
 // ---------- the trip map (card and full view) ----------
+// The GIS dashboard's own basemap, with the project's data kept quiet underneath (prefecture outline and the
+// 626 attractions as faint dots), the day's places as photo markers and the legs drawn on top. New legs
+// draw themselves from one place to the next, in order. The map can be dragged and zoomed.
 const MAP_PAL = {
-  light: { bg: '#d4ebe2', water: '#7cc6c0', park: '#bfe0cf', road: '#f1f8f5', minor: '#e3f1ec', bus: '#c0472a', foot: '#ffffff', bike: '#e0952a', car: '#4a6fa5', casing: 'rgba(31,79,75,.35)' },
-  dark: { bg: '#14201f', water: '#1d4a4c', park: '#1a3330', road: '#2d4140', minor: '#223432', bus: '#ff8a65', foot: '#eaf5f2', bike: '#f2b04a', car: '#8fb0e0', casing: 'rgba(0,0,0,.55)' },
+  light: { bus: '#c0472a', foot: '#1f6f6b', bike: '#d0861c', car: '#4a6fa5', casing: 'rgba(255,255,255,.85)', outline: '#b4543a' },
+  dark: { bus: '#ff8a65', foot: '#8fe3da', bike: '#f2b04a', car: '#8fb0e0', casing: 'rgba(0,0,0,.6)', outline: '#79d7da' },
 };
 const DAY_HUES = ['#1f6f6b', '#c0472a', '#7b5cc4', '#c08a1a', '#2f7fbf', '#b4457e', '#4b8a3a'];
-function tripStyle(theme) {
-  const P = MAP_PAL[theme === 'light' ? 'light' : 'dark'];
-  if (OFFLINE_PREVIEW) return { version: 8, sources: {}, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': P.bg } }] };
-  const NT = ['!=', ['get', 'brunnel'], 'tunnel'];
-  return {
-    version: 8, sources: { omt: { type: 'vector', url: 'https://tiles.openfreemap.org/planet', attribution: '<a href="https://openfreemap.org" target="_blank" rel="noreferrer">OpenFreeMap</a> © OpenMapTiles © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>' } },
-    layers: [
-      { id: 'bg', type: 'background', paint: { 'background-color': P.bg } },
-      { id: 'park', type: 'fill', source: 'omt', 'source-layer': 'park', paint: { 'fill-color': P.park } },
-      { id: 'cover', type: 'fill', source: 'omt', 'source-layer': 'landcover', filter: ['in', ['get', 'class'], ['literal', ['wood', 'grass']]], paint: { 'fill-color': P.park, 'fill-opacity': 0.8 } },
-      { id: 'water', type: 'fill', source: 'omt', 'source-layer': 'water', paint: { 'fill-color': P.water } },
-      { id: 'river', type: 'line', source: 'omt', 'source-layer': 'waterway', filter: NT, paint: { 'line-color': P.water, 'line-width': 1.4 } },
-      { id: 'minor', type: 'line', source: 'omt', 'source-layer': 'transportation', minzoom: 12, filter: ['all', NT, ['in', ['get', 'class'], ['literal', ['minor', 'service']]]], paint: { 'line-color': P.minor, 'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.6, 16, 3] } },
-      { id: 'road', type: 'line', source: 'omt', 'source-layer': 'transportation', filter: ['all', NT, ['in', ['get', 'class'], ['literal', ['motorway', 'trunk', 'primary', 'secondary', 'tertiary']]]], paint: { 'line-color': P.road, 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 1, 16, 6] } },
-    ],
-  };
-}
-// legs: [{ mode, coords, day }]; points: [{ xy, name, photo, n, day, start }]
-function TripMap({ theme, points, legs, full = false, playRef, dayColors = false }) {
-  const el = useRef(null), map = useRef(null), marks = useRef([]), ready = useRef(false), latest = useRef(null);
+const CAT_COLOR = ['match', ['get', 'category'], ...ATTRACTION_CATS.flatMap((c) => [c.key, c.color]), '#999'];
+const lineLen = (c) => c.reduce((s, p, k) => (k ? s + TP.distM(c[k - 1], p) : 0), 0);
+const lineCut = (c, d) => {   // the first d metres of a line
+  if (d <= 0) return [c[0], c[0]];
+  let acc = 0;
+  for (let j = 1; j < c.length; j++) {
+    const s = TP.distM(c[j - 1], c[j]);
+    if (acc + s >= d) { const f = s ? (d - acc) / s : 0; return [...c.slice(0, j), [c[j - 1][0] + (c[j][0] - c[j - 1][0]) * f, c[j - 1][1] + (c[j][1] - c[j - 1][1]) * f]]; }
+    acc += s;
+  }
+  return c;
+};
+// legs: [{ mode, coords, day }] in travel order; points: [{ xy, name, photo, n, day, start }]
+function TripMap({ theme, points, legs, full = false, playRef, dayColors = false, base }) {
+  const el = useRef(null), map = useRef(null), marks = useRef([]), ready = useRef(false), latest = useRef(null), drawn = useRef(new Set()), anim = useRef(0);
   latest.current = { points, legs };
-  const sig = points.map((p) => `${p.xy[0].toFixed(5)},${p.xy[1].toFixed(5)},${p.n},${p.day},${p.photo || ''},${p.name}`).join('|') + '#' + legs.map((l) => `${l.mode}${l.day}:${l.coords?.length}:${l.coords?.[0]?.join(',')}`).join('|');
   const P = MAP_PAL[theme === 'light' ? 'light' : 'dark'];
+  const ptsSig = points.map((p) => `${p.xy[0].toFixed(5)},${p.xy[1].toFixed(5)},${p.n},${p.day},${p.photo || ''},${p.name}`).join('|');
+  const legSig = legs.map((l) => `${l.mode}${l.day}:${l.coords?.length}:${l.coords?.[0]?.join(',')}`).join('|');
   useEffect(() => {
-    const m = new maplibregl.Map({ container: el.current, style: tripStyle(theme), center: [135.768, 35.005], zoom: 11.6, attributionControl: false, interactive: full, fadeDuration: 0 });
+    const m = new maplibregl.Map({ container: el.current, style: basemapStyle(theme), center: [135.768, 35.005], zoom: 11.6, attributionControl: false, fadeDuration: 0, dragRotate: false, pitchWithRotate: false });
+    m.touchZoomRotate.disableRotation();
+    m.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     m.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
     map.current = m;
-    m.on('load', () => { ready.current = true; m.fire('tp-data'); });
-    return () => { ready.current = false; marks.current.forEach((x) => x.remove()); m.remove(); };
-  }, [theme, full]);
+    drawn.current = new Set();
+    m.on('load', () => {
+      if (base?.outline) {
+        m.addSource('pref', { type: 'geojson', data: base.outline });
+        m.addLayer({ id: 'pref', type: 'line', source: 'pref', paint: { 'line-color': P.outline, 'line-width': 1.2, 'line-opacity': 0.55 } });
+      }
+      if (base?.attractions) {
+        m.addSource('attr', { type: 'geojson', data: base.attractions });
+        m.addLayer({ id: 'attr', type: 'circle', source: 'attr', paint: { 'circle-color': CAT_COLOR, 'circle-radius': ['interpolate', ['linear'], ['zoom'], 8, 1.4, 12, 2.4, 15, 4], 'circle-opacity': 0.55 } });
+      }
+      m.addSource('legs', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+      const lo = { 'line-cap': 'round', 'line-join': 'round' };
+      m.addLayer({ id: 'legs-c', type: 'line', source: 'legs', paint: { 'line-color': P.casing, 'line-width': full ? 7.5 : 6.5 }, layout: lo });
+      m.addLayer({ id: 'legs', type: 'line', source: 'legs', filter: ['in', ['get', 'mode'], ['literal', ['bus', 'car']]], paint: { 'line-color': ['get', 'c'], 'line-width': full ? 4.5 : 4 }, layout: lo });
+      m.addLayer({ id: 'legs-d', type: 'line', source: 'legs', filter: ['==', ['get', 'mode'], 'foot'], paint: { 'line-color': ['get', 'c'], 'line-width': 3.6, 'line-dasharray': [1.2, 1.4] }, layout: lo });
+      m.addLayer({ id: 'legs-b', type: 'line', source: 'legs', filter: ['==', ['get', 'mode'], 'bike'], paint: { 'line-color': ['get', 'c'], 'line-width': 4, 'line-dasharray': [0.6, 1.6] }, layout: lo });
+      ready.current = true;
+      m.fire('tp-pts'); m.fire('tp-legs');
+    });
+    return () => { ready.current = false; cancelAnimationFrame(anim.current); marks.current.forEach((x) => x.remove()); m.remove(); };
+  }, [theme, full]); // eslint-disable-line react-hooks/exhaustive-deps
+  // the places: photo markers that appear one after another, and the view framed on them
   useEffect(() => {
     const m = map.current;
     if (!m) return undefined;
-    const draw = () => {
+    const put = () => {
       if (!ready.current) return;
-      const { points, legs } = latest.current; // eslint-disable-line no-shadow
-      for (const id of ['legs-c', 'legs', 'legs-d', 'legs-b']) if (m.getLayer(id)) m.removeLayer(id);
-      if (m.getSource('legs')) m.removeSource('legs');
-      const fc = { type: 'FeatureCollection', features: legs.filter((l) => l.coords?.length > 1).map((l) => ({ type: 'Feature', properties: { mode: l.mode, c: dayColors ? DAY_HUES[l.day % 7] : P[l.mode] || P.foot }, geometry: { type: 'LineString', coordinates: l.coords } })) };
-      m.addSource('legs', { type: 'geojson', data: fc });
-      m.addLayer({ id: 'legs-c', type: 'line', source: 'legs', paint: { 'line-color': P.casing, 'line-width': full ? 7 : 6 }, layout: { 'line-cap': 'round', 'line-join': 'round' } });
-      m.addLayer({ id: 'legs', type: 'line', source: 'legs', filter: ['in', ['get', 'mode'], ['literal', ['bus', 'car']]], paint: { 'line-color': ['get', 'c'], 'line-width': full ? 4.5 : 4 }, layout: { 'line-cap': 'round', 'line-join': 'round' } });
-      m.addLayer({ id: 'legs-d', type: 'line', source: 'legs', filter: ['==', ['get', 'mode'], 'foot'], paint: { 'line-color': ['get', 'c'], 'line-width': 3.6, 'line-dasharray': [1.2, 1.4] }, layout: { 'line-cap': 'round', 'line-join': 'round' } });
-      m.addLayer({ id: 'legs-b', type: 'line', source: 'legs', filter: ['==', ['get', 'mode'], 'bike'], paint: { 'line-color': ['get', 'c'], 'line-width': 4, 'line-dasharray': [0.6, 1.6] }, layout: { 'line-cap': 'round', 'line-join': 'round' } });
+      const { points } = latest.current; // eslint-disable-line no-shadow
       marks.current.forEach((x) => x.remove());
-      marks.current = points.map((p) => {
+      marks.current = points.map((p, k) => {
         const d = document.createElement('div');
         d.className = 'tp-mk' + (p.start ? ' start' : '');
+        d.style.animationDelay = `${k * 140}ms`;
         if (p.photo) { const im = document.createElement('i'); im.className = 'im'; im.style.backgroundImage = `url("${BASE}${p.photo}")`; d.appendChild(im); }
         const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = (p.n != null ? `${p.n}. ` : '') + p.name; d.appendChild(nm);
         if (dayColors) d.style.setProperty('--dc', DAY_HUES[p.day % 7]);
         return new maplibregl.Marker({ element: d, anchor: 'bottom' }).setLngLat(p.xy).addTo(m);
       });
-      const all = [...points.map((p) => p.xy), ...legs.flatMap((l) => l.coords || [])];
-      if (all.length) {
+      const all = points.map((p) => p.xy);
+      if (all.length === 1) m.jumpTo({ center: all[0], zoom: 14 });
+      else if (all.length > 1) {
         const b = all.reduce((bb, c) => [[Math.min(bb[0][0], c[0]), Math.min(bb[0][1], c[1])], [Math.max(bb[1][0], c[0]), Math.max(bb[1][1], c[1])]], [[180, 90], [-180, -90]]);
-        const pad = full ? 80 : { top: 64, bottom: 26, left: 30, right: 30 };
-        if (b[1][0] - b[0][0] < 0.004 && b[1][1] - b[0][1] < 0.004) m.jumpTo({ center: all[0], zoom: 14.5 });
-        else m.fitBounds(b, { padding: pad, duration: 0, maxZoom: 15.5 });
+        m.fitBounds(b, { padding: full ? 90 : { top: 70, bottom: 30, left: 36, right: 50 }, duration: reduce() ? 0 : 700, maxZoom: 15 });
       }
     };
+    put();
+    m.on('tp-pts', put);
+    return () => m.off('tp-pts', put);
+  }, [ptsSig, theme, full, dayColors]); // eslint-disable-line react-hooks/exhaustive-deps
+  // the legs: those already shown stay, new ones draw from the first place to the next, in order
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return undefined;
+    const draw = () => {
+      if (!ready.current || !m.getSource('legs')) return;
+      cancelAnimationFrame(anim.current);
+      const { legs } = latest.current; // eslint-disable-line no-shadow
+      const all = legs.filter((l) => l.coords?.length > 1).map((l) => ({ ...l, key: `${l.mode}|${l.day}|${l.coords.length}|${l.coords[0]}|${l.coords[l.coords.length - 1]}`, c: dayColors ? DAY_HUES[l.day % 7] : P[l.mode] || P.foot }));
+      const had = drawn.current;
+      drawn.current = new Set(all.filter((f) => had.has(f.key)).map((f) => f.key));
+      const fresh = all.filter((f) => !drawn.current.has(f.key)).map((f) => ({ ...f, len: lineLen(f.coords) }));
+      const total = fresh.reduce((s, f) => s + f.len, 0);
+      const D = reduce() || !total ? 0 : Math.min(3200, 700 + total / 5);
+      const t0 = performance.now();
+      const step = (now) => {
+        const k = D ? Math.min(1, (now - t0) / D) : 1, e = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
+        let left = total * e;
+        const feats = all.map((f) => {
+          let c = f.coords;
+          if (!drawn.current.has(f.key)) { const g = fresh.find((x) => x.key === f.key); c = lineCut(f.coords, Math.max(0, Math.min(g.len, left))); left -= g.len; }
+          return { type: 'Feature', properties: { mode: f.mode, c: f.c }, geometry: { type: 'LineString', coordinates: c } };
+        });
+        m.getSource('legs')?.setData({ type: 'FeatureCollection', features: feats });
+        if (k < 1) anim.current = requestAnimationFrame(step);
+        else fresh.forEach((f) => drawn.current.add(f.key));
+      };
+      anim.current = requestAnimationFrame(step);
+    };
     draw();
-    m.on('tp-data', draw);
-    return () => m.off('tp-data', draw);
-  }, [sig, theme, full, dayColors]); // eslint-disable-line react-hooks/exhaustive-deps
+    m.on('tp-legs', draw);
+    return () => { m.off('tp-legs', draw); cancelAnimationFrame(anim.current); };
+  }, [legSig, theme, full, dayColors]); // eslint-disable-line react-hooks/exhaustive-deps
   // Play day: a light walks the legs in order (driven from outside through playRef)
   useEffect(() => {
     if (!playRef) return undefined;
@@ -338,7 +431,7 @@ function useForecast(spots) {
 }
 
 // ---------- the dashboard ----------
-export default function TripDashboard({ open, onShown, onClose, d, byId, A, Tr, theme, fetchBusVariant, addRequest }) {
+export default function TripDashboard({ open, onShown, onClose, d, byId, A, Tr, theme, seasonPick, fetchBusVariant, addRequest }) {
   const [vis, setVis] = useState(false);
   const doors = useRef(null);
   const busy = useRef(false);
@@ -371,13 +464,17 @@ export default function TripDashboard({ open, onShown, onClose, d, byId, A, Tr, 
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="trip-root">
-      {vis && <Trip d={d} byId={byId} A={A} Tr={Tr} theme={theme} fetchBusVariant={fetchBusVariant} onClose={onClose} addRequest={addRequest && addRequest.n !== usedAdd.current ? addRequest : null} onUsed={(n) => { usedAdd.current = n; }} />}
+      {vis && <Trip d={d} byId={byId} A={A} Tr={Tr} theme={theme} seasonPick={seasonPick} fetchBusVariant={fetchBusVariant} onClose={onClose} addRequest={addRequest && addRequest.n !== usedAdd.current ? addRequest : null} onUsed={(n) => { usedAdd.current = n; }} />}
       <div className="tp-doors" ref={doors} aria-hidden="true"><i /><i /></div>
     </div>
   );
 }
 
-function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onUsed }) {
+function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, addRequest, onUsed }) {
+  const rootRef = useRef(null);
+  useMist(rootRef);
+  const base = useMemo(() => ({ outline: d.outline, attractions: d.attractions }), [d.outline, d.attractions]);
+  const [focus, setFocus] = useState(null);         // a place opened in the day's strip: the scene shows it
   const [trip, setTripState] = useState(() => TP.loadTrip());
   const setTrip = (f) => setTripState((t) => { const n = typeof f === 'function' ? f(t) : f; TP.saveTrip(n); return n; });
   const [active, setActive] = useState(0);
@@ -419,7 +516,9 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
   const nextT = nIdx >= 0 ? tl.points[nIdx + off] : null;
   const after = nIdx >= 0 && nIdx + 1 < day.stops.length ? info(day.stops[nIdx + 1].id) : null;
   const afterT = after ? tl.points[nIdx + 1 + off] : null;
-  const board = !isPlanned || !next?.photo;   // the illustration and the board, unless the next stop has a photo
+  // the scene shows the place opened in the strip, otherwise the next stop
+  const shown = planner != null && focus && focus.day === di && day.stops[focus.si] ? info(day.stops[focus.si].id) : next;
+  const board = !isPlanned || !shown?.photo;   // the illustration and the board, unless that place has a photo
   const toastT = useRef(0);
   const say = (msg) => { setToast(msg); clearTimeout(toastT.current); toastT.current = setTimeout(() => setToast(null), 2600); };
 
@@ -427,7 +526,11 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
     const pl = info(id);
     if (!pl) return;
     if (trip.days[dj]?.stops.some((s) => s.id === id)) { say(`${pl.name} is already on Day ${dj + 1}.`); return; }
-    setTrip((t) => TP.addStop(t, dj, id, { mode: t.days[dj].stops.length || t.days[dj].from ? 'foot' : 'foot' }));
+    setTrip((t) => {
+      const dd = t.days[dj], prev = dd.stops.length ? dd.stops[dd.stops.length - 1].id : dd.from;
+      const a = prev && info(prev)?.xy, km = a ? TP.distM(a, pl.xy) / 1000 : 0;
+      return TP.addStop(t, dj, id, { mode: km > 8 ? 'car' : km > 1.5 ? 'bus' : 'foot' });   // a starting choice only; it can be changed
+    });
     setTrip((t) => ({ ...t, hintSeen: true }));
     say(`Added ${pl.name} to Day ${dj + 1}.`);
   }
@@ -614,7 +717,7 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
   const greet = hour < 5 ? 'Good evening' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <section className={'trip' + (drag?.moved ? ' dragging' : '') + ` v-${view}`} aria-label="Plan your trip">
+    <section ref={rootRef} className={'trip' + (drag?.moved ? ' dragging' : '') + ` v-${view}`} aria-label="Plan your trip">
       <svg className="tp-logo" viewBox="0 0 84 40" aria-hidden="true"><path d="M4 22c14-14 30-14 44-4 10 7 20 6 30-2" /><path d="M10 33c12-9 24-9 36-2 9 5 18 5 28 0" /></svg>
       <header className="tp-head">
         <h2>Hello, Explorer <span className="wave" aria-hidden="true">👋</span></h2>
@@ -635,8 +738,8 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
       </nav>
 
       {view === 'trip' && (
-        <Scene trip={trip} active={di} theme={theme} strip={planner} onPick={openDay} onAddDay={() => { setTrip((t) => TP.addDay(t)); say('Day added.'); }} board={board} hint={!trip.hintSeen && !isPlanned}
-          photo={next?.photo} photoInfo={next?.photo && { artist: next.photo.artist, license: next.photo.license, badge: PHOTO_BADGE[next.photo.match] }} dragging={!!drag?.moved}>
+        <Scene trip={trip} active={di} theme={theme} seasonPick={seasonPick} strip={planner} onPick={openDay} onAddDay={() => { setTrip((t) => TP.addDay(t)); say('Day added.'); }} board={board} hint={!trip.hintSeen && !isPlanned}
+          photo={shown?.photo} photoInfo={shown?.photo && { artist: shown.photo.artist, license: shown.photo.license, badge: PHOTO_BADGE[shown.photo.match] }} dragging={!!drag?.moved}>
           <article className="tp-card tp-feat">
             <div className="txt">
               <p className="lbl">YOUR TRIP</p>
@@ -652,14 +755,14 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
             {after?.photo && <div className="ph" style={{ backgroundImage: `url("${BASE}${after.photo.src}")` }}><span className="pin">Then: {after.name}{afterT?.arrive != null ? `, ${TP.fmtHM(afterT.arrive)}` : ''}</span></div>}
           </article>
           {planner != null && trip.days[planner] && (
-            <Planner key={planner} trip={trip} di={planner} setTrip={setTrip} info={info} ctx={ctx} onClose={() => setPlanner(null)} onAdd={() => { setActive(planner); setAddKind('all'); setSheet('add'); }} onStart={() => { setActive(planner); setAddKind('station'); setSheet('add'); }} say={say} />
+            <Planner key={planner} trip={trip} di={planner} setTrip={setTrip} info={info} ctx={ctx} onFocus={(si) => setFocus(si == null ? null : { day: planner, si })} onClose={() => { setPlanner(null); setFocus(null); }} onAdd={() => { setActive(planner); setAddKind('all'); setSheet('add'); }} onStart={() => { setActive(planner); setAddKind('station'); setSheet('add'); }} say={say} />
           )}
         </Scene>
       )}
       {view === 'agenda' && <Agenda trip={trip} info={info} ctx={ctx} allLegs={allLegs} onOpen={(i) => { setView('trip'); openDay(i); }} />}
       {view === 'map' && (
         <div className="tp-full">
-          <TripMap theme={theme} full dayColors points={trip.days.flatMap((x, j) => TP.dayPoints(x).map((p, i) => { const q = info(p.id); return q && { xy: q.xy, name: q.name, photo: q.photo?.src, n: p.start ? null : i + 1 - (x.from ? 1 : 0), start: !!p.start, day: j }; }).filter(Boolean))}
+          <TripMap theme={theme} full dayColors base={base} points={trip.days.flatMap((x, j) => TP.dayPoints(x).map((p, i) => { const q = info(p.id); return q && { xy: q.xy, name: q.name, photo: q.photo?.src, n: p.start ? null : i + 1 - (x.from ? 1 : 0), start: !!p.start, day: j }; }).filter(Boolean))}
             legs={allLegs.flatMap((ls, j) => ls.flatMap((l) => (l?.parts ? l.parts.map((q) => ({ ...q, day: j })) : [])))} />
           <div className="tp-daykey">{trip.days.map((x, j) => <span key={x.id} style={{ '--dc': DAY_HUES[j % 7] }}>Day {j + 1} · {TP.dayLabel(x.date)}</span>)}</div>
         </div>
@@ -684,8 +787,7 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
         </div>
         <div className="tp-card tp-mapcard">
           <div className="hd"><h4>{isPlanned ? `Day ${di + 1} Map` : 'Kyoto Map'}</h4><button type="button" className="lnk" onClick={() => setView('map')}>Open full map ›</button></div>
-          <TripMap theme={theme} points={mapPoints} legs={mapLegs} playRef={playRef} />
-          {mapLegs.length > 0 && <div className="tp-key"><span className="bus">Bus</span><span className="foot">Walk</span><span className="bike">Cycle</span><span className="car">Drive</span></div>}
+          <TripMap theme={theme} points={mapPoints} legs={mapLegs} playRef={playRef} base={base} />
         </div>
         <div className="tp-card tp-next">
           <div className="hd"><h4>Next Stop</h4>{next && <button type="button" className="lnk" onClick={() => openDay(di)}>See all ›</button>}</div>
@@ -714,9 +816,9 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
             {worth.slice(page * perPage, page * perPage + perPage).map((x) => (
               <div key={x.id} className="pc" onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); setDrag({ id: x.id, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY }); } }}
                 role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') addPlace(x.id); }} aria-label={`Add ${x.name} to Day ${di + 1}`} title="Click to add to the day, or drag onto an ema">
-                <div className="im" style={x.photo ? { backgroundImage: `url("${BASE}${x.photo.src}")` } : null}>{!x.photo && <Ic k="house" s={30} />}</div>
+                <div className={'im' + (x.photo ? '' : ' none')} style={x.photo ? { backgroundImage: `url("${BASE}${x.photo.src}")` } : null}>{!x.photo && <Ic k="house" s={30} />}</div>
                 <span className="add" aria-hidden="true"><Ic k="plus" s={16} /></span>
-                <div className="tx"><b>{x.name}</b><small>{[x.cat, x.area].filter(Boolean).join(' · ')}</small></div>
+                <div className="tx"><b>{x.name}</b><small>{[x.cat, x.area].filter(Boolean).join(' · ')}</small><em>{x.photo ? `Photo: ${x.photo.artist || 'unknown'} · ${x.photo.license}` : 'No photo'} · click to add, or drag onto an ema</em></div>
               </div>
             ))}
             {!worth.length && <p className="muted">No other places with records within 1 km of this day's stops.</p>}
@@ -804,9 +906,10 @@ const legShort = (leg, mode) => {
   if (!leg || leg.pending) return { t: 'Finding the way…', k: 'wait' };
   if (leg.error && !leg.option) return { t: mode === 'bus' ? 'No bus found' : 'No route found', k: 'warn' };
   if (leg.mode === 'bus') { const o = leg.option; return { t: `${o.number} · ${o.stops} stop${o.stops > 1 ? 's' : ''}${o.fare?.adult != null ? ` · ¥${o.fare.adult}` : ''}`, k: 'bus' }; }
-  return { t: `${MODE_TEXT[leg.mode]} ${fmtDuration(leg.duration_s)}`, k: leg.mode };
+  const far = (leg.mode === 'foot' && leg.duration_s > 7200) || (leg.mode === 'bike' && leg.duration_s > 10800);
+  return { t: `${MODE_TEXT[leg.mode]} ${fmtDuration(leg.duration_s)}${far ? ' · far, try bus or drive' : ''}`, k: far ? 'warn' : leg.mode };
 };
-function Planner({ trip, di, setTrip, info, ctx, onClose, onAdd, onStart, say }) {
+function Planner({ trip, di, setTrip, info, ctx, onClose, onAdd, onStart, onFocus, say }) {
   const day = trip.days[di];
   const legs = useLegs(day, ctx);
   const tl = TP.timeline(day, legs.map((l) => (l && !l.pending ? { duration_s: l.duration_s } : null)));
@@ -814,6 +917,7 @@ function Planner({ trip, di, setTrip, info, ctx, onClose, onAdd, onStart, say })
   const from = day.from ? info(day.from) : null;
   const [open, setOpen] = useState(null);       // 'hours' | 'stop:i' | 'leg:i'
   const tog = (k) => setOpen((o) => (o === k ? null : k));
+  useEffect(() => { const m = /^stop:(\d+)$/.exec(open || ''); onFocus?.(m ? +m[1] : null); }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   const dd = new Date(`${day.date}T00:00:00Z`);
   const wk = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short' }).format(dd).toUpperCase();
   const big = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'long' }).format(dd);

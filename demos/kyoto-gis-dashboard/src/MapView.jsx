@@ -78,6 +78,8 @@ function styleFor(basemap, theme) {
   const p = baseParts(basemap, theme);
   return { version: 8, glyphs: GLYPHS, sources: p.sources, layers: [{ id: 'bg', type: 'background', paint: { 'background-color': p.bg } }, ...p.layers] };
 }
+// the same basemap for the trip dashboard's maps
+export const basemapStyle = (theme) => styleFor('night', theme);
 const TRANSIT_LAYERS = ['transport-pt', 'transport-sym-rail', 'transport-sym-bus'];
 // Landmark symbols (lib/landmarks.js). Three levels drawn by the map engine from cached images:
 //   lm-iconic  the 15 places with their own silhouette: any zoom, lowest rank wins where they would overlap

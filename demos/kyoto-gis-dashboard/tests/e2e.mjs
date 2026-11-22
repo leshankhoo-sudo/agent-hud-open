@@ -1235,11 +1235,19 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   await tp.locator('.tp-strip .ds-leg').nth(1).locator('.ds-pill').click();
   await tp.locator('.tp-strip .ds-pop .ds-seg button', { hasText: 'Cycle' }).click();
   await tp.locator('.tp-strip .ds-leg').nth(1).locator('.ds-pill').click();
+  // the third leg starts as a bus (Ginkaku-ji to Yasaka Shrine is about 3 km); switch it to walking
+  await tp.locator('.tp-strip .ds-leg').nth(2).locator('.ds-pill').click();
+  await tp.locator('.tp-strip .ds-pop .ds-seg button', { hasText: 'Walk' }).click();
+  await tp.locator('.tp-strip .ds-leg').nth(2).locator('.ds-pill').click();
   await tp.waitForFunction(() => { const t = [...document.querySelectorAll('.tp-strip .ds-pill')].map((x) => x.textContent); return t.length === 3 && t.every((x) => !/Finding/.test(x)); }, null, { timeout: 60000 }).catch(() => {});
   const lg = await tp.evaluate(() => ({ pills: [...document.querySelectorAll('.tp-strip .ds-pill')].map((x) => x.textContent), titles: [...document.querySelectorAll('.tp-strip .ds-pill')].map((x) => x.title), nt: document.querySelector('.tp-strip .ds-leg .nt')?.textContent, times: [...document.querySelectorAll('.tp-strip button.ds-stop .t')].map((x) => x.textContent) }));
   check('trip: a bus leg names the route, the stops and the official fare, says the ride time is not known, and states the stop search radius', /^Bus \S+: .+ → .+, \d+ stops?/.test(bus.lt) && /ride time not known/.test(bus.lt) && /¥\d+/.test(bus.lt) && bus.opts >= 1 && /Stops searched within \d+ m/.test(bus.xs) && /^\S+ · \d+ stops? · ¥\d+$/.test(lg.pills[0]) && lg.nt === 'no timetable', JSON.stringify({ bus, lg }));
   check('trip: walking and cycling legs are timed by the routing service; times run on from the arrival time the visitor set (10:00 + 1 h 30 stay + the cycle ride)', /^Cycle \d+ min · [\d.]+ k?m/.test(lg.titles[1]) && /^Walk \d+ min/.test(lg.titles[2]) && lg.times[0] === '10:00' && /^\d\d:\d\d$/.test(lg.times[1]) && lg.times[1] > '11:30' && lg.times[2] > lg.times[1], JSON.stringify(lg));
   await tp.screenshot({ path: `${out}/21-trip-strip.png` });
+  await tp.locator('.tp-strip button.ds-stop').nth(2).click(); await tp.waitForTimeout(1500);
+  const fo = await tp.evaluate(() => ({ photo: document.querySelector('.tp-scene').classList.contains('photo'), credit: document.querySelector('.tp-credit')?.textContent || '' }));
+  await tp.locator('.tp-strip button.ds-stop').nth(2).click();
+  check('trip: opening a place in the strip shows that place\'s own photo in the scene', fo.photo && /Zairon/.test(fo.credit), JSON.stringify(fo));
   await tp.locator('.tp-strip .ds-close').click();
   await tp.waitForTimeout(2500);
   const pv = await tp.evaluate(() => ({ photo: document.querySelector('.tp-scene').classList.contains('photo'), credit: document.querySelector('.tp-credit')?.textContent || '', hang: document.querySelectorAll('.ema.hang').length, next: document.querySelector('.tp-next .tx b')?.textContent, wx: document.querySelector('.tp-wx .loc')?.textContent, hours: [...document.querySelectorAll('.tp-wx .hours > div > span')].map((x) => x.textContent), fare: document.querySelector('.tp-feat .stats span:nth-child(3) b')?.textContent, markers: document.querySelectorAll('.tp-mapcard .tp-mk').length }));
@@ -1318,7 +1326,16 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
       sc[sc.length - 1].want = want;
       await sp2.close();
     }
-    check('trip: the scene follows the planned day\'s season and the light or dark theme, and the ema stay on its board', sc.every((x) => x.scene === x.want && x.ok && x.inside), JSON.stringify(sc));
+    {
+      const sp3 = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
+      await sp3.addInitScript(() => { localStorage.setItem('kyoto-gis-trip-v1', JSON.stringify({ v: 1, title: 'Kyoto', hintSeen: true, days: [{ id: 'd0', date: '2026-11-23', start: '09:00', end: '18:00', from: null, stops: [] }] })); localStorage.setItem('kyoto-gis-theme', 'light'); localStorage.setItem('kyoto-gis-season', 'spring'); });
+      await sp3.goto(url); await sp3.waitForSelector('.plan-entry', { timeout: 60000, state: 'attached' });
+      await sp3.evaluate(() => { document.getElementById('dashboard').scrollIntoView(); document.querySelector('.plan-entry').click(); });
+      await sp3.waitForSelector('.tp-illus'); await sp3.waitForTimeout(1200);
+      sc.push({ scene: await sp3.evaluate(() => document.querySelector('.tp-illus').dataset.scene), want: 'spring-day', ok: true, inside: true, note: 'November trip, spring picked on the site' });
+      await sp3.close();
+    }
+    check('trip: the scene follows the planned day\'s season (or the season picked on the site) and the light or dark theme, and the ema stay on its board', sc.every((x) => x.scene === x.want && x.ok && x.inside), JSON.stringify(sc));
   }
 
   // phone: the trip dashboard stacks, no sideways scroll, the dock stays on screen

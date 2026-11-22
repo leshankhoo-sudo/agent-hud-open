@@ -381,3 +381,108 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
 .plan-entry .pe-go { width: 34px; height: 34px; flex: none; border-radius: 50%; display: grid; place-items: center; background: #2a756f; color: #fff; font-size: 17px; transition: transform .3s; }
 .plan-entry:hover .pe-go { transform: translateX(3px); }
 .btn.add-trip { align-self: flex-start; }
+
+/* ===== 2026-11-22 review: smaller controls, frosted glass with a pointer mist, photo-first cards ===== */
+.trip-root { z-index: 50; }   /* under the site's theme, volume and season controls (z-index 60) */
+.trip { padding-top: 40px; grid-template-rows: 86px minmax(0, 1fr) auto 66px; }
+:root:not([data-theme='light']) .trip > .tp-scene, .trip > .tp-head, .trip > .tp-tools, .trip > .tp-logo, .trip > .tp-full, .trip > .tp-agenda, .trip > .tp-foot { position: relative; z-index: 1; }
+.trip > .tp-worth, .trip > .tp-side, .trip > .tp-rail, .trip > .tp-dock, .trip > .tp-support { position: relative; z-index: 3; }
+
+/* glass: translucent, blurred, a bright rim; a mist of light inside follows the pointer */
+.tp-card, .tp-strip, .tp-rail button, .tp-dock, .tp-search, .tp-bell {
+  background: rgba(252, 250, 246, .56); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 14px 34px rgba(30, 45, 40, .12), inset 0 0 0 1px rgba(255, 255, 255, .55), inset 0 1px 0 rgba(255, 255, 255, .8);
+}
+:root:not([data-theme='light']) .tp-card, :root:not([data-theme='light']) .tp-strip, :root:not([data-theme='light']) .tp-rail button,
+:root:not([data-theme='light']) .tp-dock, :root:not([data-theme='light']) .tp-search, :root:not([data-theme='light']) .tp-bell {
+  background: rgba(20, 30, 33, .52); box-shadow: 0 14px 34px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(170, 230, 222, .1), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+.tp-card, .tp-strip { isolation: isolate; }
+.tp-card::before, .tp-strip::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: var(--mo, 0);
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .5), transparent 62%);
+}
+.tp-card::after, .tp-strip::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: var(--mo, 0); padding: 1px;
+  background: radial-gradient(180px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .9), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+}
+:root:not([data-theme='light']) .tp-card::before, :root:not([data-theme='light']) .tp-strip::before {
+  opacity: 1;
+  background:
+    radial-gradient(340px circle at var(--mx, 20%) var(--my, 0%), rgba(121, 215, 218, calc(.05 + var(--mo, 0) * .2)), transparent 65%),
+    radial-gradient(260px circle at 88% 110%, rgba(140, 190, 255, .08), transparent 70%);
+  animation: tpMist 14s ease-in-out infinite alternate;
+}
+:root:not([data-theme='light']) .tp-card::after, :root:not([data-theme='light']) .tp-strip::after { background: radial-gradient(180px circle at var(--mx, 50%) var(--my, 50%), rgba(150, 240, 230, .55), transparent 70%); }
+@keyframes tpMist { from { background-position: 0 0, 0 0; } to { background-position: 30px 18px, -24px -16px; } }
+.tp-wx { background: rgba(31, 111, 107, .8) !important; }
+:root:not([data-theme='light']) .tp-wx { background: rgba(29, 92, 87, .64) !important; }
+.tp-wx::before { background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .22), transparent 62%) !important; opacity: var(--mo, 0) !important; animation: none !important; }
+
+/* rail and dock: smaller */
+.tp-rail { gap: 12px; padding: 22px 0 0 26px; }
+.tp-rail button { width: 70px; height: 72px; border-radius: 20px; font-size: 11.5px; gap: 5px; }
+.tp-rail button svg { width: 22px; height: 22px; }
+.tp-rail button.on { background: var(--tp-teal); }
+.tp-support { width: 70px; height: 54px; border-radius: 18px; font-size: 11.5px; gap: 3px; margin-left: 26px; }
+.tp-support svg { width: 20px; height: 20px; }
+.tp-dock { width: min(520px, 100%); height: 52px; grid-template-columns: 1fr 1fr 76px 1fr 1fr; }
+.tp-dock button { font-size: 11.5px; gap: 1px; padding: 3px 8px; }
+.tp-dock button svg { width: 19px; height: 19px; }
+.tp-dock .fab { width: 62px; height: 62px; margin-top: -26px; background: var(--tp-teal) !important; }
+.tp-dock .fab svg { width: 26px; height: 26px; }
+.tp-search { height: 46px; }
+.tp-bell { width: 46px; height: 46px; }
+.tp-bell i { right: 11px; top: 10px; }
+.tp-head h2 { font-size: clamp(28px, 2.8vw, 42px); }
+
+/* the scene: a thinner fade at the top, so the thread and the strip are never half hidden */
+.tp-scene { -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 4%, #000 90%, transparent 100%), linear-gradient(to left, transparent 0, #000 3%); }
+.tp-strip { top: 10%; width: min(440px, 42%); animation-delay: .45s; }
+.tp-thread { z-index: 7; }
+.tp-thread path { stroke: #b43c1c; stroke-width: 1.8; filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, .35)); animation: tpThread .7s cubic-bezier(.4, 0, .2, 1) forwards; }
+.tp-thread .knot { fill: #b43c1c; opacity: 1; animation: none; }
+.tp-thread .ring { fill: var(--tp-solid); stroke: #b43c1c; stroke-width: 1.8; opacity: 0; animation: tpIn .25s .6s forwards; }
+
+/* places worth adding: the photo first, the words over it, more on hover */
+.tp-worth { padding: 12px 16px 14px; }
+.tp-worth .hd h4 { font-size: 18px; }
+.tp-worth .cards { gap: 12px; margin-top: 10px; }
+.pc { height: clamp(118px, 16vh, 168px); background: #2a3432; border-radius: 16px; box-shadow: 0 8px 18px rgba(0, 0, 0, .16); transition: transform .45s cubic-bezier(.2, .9, .3, 1.2), box-shadow .35s; z-index: 0; }
+.pc .im { position: absolute; inset: 0; height: auto; background-size: cover; background-position: center; transition: transform .8s cubic-bezier(.2, .8, .2, 1); }
+.pc .im.none { background: linear-gradient(135deg, #2c5c58, #1d3b39); color: rgba(255, 255, 255, .6); }
+.pc::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(10, 16, 15, .82) 0, rgba(10, 16, 15, .35) 42%, transparent 70%); pointer-events: none; }
+.pc .tx { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; padding: 10px 12px; color: #fff; }
+.pc .tx b { font-size: 13.5px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
+.pc .tx small { color: rgba(255, 255, 255, .82); font-size: 11px; }
+.pc .tx em { display: block; font-style: normal; font-size: 10.5px; color: rgba(255, 255, 255, .78); max-height: 0; opacity: 0; overflow: hidden; transition: max-height .4s, opacity .3s, margin .4s; }
+.pc .add { z-index: 2; background: rgba(0, 0, 0, .25); backdrop-filter: blur(4px); transition: transform .4s cubic-bezier(.3, 1.6, .5, 1), background .3s; }
+.pc:hover, .pc:focus-visible { transform: translateY(-8px) scale(1.07); z-index: 4; box-shadow: 0 22px 40px rgba(0, 0, 0, .3); }
+.pc:hover .im, .pc:focus-visible .im { transform: scale(1.12); }
+.pc:hover .tx em, .pc:focus-visible .tx em { max-height: 30px; opacity: 1; margin-top: 4px; }
+.pc:hover .tx b { -webkit-line-clamp: 3; }
+.pc:hover .add { transform: rotate(90deg) scale(1.1); background: var(--tp-teal); }
+.tp-worth .muted { grid-column: 1 / -1; }
+
+/* map: markers arrive one after another; the zoom buttons are small glass */
+.tp-mk { animation: tpMk .5s cubic-bezier(.3, 1.5, .5, 1) both; }
+@keyframes tpMk { from { opacity: 0; transform: translateY(10px) scale(.7); } }
+.tp-map .maplibregl-ctrl-group { background: rgba(255, 255, 255, .8); backdrop-filter: blur(8px); border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, .15); }
+.tp-map .maplibregl-ctrl-group button { width: 26px; height: 26px; }
+.tp-mapcard { padding: 14px; }
+.tp-mapcard .tp-map { border-radius: 18px; }
+@media (max-width: 760px) {
+  .trip { padding-top: 46px; }
+  .tp-rail button { height: 56px; }
+  .tp-dock { width: auto; height: 52px; }
+}
+@media (prefers-reduced-motion: reduce) { .tp-mk, .tp-card::before, .tp-strip::before { animation: none !important; } .pc, .pc .im { transition: none; } }
+.tp-agenda .col { position: relative; }
+:root .trip .tp-rail button.on { background: var(--tp-teal); color: #fff; }
+:root:not([data-theme='light']) .trip .tp-rail button.on { background: rgba(95, 179, 170, .9); color: #062220; }
+:root:not([data-theme='light']) .trip .tp-rail button.on svg { color: #062220; }
+@media (max-width: 760px) {
+  .trip { overflow-x: hidden; }
+    .trip > .tp-dock, .trip > .tp-support { position: fixed; }
+}

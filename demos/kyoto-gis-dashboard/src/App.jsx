@@ -1097,7 +1097,7 @@ export default function App() {
           ))}
         </>
       )}
-      <TripDashboard open={tripOpen} onShown={setTripShown} onClose={() => setTripOpen(false)} d={d} byId={byId} A={A} Tr={Tr} theme={theme} fetchBusVariant={fetchBusVariant} addRequest={tripAdd} />
+      <TripDashboard open={tripOpen} onShown={setTripShown} onClose={() => setTripOpen(false)} d={d} byId={byId} A={A} Tr={Tr} theme={theme} seasonPick={seasonMode === 'auto' ? null : seasonMode} fetchBusVariant={fetchBusVariant} addRequest={tripAdd} />
     </div>
     <Seam mark="結" ja="結び" en="Closing" />
     <Outro manifest={d.manifest} />

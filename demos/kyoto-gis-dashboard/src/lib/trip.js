@@ -30,7 +30,7 @@ export const parseHM = (s) => {
   const h = +m[1], mi = +m[2];
   return h < 24 && mi < 60 ? h * 60 + mi : null;
 };
-export const fmtHM = (min) => (min == null ? '' : `${String(Math.floor(min / 60) % 24).padStart(2, '0')}:${String(Math.round(min) % 60).padStart(2, '0')}`);
+export const fmtHM = (min) => (min == null ? '' : `${String(Math.floor(min / 60) % 24).padStart(2, '0')}:${String(Math.round(min) % 60).padStart(2, '0')}${min >= 1440 ? ' +1d' : ''}`);   // past midnight: next day
 export const tokyoDate = (date = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
 export const addDays = (iso, n) => {
   const d = new Date(`${iso}T00:00:00Z`);
