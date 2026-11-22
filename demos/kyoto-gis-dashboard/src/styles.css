@@ -2227,3 +2227,12 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
   .map-tools.rail, .map-tools.rail::before, .map-tools.rail .ri, .map-tools.rail button > span, .rail-ink { transition: none; }
   .map-tools.rail button.on .ri::after { animation: none; }
 }
+
+/* feature panels: a light that follows the pointer closely (Features.jsx writes --lx, --ly, --lo) */
+.ft-light { position: absolute; left: 0; top: 0; z-index: -1; width: 380px; height: 380px; margin: -190px 0 0 -190px; border-radius: 50%; pointer-events: none;
+  translate: var(--lx, 50%) var(--ly, 50%); opacity: var(--lo, 0); will-change: translate, opacity;
+  background: radial-gradient(circle, hsl(var(--hue) 95% 78% / .5) 0%, hsl(var(--hue) 85% 66% / .2) 34%, transparent 68%); mix-blend-mode: screen; filter: blur(10px); }
+:root[data-theme='light'] .ft-light { mix-blend-mode: normal; background: radial-gradient(circle, hsl(var(--hue) 80% 62% / .26) 0%, hsl(var(--hue) 70% 60% / .1) 36%, transparent 68%); }
+.ft-panel::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: var(--lo, 0);
+  background: radial-gradient(180px circle at var(--lx, 50%) var(--ly, 50%), hsl(var(--hue) 90% 80% / .55), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); padding: 1px; }

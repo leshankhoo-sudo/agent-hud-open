@@ -458,6 +458,8 @@ export default function App() {
     return info;
   };
   const sortShow = async (id) => { await flipTo(false); select({ id }); };
+  // anything that asks for the map (feature buttons, Explore places, Open the map) turns a flipped dashboard back
+  const toMapSide = () => { if (face === 'back' || side === 'back') flipTo(false); };
   // ---------- map | panel split ----------
   const resizeMap = () => mapRef.current?.resize();
   // a short eased change (open, close, reset); dragging itself follows the pointer with no transition
@@ -603,6 +605,7 @@ export default function App() {
   // "Explore Kyoto": go to the dashboard; with a place, move the map there once its own opening has played.
   const enter = (place) => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    toMapSide();
     document.getElementById('dashboard')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
     if (!place) return;
     const [lon, lat, zoom] = place.view;
@@ -626,6 +629,7 @@ export default function App() {
   ];
   const openFeature = (key) => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    toMapSide();   // every feature lives on the map side: a dashboard left on "Sort the data" turns back first
     document.getElementById('dashboard')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
     setSheet(key === 'fares' ? 'journeys' : key === 'sources' ? 'sources' : null);
     if (key === 'density' || key === 'walk') { if (!isPhone()) openPanel('explore'); else switchTab('explore'); setAnOpen(true); setPanel(key); }
@@ -642,7 +646,7 @@ export default function App() {
   const onNav = (k) => { if (k === 'sources') { go('dashboard'); if (loaded) setTimeout(() => setSheet('sources'), 700); } else go(k); };
   const intro = (
     <>
-      <Landing counts={openCounts} onOpenMap={() => go('dashboard')} onStory={() => go('seasons')} onNav={onNav} />
+      <Landing counts={openCounts} onOpenMap={() => { toMapSide(); go('dashboard'); }} onStory={() => go('seasons')} onNav={onNav} />
       <SeasonStory season={visualSeason} autoSeason={seasonAuto.visual} theme={theme} counts={openCounts} onExplore={() => go('explore')} onPick={(k) => setSeasonMode(k === seasonAuto.visual ? 'auto' : k)} />
       <Panorama onNext={() => go(loaded && d?.explore?.places?.length ? 'explore' : 'dashboard')} />
     </>

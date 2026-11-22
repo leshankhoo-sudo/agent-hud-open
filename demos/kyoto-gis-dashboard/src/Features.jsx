@@ -15,9 +15,54 @@ const ICONS = {
   sources: <><ellipse cx="12" cy="6" rx="7" ry="3" /><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" /></>,
 };
 
+// A soft light inside the panel follows the pointer closely (about 60 ms behind), and fades when the
+// pointer moves to another panel or leaves. Positions are written straight to CSS variables, one frame loop.
+function useFollowLight(row) {
+  useEffect(() => {
+    const el = row.current;
+    if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const lights = new Map();   // panel -> { x, y, o, tx, ty, to }
+    let raf = 0, last = 0;
+    const frame = (now) => {
+      raf = 0;
+      const dt = last ? Math.min(64, now - last) : 16;
+      last = now;
+      const kp = 1 - Math.exp(-dt / 60), ko = 1 - Math.exp(-dt / 140);
+      let moving = false;
+      for (const [panel, l] of lights) {
+        l.x += (l.tx - l.x) * kp; l.y += (l.ty - l.y) * kp; l.o += (l.to - l.o) * ko;
+        panel.style.setProperty('--lx', `${l.x.toFixed(1)}px`);
+        panel.style.setProperty('--ly', `${l.y.toFixed(1)}px`);
+        panel.style.setProperty('--lo', l.o.toFixed(3));
+        if (Math.abs(l.tx - l.x) > 0.3 || Math.abs(l.ty - l.y) > 0.3 || Math.abs(l.to - l.o) > 0.003) moving = true;
+        else if (l.to === 0) { lights.delete(panel); panel.style.setProperty('--lo', '0'); }
+      }
+      if (moving) raf = requestAnimationFrame(frame); else last = 0;
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+    const move = (e) => {
+      if (e.pointerType === 'touch') return;
+      const panel = e.target.closest?.('.ft-panel');
+      for (const [p, l] of lights) if (p !== panel) l.to = 0;
+      if (panel) {
+        const r = panel.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+        let l = lights.get(panel);
+        if (!l) { l = { x, y, o: 0 }; lights.set(panel, l); }
+        l.tx = x; l.ty = y; l.to = 1;
+      }
+      kick();
+    };
+    const leave = () => { for (const l of lights.values()) l.to = 0; kick(); };
+    el.addEventListener('pointermove', move, { passive: true });
+    el.addEventListener('pointerleave', leave);
+    return () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerleave', leave); cancelAnimationFrame(raf); };
+  }, [row]);
+}
+
 export default function Features({ items, onOpen }) {
-  const root = useRef(null);
+  const root = useRef(null), row = useRef(null);
   useScene(root);
+  useFollowLight(row);
   const [open, setOpen] = useState(0);
   const [seen, setSeen] = useState(false);
   useEffect(() => {
@@ -31,11 +76,12 @@ export default function Features({ items, onOpen }) {
         <p className="ft-eyebrow">INSIDE THE DASHBOARD</p>
         <h2 id="ft-title">Six ways to <em>read</em> the map</h2>
       </header>
-      <div className="ft-row">
+      <div className="ft-row" ref={row}>
         {items.map((it, i) => (
           <article key={it.key} className={'ft-panel' + (open === i ? ' open' : '')} style={{ '--i': i, '--hue': it.hue }}
             onPointerEnter={(e) => { if (e.pointerType === 'mouse') setOpen(i); }} onFocus={() => setOpen(i)}>
             <span className="ft-blob" aria-hidden="true" />
+            <span className="ft-light" aria-hidden="true" />
             <button type="button" className="ft-toggle" aria-expanded={open === i} aria-controls={`ft-body-${it.key}`} onClick={() => setOpen(i)}>
               <span className="ft-title">{it.title}</span>
               <svg className="ft-ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{ICONS[it.key]}</svg>
