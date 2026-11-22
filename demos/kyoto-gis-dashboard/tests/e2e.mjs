@@ -966,13 +966,13 @@ await rp.waitForTimeout(3500); const kAfter = await kd();
 check('3D density card: the cross-section is a string; dragging bends it, letting go makes it ring, then it comes to rest', !!ksb && kBent !== kRest && kR1 !== kR2 && kR1 !== kRest && kAfter === kRest, JSON.stringify({ ok: !!ksb, bent: kBent !== kRest, ring: kR1 !== kR2, rest: kAfter === kRest }));
 await rp.locator('.d3-card .x').click().catch(() => {}); await rp.waitForTimeout(300);
 // hold the middle mouse button and drag to orbit; the page does not auto-scroll
-const orb0 = await rp.evaluate(() => ({ b: window.__kyotoMap.getBearing(), y: scrollY }));
+const mOrb0 = await rp.evaluate(() => ({ b: window.__kyotoMap.getBearing(), y: scrollY }));
 const cbox = await rp.locator('#dashboard > .center').boundingBox();
 await rp.mouse.move(cbox.x + cbox.width * 0.5, cbox.y + cbox.height * 0.2); await rp.mouse.down({ button: 'middle' });
 await rp.mouse.move(cbox.x + cbox.width * 0.5 + 120, cbox.y + cbox.height * 0.2, { steps: 10 }); await rp.mouse.up({ button: 'middle' }); await rp.waitForTimeout(600);
-const orb1 = await rp.evaluate(() => ({ b: window.__kyotoMap.getBearing(), y: scrollY }));
-const orbTurn = Math.round(((orb1.b - orb0.b) % 360 + 540) % 360 - 180);
-check('3D density: holding the middle mouse button and dragging orbits the view (no auto-scroll)', orbTurn >= 35 && orb1.y === orb0.y, JSON.stringify({ orbTurn, y0: orb0.y, y1: orb1.y }));
+const mOrb1 = await rp.evaluate(() => ({ b: window.__kyotoMap.getBearing(), y: scrollY }));
+const mOrbTurn = Math.round(((mOrb1.b - mOrb0.b) % 360 + 540) % 360 - 180);
+check('3D density: holding the middle mouse button and dragging orbits the view (no auto-scroll)', mOrbTurn >= 35 && mOrb1.y === mOrb0.y, JSON.stringify({ mOrbTurn, y0: mOrb0.y, y1: mOrb1.y }));
 await rp.locator('.d3t').click(); await rp.waitForFunction(() => !document.querySelector('.d3'), null, { timeout: 8000 }).catch(() => {}); await rp.waitForTimeout(1300);
 const d3off = await rp.evaluate(() => ({ bearing: Math.round(window.__kyotoMap.getBearing()), rot: window.__kyotoMap.dragRotate.isEnabled(), layer: !!window.__kyotoMap.getLayer('density-3d'), pts: window.__kyotoMap.getLayoutProperty('attractions-pt', 'visibility'), overlay: !!document.querySelector('.d3') }));
 check('3D density: switching it off sinks the surface, removes the layer and puts the points back', !d3off.layer && !d3off.overlay && d3off.pts === d3before.pts && d3off.bearing === 0 && !d3off.rot, JSON.stringify({ d3before, d3off }));
@@ -1039,6 +1039,7 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   const curlPos = await sp.evaluate(() => { const c = document.querySelector('.curl.front').getBoundingClientRect(), d = document.getElementById('dashboard').getBoundingClientRect(); return { right: Math.round(d.right - c.right), bottom: Math.round(d.bottom - c.bottom) }; });
   check('flip: the bottom-right corner turns up once to show the dashboard can be turned over', peeked && curlPos.right <= 1 && curlPos.bottom <= 1, JSON.stringify({ peeked, curlPos }));
   // turn over: the map and the panel turn as one; the header stays and shows rolling counters
+  await sp.evaluate(() => document.getElementById('dashboard').scrollIntoView()); await sp.waitForTimeout(500);   // earlier steps can leave the page elsewhere
   const before = await sp.evaluate(() => ({ top: document.querySelector('#dashboard .top').getBoundingClientRect().top, y: scrollY }));
   await sp.locator('.sort-btn').click();
   const mid = await sp.evaluate(() => new Promise((res) => setTimeout(() => res(['.center', '.right', '.sort-back'].map((s) => { const el = document.querySelector('#dashboard > ' + s); return { s, t: getComputedStyle(el).transform !== 'none', anims: el.getAnimations().length }; })), 250)));
@@ -1054,6 +1055,7 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   check('flip: the map and the panel turn over together (3D, both halves animated); the header stays where it was', mid.filter((x) => x.s !== '.sort-back').every((x) => x.t || x.anims) && back.cls.includes('face-back') && back.center === 'hidden' && back.right === 'hidden' && back.back === 'visible' && Math.abs(back.top - before.top) < 2 && back.y === before.y, JSON.stringify({ mid, back, before }));
   check('sort: the back shows all 644 records as one floating sphere, no slots yet, a double-click hint, and 6 counters in the header', back.tiles === 644 && back.alive === 644 && back.inMid && back.R > 120 && back.cards === 'hidden' && back.hint && back.counters.join() === 'checked,merged,leftOut,sorted,withPhoto,cats' && back.ghost === 0, JSON.stringify(back));
   // the pointer steers and magnifies the sphere
+  await sp.evaluate(() => document.getElementById('dashboard').scrollIntoView()); await sp.waitForTimeout(400);
   const g = await sp.evaluate(() => window.__kyotoSort.geo), box = await sp.locator('.sort-in').boundingBox();
   await sp.mouse.move(box.x + g.cx, box.y + g.cy + g.R * 0.8, { steps: 6 }); await sp.waitForTimeout(1800);
   const steer = await sp.evaluate(() => { const e = window.__kyotoSort; return { tilt: e.tilt, lens: Math.max(...e.tiles.map((t) => t.lens)) }; });
@@ -1103,6 +1105,16 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   await sp.locator('.sc-bar .btn:not(.ghost)').click(); await sp.waitForTimeout(1500);
   const front = await sp.evaluate(() => document.getElementById('dashboard').className.includes('face-back'));
   check('sort: Back to the map turns it back; no page errors on the way', !front && spErr.length === 0, spErr.join(' | '));
+  // feature buttons ask for the map: from a flipped dashboard they turn it back first; the panel light follows the pointer
+  await sp.locator('.sort-btn').click(); await sp.waitForTimeout(1500);
+  await sp.evaluate(() => document.getElementById('features').scrollIntoView()); await sp.waitForTimeout(1200);
+  const wxp = sp.locator('.ft-panel').nth(3); await wxp.hover(); await sp.waitForTimeout(900);
+  const wb = await wxp.boundingBox();
+  await sp.mouse.move(wb.x + wb.width * 0.3, wb.y + wb.height * 0.3, { steps: 3 }); await sp.waitForTimeout(260);
+  const lt1 = await sp.evaluate(() => { const el = document.querySelectorAll('.ft-panel')[3]; return [parseFloat(el.style.getPropertyValue('--lx')), parseFloat(el.style.getPropertyValue('--ly')), +el.style.getPropertyValue('--lo')]; });
+  await wxp.locator('.ft-go').click(); await sp.waitForTimeout(2600);
+  const wxs = await sp.evaluate(() => ({ back: document.getElementById('dashboard').className.includes('face-back'), place: document.querySelector('.detail h2')?.textContent || '' }));
+  check('feature cards: the light follows the pointer; See a forecast turns a flipped dashboard back and opens Kyoto Station', Math.abs(lt1[0] - wb.width * 0.3) < 12 && Math.abs(lt1[1] - wb.height * 0.3) < 12 && lt1[2] > 0.8 && !wxs.back && /京都|Kyoto/.test(wxs.place), JSON.stringify({ lt1, w: wb.width, wxs }));
   // light theme: the back follows it
   const th0 = await sp.evaluate(() => document.documentElement.dataset.theme);
   await sp.locator('.theme-toggle').first().click(); await sp.waitForFunction((t) => document.documentElement.dataset.theme !== t, th0, { timeout: 8000 }).catch(() => {}); await sp.waitForTimeout(1500);

@@ -654,3 +654,22 @@ test('sort the data: every record once, real counts, the timeline stays inside 1
   const end = along(a, m, b, flightEase(1));
   assert.ok(Math.abs(end.x - b.x) < 1e-6 && Math.abs(end.y - b.y) < 1e-6 && Math.abs(end.rot) < 1e-9);
 });
+
+test('koto string: hirajoshi notes, a string sample at the right pitch; sort release curve is steady and monotonic', async () => {
+  const { noteFor, stringSamples } = await import('../src/lib/pluck.js');
+  const { steadyTime } = await import('../src/lib/sortMotion.js');
+  assert.equal(Math.round(noteFor(0) * 100) / 100, 146.83);              // D3
+  assert.ok(Math.abs(noteFor(1) - 146.83 * 2 ** (1 + 8 / 12)) < 0.01);  // B-flat4, the top of two octaves
+  const sr = 44100, f = 220, x = stringSamples(f, sr, { seconds: 1, seed: 3 });
+  // pitch: the strongest autocorrelation lag in 1/400 s to 1/120 s is one period
+  let best = 0, lag = 0;
+  for (let L = Math.floor(sr / 400); L < sr / 120; L++) { let c = 0; for (let i = 2000; i < 12000; i++) c += x[i] * x[i + L]; if (c > best) { best = c; lag = L; } }
+  assert.ok(Math.abs(sr / lag - f) / f < 0.03, `pitch ${sr / lag}`);
+  assert.ok(Math.max(...x.slice(0, 2000).map(Math.abs)) > 0.5 && Math.max(...x.slice(-2000).map(Math.abs)) < 0.5, 'it decays');
+  let prev = -1;
+  for (let k = 0; k <= 100; k++) { const t = steadyTime(k / 100); assert.ok(t >= prev - 1e-9); prev = t; }
+  assert.ok(Math.abs(steadyTime(0)) < 1e-9 && Math.abs(steadyTime(1) - 1) < 1e-9);
+  // the middle runs at a constant rate: equal steps in records give equal steps in time
+  const d1 = steadyTime(0.45) - steadyTime(0.4), d2 = steadyTime(0.6) - steadyTime(0.55);
+  assert.ok(Math.abs(d1 - d2) < 1e-9);
+});

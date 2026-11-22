@@ -405,7 +405,7 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
     };
 
     e.step = (now) => {
-      const dt = Math.min(50, now - (e.last || now));
+      const raw = now - (e.last || now), dt = Math.min(50, raw);
       e.last = now;
       // sphere geometry: idle -> sorting layout
       if (e.geoFrom) {
@@ -428,10 +428,11 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
       if (r) {
         const t = now - r.t0;
         const ev = r.plan.events;
-        // at most a few launches per frame: if a frame comes late, the records due catch up over the next
-      // frames instead of leaving the sphere all at once
+        // at most four launches per 1/60 s of frame time (up to 24): a single late frame no longer releases a
+      // clump, while a steadily slow machine still keeps to the 15 s timeline
+      const cap = Math.min(24, Math.max(4, Math.ceil((4 * raw) / 16.7)));
       let n = 0;
-      while (r.idx < ev.length && ev[r.idx].t <= t && n < 4) { e.launch(ev[r.idx++], now); n++; }
+      while (r.idx < ev.length && ev[r.idx].t <= t && n < cap) { e.launch(ev[r.idx++], now); n++; }
         e.caption(t < PHASES.merge * duration ? 'idle' : t < PHASES.leftOut * duration ? 'merge' : t < PHASES.sort * duration ? 'leftOut' : 'sort');
       }
       // fliers
