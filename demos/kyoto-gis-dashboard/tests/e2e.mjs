@@ -957,11 +957,14 @@ check('3D density: the camera turns (the turn button swings it 45°, and drag-ro
 await rp.waitForTimeout(1500);
 const kd = () => rp.evaluate(() => document.querySelector('.koto-string .ln')?.getAttribute('d') || '');
 const ksb = await rp.locator('.koto-string').boundingBox();
-const kRest = await kd();
+// wait until the string is still (its own hint shiver has ended) before taking its resting shape
+let kRest = await kd();
+for (let k = 0; k < 30; k++) { await rp.waitForTimeout(200); const d = await kd(); if (d === kRest) break; kRest = d; }
 if (ksb) { await rp.mouse.move(ksb.x + ksb.width * 0.3, ksb.y + ksb.height * 0.5); await rp.mouse.down(); await rp.mouse.move(ksb.x + ksb.width * 0.3, ksb.y + ksb.height * 0.5 + 14, { steps: 4 }); }
 const kBent = await kd();
 await rp.mouse.up(); await rp.waitForTimeout(110);
-const kR1 = await kd(); await rp.waitForTimeout(70); const kR2 = await kd();
+const kR1 = await kd(); let kR2 = kR1;
+for (let k = 0; k < 8 && kR2 === kR1; k++) { await rp.waitForTimeout(60); kR2 = await kd(); }   // slow frames: sample until one changes
 await rp.waitForTimeout(3500); const kAfter = await kd();
 check('3D density card: the cross-section is a string; dragging bends it, letting go makes it ring, then it comes to rest', !!ksb && kBent !== kRest && kR1 !== kR2 && kR1 !== kRest && kAfter === kRest, JSON.stringify({ ok: !!ksb, bent: kBent !== kRest, ring: kR1 !== kR2, rest: kAfter === kRest }));
 await rp.locator('.d3-card .x').click().catch(() => {}); await rp.waitForTimeout(300);
