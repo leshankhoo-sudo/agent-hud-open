@@ -1165,6 +1165,138 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   await pctx.close();
 }
 
+// ---------- Plan your trip: the second dashboard ----------
+{
+  const tp = await browser.newPage({ viewport: { width: 1600, height: 1000 }, acceptDownloads: true });
+  const tErr = []; tp.on('pageerror', (e) => tErr.push(e.message));
+  await tp.goto(url);
+  await tp.evaluate(() => localStorage.removeItem('kyoto-gis-trip-v1'));
+  await tp.reload();
+  await tp.waitForSelector('.plan-entry', { timeout: 60000 });
+  await tp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+  await tp.waitForTimeout(1200);
+  const store = () => tp.evaluate(() => JSON.parse(localStorage.getItem('kyoto-gis-trip-v1') || 'null'));
+  await tp.locator('.plan-entry').click();
+  const doors = await tp.evaluate(() => new Promise((r) => { const t0 = performance.now(); const iv = setInterval(() => { if (document.querySelector('.tp-doors.on')) { clearInterval(iv); r(true); } else if (performance.now() - t0 > 1500) { clearInterval(iv); r(false); } }, 20); }));
+  await tp.waitForSelector('.trip', { timeout: 10000 });
+  await tp.waitForTimeout(1600);
+  const e0 = await tp.evaluate(() => ({
+    hidden: getComputedStyle(document.querySelector('#dashboard > .top')).visibility, photo: document.querySelector('.tp-scene').classList.contains('photo'),
+    pinned: document.querySelectorAll('.ema.pinned').length, add: document.querySelectorAll('.ema.add').length, hint: !!document.querySelector('.tp-hint'),
+    sub: document.querySelector('.tp-feat h3').textContent, cards: [...document.querySelectorAll('.tp-worth .pc')].map((c) => !!c.querySelector('.im').style.backgroundImage), title: document.querySelector('.tp-worth h4').textContent,
+    rail: [...document.querySelectorAll('.tp-rail button')].map((b) => b.textContent.trim()), dock: [...document.querySelectorAll('.tp-dock button')].map((b) => b.textContent.trim()), support: document.querySelector('.tp-support')?.textContent.trim(),
+  }));
+  await tp.screenshot({ path: `${out}/20-trip-empty.png` });
+  check('trip: "Plan your trip" in the panel switches the whole dashboard behind shoji doors; not planned yet, the ema are pinned on the board with a hint', doors && e0.hidden === 'hidden' && !e0.photo && e0.pinned === 4 && e0.add === 1 && e0.hint && e0.sub === 'Not planned yet', JSON.stringify(e0));
+  check('trip: rail is Trip, Agenda, Trip map, Dashboard; dock is Play day, hours, +, Best order, Export; Support at the bottom left; popular places have photos', JSON.stringify(e0.rail) === JSON.stringify(['Trip', 'Agenda', 'Trip map', 'Dashboard']) && e0.dock.length === 5 && /Play day/.test(e0.dock[0]) && /Best order/.test(e0.dock[3]) && /Export/.test(e0.dock[4]) && e0.support === 'Support' && e0.cards.length === 4 && e0.cards.every(Boolean) && /Popular in/.test(e0.title), JSON.stringify(e0));
+
+  // an ema opens its day's scroll; the "+" ema adds a day
+  await tp.locator('.ema.add').click();
+  await tp.locator('.ema[data-day="0"]').click();
+  await tp.waitForTimeout(1000);
+  const s1 = await tp.evaluate(() => ({ scroll: document.querySelector('.tp-scroll h4')?.textContent, days: document.querySelectorAll('.ema:not(.add)').length }));
+  check('trip: the "+" ema adds a day, an ema unrolls that day\'s plan', s1.days === 4 && /^Day 1/.test(s1.scroll || ''), JSON.stringify(s1));
+
+  // start place from the station list, then places by search (Japanese name) and by the + button
+  await tp.locator('.tp-dock .fab').click();
+  await tp.locator('.tp-sheet .kinds button', { hasText: 'Stations' }).click();
+  await tp.locator('.tp-sheet input[type=search]').fill('京都');
+  await tp.locator('.tp-sheet .res li', { has: tp.locator('b', { hasText: /^Kyoto$/ }) }).first().locator('button', { hasText: 'Start here' }).click();
+  await tp.locator('.tp-search input').fill('清水寺');
+  await tp.waitForSelector('.tp-sheet .res li');
+  await tp.locator('.tp-sheet .kinds button', { hasText: 'Temples' }).click();
+  await tp.locator('.tp-sheet .res li', { has: tp.locator('b', { hasText: /^Kiyomizu-dera$/ }) }).locator('button', { hasText: 'Add to Day 1' }).click();
+  await tp.locator('.tp-sheet input[type=search]').fill('銀閣');
+  await tp.locator('.tp-sheet .res li').first().locator('button', { hasText: 'Add to Day 1' }).click();
+  await tp.locator('.tp-sheet input[type=search]').fill('八坂神社');
+  await tp.locator('.tp-sheet .kinds button', { hasText: 'Shrines' }).click();
+  await tp.locator('.tp-sheet .res li').first().locator('button', { hasText: 'Add to Day 1' }).click();
+  await tp.locator('.tp-sheet .x').click();
+  let st = await store();
+  check('trip: a station can be the start; places are found by Japanese name and added to the day, and the plan is saved in the browser', st?.days[0].from === 'S00019' && JSON.stringify(st.days[0].stops.map((s) => s.id)) === JSON.stringify(['A00560', 'A00540', 'A00559']), JSON.stringify(st?.days[0]));
+
+  // the leg into Kiyomizu-dera by bus: route, stops and fare from the bus data, no ride time
+  await tp.locator('.tp-scroll .stops > li').nth(1).locator('.m.bus').click();
+  await tp.locator('.tp-scroll .stops > li').nth(1).locator('.tp-at input').fill('10:00');
+  await tp.locator('.tp-scroll .stops > li').nth(2).locator('.m.bike').click();
+  await tp.waitForFunction(() => { const t = [...document.querySelectorAll('.tp-scroll .lt')].map((x) => x.textContent); return t.length >= 3 && t.every((x) => !/Finding/.test(x)); }, null, { timeout: 60000 }).catch(() => {});
+  const lg = await tp.evaluate(() => ({ legs: [...document.querySelectorAll('.tp-scroll .lt')].map((x) => x.textContent), buses: document.querySelectorAll('.tp-scroll .leg select option').length, times: [...document.querySelectorAll('.tp-scroll .stop .t')].map((x) => x.textContent), radius: document.querySelector('.tp-scroll .leg .xs')?.textContent || '' }));
+  check('trip: a bus leg names the route, the stops and the official fare, says the ride time is not known, and states the stop search radius', /^Bus \S+: .+ → .+, \d+ stops?/.test(lg.legs[0]) && /ride time not known/.test(lg.legs[0]) && /¥\d+/.test(lg.legs[0]) && lg.buses >= 1 && /search radius/.test(lg.radius), JSON.stringify(lg));
+  check('trip: walking and cycling legs are timed by the routing service; times run on from the arrival time the visitor set (10:00 + 60 min stay + the cycle ride)', /^Cycle \d+ min · [\d.]+ k?m/.test(lg.legs[1]) && /^Walk \d+ min/.test(lg.legs[2]) && lg.times[0] === '10:00' && /^\d\d:\d\d$/.test(lg.times[1]) && lg.times[1] > '11:00' && lg.times[2] > lg.times[1], JSON.stringify(lg));
+  await tp.screenshot({ path: `${out}/21-trip-scroll.png` });
+  await tp.locator('.tp-scroll .x').first().click();
+  await tp.waitForTimeout(2500);
+  const pv = await tp.evaluate(() => ({ photo: document.querySelector('.tp-scene').classList.contains('photo'), credit: document.querySelector('.tp-credit')?.textContent || '', hang: document.querySelectorAll('.ema.hang').length, next: document.querySelector('.tp-next .tx b')?.textContent, wx: document.querySelector('.tp-wx .loc')?.textContent, hours: [...document.querySelectorAll('.tp-wx .hours > div > span')].map((x) => x.textContent), fare: document.querySelector('.tp-feat .stats span:nth-child(3) b')?.textContent, markers: document.querySelectorAll('.tp-mapcard .tp-mk').length }));
+  await tp.screenshot({ path: `${out}/22-trip-planned.png` });
+  check('trip: planned, the next stop\'s own photo fills the scene with its author and licence; the ema hang on a rope', pv.photo && /Photo: .+ · CC|Public domain/.test(pv.credit) && pv.hang === 5 && /^Kiyomizu-dera · 10:00/.test(pv.next || ''), JSON.stringify(pv));
+  check('trip: weather is asked for the next stop at its planned time; the map shows the day\'s places; the bus fare is added up', /Kiyomizu-dera/.test(pv.wx || '') && /10:00/.test(pv.wx || '') && pv.hours[0] === '09:00' && pv.markers === 4 && /^¥\d+/.test(pv.fare || ''), JSON.stringify(pv));
+
+  // a place card dragged onto Day 2's ema
+  await tp.evaluate(() => document.getElementById('dashboard').scrollIntoView());   // filling the plan's fields can scroll the page
+  await tp.waitForTimeout(400);
+  const card = await tp.locator('.tp-worth .pc').first().boundingBox(), ema2 = await tp.locator('.ema[data-day="1"]').boundingBox();
+  await tp.mouse.move(card.x + 40, card.y + 40); await tp.mouse.down();
+  await tp.mouse.move(card.x + 120, card.y - 60, { steps: 6 }); await tp.mouse.move(ema2.x + ema2.width / 2, ema2.y + ema2.height / 2, { steps: 12 });
+  const ghost = await tp.evaluate(() => !!document.querySelector('.tp-ghost') && document.querySelector('.trip').classList.contains('dragging'));
+  await tp.mouse.up(); await tp.waitForTimeout(400);
+  st = await store();
+  check('trip: a place card dragged onto an ema lands on that day', ghost && st.days[1].stops.length === 1, JSON.stringify({ ghost, d2: st.days[1].stops }));
+
+  // Best order, Play day, Export
+  await tp.locator('.tp-dock button', { hasText: 'Best order' }).click();
+  await tp.waitForFunction(() => document.querySelector('.tp-sheet .cmp, .tp-sheet .warn'), null, { timeout: 45000 }).catch(() => {});
+  const bo = await tp.evaluate(() => ({ cmp: [...document.querySelectorAll('.tp-sheet .cmp b')].map((x) => x.textContent), list: [...document.querySelectorAll('.tp-sheet ol li')].map((x) => x.textContent), warn: document.querySelector('.tp-sheet .warn')?.textContent }));
+  check('trip: Best order compares travel times from the routing service and keeps the start first', (bo.cmp.length === 2 && bo.list[0] === 'Kyoto' && bo.list.length === 4) || !!bo.warn, JSON.stringify(bo));
+  await tp.locator('.tp-sheet .x').click();
+  await tp.locator('.tp-dock button', { hasText: 'Play day' }).click();
+  await tp.waitForTimeout(1200);
+  const pl = await tp.evaluate(() => ({ dot: !!document.querySelector('.tp-mapcard .tp-play'), clock: document.querySelector('.tp-mapcard .tp-clock')?.textContent || '' }));
+  await tp.locator('.tp-dock button', { hasText: 'Stop' }).click();
+  check('trip: Play day moves a light along the day\'s route with a clock', pl.dot && /\d\d:\d\d|time not known/.test(pl.clock), JSON.stringify(pl));
+  const [dl] = await Promise.all([tp.waitForEvent('download', { timeout: 60000 }), tp.locator('.tp-dock button', { hasText: 'Export' }).click()]);
+  const { readFileSync } = await import('node:fs');
+  const icsPath = await dl.path(), ics = readFileSync(icsPath, 'utf8');
+  check('trip: Export saves an .ics calendar with timed stops in UTC and the untimed-bus note', /\.ics$/.test(dl.suggestedFilename()) && ics.startsWith('BEGIN:VCALENDAR') && /DTSTART:20\d{6}T010000Z/.test(ics) && /no timetable/.test(ics.replace(/\r\n /g, '')), dl.suggestedFilename());
+
+  // the other views, Support, and back to the GIS dashboard
+  await tp.locator('.tp-rail button', { hasText: 'Agenda' }).click(); await tp.waitForTimeout(800);
+  const ag = await tp.evaluate(() => document.querySelectorAll('.tp-agenda .col').length);
+  await tp.locator('.tp-rail button', { hasText: 'Trip map' }).click(); await tp.waitForTimeout(2500);
+  const fm = await tp.evaluate(() => ({ map: !!document.querySelector('.tp-full .tp-map canvas'), keys: document.querySelectorAll('.tp-daykey span').length }));
+  await tp.locator('.tp-rail button', { hasText: 'Trip' }).first().click();
+  await tp.locator('.tp-support').click();
+  const hp = await tp.evaluate(() => document.querySelector('.tp-sheet.help')?.textContent || '');
+  await tp.locator('.tp-sheet .x').click();
+  check('trip: Agenda lists every day, Trip map shows them all, Support explains the sources and that the plan stays in the browser', ag === 4 && fm.map && fm.keys === 4 && /no timetable/.test(hp) && /saved in this browser only/.test(hp) && /AI-generated illustration/.test(hp), JSON.stringify({ ag, fm }));
+  await tp.locator('.tp-rail button', { hasText: 'Dashboard' }).click();
+  await tp.waitForFunction(() => !document.querySelector('.trip'), null, { timeout: 5000 }).catch(() => {});
+  const back = await tp.evaluate(() => ({ trip: !!document.querySelector('.trip'), top: getComputedStyle(document.querySelector('#dashboard > .top')).visibility }));
+  check('trip: Dashboard returns to the GIS dashboard as it was', !back.trip && back.top === 'visible', JSON.stringify(back));
+
+  // "Add to trip" on a place card opens the trip with that place added
+  await tp.evaluate(() => { const i = document.querySelector('#q'); i.focus(); });
+  await tp.locator('#q').fill('南禅寺');
+  await tp.locator('.results button').first().click();
+  await tp.locator('.add-trip').click();
+  await tp.waitForSelector('.trip', { timeout: 8000 });
+  await tp.waitForTimeout(1000);
+  st = await store();
+  check('trip: "Add to trip" on a place adds it to the open day and switches to the trip dashboard', st.days.some((x) => x.stops.some((s) => s.id === 'A00563')), JSON.stringify(st.days.map((x) => x.stops.map((s) => s.id))));
+  check('trip: no page errors', tErr.length === 0, tErr.join(' | '));
+  await tp.close();
+
+  // phone: the trip dashboard stacks, no sideways scroll, the dock stays on screen
+  const tph = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const pp2 = await tph.newPage();
+  await pp2.goto(url); await pp2.waitForSelector('.plan-entry', { timeout: 60000, state: 'attached' });
+  await pp2.evaluate(() => { document.getElementById('dashboard').scrollIntoView(); document.querySelector('.plan-entry').click(); });
+  await pp2.waitForSelector('.trip', { timeout: 10000 }); await pp2.waitForTimeout(1500);
+  const ph = await pp2.evaluate(() => { const t = document.querySelector('.trip'), dk = document.querySelector('.tp-dock').getBoundingClientRect(); const em = [...document.querySelectorAll('.ema')].map((e) => e.getBoundingClientRect()); return { sw: t.scrollWidth, cw: t.clientWidth, dock: dk.bottom <= innerHeight && dk.top > innerHeight - 120, emaIn: em.every((r) => r.left >= 0 && r.right <= innerWidth) }; });
+  await pp2.screenshot({ path: `${out}/23-trip-phone.png` });
+  check('trip, phone: one column, no sideways scroll, the dock stays at the bottom, the ema on the board are on screen', ph.sw <= ph.cw + 1 && ph.dock && ph.emaIn, JSON.stringify(ph));
+  await tph.close();
+}
+
 check('no page errors', errors.length === 0, errors.join(' | '));
 await browser.close();
 const failed = results.filter((r) => !r.ok).length;

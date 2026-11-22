@@ -20,6 +20,7 @@ import CursorLight, { CursorFxToggle, cursorFxInitial, saveCursorFx } from './Cu
 import Density3D from './Density3D.jsx';
 import MapRail from './MapRail.jsx';
 import SortStage, { SortCounters, makeSortBus } from './SortStage.jsx';
+import TripDashboard from './TripDashboard.jsx';
 import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
@@ -360,6 +361,11 @@ export default function App() {
   // ---------- turn the dashboard over: "Sort the data" (SortStage.jsx) ----------
   // The header stays; the map, the splitter and the panel turn over as one card, about one axis through
   // the middle of the area they cover. Two halves: the front turns edge-on, then the back turns in.
+  // Plan your trip: a second dashboard over this one (TripDashboard.jsx)
+  const [tripOpen, setTripOpen] = useState(false);
+  const [tripShown, setTripShown] = useState(false);
+  const [tripAdd, setTripAdd] = useState(null);
+  const openTrip = (id) => { if (id) setTripAdd({ id, n: Date.now() }); toMapSide(); setTripOpen(true); };
   const [face, setFace] = useState('front');   // the side that is showing
   const [side, setSide] = useState('front');   // the side being turned to (the header follows this at once)
   const [flipping, setFlipping] = useState(false);
@@ -669,7 +675,7 @@ export default function App() {
   const densityLabel = densityMode === 'kde' ? 'KDE layer on' : densityMode === 'heat' ? 'Heatmap on' : 'Off';
   const anStatus = [densityMode === 'kde' && 'KDE on', densityMode === 'heat' && 'Heatmap on', walkShow && 'Walking routes shown', busRun && `Bus ${busRun.route.number} shown`, busHl && `Bus ${busHl.route.number} stops`].filter(Boolean);
   const pilotName = walk.pilotInfo?.name;
-  const cls = 'app' + (introDone ? '' : dashSeen ? ' intro' : ' waiting') + (rightOpen ? '' : ' no-right') + (selHit ? ' has-sel' : '') + (picking ? ' picking' : '') + (face === 'back' ? ' face-back' : '') + (side === 'back' ? ' side-back' : '') + (flipping ? ' flipping' : '');
+  const cls = 'app' + (introDone ? '' : dashSeen ? ' intro' : ' waiting') + (rightOpen ? '' : ' no-right') + (selHit ? ' has-sel' : '') + (picking ? ' picking' : '') + (face === 'back' ? ' face-back' : '') + (side === 'back' ? ' side-back' : '') + (flipping ? ' flipping' : '') + (tripShown ? ' trip-shown' : '');
   const cov = d.coverage;
   const covBbox = bboxOf(d.coverageLines);
   const toggleCoverage = () => setCovShow((c) => ({ on: !c.on, token: c.token + 1 }));
@@ -758,6 +764,11 @@ export default function App() {
             {matches.length > 8 && <li className="muted xs more">Showing 8 of {matches.length >= 80 ? '80+' : matches.length} matches. Type more to narrow the list.</li>}
           </ul>
         )}
+        <button type="button" className="card plan-entry" onClick={() => openTrip()}>
+          <span className="pe-img" style={{ backgroundImage: `url("${import.meta.env.BASE_URL}trip/hero-autumn-day.webp")` }} aria-hidden="true" />
+          <span className="pe-tx"><b>Plan your trip</b><small>Hang your days on ema, add places, and see each day's routes, buses and weather.</small></span>
+          <span className="pe-go" aria-hidden="true">→</span>
+        </button>
         <Bento id="explore-v2" resetToken={bentoReset}>
           <Tile k="study" w={2} label="Study area"><StudyArea cov={cov} on={covShow.on} onToggle={toggleCoverage} onReplay={replayCoverage} /></Tile>
 
@@ -947,6 +958,7 @@ export default function App() {
         ) : (
           <div className="pstack" key={sel.id}>
             <Summary hit={selHit} pm={d.pointMuni} photos={d.photos} color={dotColor(selHit.f)} onClose={() => setSel(null)} onBack={() => switchTab('explore')} />
+            <button type="button" className="btn add-trip" onClick={() => openTrip(sel.id)}><span aria-hidden="true">＋</span> Add to trip</button>
             <RouteCard sel={sel} origin={origin} res={routeRes} mode={routeMode} picking={picking} locErr={locErr}
               onMode={setRouteMode} onPick={() => setPicking(!picking)} onHere={() => setOrigin({ key: sel.id, id: sel.id, coords: sel.coords, label: sel.label, kind: sel.layer })}
               onLocate={useMyLocation} onClear={() => { setOrigin(null); setPicking(false); }} onRetry={() => setRouteTry((n) => n + 1)} />
@@ -1085,6 +1097,7 @@ export default function App() {
           ))}
         </>
       )}
+      <TripDashboard open={tripOpen} onShown={setTripShown} onClose={() => setTripOpen(false)} d={d} byId={byId} A={A} Tr={Tr} theme={theme} fetchBusVariant={fetchBusVariant} addRequest={tripAdd} />
     </div>
     <Seam mark="結" ja="結び" en="Closing" />
     <Outro manifest={d.manifest} />
