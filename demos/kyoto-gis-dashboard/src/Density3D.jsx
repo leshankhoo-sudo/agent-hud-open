@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import KotoString from './KotoString.jsx';
+import { noteFor } from './lib/pluck.js';
 import { ATTRACTION_CATS, recordLabel, muniLabel } from './lib/data.js';
 import { themeOf } from './lib/theme.js';
 
@@ -226,10 +228,13 @@ export default function Density3D({ mapRef, on, theme, d }) {
         wrapEl.current.style.opacity = '';
         const W = wrapEl.current.clientWidth, H = wrapEl.current.clientHeight, cw = cardEl.current.offsetWidth || 300, ch = cardEl.current.offsetHeight || 320;
         const right = s.x + 60 + cw < W - 12;                                    // open to the side with room
-        const ex = right ? s.x + 56 : s.x - 56, ey = Math.max(16 + 20, Math.min(H - ch + 20, s.y - 70));
+        // keep clear of the map-tool rail on the left edge and the view presets above it
+        const ey = Math.max(76, Math.min(H - ch + 20, s.y - 70));
+        const cx = Math.max(72, Math.min(W - cw - 12, right ? s.x + 56 : s.x - 56 - cw));
+        const ex = right ? cx : cx + cw;
         anchorEl.current.style.transform = `translate(${s.x}px, ${s.y}px)`;
         lineEl.current.setAttribute('d', `M${s.x},${s.y} L${s.x + (right ? 26 : -26)},${ey} L${ex},${ey}`);
-        cardEl.current.style.transform = `translate(${right ? ex : ex - cw}px, ${ey - 20}px)`;
+        cardEl.current.style.transform = `translate(${cx}px, ${ey - 20}px)`;
         cardEl.current.dataset.side = right ? 'r' : 'l';
       }
     };
@@ -241,7 +246,6 @@ export default function Density3D({ mapRef, on, theme, d }) {
   if (!shown && !on) return null;
   const i = card?.info;
   const catList = i ? ATTRACTION_CATS.filter((c) => i.byCat[c.key]) : [];
-  const spark = i ? sparkPath(i.line, 220, 44) : null;
   return (
     <div className={'d3 ' + phase} ref={wrapEl} data-theme-variant={theme}>
       {phase === 'loading' && <div className="d3-status" role="status">Raising the density surface…</div>}
@@ -277,12 +281,12 @@ export default function Density3D({ mapRef, on, theme, d }) {
             </header>
             <div className="d3-big">
               <Gauge share={i.below} />
-              <div><b><Count to={i.value} /></b><span>records / km²</span><small>denser than {pct(i.below)}% of the prefecture</small></div>
+              <div><b className="d3-num"><Count to={i.value} delay={1350} dur={1500} /></b><span>records / km²</span><small>denser than {pct(i.below)}% of the prefecture</small></div>
             </div>
             {i.muni && <p className="d3-where">{i.muni}</p>}
             <figure className="d3-cut">
-              <figcaption><span>W</span>Cross-section, 5 km east–west<span>E</span></figcaption>
-              <svg viewBox="0 0 220 44" preserveAspectRatio="none" aria-hidden="true"><path className="area" d={spark.area} /><path className="ln" d={spark.line} /><circle cx="110" cy={spark.yMid} r="3" /></svg>
+              <figcaption><span>W</span>Cross-section, 5 km east–west <em className="pluck-hint">· pluck it</em><span>E</span></figcaption>
+              <KotoString values={i.line} freq={noteFor(i.below)} label="Cross-section of the density, 5 km east to west. Press and drag to pluck it like a koto string; denser spots sound higher." />
             </figure>
             <div className="d3-cats">
               <p><b>{i.total}</b> attraction record{i.total === 1 ? '' : 's'} within 1 km</p>
@@ -299,17 +303,17 @@ export default function Density3D({ mapRef, on, theme, d }) {
   );
 }
 
-// number that counts up to its value once
-function Count({ to }) {
+// number that counts up to its value once, after the card has unfolded
+function Count({ to, delay = 0, dur = 900, format = fmt }) {
   const [v, setV] = useState(reduce() ? to : 0);
   useEffect(() => {
     if (reduce()) { setV(to); return undefined; }
     let raf, t0;
-    const step = (now) => { t0 ??= now; const k = Math.min(1, (now - t0) / 900); setV(to * (1 - Math.pow(1 - k, 3))); if (k < 1) raf = requestAnimationFrame(step); };
+    const step = (now) => { t0 ??= now + delay; const k = Math.max(0, Math.min(1, (now - t0) / dur)); setV(to * (1 - Math.pow(1 - k, 4))); if (k < 1) raf = requestAnimationFrame(step); };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [to]);
-  return fmt(v);
+  }, [to, delay, dur]);
+  return format(v);
 }
 // ring that sweeps to the spot's share of the prefecture
 function Gauge({ share }) {
@@ -318,13 +322,8 @@ function Gauge({ share }) {
     <svg className="d3-gauge" viewBox="0 0 56 56" aria-hidden="true">
       <circle cx="28" cy="28" r={r} className="bg" />
       <circle cx="28" cy="28" r={r} className="fg" style={{ '--len': c, '--to': c * (1 - share) }} />
-      <text x="28" y="31">{Math.floor(share * 100)}</text>
+      <circle cx="28" cy="28" r={r} className="ping" />
+      <text x="28" y="31"><Count to={share * 100} delay={1350} dur={1600} format={(x) => Math.floor(x)} /></text>
     </svg>
   );
-}
-function sparkPath(vals, w, h) {
-  const n = vals.length, max = Math.max(1e-6, ...vals.map((x) => x || 0));
-  const pts = vals.map((x, k) => [(k / (n - 1)) * w, h - 3 - ((x || 0) / max) * (h - 8)]);
-  const line = pts.map((p, k) => `${k ? 'L' : 'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join('');
-  return { line, area: `${line}L${w},${h}L0,${h}Z`, yMid: pts[(n - 1) / 2][1] };
 }

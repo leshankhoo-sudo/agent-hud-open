@@ -953,6 +953,26 @@ const b0 = await rp.evaluate(() => window.__kyotoMap.getBearing());
 await rp.locator('.d3-views button.ico').nth(1).click(); await rp.waitForTimeout(1400);
 const turned = await rp.evaluate((b0) => Math.round(((window.__kyotoMap.getBearing() - b0) % 360 + 540) % 360 - 180), b0);
 check('3D density: the camera turns (the turn button swings it 45°, and drag-rotate is on while the surface is up)', turned === 45 && d3a.rot, JSON.stringify({ b0, turned }));
+// the cross-section is a koto string: drag bends it from the point held, letting go makes it ring, then it rests
+await rp.waitForTimeout(1500);
+const kd = () => rp.evaluate(() => document.querySelector('.koto-string .ln')?.getAttribute('d') || '');
+const ksb = await rp.locator('.koto-string').boundingBox();
+const kRest = await kd();
+if (ksb) { await rp.mouse.move(ksb.x + ksb.width * 0.3, ksb.y + ksb.height * 0.5); await rp.mouse.down(); await rp.mouse.move(ksb.x + ksb.width * 0.3, ksb.y + ksb.height * 0.5 + 14, { steps: 4 }); }
+const kBent = await kd();
+await rp.mouse.up(); await rp.waitForTimeout(110);
+const kR1 = await kd(); await rp.waitForTimeout(70); const kR2 = await kd();
+await rp.waitForTimeout(3500); const kAfter = await kd();
+check('3D density card: the cross-section is a string; dragging bends it, letting go makes it ring, then it comes to rest', !!ksb && kBent !== kRest && kR1 !== kR2 && kR1 !== kRest && kAfter === kRest, JSON.stringify({ ok: !!ksb, bent: kBent !== kRest, ring: kR1 !== kR2, rest: kAfter === kRest }));
+await rp.locator('.d3-card .x').click().catch(() => {}); await rp.waitForTimeout(300);
+// hold the middle mouse button and drag to orbit; the page does not auto-scroll
+const orb0 = await rp.evaluate(() => ({ b: window.__kyotoMap.getBearing(), y: scrollY }));
+const cbox = await rp.locator('#dashboard > .center').boundingBox();
+await rp.mouse.move(cbox.x + cbox.width * 0.5, cbox.y + cbox.height * 0.2); await rp.mouse.down({ button: 'middle' });
+await rp.mouse.move(cbox.x + cbox.width * 0.5 + 120, cbox.y + cbox.height * 0.2, { steps: 10 }); await rp.mouse.up({ button: 'middle' }); await rp.waitForTimeout(600);
+const orb1 = await rp.evaluate(() => ({ b: window.__kyotoMap.getBearing(), y: scrollY }));
+const orbTurn = Math.round(((orb1.b - orb0.b) % 360 + 540) % 360 - 180);
+check('3D density: holding the middle mouse button and dragging orbits the view (no auto-scroll)', orbTurn >= 35 && orb1.y === orb0.y, JSON.stringify({ orbTurn, y0: orb0.y, y1: orb1.y }));
 await rp.locator('.d3t').click(); await rp.waitForFunction(() => !document.querySelector('.d3'), null, { timeout: 8000 }).catch(() => {}); await rp.waitForTimeout(1300);
 const d3off = await rp.evaluate(() => ({ bearing: Math.round(window.__kyotoMap.getBearing()), rot: window.__kyotoMap.dragRotate.isEnabled(), layer: !!window.__kyotoMap.getLayer('density-3d'), pts: window.__kyotoMap.getLayoutProperty('attractions-pt', 'visibility'), overlay: !!document.querySelector('.d3') }));
 check('3D density: switching it off sinks the surface, removes the layer and puts the points back', !d3off.layer && !d3off.overlay && d3off.pts === d3before.pts && d3off.bearing === 0 && !d3off.rot, JSON.stringify({ d3before, d3off }));
