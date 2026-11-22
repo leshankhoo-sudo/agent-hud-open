@@ -108,7 +108,42 @@ export default function Density3D({ mapRef, on, theme, d }) {
     const map = mapRef.current;
     if (!map || !(phase === 'rising' || phase === 'ready')) return undefined;
     map.dragRotate.enable(); map.touchZoomRotate.enableRotation(); map.keyboard.enableRotation();
-    return () => { map.dragRotate.disable(); map.touchZoomRotate.disableRotation(); map.keyboard.disableRotation(); };
+    // Hold the middle mouse button and drag to orbit: sideways turns the camera round, up and down tilts it.
+    // On release it keeps turning a little and slows to a stop.
+    const box = map.getCanvasContainer();
+    let drag = null, coast = 0;
+    const down = (e) => {
+      if (e.button !== 1) return;
+      e.preventDefault();   // no browser auto-scroll
+      cancelAnimationFrame(coast); setSpin(false);
+      drag = { x: e.clientX, y: e.clientY, b: map.getBearing(), p: map.getPitch(), lx: e.clientX, lt: e.timeStamp, v: 0 };
+      box.classList.add('orbiting');
+    };
+    const move = (e) => {
+      if (!drag) return;
+      const dt = Math.max(8, e.timeStamp - drag.lt);
+      drag.v = 0.8 * drag.v + 0.2 * ((e.clientX - drag.lx) * 0.35 / dt);   // degrees per ms
+      drag.lx = e.clientX; drag.lt = e.timeStamp;
+      map.jumpTo({ bearing: drag.b + (e.clientX - drag.x) * 0.35, pitch: Math.max(0, Math.min(map.getMaxPitch(), drag.p - (e.clientY - drag.y) * 0.25)) });
+    };
+    const up = (e) => {
+      if (!drag || (e.button !== undefined && e.button !== 1)) return;
+      let v = reduce() ? 0 : drag.v, last = 0;
+      drag = null; box.classList.remove('orbiting');
+      const glide = (now) => { const dt = last ? Math.min(40, now - last) : 16; last = now; v *= Math.pow(0.9, dt / 16.7); map.setBearing(map.getBearing() + v * dt); if (Math.abs(v) > 0.002) coast = requestAnimationFrame(glide); };
+      if (Math.abs(v) > 0.005) coast = requestAnimationFrame(glide);
+    };
+    const aux = (e) => { if (e.button === 1) e.preventDefault(); };
+    box.addEventListener('mousedown', down, true);
+    box.addEventListener('auxclick', aux);
+    addEventListener('mousemove', move);
+    addEventListener('mouseup', up);
+    return () => {
+      map.dragRotate.disable(); map.touchZoomRotate.disableRotation(); map.keyboard.disableRotation();
+      box.removeEventListener('mousedown', down, true); box.removeEventListener('auxclick', aux);
+      removeEventListener('mousemove', move); removeEventListener('mouseup', up);
+      cancelAnimationFrame(coast); box.classList.remove('orbiting');
+    };
   }, [phase, mapRef]);
   // a slow orbit round the prefecture; any drag, wheel or touch stops it
   useEffect(() => {
@@ -224,7 +259,7 @@ export default function Density3D({ mapRef, on, theme, d }) {
             <b>Attraction density</b>
             <i style={{ background: `linear-gradient(90deg, ${(theme === 'light' ? ['#f4eff9', '#ddd1f4', '#a98ff0', '#d052b7', '#7c1863'] : ['#1a2229', '#1f5f6e', '#79d7da', '#fff0d4', '#ff8a5c']).join(', ')})` }} />
             <span>0</span><span>{S.current ? S.current.peak.toFixed(1) : ''} records / km²</span>
-            <small>Height in proportion to density (1 record/km² ≈ {S.current ? Math.round(28000 / S.current.peak / 100) / 10 : ''} km drawn) · ~250 m grid · kernel density, not visitor numbers{phase === 'ready' ? ' · click the surface · right-drag or Ctrl-drag to turn' : ''}</small>
+            <small>Height in proportion to density (1 record/km² ≈ {S.current ? Math.round(28000 / S.current.peak / 100) / 10 : ''} km drawn) · ~250 m grid · kernel density, not visitor numbers{phase === 'ready' ? ' · click the surface · hold the middle mouse button and drag to orbit (or right-drag)' : ''}</small>
           </div>
         </>
       )}
