@@ -406,6 +406,8 @@ if (wxOk) {
   check('weather shows forecast, valid time and retrieval time', /Forecast valid for/.test(wxText) && /Retrieved/.test(wxText), wxText.slice(0, 200));
   const opts = await page.locator('#wx-day option').count();
   check('date selector offers 7 forecast days', opts === 7, String(opts));
+  const tree = await page.evaluate(() => { const c = document.querySelector('.wx .pixel-tree'); if (!c) return null; const r = c.getBoundingClientRect(), ov = (q) => { const e = document.querySelector(q)?.getBoundingClientRect(); return !!e && !(r.left >= e.right || r.right <= e.left || r.top >= e.bottom || r.bottom <= e.top); }; return { w: r.width, temp: ov('.wx-temp'), valid: ov('.wx-valid'), aria: c.getAttribute('aria-label'), season: document.documentElement.dataset.season }; });
+  check('weather: a pixel tree for the season of the site stands beside the current values, not over them', !!tree && tree.w > 90 && !tree.temp && !tree.valid && tree.aria.includes(`for ${tree.season}`), JSON.stringify(tree));
 } else {
   check('weather failure is shown as an error, with no invented values', /Weather unavailable/.test(wxText) && !/Forecast valid for/.test(wxText), wxText.slice(0, 200));
 }
@@ -1255,6 +1257,15 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   check('trip: planned, the next stop\'s own photo fills the scene with its author and licence; the ema hang on a rope', pv.photo && /Photo: .+ · CC|Public domain/.test(pv.credit) && pv.hang === 5 && /^Kiyomizu-dera · 10:00/.test(pv.next || ''), JSON.stringify(pv));
   check('trip: weather is asked for the next stop at its planned time; the map shows the day\'s places; the bus fare is added up', /Kiyomizu-dera/.test(pv.wx || '') && /10:00/.test(pv.wx || '') && pv.hours[0] === '09:00' && pv.markers === 4 && /^¥\d+/.test(pv.fare || ''), JSON.stringify(pv));
 
+  // the pixel tree in the weather card: beside the numbers, never over them, and it moves when the pointer passes
+  const tr0 = await tp.evaluate(() => { const c = document.querySelector('.tp-wx .pixel-tree'); if (!c) return null; const r = c.getBoundingClientRect(), ov = (q) => { const e = document.querySelector(q)?.getBoundingClientRect(); return !!e && !(r.left >= e.right || r.right <= e.left || r.top >= e.bottom || r.bottom <= e.top); }; return { w: r.width, temp: ov('.tp-wx .big b'), label: ov('.tp-wx .big span'), loc: ov('.tp-wx .loc'), hours: ov('.tp-wx .hours'), img: c.toDataURL(), aria: c.getAttribute('aria-label') }; });
+  if (tr0) {
+    const tb = await tp.locator('.tp-wx .pixel-tree').boundingBox();
+    await tp.mouse.move(tb.x + 4, tb.y + tb.height * 0.35); await tp.mouse.move(tb.x + tb.width - 4, tb.y + tb.height * 0.3, { steps: 8 }); await tp.waitForTimeout(250);
+    tr0.moved = await tp.evaluate((u) => document.querySelector('.tp-wx .pixel-tree').toDataURL() !== u, tr0.img);
+    delete tr0.img;
+  }
+  check('trip: a pixel tree for the season sits in the weather card beside the numbers, never over them, and moves when the pointer passes', !!tr0 && tr0.w > 100 && !tr0.temp && !tr0.label && !tr0.loc && !tr0.hours && tr0.moved && /Pixel tree for autumn/.test(tr0.aria), JSON.stringify(tr0));
   // a place card dragged onto Day 2's ema
   await tp.evaluate(() => document.getElementById('dashboard').scrollIntoView());   // filling the plan's fields can scroll the page
   await tp.waitForTimeout(400);

@@ -6,6 +6,7 @@ import { getWeather, describeCode } from './lib/weather.js';
 import { CATEGORY_LABEL, ATTRACTION_CATS, recordLabel } from './lib/data.js';
 import { ICONIC } from './lib/landmarks.js';
 import { OFFLINE_PREVIEW, basemapStyle } from './MapView.jsx';
+import PixelTree from './PixelTree.jsx';
 import './trip.css';
 
 // "Plan your trip": a second dashboard for the visitor's own plan. It covers the GIS dashboard (the
@@ -777,6 +778,8 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
                 <div><b>{wxNow?.temperature != null ? `${Math.round(wxNow.temperature)}°` : '–'}</b><span>{wxNow?.pending ? 'Loading…' : wxNow?.error ? 'Forecast not available' : wxNow?.none ? 'No forecast yet' : wxNow?.label}</span></div>
               </div>
               <p className="loc">{wxMain.p.name}<small>{TP.dateLong(day.date)} · {TP.fmtHM(wxMain.t)}</small></p>
+              <div className="tp-tree"><PixelTree season={seasonPick || seasonWord(day.date)} theme={theme} wind={wxNow?.wind} windDir={wxNow?.windDir} gust={wxNow?.gust} code={wxNow?.code} precip={wxNow?.precip} night={!!wxNow?.night} width={150} height={112}
+                label={`Pixel tree for ${seasonPick || seasonWord(day.date)}, moving with the forecast wind${wxNow?.wind != null ? ` of ${Math.round(wxNow.wind)} km/h` : ''} at ${wxMain.p.name}`} /></div>
               {wxNow?.none && <p className="wx-note">Open-Meteo forecasts 7 days ahead; this date is beyond it.</p>}
               {wxNow?.error && <p className="wx-note">{wxNow.error}</p>}
               <div className="hours">

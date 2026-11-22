@@ -194,8 +194,8 @@ test('weather URL asks for the required variables in Asia/Tokyo', () => {
   assert.equal(u.origin + u.pathname, 'https://api.open-meteo.com/v1/forecast');
   assert.equal(u.searchParams.get('timezone'), 'Asia/Tokyo');
   assert.equal(u.searchParams.get('forecast_days'), '7');
-  assert.equal(u.searchParams.get('current'), 'temperature_2m,weather_code');
-  assert.equal(u.searchParams.get('hourly'), 'temperature_2m,weather_code,precipitation_probability,precipitation');
+  assert.equal(u.searchParams.get('current'), 'temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m');
+  assert.equal(u.searchParams.get('hourly'), 'temperature_2m,weather_code,precipitation_probability,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m');
   assert.equal(u.searchParams.get('latitude'), '35.03952');
 });
 
@@ -220,6 +220,7 @@ test('weather: nulls stay null, cache lasts 30 minutes, force refresh bypasses i
   assert.equal(r1.fromCache, false);
   assert.equal(r1.data.hourly[1].temperature, null);
   assert.equal(r1.data.hourly[1].precipProb, null);
+  assert.equal(r1.data.hourly[0].wind, null);                  // no wind in the response: null, not calm
   t += WEATHER_TTL_MS - 1;
   assert.equal((await getWeather(35.04, 135.73, { fetchImpl, now, storage: null })).fromCache, true);
   t += 2;
@@ -798,4 +799,34 @@ test('trip: calendar file in UTC from Japan time, folded lines, bus rides flagge
   assert.ok(ics.split('\r\n').every((l) => l.length <= 75));
   assert.match(ics.replace(/\r\n /g, ''), /no timetable/);
   assert.equal(t.commonsUrl('File:Kiyomizu-dera, Kyoto, November 2016 -02.jpg', 1600), 'https://commons.wikimedia.org/wiki/Special:FilePath/Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg?width=1600');
+});
+
+test('pixel tree: one tree per season that fits its box and is centred; wind from the forecast, none when there is no value', async () => {
+  const t = await import('../src/lib/pixelTree.js');
+  for (const season of ['spring', 'summer', 'autumn', 'winter']) {
+    const a = t.buildTree(season, 150, 112, 11), b = t.buildTree(season, 150, 112, 11);
+    assert.deepEqual(a, b);                                                     // same season and seed, same tree
+    const cells = [...a.bark, ...a.leaves];
+    assert.ok(cells.every((c) => c.x >= 0 && c.x < a.cols && c.y >= 0 && c.y < a.ground), season);
+    const xs = cells.map((c) => c.x), mid = (Math.min(...xs) + Math.max(...xs)) / 2;
+    assert.ok(Math.abs(mid - (a.cols - 1) / 2) <= 1, `${season} centred`);
+    assert.ok(a.leaves.every((l) => l.c >= 0 && l.c < a.palette.length && l.h >= 0 && l.h <= 1));
+    if (season === 'winter') {
+      const bark = new Set(a.bark.map((c) => `${c.x},${c.y}`));
+      assert.ok(a.leaves.length > 20 && a.leaves.every((l) => bark.has(`${l.x},${l.y + 1}`)));   // snow lies on top of branches
+    } else assert.ok(a.leaves.length > 150, `${season} has a crown`);
+  }
+  assert.equal(t.windSide(270), 1);            // a west wind blows to the right
+  assert.ok(Math.abs(t.windSide(90) + 1) < 1e-9);
+  assert.equal(t.windSide(null), 0);
+  assert.equal(t.windStrength(null), 0);       // no wind value: the tree stands still, nothing is assumed
+  assert.equal(t.windStrength(18), 0.5);
+  assert.equal(t.windStrength(200), 1.2);
+  assert.deepEqual([t.weatherFx(63, 1).rain, t.weatherFx(73, 0.5).snow, t.weatherFx(95, 2).storm, t.weatherFx(45, 0).fog, t.weatherFx(0, 0).drops], [true, true, true, true, 0]);
+});
+
+test('weather: wind speed, direction and gusts are parsed from the hourly forecast', async () => {
+  const w = parseWeather({ timezone: 'Asia/Tokyo', hourly: { time: ['2026-11-23T10:00'], temperature_2m: [8], weather_code: [0], wind_speed_10m: [12.4], wind_direction_10m: [290], wind_gusts_10m: [25.2] }, current: { time: '2026-11-23T10:00', wind_speed_10m: 10, wind_direction_10m: 300, wind_gusts_10m: 20 } });
+  assert.deepEqual([w.hourly[0].wind, w.hourly[0].windDir, w.hourly[0].gust], [12.4, 290, 25.2]);
+  assert.deepEqual([w.current.wind, w.current.windDir, w.current.gust], [10, 300, 20]);
 });

@@ -987,7 +987,7 @@ export default function App() {
                 </div>
               )}
               <div className="pane" role="tabpanel" id="pane-weather" aria-labelledby="tab-weather" hidden={curTab !== 'weather'}>
-                <Weather target={{ id: sel.id, lat: sel.coords[1], lon: sel.coords[0] }} visit={visit} onVisit={setVisit} />
+                <Weather target={{ id: sel.id, lat: sel.coords[1], lon: sel.coords[0] }} visit={visit} onVisit={setVisit} season={visualSeason} theme={theme} />
               </div>
               <div className="pane" role="tabpanel" id="pane-journeys" aria-labelledby="tab-journeys" hidden={curTab !== 'journeys'}>
                 <PlaceJourneys journeys={d.journeys} id={sel.id} onOpen={() => setSheet('journeys')} />
@@ -1692,6 +1692,7 @@ function Sources({ d, status, walk, failed, onClose, onRecords }) {
           <h3>Koi pond background</h3>
           <p>The koi swimming behind the panel are drawn by <a href="https://github.com/pursurer/ascii-koi" target="_blank" rel="noreferrer">ASCII Koi</a> by pursurer (MIT licence), used unchanged. Decoration only: it carries no data.</p>
           <p>"Sort the data" (the back of the dashboard) adapts the sphere layout and the arc flight into folders from <a href="https://github.com/kairothq/claude-photo-sorter" target="_blank" rel="noreferrer">Claude photo sorter</a> by Divy Kairoth (MIT licence), rewritten for this project. Every tile is a real record from sort_story.json: 523 OpenStreetMap records and 121 Kyoto City sites, of which 5 were merged and 13 left out.</p>
+          <p>The pixel tree in the weather panels takes its idea (a tree of pixel leaves the wind and the pointer can shake loose) from FeralUI's Pixel Play; the trees, colours and code are this project's own. It moves with the Open-Meteo wind speed, direction and gusts of the chosen hour, and shows rain, snow, fog and thunder from the forecast code.</p>
         </section>
         <section>
           <h3>Sample journeys & fares</h3>

@@ -486,3 +486,10 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
   .trip { overflow-x: hidden; }
     .trip > .tp-dock, .trip > .tp-support { position: fixed; }
 }
+
+/* pixel tree on the right of the trip weather card; the place moves under the temperature */
+.tp-wx .loc { position: static; text-align: left; max-width: calc(100% - 160px); margin: 8px 0 0; font-size: 14px; }
+.tp-wx .big { max-width: calc(100% - 160px); }
+.tp-wx .tp-tree { position: absolute; right: 12px; top: 8px; width: 150px; height: 112px; }
+.tp-wx .pixel-tree { display: block; image-rendering: pixelated; cursor: crosshair; touch-action: pan-y; }
+.tp-wx .hours { position: relative; z-index: 1; }

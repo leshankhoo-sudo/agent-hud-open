@@ -2279,3 +2279,8 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
 .koto-string .hit { fill: transparent; }
 .koto-string:hover .ln { stroke-width: 1.8; filter: drop-shadow(0 0 3px var(--d3-line)); }
 @media (prefers-reduced-motion: reduce) { .d3-gauge .ping, .d3-num, .d3-cats ol li, .d3-cut figcaption .pluck-hint { animation-duration: .01s !important; animation-delay: 0s !important; } }
+
+/* pixel tree in the weather panel (PixelTree.jsx): at the end of the current-weather row, never over the numbers */
+.wx-now > div:nth-child(2) { flex: 1; min-width: 0; }
+.wx-now .pixel-tree { flex: none; margin: -8px -4px -6px auto; image-rendering: pixelated; cursor: crosshair; touch-action: pan-y; }
+@media (max-width: 420px) { .wx-now .pixel-tree { width: 104px !important; height: 82px !important; } }

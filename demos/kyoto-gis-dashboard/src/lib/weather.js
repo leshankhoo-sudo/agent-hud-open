@@ -9,8 +9,8 @@ export function weatherUrl(lat, lon) {
   const p = new URLSearchParams({
     latitude: lat.toFixed(5),
     longitude: lon.toFixed(5),
-    current: 'temperature_2m,weather_code',
-    hourly: 'temperature_2m,weather_code,precipitation_probability,precipitation',
+    current: 'temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m',
+    hourly: 'temperature_2m,weather_code,precipitation_probability,precipitation,wind_speed_10m,wind_direction_10m,wind_gusts_10m',
     timezone: 'Asia/Tokyo',
     forecast_days: '7',
   });
@@ -38,13 +38,17 @@ export function parseWeather(json) {
     code: num(h.weather_code?.[i]),
     precipProb: num(h.precipitation_probability?.[i]),
     precip: num(h.precipitation?.[i]),
+    // wind at 10 m: speed and gusts in km/h, direction in degrees the wind comes from (missing values stay null)
+    wind: num(h.wind_speed_10m?.[i]),
+    windDir: num(h.wind_direction_10m?.[i]),
+    gust: num(h.wind_gusts_10m?.[i]),
   }));
   const c = json.current || null;
   return {
     timezone: json.timezone,
     grid: { lat: num(json.latitude), lon: num(json.longitude), elevation: num(json.elevation) },
     units: { temperature: json.hourly_units?.temperature_2m || '°C', precip: json.hourly_units?.precipitation || 'mm', precipProb: json.hourly_units?.precipitation_probability || '%' },
-    current: c ? { time: c.time || null, interval: num(c.interval), temperature: num(c.temperature_2m), code: num(c.weather_code) } : null,
+    current: c ? { time: c.time || null, interval: num(c.interval), temperature: num(c.temperature_2m), code: num(c.weather_code), wind: num(c.wind_speed_10m), windDir: num(c.wind_direction_10m), gust: num(c.wind_gusts_10m) } : null,
     hourly,
   };
 }

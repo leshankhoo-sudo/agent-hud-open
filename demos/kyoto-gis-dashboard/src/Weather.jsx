@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getWeather, describeCode, tokyoHourKey, formatTokyo, dailySummary, WEATHER_TTL_MS } from './lib/weather.js';
+import PixelTree from './PixelTree.jsx';
 
 const DOW = (d) => new Date(d + 'T00:00:00+09:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', timeZone: 'Asia/Tokyo' });
 const fmt = (v, unit, digits = 1) => (v == null ? 'no value' : `${digits === 0 ? Math.round(v) : v.toFixed(digits)}${unit}`);
@@ -39,7 +40,7 @@ export function WxIcon({ kind, size = 22 }) {
 
 // `visit` / `onVisit` (optional) keep the planned visit date and hour in the parent, so the choice
 // survives a change of tab, theme or selected place.
-export default function Weather({ target, visit, onVisit }) {
+export default function Weather({ target, visit, onVisit, season = 'autumn', theme = 'dark' }) {
   const [state, setState] = useState({ status: 'idle' });
   const [own, setOwn] = useState({ day: null, hour: null });
   const v = visit || own;
@@ -136,8 +137,14 @@ export default function Weather({ target, visit, onVisit }) {
             <div>
               <div className="wx-temp">{data.current?.temperature == null ? 'no value' : <><RollNum value={data.current.temperature} />{data.units.temperature}</>}</div>
               <div>{describeCode(data.current?.code).label}</div>
-              <div className="muted xs">Current model value · valid {data.current?.time ? data.current.time.replace('T', ' ') + ' JST' : 'no time given'}{data.current?.interval ? ` (${data.current.interval / 60}-min interval)` : ''}</div>
+              <div className="muted xs wx-valid">Current model value · valid {data.current?.time ? data.current.time.replace('T', ' ') + ' JST' : 'no time given'}{data.current?.interval ? ` (${data.current.interval / 60}-min interval)` : ''}</div>
             </div>
+            {(() => {
+              const w = sel || data.current || {};
+              const hr = Number((sel?.time || data.current?.time || 'T12').slice(11, 13));
+              return <PixelTree season={season} theme={theme} wind={w.wind} windDir={w.windDir} gust={w.gust} code={w.code} precip={sel?.precip ?? null} night={hr < 6 || hr >= 18} width={132} height={104}
+                label={`Pixel tree for ${season}, moving with the forecast wind${w.wind != null ? ` of ${Math.round(w.wind)} km/h` : ''} at the chosen hour`} />;
+            })()}
           </div>
 
           <fieldset className="visit">
