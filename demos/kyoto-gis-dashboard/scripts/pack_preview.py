@@ -19,6 +19,11 @@ import os
 import re
 import sys
 
+try:
+    sys.stdout.reconfigure(encoding='utf-8')   # the dropped characters are Japanese; Windows consoles default to cp1252
+except AttributeError:
+    pass
+
 root = next((a for a in sys.argv[1:] if not a.startswith('--')), 'dist-artifact')
 limit = int(sys.argv[sys.argv.index('--limit') + 1]) if '--limit' in sys.argv else 511
 

@@ -1190,12 +1190,12 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   check('trip: "Plan your trip" in the panel switches the whole dashboard behind shoji doors; not planned yet, the ema are pinned on the board with a hint', doors && e0.hidden === 'hidden' && !e0.photo && e0.pinned === 4 && e0.add === 1 && e0.hint && e0.sub === 'Not planned yet', JSON.stringify(e0));
   check('trip: rail is Trip, Agenda, Trip map, Dashboard; dock is Play day, hours, +, Best order, Export; Support at the bottom left; popular places have photos', JSON.stringify(e0.rail) === JSON.stringify(['Trip', 'Agenda', 'Trip map', 'Dashboard']) && e0.dock.length === 5 && /Play day/.test(e0.dock[0]) && /Best order/.test(e0.dock[3]) && /Export/.test(e0.dock[4]) && e0.support === 'Support' && e0.cards.length === 4 && e0.cards.every(Boolean) && /Popular in/.test(e0.title), JSON.stringify(e0));
 
-  // an ema opens its day's scroll; the "+" ema adds a day
+  // an ema opens its day's strip (a thread runs from the ema, the trip card steps aside); the "+" ema adds a day
   await tp.locator('.ema.add').click();
   await tp.locator('.ema[data-day="0"]').click();
-  await tp.waitForTimeout(1000);
-  const s1 = await tp.evaluate(() => ({ scroll: document.querySelector('.tp-scroll h4')?.textContent, days: document.querySelectorAll('.ema:not(.add)').length }));
-  check('trip: the "+" ema adds a day, an ema unrolls that day\'s plan', s1.days === 4 && /^Day 1/.test(s1.scroll || ''), JSON.stringify(s1));
+  await tp.waitForTimeout(1400);
+  const s1 = await tp.evaluate(() => ({ k: document.querySelector('.tp-strip .ds-k')?.textContent, h: document.querySelector('.tp-strip h4')?.textContent, days: document.querySelectorAll('.ema:not(.add)').length, thread: !!document.querySelector('.tp-thread path'), card: getComputedStyle(document.querySelector('.tp-feat')).opacity }));
+  check('trip: the "+" ema adds a day; an ema drops that day\'s strip on a thread and the trip card steps aside', s1.days === 4 && /DAY 1$/.test(s1.k || '') && /^\d+ [A-Z][a-z]+$/.test(s1.h || '') && s1.thread && +s1.card < 0.1, JSON.stringify(s1));
 
   // start place from the station list, then places by search (Japanese name) and by the + button
   await tp.locator('.tp-dock .fab').click();
@@ -1215,16 +1215,32 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   let st = await store();
   check('trip: a station can be the start; places are found by Japanese name and added to the day, and the plan is saved in the browser', st?.days[0].from === 'S00019' && JSON.stringify(st.days[0].stops.map((s) => s.id)) === JSON.stringify(['A00560', 'A00540', 'A00559']), JSON.stringify(st?.days[0]));
 
-  // the leg into Kiyomizu-dera by bus: route, stops and fare from the bus data, no ride time
-  await tp.locator('.tp-scroll .stops > li').nth(1).locator('.m.bus').click();
-  await tp.locator('.tp-scroll .stops > li').nth(1).locator('.tp-at input').fill('10:00');
-  await tp.locator('.tp-scroll .stops > li').nth(2).locator('.m.bike').click();
-  await tp.waitForFunction(() => { const t = [...document.querySelectorAll('.tp-scroll .lt')].map((x) => x.textContent); return t.length >= 3 && t.every((x) => !/Finding/.test(x)); }, null, { timeout: 60000 }).catch(() => {});
-  const lg = await tp.evaluate(() => ({ legs: [...document.querySelectorAll('.tp-scroll .lt')].map((x) => x.textContent), buses: document.querySelectorAll('.tp-scroll .leg select option').length, times: [...document.querySelectorAll('.tp-scroll .stop .t')].map((x) => x.textContent), radius: document.querySelector('.tp-scroll .leg .xs')?.textContent || '' }));
-  check('trip: a bus leg names the route, the stops and the official fare, says the ride time is not known, and states the stop search radius', /^Bus \S+: .+ → .+, \d+ stops?/.test(lg.legs[0]) && /ride time not known/.test(lg.legs[0]) && /¥\d+/.test(lg.legs[0]) && lg.buses >= 1 && /search radius/.test(lg.radius), JSON.stringify(lg));
-  check('trip: walking and cycling legs are timed by the routing service; times run on from the arrival time the visitor set (10:00 + 60 min stay + the cycle ride)', /^Cycle \d+ min · [\d.]+ k?m/.test(lg.legs[1]) && /^Walk \d+ min/.test(lg.legs[2]) && lg.times[0] === '10:00' && /^\d\d:\d\d$/.test(lg.times[1]) && lg.times[1] > '11:00' && lg.times[2] > lg.times[1], JSON.stringify(lg));
-  await tp.screenshot({ path: `${out}/21-trip-scroll.png` });
-  await tp.locator('.tp-scroll .x').first().click();
+  // each place is one quiet line; its stay and arrival time open in place
+  const rows0 = await tp.evaluate(() => ({ rows: document.querySelectorAll('.tp-strip button.ds-stop').length, edits: document.querySelectorAll('.tp-strip .ds-edit, .tp-strip .ds-pop').length, pills: document.querySelectorAll('.tp-strip .ds-pill').length }));
+  await tp.locator('.tp-strip button.ds-stop').nth(0).click();
+  await tp.locator('.tp-strip .ds-edit input[type=time]').fill('10:00');
+  await tp.locator('.tp-strip .ds-edit .stp button', { hasText: '+' }).click();
+  await tp.locator('.tp-strip .ds-edit .stp button', { hasText: '+' }).click();
+  const stay = await tp.evaluate(() => document.querySelector('.tp-strip .ds-edit .stp b')?.textContent);
+  await tp.locator('.tp-strip button.ds-stop').nth(0).click();
+  check('trip: the strip shows one line per place and one pill per leg; a place\'s stay and arrival open only when asked', rows0.rows === 3 && rows0.edits === 0 && rows0.pills === 3 && stay === '1 h 30', JSON.stringify({ rows0, stay }));
+
+  // the leg into Kiyomizu-dera by bus: route, stops and fare from the bus data, no ride time; then a cycle leg
+  await tp.locator('.tp-strip .ds-leg').nth(0).locator('.ds-pill').click();
+  await tp.locator('.tp-strip .ds-pop .ds-seg button', { hasText: 'Bus' }).click();
+  await tp.waitForFunction(() => /^Bus \S+:/.test(document.querySelector('.tp-strip .ds-pop .lt')?.textContent || ''), null, { timeout: 60000 }).catch(() => {});
+  const bus = await tp.evaluate(() => ({ lt: document.querySelector('.tp-strip .ds-pop .lt')?.textContent || '', opts: document.querySelectorAll('.tp-strip .ds-pop .buses li').length, xs: document.querySelector('.tp-strip .ds-pop .xs')?.textContent || '' }));
+  await tp.screenshot({ path: `${out}/21-trip-strip-bus.png` });
+  await tp.locator('.tp-strip .ds-leg').nth(0).locator('.ds-pill').click();
+  await tp.locator('.tp-strip .ds-leg').nth(1).locator('.ds-pill').click();
+  await tp.locator('.tp-strip .ds-pop .ds-seg button', { hasText: 'Cycle' }).click();
+  await tp.locator('.tp-strip .ds-leg').nth(1).locator('.ds-pill').click();
+  await tp.waitForFunction(() => { const t = [...document.querySelectorAll('.tp-strip .ds-pill')].map((x) => x.textContent); return t.length === 3 && t.every((x) => !/Finding/.test(x)); }, null, { timeout: 60000 }).catch(() => {});
+  const lg = await tp.evaluate(() => ({ pills: [...document.querySelectorAll('.tp-strip .ds-pill')].map((x) => x.textContent), titles: [...document.querySelectorAll('.tp-strip .ds-pill')].map((x) => x.title), nt: document.querySelector('.tp-strip .ds-leg .nt')?.textContent, times: [...document.querySelectorAll('.tp-strip button.ds-stop .t')].map((x) => x.textContent) }));
+  check('trip: a bus leg names the route, the stops and the official fare, says the ride time is not known, and states the stop search radius', /^Bus \S+: .+ → .+, \d+ stops?/.test(bus.lt) && /ride time not known/.test(bus.lt) && /¥\d+/.test(bus.lt) && bus.opts >= 1 && /Stops searched within \d+ m/.test(bus.xs) && /^\S+ · \d+ stops? · ¥\d+$/.test(lg.pills[0]) && lg.nt === 'no timetable', JSON.stringify({ bus, lg }));
+  check('trip: walking and cycling legs are timed by the routing service; times run on from the arrival time the visitor set (10:00 + 1 h 30 stay + the cycle ride)', /^Cycle \d+ min · [\d.]+ k?m/.test(lg.titles[1]) && /^Walk \d+ min/.test(lg.titles[2]) && lg.times[0] === '10:00' && /^\d\d:\d\d$/.test(lg.times[1]) && lg.times[1] > '11:30' && lg.times[2] > lg.times[1], JSON.stringify(lg));
+  await tp.screenshot({ path: `${out}/21-trip-strip.png` });
+  await tp.locator('.tp-strip .ds-close').click();
   await tp.waitForTimeout(2500);
   const pv = await tp.evaluate(() => ({ photo: document.querySelector('.tp-scene').classList.contains('photo'), credit: document.querySelector('.tp-credit')?.textContent || '', hang: document.querySelectorAll('.ema.hang').length, next: document.querySelector('.tp-next .tx b')?.textContent, wx: document.querySelector('.tp-wx .loc')?.textContent, hours: [...document.querySelectorAll('.tp-wx .hours > div > span')].map((x) => x.textContent), fare: document.querySelector('.tp-feat .stats span:nth-child(3) b')?.textContent, markers: document.querySelectorAll('.tp-mapcard .tp-mk').length }));
   await tp.screenshot({ path: `${out}/22-trip-planned.png` });
@@ -1284,6 +1300,26 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   check('trip: "Add to trip" on a place adds it to the open day and switches to the trip dashboard', st.days.some((x) => x.stops.some((s) => s.id === 'A00563')), JSON.stringify(st.days.map((x) => x.stops.map((s) => s.id))));
   check('trip: no page errors', tErr.length === 0, tErr.join(' | '));
   await tp.close();
+
+  // the scene follows the season of the planned day and day or night follows the theme
+  {
+    const sc = [];
+    for (const [date, theme, want] of [['2027-01-15', 'light', 'winter-day'], ['2027-01-15', 'dark', 'winter-night'], ['2026-04-06', 'light', 'spring-day'], ['2026-07-20', 'dark', 'summer-night']]) {
+      const sp2 = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
+      await sp2.addInitScript(([d0, th]) => {
+        const days = [0, 1].map((i) => { const x = new Date(d0 + 'T00:00:00Z'); x.setUTCDate(x.getUTCDate() + i); return { id: 'd' + i, date: x.toISOString().slice(0, 10), start: '09:00', end: '18:00', from: null, stops: [] }; });
+        localStorage.setItem('kyoto-gis-trip-v1', JSON.stringify({ v: 1, title: 'Kyoto', hintSeen: true, days }));
+        localStorage.setItem('kyoto-gis-theme', th);
+      }, [date, theme]);
+      await sp2.goto(url); await sp2.waitForSelector('.plan-entry', { timeout: 60000, state: 'attached' });
+      await sp2.evaluate(() => { document.getElementById('dashboard').scrollIntoView(); document.querySelector('.plan-entry').click(); });
+      await sp2.waitForSelector('.tp-illus', { timeout: 10000 }); await sp2.waitForTimeout(1500);
+      sc.push(await sp2.evaluate(() => { const im = document.querySelector('.tp-illus'), em = [...document.querySelectorAll('.ema.pinned')].map((e) => e.getBoundingClientRect()), sr = document.querySelector('.tp-scene').getBoundingClientRect(); return { scene: im.dataset.scene, ok: im.complete && im.naturalWidth > 0, inside: em.length === 3 && em.every((r) => r.left > sr.left && r.right < sr.right && r.top > sr.top && r.bottom < sr.bottom) }; }));
+      sc[sc.length - 1].want = want;
+      await sp2.close();
+    }
+    check('trip: the scene follows the planned day\'s season and the light or dark theme, and the ema stay on its board', sc.every((x) => x.scene === x.want && x.ok && x.inside), JSON.stringify(sc));
+  }
 
   // phone: the trip dashboard stacks, no sideways scroll, the dock stays on screen
   const tph = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

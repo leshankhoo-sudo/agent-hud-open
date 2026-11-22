@@ -16,9 +16,18 @@ import './trip.css';
 
 const BASE = import.meta.env.BASE_URL;
 const reduce = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-// The scene: an AI-generated illustration (Figma image generation), mirrored so the sky sits behind the
-// trip card. The blank notice board is where the ema hang before anything is planned (image pixels).
-const SCENE = { src: `${BASE}trip/hero-autumn-day.webp`, w: 1536, h: 864, board: [1203, 254, 1416, 444], focusX: 0.62 };
+// The scene: AI-generated illustrations (Figma image generation), one per season, day and night, all
+// mirrored so the sky sits behind the trip card. The season follows the date of the day being planned
+// (JMA months), day or night follows the light or dark theme. The blank notice board is where the ema
+// hang before anything is planned (its face in image pixels, measured on each picture).
+const SCENE_BOARD = {
+  'spring-day': [1200, 280, 1414, 468], 'spring-night': [1177, 322, 1414, 488],
+  'summer-day': [1257, 330, 1468, 508], 'summer-night': [1180, 352, 1430, 545],
+  'autumn-day': [1203, 254, 1416, 444], 'autumn-night': [1212, 312, 1442, 500],
+  'winter-day': [1192, 285, 1413, 468], 'winter-night': [1232, 302, 1424, 492],
+};
+const SCENE = { w: 1536, h: 864, focusX: 0.62 };
+const sceneFor = (iso, theme) => { const k = `${seasonWord(iso)}-${theme === 'light' ? 'day' : 'night'}`; return { key: k, src: `${BASE}trip/hero-${k}.webp`, board: SCENE_BOARD[k] }; }
 const MODE_TEXT = { foot: 'Walk', bike: 'Cycle', car: 'Drive', bus: 'Bus' };
 const NUM = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'];
 const seasonWord = (iso) => { const m = +iso.slice(5, 7); return m >= 3 && m <= 5 ? 'spring' : m >= 6 && m <= 8 ? 'summer' : m >= 9 && m <= 11 ? 'autumn' : 'winter'; };
@@ -111,14 +120,15 @@ function Ema({ day, i, active, style, kind, onPick, dragging }) {
   );
 }
 
-function Scene({ trip, active, onPick, onAddDay, photo, photoInfo, board, hint, dragging, children }) {
+function Scene({ trip, active, onPick, onAddDay, photo, photoInfo, board, hint, dragging, theme, strip = null, children }) {
+  const sc = sceneFor(trip.days[Math.min(active, trip.days.length - 1)].date, theme);
   const ref = useRef(null);
   const box = useBox(ref);
   const url = useScenePhoto(board ? null : photo);
   const showPhoto = !board && !!url;
   const fx = box.w && box.w < 700 ? 0.97 : SCENE.focusX;   // narrow screens keep the board in view
   const { s, ox, oy } = coverRect(box.w, box.h, fx);
-  const [bx0, by0, bx1, by1] = SCENE.board;
+  const [bx0, by0, bx1, by1] = sc.board;
   const rect = { x: ox + bx0 * s, y: oy + by0 * s, w: (bx1 - bx0) * s, h: (by1 - by0) * s };
   const items = [...trip.days.map((d, i) => ({ d, i })), ...(trip.days.length < TP.MAX_DAYS ? [{ d: null, i: trip.days.length }] : [])];
   const n = items.length;
@@ -145,8 +155,8 @@ function Scene({ trip, active, onPick, onAddDay, photo, photoInfo, board, hint, 
     });
   }
   return (
-    <div className={'tp-scene' + (showPhoto ? ' photo' : '')} ref={ref}>
-      <img className="tp-illus" src={SCENE.src} alt="" style={{ objectPosition: `${fx * 100}% 50%` }} draggable="false" />
+    <div className={'tp-scene' + (showPhoto ? ' photo' : '') + (strip != null ? ' planning' : '')} ref={ref}>
+      <img key={sc.key} className="tp-illus" src={sc.src} alt="" style={{ objectPosition: `${fx * 100}% 50%` }} draggable="false" data-scene={sc.key} />
       <div className="tp-photo" style={url ? { backgroundImage: `url("${url}")` } : null} aria-hidden="true" />
       {!board && box.w > 0 && (
         <svg className="tp-rope" width={box.w} height={box.h * 0.14} aria-hidden="true">
@@ -157,6 +167,12 @@ function Scene({ trip, active, onPick, onAddDay, photo, photoInfo, board, hint, 
         <Ema key={d ? d.id : 'add'} day={d} i={i} active={d && i === active} kind={(board ? 'pinned' : 'hang') + (d ? '' : ' add')} style={pos[k]}
           onPick={(j) => (d ? onPick(j) : onAddDay())} dragging={dragging && !!d} />
       ))}
+      {strip != null && box.w > 760 && pos[strip] && (() => {
+        // a thin thread from the open day's ema down to the top of its strip (strip box as in trip.css)
+        const rail = innerWidth <= 1180 ? 96 : 112, sw = Math.min(470, box.w * 0.44);
+        const x1 = pos[strip].left + pos[strip].width / 2, y1 = pos[strip].top + 4, x2 = rail + 30 + sw - 46, y2 = box.h * 0.07 + 2;
+        return <svg className="tp-thread" width={box.w} height={box.h} aria-hidden="true"><path d={`M${x1} ${y1} C${x1} ${y1 + 90} ${x2 + 60} ${y2 - 60} ${x2} ${y2}`} pathLength="1" /><circle cx={x2} cy={y2} r="3.5" /></svg>;
+      })()}
       {board && hint && box.w > 0 && <span className="tp-hint" style={{ left: rect.x + rect.w / 2, top: rect.y + rect.h + 10 }}>Click an ema to plan that day</span>}
       {showPhoto && photoInfo && <p className="tp-credit">{photoInfo.badge && <b>{photoInfo.badge} · </b>}Photo: {photoInfo.artist || 'unknown author'} · {photoInfo.license} · Wikimedia Commons</p>}
       {!showPhoto && <p className="tp-credit illus">Illustration: AI-generated scene (Figma), not a real place</p>}
@@ -368,6 +384,7 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
   const [view, setView] = useState('trip');          // 'trip' | 'agenda' | 'map'
   const [planner, setPlanner] = useState(null);      // day index whose scroll is open
   const [sheet, setSheet] = useState(null);          // 'add' | 'help' | 'order' | 'hours' | 'notes'
+  const [addKind, setAddKind] = useState('all');     // the add sheet opens on stations when choosing a start
   const [query, setQuery] = useState('');
   const [toast, setToast] = useState(null);
   const [drag, setDrag] = useState(null);            // { id, x, y } while a place card is dragged
@@ -618,7 +635,7 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
       </nav>
 
       {view === 'trip' && (
-        <Scene trip={trip} active={di} onPick={openDay} onAddDay={() => { setTrip((t) => TP.addDay(t)); say('Day added.'); }} board={board} hint={!trip.hintSeen && !isPlanned}
+        <Scene trip={trip} active={di} theme={theme} strip={planner} onPick={openDay} onAddDay={() => { setTrip((t) => TP.addDay(t)); say('Day added.'); }} board={board} hint={!trip.hintSeen && !isPlanned}
           photo={next?.photo} photoInfo={next?.photo && { artist: next.photo.artist, license: next.photo.license, badge: PHOTO_BADGE[next.photo.match] }} dragging={!!drag?.moved}>
           <article className="tp-card tp-feat">
             <div className="txt">
@@ -635,7 +652,7 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
             {after?.photo && <div className="ph" style={{ backgroundImage: `url("${BASE}${after.photo.src}")` }}><span className="pin">Then: {after.name}{afterT?.arrive != null ? `, ${TP.fmtHM(afterT.arrive)}` : ''}</span></div>}
           </article>
           {planner != null && trip.days[planner] && (
-            <Planner key={planner} trip={trip} di={planner} setTrip={setTrip} info={info} ctx={ctx} onClose={() => setPlanner(null)} onAdd={() => { setActive(planner); setSheet('add'); }} say={say} />
+            <Planner key={planner} trip={trip} di={planner} setTrip={setTrip} info={info} ctx={ctx} onClose={() => setPlanner(null)} onAdd={() => { setActive(planner); setAddKind('all'); setSheet('add'); }} onStart={() => { setActive(planner); setAddKind('station'); setSheet('add'); }} say={say} />
           )}
         </Scene>
       )}
@@ -731,7 +748,7 @@ function Trip({ d, byId, A, Tr, theme, fetchBusVariant, onClose, addRequest, onU
           {notes.length ? <ul>{notes.map((n, k) => <li key={k}>{n}</li>)}</ul> : <p className="muted">Nothing to check on this day.</p>}
         </div>
       )}
-      {sheet === 'add' && <AddSheet A={A} Tr={Tr} info={info} trip={trip} di={di} query={query} setQuery={setQuery} onAdd={addPlace} onFrom={(id) => { setTrip((t) => TP.setFrom(t, di, id)); say('Start place set.'); }} onClose={() => { setSheet(null); setQuery(''); }} />}
+      {sheet === 'add' && <AddSheet kind0={addKind} A={A} Tr={Tr} info={info} trip={trip} di={di} query={query} setQuery={setQuery} onAdd={addPlace} onFrom={(id) => { setTrip((t) => TP.setFrom(t, di, id)); say('Start place set.'); }} onClose={() => { setSheet(null); setQuery(''); setAddKind('all'); }} />}
       {sheet === 'order' && order && (
         <div className="tp-modal" role="dialog" aria-label="Best order"><div className="tp-sheet small">
           <header><h4>Best order · Day {di + 1}</h4><button type="button" className="x" onClick={() => setSheet(null)} aria-label="Close"><Ic k="x" /></button></header>
@@ -778,85 +795,128 @@ function useAllLegs(trip, ctx, enabled) {
   return all.map((keys) => keys.map((k) => (k ? ctx.legCache.get(k) || { pending: true } : null)));
 }
 
-// ---------- the day's scroll: hours, start place, stops with their legs ----------
-function Planner({ trip, di, setTrip, info, ctx, onClose, onAdd, say }) {
+// ---------- the day's strip: a calm timeline that hangs from its ema ----------
+// One line per place (time, photo, name, one quiet detail); between places, one small pill for the way
+// there. Everything else waits until asked for: the hours, a place's stay and arrival time, the way of
+// travel and the bus to take open in place, one at a time.
+const fmtStay = (m) => (m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ` ${m % 60}` : ''}` : `${m} min`);
+const legShort = (leg, mode) => {
+  if (!leg || leg.pending) return { t: 'Finding the way…', k: 'wait' };
+  if (leg.error && !leg.option) return { t: mode === 'bus' ? 'No bus found' : 'No route found', k: 'warn' };
+  if (leg.mode === 'bus') { const o = leg.option; return { t: `${o.number} · ${o.stops} stop${o.stops > 1 ? 's' : ''}${o.fare?.adult != null ? ` · ¥${o.fare.adult}` : ''}`, k: 'bus' }; }
+  return { t: `${MODE_TEXT[leg.mode]} ${fmtDuration(leg.duration_s)}`, k: leg.mode };
+};
+function Planner({ trip, di, setTrip, info, ctx, onClose, onAdd, onStart, say }) {
   const day = trip.days[di];
   const legs = useLegs(day, ctx);
   const tl = TP.timeline(day, legs.map((l) => (l && !l.pending ? { duration_s: l.duration_s } : null)));
   const off = day.from ? 1 : 0;
   const from = day.from ? info(day.from) : null;
+  const [open, setOpen] = useState(null);       // 'hours' | 'stop:i' | 'leg:i'
+  const tog = (k) => setOpen((o) => (o === k ? null : k));
+  const dd = new Date(`${day.date}T00:00:00Z`);
+  const wk = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'short' }).format(dd).toUpperCase();
+  const big = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'long' }).format(dd);
+  const patch = (si, p) => setTrip((t) => TP.patchStop(t, di, si, p));
   return (
-    <div className="tp-scroll" role="dialog" aria-label={`Day ${di + 1} plan`}>
-      <i className="roller r-top" aria-hidden="true" />
-      <div className="paper">
-        <header>
-          <h4>Day {di + 1} · {TP.dateLong(day.date)}</h4>
-          <button type="button" className="x" onClick={onClose} aria-label="Roll up the plan"><Ic k="x" /></button>
-        </header>
-        <div className="hrs">
+    <div className="tp-strip" role="dialog" aria-label={`Day ${di + 1} plan`}>
+      <header className="ds-h">
+        <div><p className="ds-k">{wk} · DAY {di + 1}</p><h4>{big}</h4></div>
+        <span className="ds-acts">
+          <button type="button" onClick={onAdd} aria-label="Add a place to this day"><Ic k="plus" s={18} /></button>
+          <button type="button" className="ds-close" onClick={onClose} aria-label="Roll the day up"><Ic k="up" s={18} /></button>
+        </span>
+      </header>
+      <button type="button" className={'ds-hours' + (open === 'hours' ? ' on' : '')} onClick={() => tog('hours')} aria-expanded={open === 'hours'}>
+        <Ic k="clock" s={15} /> {day.start} – {day.end}
+        <span className={tl.overrun ? 'warn' : ''}>{tl.overrun ? ` · runs ${fmtDuration(tl.overrun * 60)} over` : tl.finish != null && day.stops.length ? ` · ends about ${TP.fmtHM(tl.finish)}` : ''}</span>
+      </button>
+      {open === 'hours' && (
+        <div className="ds-edit">
           <label>Start <input type="time" step="300" value={day.start} onChange={(e) => setTrip((t) => TP.setHours(t, di, e.target.value, t.days[di].end))} /></label>
           <label>End <input type="time" step="300" value={day.end} onChange={(e) => setTrip((t) => TP.setHours(t, di, t.days[di].start, e.target.value))} /></label>
-          {trip.days.length > 1 && <button type="button" className="lnk" onClick={() => { setTrip((t) => TP.removeDay(t, di)); onClose(); say(`Day ${di + 1} removed.`); }}>Remove this day</button>}
+          {trip.days.length > 1 && <button type="button" className="lnk warn" onClick={() => { setTrip((t) => TP.removeDay(t, di)); onClose(); say(`Day ${di + 1} removed.`); }}>Remove this day</button>}
         </div>
-        <ol className="stops">
-          <li className="start">
-            <span className="t">{day.start}</span>
-            <span className="nm">{from ? <><b>Start · {from.name}</b><small>{[from.cat, from.area].filter(Boolean).join(' · ')}</small></> : <span className="muted">Start at the first place, or search a station and choose "Start here".</span>}</span>
-            {from && <button type="button" className="ic" onClick={() => setTrip((t) => TP.setFrom(t, di, null))} aria-label="Remove the start place"><Ic k="x" s={16} /></button>}
-          </li>
-          {day.stops.map((s, si) => {
-            const x = info(s.id), t = tl.points[si + off], leg = legs[si + off];
-            return (
-              <li key={s.id} className={t?.late ? 'late' : ''}>
-                {(si > 0 || from) && (
-                  <div className="leg">
-                    <div className="modes" role="group" aria-label={`How to get to ${x?.name}`}>
-                      {TP.LEG_MODES.map((m) => <button key={m.key} type="button" className={'m ' + m.key + (s.mode === m.key ? ' on' : '')} aria-pressed={s.mode === m.key} onClick={() => setTrip((tt) => TP.patchStop(tt, di, si, { mode: m.key, bus: null }))}>{m.label}</button>)}
+      )}
+      <ol className="ds-tl">
+        <li className="ds-row start" style={{ '--i': 0 }}>
+          <div className="ds-stop static">
+            <span className="t">{day.start}</span><i className="ds-dot" />
+            {from ? <span className="nm"><b>{from.name}</b><small>Start · {from.cat}</small></span> : <button type="button" className="lnk nm" onClick={onStart}>Set where the day starts</button>}
+            {from && <button type="button" className="ic ghost" onClick={() => setTrip((t) => TP.setFrom(t, di, null))} aria-label="Remove the start place"><Ic k="x" s={14} /></button>}
+          </div>
+        </li>
+        {day.stops.map((s, si) => {
+          const x = info(s.id), t = tl.points[si + off], leg = legs[si + off], hasLeg = si > 0 || !!from;
+          const L = legShort(leg, s.mode), kl = `leg:${si}`, ks = `stop:${si}`;
+          return [
+            hasLeg && (
+              <li key={`l${s.id}`} className="ds-leg" style={{ '--i': si * 2 + 1 }}>
+                <button type="button" className={'ds-pill ' + L.k + (open === kl ? ' on' : '')} onClick={() => tog(kl)} aria-expanded={open === kl} title={legText(leg)}>
+                  <i className={'mi ' + s.mode} aria-hidden="true" />{L.t}
+                </button>
+                {s.mode === 'bus' && leg?.option && <span className="nt">no timetable</span>}
+                {open === kl && (
+                  <div className="ds-pop">
+                    <div className="ds-seg" role="group" aria-label={`How to get to ${x?.name}`}>
+                      {TP.LEG_MODES.map((m) => <button key={m.key} type="button" className={'m ' + m.key + (s.mode === m.key ? ' on' : '')} aria-pressed={s.mode === m.key} onClick={() => patch(si, { mode: m.key, bus: null })}>{m.label}</button>)}
                     </div>
-                    <p className={'lt' + (leg?.error && !leg?.option ? ' warn' : '')}>{legText(leg)}</p>
-                    {leg?.mode === 'bus' && leg.options?.length > 1 && (
-                      <select value={`${leg.option.variant}:${leg.option.boardSeq}:${leg.option.alightSeq}`} onChange={(e) => { const [variant, b, a] = e.target.value.split(':'); setTrip((tt) => TP.patchStop(tt, di, si, { bus: { variant, boardSeq: +b, alightSeq: +a } })); }} aria-label="Choose the bus">
-                        {leg.options.map((o) => <option key={`${o.variant}:${o.boardSeq}`} value={`${o.variant}:${o.boardSeq}:${o.alightSeq}`}>Bus {o.number}: {o.boardName} → {o.alightName} · {o.stops} stop{o.stops > 1 ? 's' : ''}</option>)}
-                      </select>
+                    <p className="lt">{legText(leg)}</p>
+                    {leg?.mode === 'bus' && leg.options?.length > 0 && (
+                      <ul className="buses">
+                        {leg.options.map((o) => {
+                          const on = o.variant === leg.option.variant && o.boardSeq === leg.option.boardSeq;
+                          return (
+                            <li key={`${o.variant}:${o.boardSeq}`}><button type="button" className={on ? 'on' : ''} aria-pressed={on} onClick={() => patch(si, { bus: { variant: o.variant, boardSeq: o.boardSeq, alightSeq: o.alightSeq } })}>
+                              <b>{o.number}</b><span>{o.boardName} → {o.alightName}</span><em>{o.stops} stop{o.stops > 1 ? 's' : ''}{o.fare?.adult != null ? ` · ¥${o.fare.adult}` : ''}</em>
+                            </button></li>
+                          );
+                        })}
+                      </ul>
                     )}
-                    {leg?.mode === 'bus' && leg.option && <p className="xs muted">Stops within {leg.found.radiusA} m / {leg.found.radiusB} m (search radius). Stop order from OpenStreetMap{leg.option.orderChecked ? ', checked' : ', not yet checked against the official list'}.</p>}
+                    {leg?.mode === 'bus' && leg.option && <p className="xs muted">Stops searched within {leg.found.radiusA} m and {leg.found.radiusB} m. Stop order from OpenStreetMap{leg.option.orderChecked ? '' : ', not yet checked against the official list'}. No timetable: set an arrival time for the next place.</p>}
                   </div>
                 )}
-                <div className="stop">
-                  <span className="t">{t?.arrive != null ? TP.fmtHM(t.arrive) : '–:–'}</span>
-                  {x?.photo ? <i className="th" style={{ backgroundImage: `url("${BASE}${x.photo.src}")` }} /> : <i className="th none"><Ic k="house" s={18} /></i>}
-                  <span className="nm"><b>{x?.name || s.id}</b><small>{[x?.cat, x?.area].filter(Boolean).join(' · ')}{t?.late ? ' · cannot make the set time' : t?.wait > 4 ? ` · ${t.wait} min spare` : ''}</small></span>
-                  <span className="ctl">
-                    <label className="tp-stay">Stay <input type="number" min="0" max="600" step="15" value={s.stay ?? TP.DEFAULT_STAY} onChange={(e) => setTrip((tt) => TP.patchStop(tt, di, si, { stay: Math.max(0, Math.min(600, +e.target.value || 0)) }))} /> min</label>
-                    <label className="tp-at">Arrive <input type="time" step="300" value={s.at || ''} onChange={(e) => setTrip((tt) => TP.patchStop(tt, di, si, { at: e.target.value || null }))} /></label>
-                    <button type="button" className="ic" disabled={si === 0} onClick={() => setTrip((tt) => TP.moveStop(tt, di, si, si - 1))} aria-label="Move up"><Ic k="up" s={16} /></button>
-                    <button type="button" className="ic" disabled={si === day.stops.length - 1} onClick={() => setTrip((tt) => TP.moveStop(tt, di, si, si + 1))} aria-label="Move down"><Ic k="down" s={16} /></button>
+              </li>
+            ),
+            <li key={s.id} className={'ds-row' + (open === ks ? ' open' : '') + (t?.late ? ' late' : '')} style={{ '--i': si * 2 + 2 }}>
+              <button type="button" className="ds-stop" onClick={() => tog(ks)} aria-expanded={open === ks}>
+                <span className="t">{t?.arrive != null ? TP.fmtHM(t.arrive) : '––:––'}</span><i className="ds-dot" />
+                {x?.photo ? <i className="th" style={{ backgroundImage: `url("${BASE}${x.photo.src}")` }} /> : <i className="th none"><Ic k="house" s={16} /></i>}
+                <span className="nm"><b>{x?.name || s.id}</b><small>{x?.cat} · stay {fmtStay(s.stay ?? TP.DEFAULT_STAY)}{s.at ? ` · arrive ${s.at}` : ''}{t?.late ? ' · too late for the set time' : ''}</small></span>
+              </button>
+              {open === ks && (
+                <div className="ds-edit">
+                  <span className="stp">Stay <button type="button" onClick={() => patch(si, { stay: Math.max(0, (s.stay ?? TP.DEFAULT_STAY) - 15) })} aria-label="Stay 15 minutes less">−</button><b>{fmtStay(s.stay ?? TP.DEFAULT_STAY)}</b><button type="button" onClick={() => patch(si, { stay: Math.min(600, (s.stay ?? TP.DEFAULT_STAY) + 15) })} aria-label="Stay 15 minutes more">+</button></span>
+                  <label>Arrive <input type="time" step="300" value={s.at || ''} onChange={(e) => patch(si, { at: e.target.value || null })} /></label>
+                  <span className="mv">
+                    <button type="button" className="ic" disabled={si === 0} onClick={() => { setTrip((tt) => TP.moveStop(tt, di, si, si - 1)); setOpen(`stop:${si - 1}`); }} aria-label="Earlier"><Ic k="up" s={15} /></button>
+                    <button type="button" className="ic" disabled={si === day.stops.length - 1} onClick={() => { setTrip((tt) => TP.moveStop(tt, di, si, si + 1)); setOpen(`stop:${si + 1}`); }} aria-label="Later"><Ic k="down" s={15} /></button>
                     {trip.days.length > 1 && (
-                      <select className="mv" value="" onChange={(e) => { if (e.target.value !== '') { setTrip((tt) => TP.moveStopToDay(tt, di, si, +e.target.value)); say(`Moved to Day ${+e.target.value + 1}.`); } }} aria-label="Move to another day">
-                        <option value="">Day…</option>{trip.days.map((_, j) => j !== di && <option key={j} value={j}>Day {j + 1}</option>)}
+                      <select value="" onChange={(e) => { if (e.target.value !== '') { setTrip((tt) => TP.moveStopToDay(tt, di, si, +e.target.value)); setOpen(null); say(`Moved to Day ${+e.target.value + 1}.`); } }} aria-label="Move to another day">
+                        <option value="">Move to…</option>{trip.days.map((_, j) => j !== di && <option key={j} value={j}>Day {j + 1}</option>)}
                       </select>
                     )}
-                    <button type="button" className="ic" onClick={() => setTrip((tt) => TP.removeStop(tt, di, si))} aria-label={`Remove ${x?.name}`}><Ic k="trash" s={16} /></button>
+                    <button type="button" className="ic" onClick={() => { setTrip((tt) => TP.removeStop(tt, di, si)); setOpen(null); }} aria-label={`Remove ${x?.name}`}><Ic k="trash" s={15} /></button>
                   </span>
                 </div>
-              </li>
-            );
-          })}
-        </ol>
-        <footer>
-          {tl.overrun > 0 && <p className="warn">Ends {fmtDuration(tl.overrun * 60)} after {day.end}.</p>}
-          {tl.finish != null && !tl.overrun && day.stops.length > 0 && <p className="muted">Ends about {TP.fmtHM(tl.finish)}.</p>}
-          <button type="button" className="tp-btn sm" onClick={onAdd}>+ Add a place</button>
-        </footer>
-      </div>
-      <i className="roller r-bot" aria-hidden="true" />
+              )}
+            </li>,
+          ];
+        })}
+      </ol>
+      {!day.stops.length && <p className="ds-empty">Nothing on this day yet.</p>}
+      <footer className="ds-f">
+        <button type="button" className="lnk" onClick={onAdd}><Ic k="plus" s={15} /> Add a place</button>
+        <em>one place at a time.</em>
+      </footer>
     </div>
   );
 }
 
 // ---------- add a place ----------
-function AddSheet({ A, Tr, info, trip, di, query, setQuery, onAdd, onFrom, onClose }) {
-  const [kind, setKind] = useState('all');
+function AddSheet({ kind0 = 'all', A, Tr, info, trip, di, query, setQuery, onAdd, onFrom, onClose }) {
+  const [kind, setKind] = useState(kind0);
   const [target, setTarget] = useState(di);
   const q = query.trim().toLowerCase();
   const KINDS = [['all', 'All'], ['temple', 'Temples'], ['shrine', 'Shrines'], ['museum', 'Museums'], ['garden', 'Gardens'], ['viewpoint', 'Viewpoints'], ['station', 'Stations']];
