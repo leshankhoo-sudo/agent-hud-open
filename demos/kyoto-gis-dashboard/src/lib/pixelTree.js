@@ -5,12 +5,12 @@
 // Japanese touch: the leaves grow in rounded "cloud" pads, as on pruned garden trees (niwaki), and the
 // colours are traditional ones (sakura-iro, wakatake, momiji, yamabuki, sumi for the bark).
 
-export const CELL = 3;   // one pixel of the tree, in CSS pixels
+export const CELL = 2;   // one pixel of the tree, in CSS pixels
 
 export const SEASON_TREE = {
-  spring: { name: 'cherry in blossom', leaves: ['#fdeef1', '#f8d3dc', '#f2b6c6', '#e897ad', '#d97a95'], pad: 1.0, density: 0.82 },
-  summer: { name: 'green maple', leaves: ['#b9db94', '#8cc673', '#5ea55a', '#3e8549', '#2b6a3d'], pad: 1.05, density: 0.92 },
-  autumn: { name: 'maple in autumn colour', leaves: ['#f9c95a', '#f5a03c', '#ea7036', '#d44a2f', '#a9322b'], pad: 0.95, density: 0.86 },
+  spring: { name: 'cherry in blossom', leaves: ['#fde9ef', '#f8c9d7', '#f0a6be', '#df7f9f', '#c25c80'], pad: 1.0, density: 0.82 },
+  summer: { name: 'green maple', leaves: ['#a9d46a', '#7fbf4a', '#56a23a', '#3b8331', '#286628'], pad: 1.05, density: 0.92 },
+  autumn: { name: 'maple in autumn colour', leaves: ['#fbd27a', '#f6ad45', '#ec8a2c', '#d8661f', '#ad4416'], pad: 0.95, density: 0.86 },
   winter: { name: 'bare tree with snow', leaves: ['#ffffff', '#eef3f8', '#dce5ee'], pad: 0, density: 0 },
 };
 export const BARK = { light: ['#3d2c25', '#58402f'], dark: ['#2b201b', '#4a3628'] };
@@ -26,81 +26,97 @@ export const windSide = (dirDeg) => (dirDeg == null ? 0 : -Math.sin((dirDeg * Ma
 // How hard the tree moves, 0..1.2, from the forecast wind in km/h (no value: 0, the tree stands still).
 export const windStrength = (kmh) => (kmh == null ? 0 : Math.max(0, Math.min(1.2, kmh / 36)));
 
-// Build the tree in a box of w x h CSS pixels: bark cells, leaf cells (with their colour and a height
-// factor 0..1 used for the sway), and the ground line. Same season and seed, same tree. The tree is
-// grown, measured and, if it does not fit, grown again a little smaller; then it is centred.
+// Build the tree in a box of w x h CSS pixels, in the shape of the reference: a dark trunk that forks
+// into limbs, and a full crown made of many small clumps of leaves (2-3 pixels each, one colour per
+// clump), lighter on top and to the upper left, darker underneath, with the branches showing through
+// in the lower part. Each clump is one "leaf" that moves, falls and grows back. Same season and seed,
+// same tree; the crown is laid out inside the box, so nothing is scaled down or cut off.
+const CROWN = {   // crown size as a share of the box, and how far it reaches down the trunk
+  spring: { rx: 0.43, ry: 0.39, cy: 0.42, fill: 1.0 },
+  summer: { rx: 0.45, ry: 0.37, cy: 0.45, fill: 1.15 },
+  autumn: { rx: 0.46, ry: 0.38, cy: 0.43, fill: 1.05 },
+  winter: { rx: 0.44, ry: 0.4, cy: 0.42, fill: 0 },
+};
 export function buildTree(season, w, h, seed = 7) {
-  const S = SEASON_TREE[season] || SEASON_TREE.autumn;
+  const S = SEASON_TREE[season] || SEASON_TREE.autumn, C = CROWN[season] || CROWN.autumn;
+  const R = rng(seed + season.length * 131);
+  const gauss = () => (R() + R() + R() - 1.5) / 1.5;
   const cols = Math.floor(w / CELL), rows = Math.floor(h / CELL);
-  const ground = rows - 3;
-  const winter = season === 'winter';
-  const grown = (scale) => {
-    const R = rng(seed + season.length * 131);
-    const bark = new Map(), tips = [];
-    let top = ground;
-    const put = (x, y, tone) => { const k = `${x},${y}`; if (!bark.has(k)) bark.set(k, { x, y, tone }); if (y < top) top = y; };
-    const maxDepth = winter ? 4 : 3;
-    // a trunk with a slight bend, then forking limbs; winter shows finer twigs
-    const grow = (x, y, ang, len, th, depth) => {
-      const steps = Math.max(2, Math.round(len));
-      const curve = (R() - 0.5) * (depth === 0 ? 0.35 : 0.6);
-      let cx = x, cy = y, a = ang;
-      for (let i = 0; i < steps; i++) {
-        a = Math.max(-Math.PI + 0.35, Math.min(-0.35, a + curve / steps));   // branches keep growing upwards
-        cx += Math.cos(a); cy += Math.sin(a);
-        const t = Math.max(1, Math.round(th * (1 - (i / steps) * 0.3)));
-        for (let dx = -Math.floor((t - 1) / 2); dx <= Math.floor(t / 2); dx++) put(Math.round(cx) + dx, Math.round(cy), dx < 0 ? 1 : 0);
-      }
-      if (depth >= maxDepth || len < 2) { tips.push({ x: cx, y: cy, depth }); return; }
-      const n = depth === 0 ? (R() < 0.5 ? 3 : 2) : R() < 0.25 ? 3 : 2;
-      for (let k = 0; k < n; k++) {
-        const spread = depth === 0 ? 0.5 + R() * 0.3 : (winter ? 0.38 : 0.36) + R() * 0.26;
-        const side = n === 2 ? (k ? 1 : -1) : (k - 1) * 1.1;
-        grow(cx, cy, a + side * spread + (R() - 0.5) * 0.2, len * (0.64 + R() * 0.1), Math.max(1, th * 0.62), depth + 1);
-      }
-    };
-    const x0 = cols / 2;
-    grow(x0, ground, -Math.PI / 2 + (R() - 0.5) * 0.12, rows * (winter ? 0.3 : 0.34) * scale, Math.max(2, Math.round(cols / 16)), 0);
-    const leaves = [];
-    if (!winter) {
-      // cloud pads round the branch tips: denser in the middle, ragged at the edge, lit from the upper left
-      const taken = new Set();
-      for (const tp of tips) {
-        if (tp.depth < 2) continue;
-        const rx = cols * (0.12 + R() * 0.05) * S.pad * scale, ry = rx * (0.68 + R() * 0.12);
-        for (let y = Math.floor(tp.y - ry); y <= tp.y + ry; y++) for (let x = Math.floor(tp.x - rx); x <= tp.x + rx; x++) {
-          const d = ((x - tp.x) / rx) ** 2 + ((y - tp.y) / ry) ** 2;
-          if (d > 1 || R() > S.density * (1.15 - d * 0.5) || y >= ground - 1) continue;
-          const k = `${x},${y}`;
-          if (taken.has(k)) continue;
-          taken.add(k);
-          if (y < top) top = y;
-          const light = ((tp.x - x) / rx + (tp.y - y) / ry) * 0.5;   // upper left is lighter
-          leaves.push({ x, y, c: Math.max(0, Math.min(S.leaves.length - 1, Math.round((1 - light) * 1.6 + R() * 1.6))) });
-        }
-      }
-    } else {
-      // snow sits on top of the branches
-      for (const b of bark.values()) if (!bark.has(`${b.x},${b.y - 1}`) && b.y < ground - 2 && R() < 0.62) { leaves.push({ x: b.x, y: b.y - 1, c: R() < 0.6 ? 0 : 1 }); if (b.y - 1 < top) top = b.y - 1; }
+  const ground = rows - 4, winter = season === 'winter';
+  const cx = cols / 2, cy = rows * C.cy, rx = cols * C.rx, ry = rows * C.ry;
+  const inBox = (x, y) => x >= 0 && x < cols && y >= 1 && y < ground;
+  const bark = new Map();
+  const put = (x, y, tone) => { x = Math.round(x); y = Math.round(y); if (inBox(x, y) || y === ground) bark.set(`${x},${y}`, { x, y, tone }); };
+  const line = (x0, y0, x1, y1, t0, t1) => {
+    const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0)));
+    for (let i = 0; i <= n; i++) {
+      const k = i / n, x = x0 + (x1 - x0) * k, y = y0 + (y1 - y0) * k, t = Math.max(1, Math.round(t0 + (t1 - t0) * k));
+      for (let d = 0; d < t; d++) put(x - Math.floor(t / 2) + d, y, d === 0 ? 1 : 0);
     }
-    return { bark: [...bark.values()], leaves, top };
   };
-  let g, scale = 1;
-  for (let i = 0; i < 8; i++) {
-    g = grown(scale);
-    const xs = [...g.bark, ...g.leaves].map((c) => c.x);
-    g.minX = Math.min(...xs); g.maxX = Math.max(...xs);
-    if (g.maxX - g.minX + 1 <= cols - 2 && g.top >= 1) break;
-    scale *= 0.9;
+  // trunk: from the ground to the fork, leaning a little
+  const tw = Math.max(3, Math.round(cols / 15));
+  const fx = cx + gauss() * cols * 0.03, fy = cy + ry * (winter ? 0.4 : 0.5);
+  const bx = (cx + fx) / 2 + gauss() * 1.5, by = (ground + fy) / 2;   // a slight bend in the trunk
+  line(cx, ground, bx, by, tw + 1, tw);
+  line(bx, by, fx, fy, tw, Math.max(2, tw - 2));
+  // limbs fan out upward from the fork to points round the crown; each forks once or twice more
+  const anchors = [];
+  const nLimbs = 4 + Math.floor(R() * 2);
+  for (let i = 0; i < nLimbs; i++) {
+    const a = -Math.PI / 2 + (i / (nLimbs - 1) - 0.5) * (winter ? 2.2 : 2.0) + gauss() * 0.12;
+    const r = winter ? 0.5 + R() * 0.28 : 0.55 + R() * 0.35;
+    const ex = cx + Math.cos(a) * rx * r, ey = cy + Math.sin(a) * ry * r * 1.1;
+    const mx = (fx + ex) / 2 + gauss() * 2, my = (fy + ey) / 2 + gauss() * 2;
+    line(fx, fy, mx, my, Math.max(1, tw - 2), Math.max(1, tw - 3));
+    line(mx, my, ex, ey, Math.max(1, tw - 3), 1);
+    anchors.push([ex, ey], [mx, my]);
+    const subs = winter ? 3 : 2;
+    for (let s = 0; s < subs; s++) {
+      const sa = a + (R() - 0.5) * 1.6, sl = (winter ? 0.32 : 0.24) * rx * (0.6 + R() * 0.6);
+      const sx = ex + Math.cos(sa) * sl, sy = ey + Math.sin(sa) * sl * 0.9 - (winter ? sl * 0.2 : 0);
+      line(ex, ey, sx, sy, 1, 1);
+      anchors.push([sx, sy]);
+      if (winter) for (let q = 0; q < 2; q++) { const qa = sa + (R() - 0.5) * 1.2, ql = sl * 0.5; line(sx, sy, sx + Math.cos(qa) * ql, sy + Math.sin(qa) * ql, 1, 1); }
+    }
   }
-  const shift = Math.round((cols - 1) / 2 - (g.minX + g.maxX) / 2);
-  const inside = (c) => c.x + shift >= 0 && c.x + shift < cols && c.y >= 0;
-  const span = Math.max(1, ground - g.top);
+  const leaves = [];
+  if (!winter) {
+    // the crown: clumps scattered round the limb ends and through the envelope, densest at the top
+    const taken = new Set();
+    const target = Math.round(((Math.PI * rx * ry) / 4.2) * C.fill);
+    let tries = 0;
+    while (leaves.length < target && tries++ < target * 30) {
+      const [ax, ay] = R() < 0.55 ? anchors[Math.floor(R() * anchors.length)] : [cx + gauss() * rx * 0.75, cy + gauss() * ry * 0.75];
+      const x = Math.round(ax + gauss() * rx * 0.42), y = Math.round(ay + gauss() * ry * 0.42);
+      const e = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2;
+      if (e > 1 + (R() - 0.5) * 0.25 || !inBox(x, y)) continue;
+      const low = (y - cy) / ry;                                   // -1 top .. +1 bottom
+      if (low > 0.35 && R() < (low - 0.35) * 1.4) continue;        // thinner below, so the branches show
+      const k = `${x},${y}`;
+      if (taken.has(k)) continue;
+      const cw = R() < 0.5 ? 2 : R() < 0.5 ? 3 : 1, ch = R() < 0.6 ? 2 : 1;
+      for (let i = 0; i < cw; i++) for (let j = 0; j < ch; j++) taken.add(`${x + i},${y + j}`);
+      // light from the upper left; darker underneath and on the right; a little noise for the mottled look
+      const inner = Math.max(0, 1 - Math.hypot((x - cx) / rx, (y - cy - ry * 0.25) / ry)) * 0.35;   // shade near the middle of the crown
+      const light = -0.7 * low - 0.35 * ((x - cx) / rx) - inner + gauss() * 0.7;
+      const ci = Math.max(0, Math.min(S.leaves.length - 1, Math.round((1 - light) * (S.leaves.length - 1) / 2)));
+      leaves.push({ x, y, w: cw, ht: ch, c: ci });
+    }
+  } else {
+    // snow on top of the branches
+    for (const b of bark.values()) if (!bark.has(`${b.x},${b.y - 1}`) && b.y < ground - 3 && R() < 0.75) leaves.push({ x: b.x, y: b.y - 1, w: 1, ht: 1, c: R() < 0.6 ? 0 : 1 });
+  }
+  // fallen leaves already lying under the tree in spring and autumn
+  const fallen = [];
+  if (season === 'spring' || season === 'autumn') for (let i = 0; i < Math.round(cols * 0.6); i++) fallen.push({ x: (cx + gauss() * rx * 0.8) * CELL, c: Math.floor(R() * S.leaves.length) });
+  const top = Math.min(...[...bark.values(), ...leaves].map((c) => c.y));
+  const span = Math.max(1, ground - top);
   const hf = (y) => Math.max(0, Math.min(1, (ground - y) / span));
   return {
-    season, name: S.name, cols, rows, ground, palette: S.leaves,
-    bark: g.bark.filter(inside).map((b) => ({ ...b, x: b.x + shift, h: hf(b.y) })),
-    leaves: g.leaves.filter(inside).map((l, i) => ({ ...l, x: l.x + shift, h: hf(l.y), ph: (i * 2.399) % (Math.PI * 2) })),
+    season, name: S.name, cols, rows, ground, palette: S.leaves, fallen,
+    bark: [...bark.values()].map((b) => ({ ...b, h: hf(b.y) })),
+    leaves: leaves.map((l, i) => ({ ...l, h: hf(l.y), ph: (i * 2.399) % (Math.PI * 2) })),
   };
 }
 

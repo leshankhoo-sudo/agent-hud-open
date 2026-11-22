@@ -801,20 +801,21 @@ test('trip: calendar file in UTC from Japan time, folded lines, bus rides flagge
   assert.equal(t.commonsUrl('File:Kiyomizu-dera, Kyoto, November 2016 -02.jpg', 1600), 'https://commons.wikimedia.org/wiki/Special:FilePath/Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg?width=1600');
 });
 
-test('pixel tree: one tree per season that fits its box and is centred; wind from the forecast, none when there is no value', async () => {
+test('pixel tree: one full tree per season that fits its box and stands in the middle; wind from the forecast, none when there is no value', async () => {
   const t = await import('../src/lib/pixelTree.js');
   for (const season of ['spring', 'summer', 'autumn', 'winter']) {
     const a = t.buildTree(season, 150, 112, 11), b = t.buildTree(season, 150, 112, 11);
     assert.deepEqual(a, b);                                                     // same season and seed, same tree
     const cells = [...a.bark, ...a.leaves];
-    assert.ok(cells.every((c) => c.x >= 0 && c.x < a.cols && c.y >= 0 && c.y < a.ground), season);
+    assert.ok(cells.every((c) => c.x >= 0 && c.x < a.cols && c.y >= 0 && c.y <= a.ground), season);   // inside the box, nothing cut off
     const xs = cells.map((c) => c.x), mid = (Math.min(...xs) + Math.max(...xs)) / 2;
-    assert.ok(Math.abs(mid - (a.cols - 1) / 2) <= 1, `${season} centred`);
-    assert.ok(a.leaves.every((l) => l.c >= 0 && l.c < a.palette.length && l.h >= 0 && l.h <= 1));
+    assert.ok(Math.abs(mid - (a.cols - 1) / 2) <= 3, `${season} centred`);
+    assert.ok(a.leaves.every((l) => l.c >= 0 && l.c < a.palette.length && l.h >= 0 && l.h <= 1 && l.w >= 1 && l.ht >= 1));
+    if (season !== 'winter') { const ys = a.leaves.map((l) => l.y); assert.ok(Math.max(...ys) - Math.min(...ys) > a.rows * 0.45, `${season} has a full crown`); }
     if (season === 'winter') {
       const bark = new Set(a.bark.map((c) => `${c.x},${c.y}`));
       assert.ok(a.leaves.length > 20 && a.leaves.every((l) => bark.has(`${l.x},${l.y + 1}`)));   // snow lies on top of branches
-    } else assert.ok(a.leaves.length > 150, `${season} has a crown`);
+    } else assert.ok(a.leaves.length > 300, `${season} has a crown`);
   }
   assert.equal(t.windSide(270), 1);            // a west wind blows to the right
   assert.ok(Math.abs(t.windSide(90) + 1) < 1e-9);
