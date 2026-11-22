@@ -493,3 +493,17 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
 .tp-wx .tp-tree { position: absolute; right: 12px; top: 8px; width: 150px; height: 112px; }
 .tp-wx .pixel-tree { display: block; image-rendering: pixelated; cursor: crosshair; touch-action: pan-y; }
 .tp-wx .hours { position: relative; z-index: 1; }
+
+/* phones: the later size rules above must not undo the fixed bottom bar */
+@media (max-width: 760px) {
+  .trip > .tp-support { position: fixed; left: 10px; bottom: 10px; margin: 0; width: 60px; height: 54px; font-size: 10.5px; border-radius: 16px; }
+  .trip > .tp-dock { position: fixed; left: 78px; right: 10px; bottom: 10px; width: auto; height: 54px; grid-template-columns: 1fr 1fr 64px 1fr 1fr; }
+  .tp-dock button { font-size: 10px; padding: 2px 2px; white-space: nowrap; }
+  .tp-dock button svg { width: 18px; height: 18px; }
+  .tp-dock .fab { width: 56px; height: 56px; margin-top: -20px; }
+  .tp-wx .tp-tree { transform: scale(.82); transform-origin: top right; }
+}
+@media (max-width: 760px) {
+  .trip > * { flex-shrink: 0; }   /* the page scrolls; no panel is squeezed under the next one */
+  .tp-side .tp-mapcard { height: 320px; flex: none; }
+}

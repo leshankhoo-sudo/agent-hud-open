@@ -145,11 +145,9 @@ function useScenePhoto(ph) {
     if (!ph.file || OFFLINE_PREVIEW) return undefined;
     let live = true;
     const img = new Image();
-    const t = 0;
     img.onload = () => { if (live) setUrl(img.src); };
-    img.onerror = () => {};
     img.src = TP.commonsUrl(ph.file, 1920);
-    return () => { live = false; clearTimeout(t); };
+    return () => { live = false; };
   }, [ph?.file, ph?.src]); // eslint-disable-line react-hooks/exhaustive-deps
   return url;
 }
@@ -437,31 +435,37 @@ export default function TripDashboard({ open, onShown, onClose, d, byId, A, Tr, 
   const doors = useRef(null);
   const busy = useRef(false);
   const usedAdd = useRef(0);   // an "Add to trip" request is used once
-  // shoji doors: they slide shut over whichever side is showing, the sides swap, and they slide open
+  // shoji doors: they slide shut over whichever side is showing, the sides swap, and they slide open.
+  // One run at a time; if the wish changes while the doors move (a quick second click), the same run
+  // goes round again for the latest wish, so the two sides never end up out of step.
+  const want = useRef(open), shown = useRef(false);
+  want.current = open;
   useEffect(() => {
-    if (open === vis) return;
-    let cancelled = false;
+    if (busy.current || shown.current === want.current) return;
+    busy.current = true;
     (async () => {
-      if (busy.current) return;
-      busy.current = true;
       const D = doors.current;
       const go = (kf, ms) => Promise.all([...D.children].map((p, i) => p.animate(kf(i), { duration: ms, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' }).finished));
-      if (!reduce() && D) {
-        D.classList.add('on');
-        await go((i) => [{ transform: `translateX(${i ? 101 : -101}%)` }, { transform: 'translateX(0)' }], 460);
-        await new Promise((r) => setTimeout(r, 90));
-      }
-      if (cancelled) return;
-      setVis(open);
-      onShown(open);
-      if (!reduce() && D) {
-        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-        await go((i) => [{ transform: 'translateX(0)' }, { transform: `translateX(${i ? 101 : -101}%)` }], 620);
-        D.classList.remove('on');
+      let closed = false;
+      while (shown.current !== want.current) {
+        const target = want.current;
+        if (!reduce() && D && !closed) {
+          closed = true;
+          D.classList.add('on');
+          await go((i) => [{ transform: `translateX(${i ? 101 : -101}%)` }, { transform: 'translateX(0)' }], 460);
+          await new Promise((r) => setTimeout(r, 90));
+        }
+        shown.current = target;
+        setVis(target);
+        onShown(target);
+        if (!reduce() && D) {
+          await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          if (want.current === target) { await go((i) => [{ transform: 'translateX(0)' }, { transform: `translateX(${i ? 101 : -101}%)` }], 620); closed = false; }
+          if (want.current === target) D.classList.remove('on');
+        }
       }
       busy.current = false;
     })();
-    return () => { cancelled = true; busy.current = false; };
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="trip-root">
@@ -622,6 +626,7 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
 
   // ---- Play day ----
   const playStop = useRef(null);
+  useEffect(() => () => playStop.current?.(), []);   // leaving the trip dashboard stops Play day
   const play = async () => {
     if (playing) { playStop.current?.(); return; }
     const m = playRef.current?.map?.();
