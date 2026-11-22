@@ -1049,13 +1049,17 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   check('sort: header counters roll digit by digit while the records fly', rolling.c.checked > 0 && rolling.c.checked < 644 && rolling.strips.length === 3 && rolling.strips.some((t) => /translateY\(-\d/.test(t)), JSON.stringify(rolling));
   await sp.waitForFunction(() => window.__kyotoSort.mode === 'done', null, { timeout: 15000 });
   await sp.waitForTimeout(300);
+  const fin = await sp.evaluate(() => ({ seal: !!document.querySelector('.sc-done.anim .hanko-big'), petals: window.__kyotoSort.petals.length, replay: !document.querySelector('.sc-bar .btn.ghost').disabled, slots30: document.querySelectorAll('.sc-card[data-k=viewpoint] .slot').length }));
+  // the full lists replace the 30 slots once the petals have fallen
+  await sp.waitForFunction(() => document.querySelectorAll('.sc-grid.all').length === 8, null, { timeout: 9000 }).catch(() => {});
   const done = await sp.evaluate(() => {
     const e = window.__kyotoSort, cnt = (k) => document.querySelectorAll(`.sc-card[data-k=${k}] .slot:not(.empty)`).length;
     const st = {}; for (const k of ['viewpoint', 'attraction', 'museum', 'temple', 'shrine', 'castle', 'merged', 'left_out']) st[k] = cnt(k);
-    return { counts: e.counts, st, hdr: [...document.querySelectorAll('.sort-counts .count .sr-only')].map((s) => s.textContent).join(), seal: !!document.querySelector('.sc-done.anim .hanko-big'), petals: e.petals.length, cardN: document.querySelector('.sc-card[data-k=viewpoint] .sc-n .sr-only').textContent, replay: !document.querySelector('.sc-bar .btn.ghost').disabled };
+    return { counts: e.counts, st, hdr: [...document.querySelectorAll('.sort-counts .count .sr-only')].map((s) => s.textContent).join(), cardN: document.querySelector('.sc-card[data-k=viewpoint] .sc-n .sr-only').textContent };
   });
+  Object.assign(done, fin);
   check('sort: ends with the real counts (644 checked, 5 merged, 13 left out, 626 sorted, 330 with a photo, 6 categories) and every record in its slot', JSON.stringify(done.counts) === JSON.stringify({ checked: 644, merged: 5, leftOut: 13, sorted: 626, withPhoto: 330, cats: 6 }) && JSON.stringify(done.st) === JSON.stringify({ viewpoint: 243, attraction: 146, museum: 101, temple: 89, shrine: 27, castle: 20, merged: 5, left_out: 13 }) && done.hdr === '644,5,13,626,330,6' && done.cardN === '243', JSON.stringify(done));
-  check('sort: the finish is a vermilion 済 seal with petals; Replay becomes available', done.seal && done.petals > 50 && done.replay, JSON.stringify(done));
+  check('sort: the finish is a vermilion 済 seal with petals; Replay becomes available; cards hold 30 slots while sorting, then every record', done.seal && done.petals > 50 && done.replay && done.slots30 === 30, JSON.stringify(done));
   await sp.screenshot({ path: `${out}/14-sort-done.png` });
   // a slot opens its place: area, nearest stop, source; Show on map turns back and selects it
   const sid = await sp.evaluate(() => document.querySelector('.sc-card[data-k=temple] .slot').dataset.id);

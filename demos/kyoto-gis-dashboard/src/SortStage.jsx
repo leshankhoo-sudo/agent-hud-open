@@ -12,7 +12,7 @@ import './sort.css';
 const SEAL = { attraction: '名', viewpoint: '景', museum: '館', castle: '城', temple: '寺', shrine: '社' };
 const LABEL = { viewpoint: 'Viewpoint', attraction: 'Attraction', museum: 'Museum', temple: 'Temple', shrine: 'Shrine', castle: 'Castle' };
 const COLS = [['viewpoint', 'attraction', 'museum'], ['temple', 'shrine', 'castle']];
-const SLOTS = 12;
+const SLOTS = 30;   // per category card while sorting (10 x 3); afterwards every record, scrollable
 const BASE = import.meta.env.BASE_URL;
 const coarse = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
 const reduced = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -81,7 +81,8 @@ function paintSlot(el, row, A, name) {
   el.disabled = false;
   el.tabIndex = 0;
   el.setAttribute('aria-label', name);
-  el.classList.remove('land'); void el.offsetWidth; el.classList.add('land');
+  // a short pop on landing (transform only, no forced layout, so landings never stall the frame)
+  el.animate([{ transform: 'scale(1.35)' }, { transform: 'none' }], { duration: 380, easing: 'cubic-bezier(.2, .8, .2, 1)' });
 }
 
 function Slot({ row, A, name, onOpen }) {
@@ -198,6 +199,15 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
       const r = el.getBoundingClientRect(), o = inRef.current.getBoundingClientRect();
       return { x: r.left - o.left + r.width / 2, y: r.top - o.top + r.height / 2, size: r.width };
     };
+    // Every slot's position is measured once, in one layout pass, when the first record flies (the slots have
+    // finished springing out by then), and again only after a resize. Measuring per flight forced a layout of the
+    // whole page for each record, which stalled frames and made records pour out in clumps.
+    e.slotPos = null;
+    e.measureSlots = () => {
+      const pos = new Map();
+      for (const card of Object.values(cards.current)) if (card) for (const sl of card.querySelectorAll('.sc-grid .slot')) pos.set(sl, e.rel(sl));
+      e.slotPos = pos;
+    };
 
     e.emit = () => {
       const s = JSON.stringify(e.counts);
@@ -241,7 +251,8 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
     e.fly = (t, from, s0, target, now) => {
       const slot = e.slotOf(target);
       if (!slot) return;
-      const to = e.rel(slot);
+      if (!e.slotPos || !e.slotPos.has(slot)) e.measureSlots();
+      const to = e.slotPos.get(slot);
       e.fliers.push({ t, kind: 'arc', target, slot, from, to, mid: arcMid(from, to, e.run.rand), t0: now, dur: flightMs(e.run.rand, duration), s0 });
     };
     e.land = (f) => {
@@ -250,7 +261,9 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
       (r.landed[f.target] = r.landed[f.target] || []).push(row[0]);
       const card = cards.current[f.target];
       if (card) {
-        card.classList.remove('hit'); void card.offsetWidth; card.classList.add('hit');
+        // the card's rim lights up for a moment: an opacity animation of its own layer (runs off the main thread)
+        const ring = card._ring || (card._ring = card.querySelector('.hit-ring'));
+        ring?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, easing: 'ease-out' });
         card._odo?.set(r.landed[f.target].length);
       }
       if (f.target === 'merged') e.counts.merged = r.landed.merged.length;
@@ -271,9 +284,12 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
       const lists = {};
       for (const k of [...COLS.flat(), 'merged', 'left_out']) lists[k] = (r.landed[k] || []).slice();
       for (const k of COLS.flat()) lists[k].sort((a, b) => (rowById.get(b)[2] >= 0) - (rowById.get(a)[2] >= 0));
-      live.current.setLists(lists);
       live.current.setPhase('done');
       live.current.setCelebrate(true);
+      // the full, scrollable lists replace the slots once the petals have fallen, so building 626 tiles
+      // never interrupts the finish; until then the slots on screen can already be clicked
+      clearTimeout(e.listT);
+      e.listT = setTimeout(() => live.current.setLists(lists), 3900);
       // petals burst from the seal, then drift down
       const g = e.geoRun, pr = rng(5);
       for (let i = 0; i < 120; i++) {
@@ -304,6 +320,8 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
       e.draw(performance.now());
     };
     e.reset = () => {
+      clearTimeout(e.listT);
+      e.slotPos = null;
       e.fliers = []; e.petals = []; e.rings = []; e.run = null; e.mode = 'idle';
       e.buildTiles(7 + Math.floor(Math.random() * 1000));
       e.tiles.forEach((t) => (t.fade = 0));
@@ -410,7 +428,10 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
       if (r) {
         const t = now - r.t0;
         const ev = r.plan.events;
-        while (r.idx < ev.length && ev[r.idx].t <= t) e.launch(ev[r.idx++], now);
+        // at most a few launches per frame: if a frame comes late, the records due catch up over the next
+      // frames instead of leaving the sphere all at once
+      let n = 0;
+      while (r.idx < ev.length && ev[r.idx].t <= t && n < 4) { e.launch(ev[r.idx++], now); n++; }
         e.caption(t < PHASES.merge * duration ? 'idle' : t < PHASES.leftOut * duration ? 'merge' : t < PHASES.sort * duration ? 'leftOut' : 'sort');
       }
       // fliers
@@ -477,7 +498,7 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
     e.accent = css.getPropertyValue('--vermilion').trim() || '#ff7a45';
 
     e.measure();
-    const ro = new ResizeObserver(() => { e.measure(); if (!e.on) e.draw(performance.now()); });
+    const ro = new ResizeObserver(() => { e.measure(); e.slotPos = null; if (!e.on) e.draw(performance.now()); });
     ro.observe(inRef.current);
     const io = new IntersectionObserver(([en]) => { e.visible = en.isIntersecting; e.wake(); });
     io.observe(inRef.current);
@@ -594,6 +615,7 @@ export default function SortStage({ story, colors, theme, shown, bus, describe, 
     const n = tray ? total : SLOTS;
     return (
       <section key={k} className={'sc-card' + (tray ? ' tray ' + k : '')} data-k={k} ref={(el) => (cards.current[k] = el)} style={{ '--c': tray ? undefined : `var(--cat-${k})` }}>
+        <i className="hit-ring" aria-hidden="true" />
         <header>
           {tray ? <i className="seal tray-seal" lang="ja" aria-hidden="true">{k === 'merged' ? '重' : '外'}</i> : <i className="seal" lang="ja" aria-hidden="true">{SEAL[k]}</i>}
           <b>{tray ? (k === 'merged' ? 'Merged' : 'Left out') : LABEL[k]}</b>

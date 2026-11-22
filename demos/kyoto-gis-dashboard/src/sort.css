@@ -50,12 +50,12 @@
 .sc-card.tray { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; outline: 1.5px dashed var(--line); outline-offset: -1.5px; }
 .sc-card.tray.hit { outline-color: var(--seal-red); box-shadow: 0 0 0 4px color-mix(in srgb, var(--seal-red) 14%, transparent); }
 
-.sc-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.sc-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
 .sc-grid.t { grid-template-columns: repeat(auto-fill, minmax(21px, 1fr)); }
-.sc-grid.all:not(.t) { max-height: calc((100cqw - 20px) / 3 + 5px); overflow-y: auto; scrollbar-width: thin; padding-right: 2px; animation: scAll .5s var(--ez) both; }
+.sc-grid.all:not(.t) { align-content: start; height: calc((100cqw - 27px) / 10 * 3 + 7px); max-height: calc((100cqw - 27px) / 10 * 3 + 7px); overflow-y: auto; scrollbar-width: thin; padding-right: 2px; animation: scAll .5s var(--ez) both; }
 @keyframes scAll { from { opacity: .4; } }
-.slot { position: relative; aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: 5px; cursor: pointer; display: grid; place-items: center;
-  font: 600 clamp(9px, 3.6cqw, 13px)/1 var(--serif); color: #fff; background-color: color-mix(in srgb, var(--ink) 6%, transparent); background-repeat: no-repeat;
+.slot { position: relative; aspect-ratio: 1; min-width: 0; padding: 0; border: 0; border-radius: 4px; cursor: pointer; display: grid; place-items: center;
+  font: 600 clamp(7px, 2.6cqw, 12px)/1 var(--serif); color: #fff; background-color: color-mix(in srgb, var(--ink) 6%, transparent); background-repeat: no-repeat;
   transition: transform .18s var(--ez), box-shadow .18s; }
 .slot.empty { cursor: default; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 7%, transparent); }
 .slot.np { background-color: var(--c); }
@@ -181,3 +181,12 @@
 .sort-counts { gap: 6px; }
 .sort-counts .count.sc-count { min-width: 0; padding: 3px 9px; }
 @media (max-width: 760px) { .top .counts.sort-counts { display: flex; order: 5; width: 100%; gap: 4px; } .sort-counts .count.sc-count { flex: 1 1 30%; padding: 2px 7px; } .sort-counts .count .k { font-size: 9.5px; } }
+
+/* a card's rim lights up when a record lands: its own layer, faded by an opacity animation (SortStage.jsx) */
+.sc-card .hit-ring { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; will-change: opacity;
+  box-shadow: inset 0 0 0 1.5px var(--c, var(--glow)), 0 0 0 4px color-mix(in srgb, var(--c, var(--glow)) 22%, transparent); }
+.sc-card.tray .hit-ring { box-shadow: inset 0 0 0 1.5px var(--seal-red), 0 0 0 4px color-mix(in srgb, var(--seal-red) 14%, transparent); }
+@media (max-width: 760px) {
+  .sc-grid { grid-template-columns: repeat(6, 1fr); }
+  .sc-grid.all:not(.t) { height: calc((100cqw - 15px) / 6 * 4 + 9px); max-height: calc((100cqw - 15px) / 6 * 4 + 9px); }
+}

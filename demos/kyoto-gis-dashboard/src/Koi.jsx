@@ -16,13 +16,16 @@ const PALETTE = {
   light: { water: '#f4efe6', ink: '#2f2924', accent: '#d2572f', koiLight: '#fffaf1', koiDark: '#3a312b', dark: false },
 };
 
-export default function Koi({ theme, scroller }) {
+export default function Koi({ theme, scroller, paused = false }) {
   const canvas = useRef(null);
   const ripCanvas = useRef(null);
   const mist = useRef(null);
   const pond = useRef(null);
   const themeRef = useRef(theme);
   themeRef.current = theme;
+  const pausedRef = useRef(paused);   // e.g. while the dashboard is turned over to "Sort the data"
+  pausedRef.current = paused;
+  const pauser = useRef(null);
 
   useEffect(() => {
     const host = scroller.current, cv = canvas.current, K = window.AsciiKoi;
@@ -72,14 +75,14 @@ export default function Koi({ theme, scroller }) {
       mist.current.style.width = `${w}px`; mist.current.style.height = `${h}px`;
       rc.style.width = `${w}px`; rc.style.height = `${h}px`; rc.width = Math.round(w * rdpr); rc.height = Math.round(h * rdpr);
       p.size(w * SCALE, h * SCALE);
-      if (!started) { started = true; p.start(); p.pause(!visible); }
+      if (!started) { started = true; p.start(); p.pause(!visible || pausedRef.current); }
     };
     const ro = new ResizeObserver(fit);
     ro.observe(host);
     // only animate while the panel is really on screen
-    const io = new IntersectionObserver((es) => { visible = es.some((e) => e.isIntersecting); if (started) p.pause(!visible || document.hidden); }, { threshold: 0.05 });
+    const io = new IntersectionObserver((es) => { visible = es.some((e) => e.isIntersecting); if (started) p.pause(!visible || document.hidden || pausedRef.current); }, { threshold: 0.05 });
     io.observe(host);
-    const vis = () => { if (started) p.pause(!visible || document.hidden); };
+    const vis = () => { if (started) p.pause(!visible || document.hidden || pausedRef.current); };
     document.addEventListener('visibilitychange', vis);
     // fish food where bare panel background is clicked (never on a card or control)
     const click = (e) => {
@@ -89,10 +92,12 @@ export default function Koi({ theme, scroller }) {
     };
     host.addEventListener('click', click);
     fit();
+    pauser.current = () => { if (started) p.pause(!visible || document.hidden || pausedRef.current); };
     return () => { ro.disconnect(); io.disconnect(); document.removeEventListener('visibilitychange', vis); host.removeEventListener('click', click); cancelAnimationFrame(rraf); p.stop(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => { pond.current?.colors(); }, [theme]);
+  useEffect(() => { pauser.current?.(); }, [paused]);
 
   return <div className="koi-layer" aria-hidden="true"><canvas ref={canvas} /><canvas ref={ripCanvas} className="koi-ripples" /><i ref={mist} className="koi-mist" /></div>;
 }

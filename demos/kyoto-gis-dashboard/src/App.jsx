@@ -725,7 +725,7 @@ export default function App() {
       </header>
 
       <aside className="right panel" id="details" aria-label="Information panel" ref={panelRef}>
-        <Koi theme={theme} scroller={panelRef} />
+        <Koi theme={theme} scroller={panelRef} paused={face === 'back'} />
         <div className="phead">
           <div className="ptabs" role="tablist" aria-label="Panel">
             <button type="button" role="tab" id="ptab-explore" aria-selected={ptab === 'explore'} aria-controls="explore-panel" className={ptab === 'explore' ? 'on' : ''} onClick={() => switchTab('explore')}>Explore</button>

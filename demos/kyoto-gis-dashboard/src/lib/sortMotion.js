@@ -62,6 +62,16 @@ export function shuffle(a, rand) {
   return a;
 }
 
+// Release times at a steady rate: the rate ramps up over the first 15 % of the sort phase, stays level, and
+// ramps down over the last 15 % (a trapezoid). Returns the time (0-1) by which fraction q of the records have left.
+// (An ease-in-out over the whole phase made the middle twice as dense as the average, which read as a sudden pour.)
+export function steadyTime(q, a = 0.15) {
+  const y = Math.min(1, Math.max(0, q)) * (1 - a);
+  if (y < a / 2) return Math.sqrt(2 * a * y);
+  if (y <= 1 - 1.5 * a) return y + a / 2;
+  return 1 - Math.sqrt(Math.max(0, 2 * a * (1 - a - y)));
+}
+
 // When each record leaves the sphere. rows: sort_story.json rows [id, category, cell, status, source].
 export function buildPlan(rows, duration = DURATION, rand = Math.random) {
   const at = (f) => f * duration;
@@ -72,7 +82,7 @@ export function buildPlan(rows, duration = DURATION, rand = Math.random) {
   const events = [
     ...merged.map((id, i) => ({ id, kind: 'merge', t: span(PHASES.merge, PHASES.leftOut, merged.length, i) })),
     ...out.map((id, i) => ({ id, kind: 'leftOut', t: span(PHASES.leftOut, PHASES.sort, out.length, i) })),
-    ...onMap.map((id, i) => ({ id, kind: 'sort', t: at(PHASES.sort) + easeInOut(onMap.length > 1 ? i / (onMap.length - 1) : 1) * (at(PHASES.sortEnd) - at(PHASES.sort)) })),
+    ...onMap.map((id, i) => ({ id, kind: 'sort', t: at(PHASES.sort) + steadyTime(onMap.length > 1 ? i / (onMap.length - 1) : 1) * (at(PHASES.sortEnd) - at(PHASES.sort)) })),
   ];
   events.sort((a, b) => a.t - b.t);
   return { events, merged, leftOut: out, onMap, duration };
