@@ -686,3 +686,116 @@ test('placeholder names: A00329 name:en "Hhhh" is kept in the context but not us
   assert.deepEqual(rejected, ['A00329']);                      // the rule is narrow: nothing else is caught
   assert.ok(!(A.find((f) => f.properties.id === 'A00329').properties.name || '').trim());   // its name field stays empty
 });
+
+test('trip: the plan is kept in this browser, days stay consecutive, a moved stop drops its bus choice', async () => {
+  const t = await import('../src/lib/trip.js');
+  const mem = new Map(), storage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, String(v)) };
+  let trip = t.loadTrip(storage, '2026-11-22');
+  assert.deepEqual(trip.days.map((d) => d.date), ['2026-11-23', '2026-11-24', '2026-11-25']);
+  assert.equal(t.planned(trip), false);
+  trip = t.addStop(trip, 0, 'A00560', { mode: 'bus' });
+  trip = t.addStop(trip, 0, 'A00560');                      // the same place twice in a day is ignored
+  trip = t.addStop(trip, 0, 'A00540', { mode: 'bike' });
+  assert.equal(trip.days[0].stops.length, 2);
+  assert.equal(trip.days[0].stops[0].stay, t.DEFAULT_STAY);
+  trip = t.patchStop(trip, 0, 1, { bus: { variant: 'x' } });
+  trip = t.moveStop(trip, 0, 1, 0);
+  assert.deepEqual(trip.days[0].stops.map((s) => s.id), ['A00540', 'A00560']);
+  assert.ok(trip.days[0].stops.every((s) => s.bus === null));
+  assert.equal(t.saveTrip(trip, storage), true);
+  assert.deepEqual(t.loadTrip(storage).days[0].stops.map((s) => s.id), ['A00540', 'A00560']);
+  mem.set(t.TRIP_KEY, '{broken');
+  assert.equal(t.loadTrip(storage, '2026-11-22').days[0].stops.length, 0);
+  for (let i = 0; i < 9; i++) trip = t.addDay(trip);
+  assert.equal(trip.days.length, t.MAX_DAYS);
+  trip = t.removeDay(trip, 1);
+  assert.deepEqual(trip.days.slice(0, 3).map((d) => d.date), ['2026-11-23', '2026-11-24', '2026-11-25']);
+  trip = t.moveStopToDay(trip, 0, 0, 2);
+  assert.deepEqual(trip.days[2].stops.map((s) => s.id), ['A00540']);
+});
+
+test('trip: the timeline only uses routed legs and the visitor\'s own times; an unknown bus ride loses the clock until a set time', async () => {
+  const t = await import('../src/lib/trip.js');
+  const day = { date: '2026-11-23', start: '09:00', end: '13:00', from: 'S00019', stops: [
+    { id: 'A00560', stay: 90, at: null, mode: 'bus' },
+    { id: 'A00540', stay: 60, at: null, mode: 'bike' },
+    { id: 'A00559', stay: 30, at: '13:30', mode: 'foot' },
+  ] };
+  const legs = [null, { duration_s: null }, { duration_s: 1500 }, { duration_s: 600 }];
+  let tl = t.timeline(day, legs);
+  assert.equal(tl.points[0].arrive, 540);
+  assert.equal(tl.points[1].known, false);                  // bus ride: no timetable, no time
+  assert.equal(tl.points[2].known, false);                  // and the clock stays lost after it
+  assert.equal(tl.points[3].arrive, t.parseHM('13:30'));    // until a time the visitor set
+  day.stops[0].at = '10:00';
+  tl = t.timeline(day, legs);
+  assert.equal(tl.points[1].arrive, 600);
+  assert.equal(tl.points[2].arrive, 600 + 90 + 25);         // 10:00 + 1 h 30 stay + 25 min cycle
+  assert.equal(tl.points[3].wait, t.parseHM('13:30') - (715 + 60 + 10));
+  assert.equal(tl.finish, t.parseHM('14:00'));
+  assert.equal(tl.overrun, 60);                             // the day was planned to end at 13:00
+  day.stops[2].at = '12:00';
+  assert.equal(t.timeline(day, legs).points[3].late, true);
+  assert.equal(t.fmtHM(615), '10:15');
+  assert.equal(t.parseHM('25:00'), null);
+});
+
+test('trip: bus options come from the variants\' stop order and the official fare, with the search radius stated', async () => {
+  const t = await import('../src/lib/trip.js');
+  const idx = J('bus/index.json');
+  const xy = new Map([...T, ...A].map((f) => [f.properties.id, f.geometry.coordinates]));
+  const pos = (id) => xy.get(id);
+  const r = t.busOptions(idx, pos, pos('S00019'), pos('A00560'));     // Kyoto Station -> Kiyomizu-dera
+  assert.ok(r.options.length > 0);
+  assert.equal(r.radiusA, 500);
+  assert.equal(r.radiusB, 800);                                         // no stop within 500 m of Kiyomizu-dera
+  for (const o of r.options) {
+    const v = idx.routes.find((x) => x.key === o.route).variants.find((x) => x.id === o.variant);
+    assert.equal(v.order[o.boardSeq], o.board);
+    assert.equal(v.order[o.alightSeq], o.alight);
+    assert.ok(o.alightSeq > o.boardSeq);
+    assert.equal(o.stops, o.alightSeq - o.boardSeq);
+    assert.deepEqual(o.fare, idx.routes.find((x) => x.key === o.route).fare);
+  }
+  assert.ok(r.options.some((o) => o.number === 'EX100' && o.boardJa === '京都駅前' && o.alightJa === '五条坂'));
+  // the ridden line follows the variant's own line between its own stop positions
+  const v = J('bus/variants/13363356.json');
+  const seqA = v.stops.findIndex((s) => s.ja === '京都駅前'), seqB = v.stops.findIndex((s) => s.ja === '五条坂');
+  const ride = t.rideLine(v, seqA, seqB);
+  assert.ok(ride.coords.length > 10);
+  assert.ok(t.distM(ride.coords[0], v.stops[seqA].xy) < 80);
+  assert.ok(t.distM(ride.coords[ride.coords.length - 1], v.stops[seqB].xy) < 80);
+  assert.equal(seqB - seqA, 7);
+  assert.equal(t.rideLine(v, seqB, seqA), null);                        // never backwards
+});
+
+test('trip: best order keeps the start, is exact for small days and never worse than the order it was given', async () => {
+  const t = await import('../src/lib/trip.js');
+  const m = [[0, 5, 9, 4], [5, 0, 3, 7], [9, 3, 0, 6], [4, 7, 6, 0]];
+  const o = t.bestOrder(m);
+  assert.equal(o[0], 0);
+  assert.deepEqual(o, [0, 3, 2, 1]);
+  assert.equal(t.orderCost(m, o), 13);                                  // 4 + 6 + 3, the brute-force minimum
+  let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const pts = Array.from({ length: 11 }, () => [rnd(), rnd()]);
+  const big = pts.map((a) => pts.map((b) => Math.hypot(a[0] - b[0], a[1] - b[1])));
+  const ob = t.bestOrder(big);
+  assert.equal(new Set(ob).size, 11);
+  assert.equal(ob[0], 0);
+  assert.ok(t.orderCost(big, ob) <= t.orderCost(big, [...Array(11).keys()]) + 1e-9);
+});
+
+test('trip: calendar file in UTC from Japan time, folded lines, bus rides flagged as untimed', async () => {
+  const t = await import('../src/lib/trip.js');
+  const day = { id: 'd1', date: '2026-11-23', start: '09:00', end: '18:00', from: null, stops: [{ id: 'A00560', stay: 90, at: '10:00', mode: 'foot' }, { id: 'A00540', stay: 60, at: null, mode: 'bike' }] };
+  const tl = t.timeline(day, [null, { duration_s: 1500 }]);
+  const ics = t.toICS({ title: 'Kyoto' }, [{ day, tl, names: ['Kiyomizu-dera', 'Ginkaku-ji temple'], legText: ['', 'Cycle 25 min'] }], { stamp: new Date('2026-11-22T12:00:00Z') });
+  assert.ok(ics.startsWith('BEGIN:VCALENDAR\r\n') && ics.endsWith('END:VCALENDAR\r\n'));
+  assert.match(ics, /DTSTART:20261123T010000Z/);                     // 10:00 JST
+  assert.match(ics, /DTEND:20261123T023000Z/);
+  assert.match(ics, /DTSTART:20261123T025500Z/);                     // 11:30 + 25 min = 11:55 JST
+  assert.match(ics, /DTSTART;VALUE=DATE:20261123/);
+  assert.ok(ics.split('\r\n').every((l) => l.length <= 75));
+  assert.match(ics.replace(/\r\n /g, ''), /no timetable/);
+  assert.equal(t.commonsUrl('File:Kiyomizu-dera, Kyoto, November 2016 -02.jpg', 1600), 'https://commons.wikimedia.org/wiki/Special:FilePath/Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg?width=1600');
+});

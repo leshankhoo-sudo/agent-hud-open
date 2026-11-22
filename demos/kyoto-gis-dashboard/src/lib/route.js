@@ -45,6 +45,28 @@ export async function fetchRoute(from, to, mode, signal) {
   return out;
 }
 
+// Travel times between every pair of points (the service's table), for ordering a day's stops.
+// Returns { durations: [[s]], distances: [[m]] } exactly as the service gives them; a missing pair is null.
+export async function fetchTable(points, mode, signal) {
+  const m = modeOf(mode);
+  if (points.length < 2) return { durations: [[0]], distances: [[0]] };
+  const pts = points.map((p) => `${p[0].toFixed(6)},${p[1].toFixed(6)}`).join(';');
+  const key = `table|${m.key}|${pts}`;
+  if (cache.has(key)) return cache.get(key);
+  let r;
+  try { r = await fetch(`https://${ROUTE_SERVICE.host}/${m.profile}/table/v1/driving/${pts}?annotations=duration,distance`, { signal }); } catch (e) {
+    if (e.name === 'AbortError') throw e;
+    throw new Error('The routing service could not be reached (network or blocked request).');
+  }
+  if (r.status === 429) throw new Error('The routing service is busy (HTTP 429). Try again in a moment.');
+  if (!r.ok) throw new Error(`The routing service answered HTTP ${r.status}.`);
+  const j = await r.json();
+  if (j.code !== 'Ok' || !Array.isArray(j.durations)) throw new Error(`The routing service could not compare these places (${j.code || 'no result'}).`);
+  const out = { durations: j.durations, distances: j.distances || null };
+  cache.set(key, out);
+  return out;
+}
+
 export const fmtDuration = (s) => {
   const min = Math.max(1, Math.round(s / 60));
   return min < 60 ? `${min} min` : `${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')} min`;
