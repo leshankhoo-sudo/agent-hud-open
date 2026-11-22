@@ -1,6 +1,6 @@
 {
  "meta": {
-  "built_at": "2026-11-21T08:47:26+00:00",
+  "built_at": "2026-11-22T06:51:44+00:00",
   "scope": "attraction records with an empty OSM name and no English name of their own",
   "rules": [
    "The records are not changed: name stays empty, display_name and IDs stay as they are.",
@@ -10,13 +10,13 @@
    "muni: the municipality alone. Nothing is translated, romanised or invented."
   ],
   "counts": {
-   "address": 82,
+   "address": 83,
    "place": 74,
    "desc": 3,
    "name": 9,
    "muni": 3
   },
-  "records": 171,
+  "records": 172,
   "sources": {
    "osm_tags": "data/cache/osm_attraction_nodes.json (OSM API)",
    "inside": "public/data/attraction_context.json",
@@ -562,6 +562,13 @@
    "text_en": "",
    "site_kind": "park",
    "basis": "inside the named OSM area \"松の平\" (park; Overpass is_in)"
+  },
+  "A00329": {
+   "kind": "address",
+   "text": "玉水町",
+   "muni": "26105",
+   "basis": "town from the GSI reverse geocoder; its municipality code matches the MLIT N03 join",
+   "muni_en": "Higashiyama Ward, Kyoto City"
   },
   "A00333": {
    "kind": "place",

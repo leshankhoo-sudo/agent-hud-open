@@ -329,6 +329,7 @@ test('context for unnamed records: same-record English names only, containing ar
     assert.ok(['osm_tags', 'unverified'].includes(c.identity), id);
     const t = tags[c.osm_element] || {};
     if (c.name_en) assert.equal(c.name_en, t['name:en'].split(';')[0].trim(), `${id} English name must be the record's own name:en`);
+    else if (c.name_en_rejected) assert.equal(c.name_en_rejected.text, t['name:en'].split(';')[0].trim(), `${id} rejected name must be its own name:en`);
     else assert.ok(!t['name:en'], `${id} has name:en but none was taken`);
     for (const s of c.inside || []) assert.ok(s.name && s.kind && !/administrative|island/.test(s.kind), id);
   }
@@ -672,4 +673,16 @@ test('koto string: hirajoshi notes, a string sample at the right pitch; sort rel
   // the middle runs at a constant rate: equal steps in records give equal steps in time
   const d1 = steadyTime(0.45) - steadyTime(0.4), d2 = steadyTime(0.6) - steadyTime(0.55);
   assert.ok(Math.abs(d1 - d2) < 1e-9);
+});
+
+test('placeholder names: A00329 name:en "Hhhh" is kept in the context but not used as a name; it gets a location label', () => {
+  const ctx = J('attraction_context.json').records, lab = J('attraction_labels.json');
+  const L = lab.labels || lab;
+  assert.equal(ctx.A00329.name_en, undefined);
+  assert.equal(ctx.A00329.name_en_rejected.text, 'Hhhh');
+  assert.equal(ctx.A00329.tags['name:en'], 'Hhhh');            // the source tag itself is kept as it is
+  assert.ok(L.A00329 && ['address', 'place', 'muni'].includes(L.A00329.kind), JSON.stringify(L.A00329));
+  const rejected = Object.entries(ctx).filter(([, c]) => c.name_en_rejected).map(([id]) => id);
+  assert.deepEqual(rejected, ['A00329']);                      // the rule is narrow: nothing else is caught
+  assert.ok(!(A.find((f) => f.properties.id === 'A00329').properties.name || '').trim());   // its name field stays empty
 });

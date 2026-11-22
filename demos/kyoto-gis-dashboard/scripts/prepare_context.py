@@ -23,6 +23,14 @@ CACHE = os.path.join(ROOT, "data", "cache")
 ID_TAGS = ("name:ja", "name:en", "wikidata", "wikipedia", "website", "opening_hours", "description", "description:en", "historic", "phone")
 
 
+def placeholder(text):
+    """True for a name tag that says nothing: one letter typed over and over ("Hhhh") or no letter at all.
+    Such a tag is kept in the record but not shown as a name (the record then gets a location label)."""
+    t = text.replace(" ", "").lower()
+    letters = [c for c in t if c.isalpha()]
+    return not letters or (len(t) >= 2 and len(set(t)) == 1)
+
+
 def site_kind(t):
     """Plain-English kind of a containing area, from its own tags only; None if it is not a 'site'."""
     if "boundary" in t or "place" in t:
@@ -76,7 +84,11 @@ def main():
         if evidence:
             rec["tags"] = evidence
         en = (tags.get("name:en") or "").split(";")[0].strip()
-        if en:
+        if en and placeholder(en):
+            # e.g. A00329: its only name-like tag is name:en "Hhhh"; recorded, not used as a name
+            rec["name_en_rejected"] = {"text": en, "reason": "placeholder: one letter repeated, or no letters; not a name"}
+            counts["english_name_rejected"] = counts.get("english_name_rejected", 0) + 1
+        elif en:
             rec["name_en"] = en
             rec["name_en_source"] = "OSM name:en of the same record"
             counts["with_english_name"] += 1

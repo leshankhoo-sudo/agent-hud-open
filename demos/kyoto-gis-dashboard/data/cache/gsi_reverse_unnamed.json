@@ -1,6 +1,6 @@
 {
  "source": "https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress",
- "retrieved_at": "2026-11-20T06:33:51+00:00",
+ "retrieved_at": "2026-11-22T06:51:44+00:00",
  "answers": {
   "A00003": {
    "muniCd": "26212",
@@ -511,6 +511,12 @@
    "lv01Nm": "薪甘南備山",
    "lon": 135.7446107,
    "lat": 34.8092734
+  },
+  "A00329": {
+   "muniCd": "26105",
+   "lv01Nm": "玉水町",
+   "lon": 135.7771017,
+   "lat": 34.9987036
   }
  }
 }

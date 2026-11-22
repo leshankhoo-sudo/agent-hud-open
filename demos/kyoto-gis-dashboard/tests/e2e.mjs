@@ -273,7 +273,7 @@ check('13 records whose own OSM tags show a business or service counter are left
   ns.n === 13 && ns.offMap && ns.offWalk && ns.evidence && ns.kde && ns.ten, JSON.stringify(ns));
 const lab = await page.evaluate(() => { const f = window.__kyotoMap.getSource('attractions')._data.features.map((x) => x.properties); const un = f.filter((p) => !p.name);
   return { unnamed: un.length, en: un.filter((p) => p.name_en).length, labelled: un.filter((p) => p.label_kind).length, bare: un.filter((p) => !p.name_en && !p.label_kind).length, kinds: [...new Set(un.map((p) => p.label_kind).filter(Boolean))].sort().join(','), nameKept: un.every((p) => p.name === '' || p.name == null) }; });
-check('every attraction shows a name: 218 with no OSM name get the English name of the same record (47) or a label with its basis (171); the name field stays empty', lab.unnamed === 218 && lab.en === 47 && lab.labelled === 171 && lab.bare === 0 && lab.kinds === 'address,desc,muni,name,place' && lab.nameKept, JSON.stringify(lab));
+check('every attraction shows a name: 218 with no OSM name get the English name of the same record (46) or a label with its basis (172; the only name tag of A00329, name:en "Hhhh", is a placeholder); the name field stays empty', lab.unnamed === 218 && lab.en === 46 && lab.labelled === 172 && lab.bare === 0 && lab.kinds === 'address,desc,muni,name,place' && lab.nameKept, JSON.stringify(lab));
 const xc = await page.evaluate(async () => {
   const c = await (await fetch('data/name_checks.json')).json(); const ph = await (await fetch('data/photos.json')).json();
   const r = Object.values(c.records), here = Object.values(ph.photos).filter((v) => v.match === 'viewpoint-here'), near = Object.values(ph.photos).filter((v) => v.match === 'nearby-checked');
@@ -1110,11 +1110,13 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   await sp.evaluate(() => document.getElementById('features').scrollIntoView()); await sp.waitForTimeout(1200);
   const wxp = sp.locator('.ft-panel').nth(3); await wxp.hover(); await sp.waitForTimeout(900);
   const wb = await wxp.boundingBox();
-  await sp.mouse.move(wb.x + wb.width * 0.3, wb.y + wb.height * 0.3, { steps: 3 }); await sp.waitForTimeout(260);
-  const lt1 = await sp.evaluate(() => { const el = document.querySelectorAll('.ft-panel')[3]; return [parseFloat(el.style.getPropertyValue('--lx')), parseFloat(el.style.getPropertyValue('--ly')), +el.style.getPropertyValue('--lo')]; });
+  await sp.evaluate(() => addEventListener('pointermove', (e) => { window.__ptr = [e.clientX, e.clientY]; }, { passive: true }));
+  await sp.mouse.move(wb.x + wb.width * 0.3, wb.y + wb.height * 0.3, { steps: 3 }); await sp.waitForTimeout(400);
+  // the light against where the pointer is in the panel now (the panel may still be widening)
+  const lt1 = await sp.evaluate(() => { const el = document.querySelectorAll('.ft-panel')[3], r = el.getBoundingClientRect(); return [parseFloat(el.style.getPropertyValue('--lx')) - (window.__ptr[0] - r.left), parseFloat(el.style.getPropertyValue('--ly')) - (window.__ptr[1] - r.top), +el.style.getPropertyValue('--lo')]; });
   await wxp.locator('.ft-go').click(); await sp.waitForTimeout(2600);
   const wxs = await sp.evaluate(() => ({ back: document.getElementById('dashboard').className.includes('face-back'), place: document.querySelector('.detail h2')?.textContent || '' }));
-  check('feature cards: the light follows the pointer; See a forecast turns a flipped dashboard back and opens Kyoto Station', Math.abs(lt1[0] - wb.width * 0.3) < 12 && Math.abs(lt1[1] - wb.height * 0.3) < 12 && lt1[2] > 0.8 && !wxs.back && /京都|Kyoto/.test(wxs.place), JSON.stringify({ lt1, w: wb.width, wxs }));
+  check('feature cards: the light follows the pointer; See a forecast turns a flipped dashboard back and opens Kyoto Station', Math.abs(lt1[0]) < 12 && Math.abs(lt1[1]) < 12 && lt1[2] > 0.8 && !wxs.back && /京都|Kyoto/.test(wxs.place), JSON.stringify({ lt1, w: wb.width, wxs }));
   // light theme: the back follows it
   const th0 = await sp.evaluate(() => document.documentElement.dataset.theme);
   await sp.locator('.theme-toggle').first().click(); await sp.waitForFunction((t) => document.documentElement.dataset.theme !== t, th0, { timeout: 8000 }).catch(() => {}); await sp.waitForTimeout(1500);

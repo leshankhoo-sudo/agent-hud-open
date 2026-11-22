@@ -1,6 +1,6 @@
 {
 "meta": {
-"built_at": "2026-11-16T09:25:20+00:00",
+"built_at": "2026-11-22T06:51:32+00:00",
 "scope": "attraction records with an empty OSM name",
 "sources": {
 "same_record_tags": "data/cache/osm_elements.json (OSM element tags, fetched with fetch_names_en.py)",
@@ -14,8 +14,9 @@
 "counts": {
 "osm_tags": 52,
 "unverified": 166,
-"with_english_name": 47,
-"inside_named_site": 97
+"with_english_name": 46,
+"inside_named_site": 97,
+"english_name_rejected": 1
 },
 "licence": "OpenStreetMap contributors, ODbL"
 },
@@ -1084,8 +1085,10 @@
 "tags": {
 "name:en": "Hhhh"
 },
-"name_en": "Hhhh",
-"name_en_source": "OSM name:en of the same record"
+"name_en_rejected": {
+"text": "Hhhh",
+"reason": "placeholder: one letter repeated, or no letters; not a name"
+}
 },
 "A00333": {
 "identity": "unverified",

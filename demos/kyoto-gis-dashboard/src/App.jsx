@@ -1350,6 +1350,7 @@ function Overview({ hit, pm, photos, tourism, dup, walk, ctx, check, onWalk, rel
       {!p.name && (p.name_en
         ? <p className="xs limit">No Japanese name in the source. The English name comes from the same OpenStreetMap record (name:en).</p>
         : <p className="xs limit">{LABEL_NOTE[p.label_kind] || 'This record has no name in the source. The label above is a fallback, not an official name.'}{p.label_basis && <span className="muted"> Source: {p.label_basis}.</span>}</p>)}
+      {!p.name && ctx?.name_en_rejected && <p className="xs limit">The only name tag on this OpenStreetMap record, name:en “{ctx.name_en_rejected.text}”, is a placeholder (one letter repeated), so it is not shown as a name.</p>}
       {p.name_full && <p className="xs limit name-full">The name tag in OpenStreetMap reads <span lang="ja">「{p.name}」</span>, cut short. The full name shown comes from the same record (name:ja).</p>}
       <dl className="kv">
         <div><dt>Category</dt><dd>{CATEGORY_LABEL[p.category]}</dd></div>
