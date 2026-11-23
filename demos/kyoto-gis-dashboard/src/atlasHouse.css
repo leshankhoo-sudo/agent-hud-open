@@ -1,7 +1,6 @@
-/* The atlas house (AtlasHouse.jsx): fixed at the bottom-left of every page, above the dashboards (the
-   trip planner is z 50) and under the chat (z 70). */
-.ah-house { position: fixed; z-index: 64; left: max(10px, env(safe-area-inset-left, 0px)); bottom: max(6px, env(safe-area-inset-bottom, 0px));
-  width: 150px; height: 155px; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
+/* The atlas house (AtlasHouse.jsx): placed by script in the map's bottom-left corner, or in the trip planner's old
+   Support slot; hidden elsewhere. Above the dashboards (the trip planner is z 50), under the chat (z 70). */
+.ah-house { position: fixed; z-index: 64; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
   filter: drop-shadow(0 6px 10px rgba(40, 26, 20, .18)); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
 .ah-house:hover { transform: translateY(-2px); }
 .ah-house:focus-visible { outline: 3px solid #ec6d4f; outline-offset: 2px; border-radius: 14px; }
@@ -19,9 +18,9 @@
 @keyframes ahShake { 0%, 30%, 60% { transform: translateX(2px); } 10%, 40%, 70% { transform: translateX(-2px); } 20%, 50%, 80%, 100% { transform: none; } }
 .ah-halo { animation: ahGlow 2.8s ease-in-out infinite; }
 @keyframes ahGlow { 50% { opacity: .45; } }
-.ah-kon { position: absolute; font: 800 15px 'Yu Gothic UI', 'Hiragino Sans', sans-serif; color: #b0532f; pointer-events: none; animation: ahKon .45s ease-out both; text-shadow: 0 1px 0 #fff; }
-.ah-kon.a { left: 68px; top: 70px; }
-.ah-kon.b { left: 98px; top: 64px; animation-delay: .45s; }
+.ah-kon { position: absolute; font: 800 12px 'Yu Gothic UI', 'Hiragino Sans', sans-serif; color: #b0532f; pointer-events: none; animation: ahKon .45s ease-out both; text-shadow: 0 1px 0 #fff; }
+.ah-kon.a { left: 42%; top: 44%; }
+.ah-kon.b { left: 62%; top: 40%; animation-delay: .45s; }
 @keyframes ahKon { from { opacity: 0; transform: translateY(4px) scale(.8); } 40% { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
 
 .ah-girl { position: fixed; z-index: 71; touch-action: none; cursor: grab; user-select: none;
@@ -54,19 +53,24 @@
 .ah-bubble { position: fixed; z-index: 72; padding: 6px 12px; border-radius: 14px; border: 2.5px solid #4a2f24; background: #fff; color: #4a2f24;
   font: 700 13.5px 'Yu Gothic UI', 'Hiragino Sans', 'Segoe UI', sans-serif; white-space: nowrap; pointer-events: none; animation: ahPop .25s cubic-bezier(.2, 1.4, .4, 1) both; }
 .ah-bubble::after { content: ''; position: absolute; left: 14px; bottom: -10px; border: 7px solid transparent; border-top-color: #4a2f24; border-bottom: 0; }
-.ah-bubble.at-house { left: 54px; bottom: 168px; }
 @keyframes ahPop { from { opacity: 0; transform: translateY(6px) scale(.85); } }
 
 @media (max-width: 640px) {
   /* a little higher, so the map's credit line along the bottom stays readable */
-  .ah-house { width: 96px; height: 100px; bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
   /* the chat is a bottom sheet on a phone: she waits behind it */
   .ah-girl:not(.held) { z-index: 69; }
-  .ah-bubble.at-house { left: 26px; bottom: 118px; }
-  .ah-kon.a { left: 46px; top: 48px; } .ah-kon.b { left: 66px; top: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ah-girl, .ah-girl .ah-girl-svg, .ah-house, .ah-door, .ah-halo, .ah-arm.up, .ah-girl.held .ah-feet { animation: none !important; transition: none !important; }
 }
-/* the trip planner's Support button sat here: the house takes its place (its help opens from the chat) */
-.trip .tp-support { display: none !important; }
+/* the trip planner's Support button: its slot stays (the house sits in it), the button itself is hidden; its
+   help opens from the chat's ? */
+.trip .tp-support { visibility: hidden !important; pointer-events: none; }
+.ah-house[hidden] { display: none; }
+.ah-tuck { position: fixed; z-index: 65; width: 18px; height: 18px; padding: 0; border-radius: 50%; border: 2px solid #4a2f24; background: #fffaf1; color: #4a2f24; display: grid; place-items: center; cursor: pointer; opacity: .0; transition: opacity .2s; }
+.ah-tuck svg { width: 11px; height: 11px; }
+.ah-house:hover + .ah-tuck, .ah-tuck:hover, .ah-tuck:focus-visible { opacity: 1; }
+@media (hover: none) { .ah-tuck { opacity: .85; } }
+.ah-badge { position: fixed; z-index: 64; width: 44px; height: 44px; padding: 4px; border-radius: 50%; border: 2.5px solid #4a2f24; background: #fffaf1; cursor: pointer; box-shadow: 0 4px 10px rgba(40, 26, 20, .2); transition: transform .2s; }
+.ah-badge:hover { transform: scale(1.08); }
+.ah-badge svg { width: 100%; height: 100%; display: block; }

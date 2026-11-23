@@ -1,4 +1,5 @@
-// The atlas house: a small Japanese house that stays at the bottom-left of every page, and the girl in a
+// The atlas house: a small Japanese house in the bottom-left corner of the map (and, in the trip planner, in
+// the slot the Support button had; nowhere else), and the girl in a
 // kimono who lives in it and opens the assistant. An original cartoon drawing (SVG) in the style of the
 // references the team chose: thick brown outlines, flat colours, a round face, dot eyes and pink cheeks.
 //   double-click the house  -> a knock (the doors shake, "kon kon"), the doors slide open, she steps out,
@@ -159,6 +160,23 @@ function Girl({ season, pose, face, look }) {
 }
 
 // open: the chat is open; onOpen asks the app to open it; ready: the atlas data has loaded
+const TUCK_KEY = 'kyoto-house-tucked';
+// where the house sits: in the trip planner the old Support slot, else the map's bottom-left corner, above
+// its credit line; null when neither is on screen
+function anchor() {
+  const phone = innerWidth <= 640, w = phone ? 64 : 96, h = Math.round(w * 1.03);
+  const slot = document.querySelector('.trip .tp-support');
+  if (slot) {
+    const r = slot.getBoundingClientRect();
+    if (r.width) return { x: Math.round(r.left + r.width / 2 - w / 2), y: Math.round(r.bottom - h + (phone ? 0 : 6)), w, h, where: 'trip' };
+  }
+  const m = document.querySelector('#dashboard .center');
+  if (!m || document.querySelector('.trip')) return null;
+  const r = m.getBoundingClientRect(), bottom = r.bottom - (phone ? 26 : 30), top = bottom - h;
+  if (top < Math.max(0, r.top) || bottom > innerHeight || r.width < 200) return null;   // the corner is not on screen
+  return { x: Math.round(r.left + (phone ? 8 : 12)), y: Math.round(top), w, h, where: 'map' };
+}
+
 export default function AtlasHouse({ open, onOpen, ready = true }) {
   const [season, setSeason] = useState(() => document.documentElement.dataset.season || 'spring');
   const [phase, setPhase] = useState('home');       // home | knock | out | held | returning
@@ -172,15 +190,28 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
   const [drop, setDrop] = useState(0);
   const houseRef = useRef(null), girlRef = useRef(null);
   const run = useRef(0);                            // the current sequence; a newer one cancels it
+  const [place, setPlace] = useState(null);         // { x, y, w, h, where } or null: hidden
+  const [tucked, setTuckedState] = useState(() => { try { return localStorage.getItem(TUCK_KEY) === '1'; } catch { return false; } });
+  const setTucked = (v) => { setTuckedState(v); try { localStorage.setItem(TUCK_KEY, v ? '1' : '0'); } catch { /* not kept */ } };
   const live = useRef({ phase, open, pos });
-  live.current = { phase, open, pos };
+  live.current = { phase, open, pos, placed: !!place, tucked };
+  // follow the slot: on scroll and resize, and now and then for layout changes (the trip planner opening)
+  useEffect(() => {
+    let raf = 0;
+    const upd = () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; const a = anchor(); setPlace((p) => (JSON.stringify(p) === JSON.stringify(a) ? p : a)); }); };
+    upd();
+    addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd);
+    const iv = setInterval(upd, 400);
+    return () => { removeEventListener('scroll', upd); removeEventListener('resize', upd); clearInterval(iv); cancelAnimationFrame(raf); };
+  }, []);
 
   useEffect(() => {
     const mo = new MutationObserver(() => setSeason(document.documentElement.dataset.season || 'spring'));
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-season'] });
     return () => mo.disconnect();
   }, []);
-  const size = () => { const w = innerWidth <= 640 ? 64 : 86; return { w, h: w * 1.42 }; };
+  // she is a little bigger than the house's door, as if she stepped towards you
+  const size = () => { const w = innerWidth <= 640 ? 44 : 60; return { w, h: w * 1.42 }; };
   // where she stands at home: in front of the doors, a little to the right
   const homePos = () => {
     const r = houseRef.current?.getBoundingClientRect(), { w, h } = size();
@@ -248,9 +279,15 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
   // the chat opened another way (the map tools): she comes out without knocking; it closed: she goes home
   useEffect(() => {
     const ph = live.current.phase;
-    if (open && ph === 'home') comeOut(false);
+    if (open && ph === 'home' && live.current.placed) { if (live.current.tucked) setTucked(false); comeOut(false); }
     if (!open && (ph === 'out' || ph === 'held')) goHome();
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  // the house left the screen while she was out: she slips back in (the chat, if open, stays); it came back
+  // while the chat is open: she comes out again
+  useEffect(() => {
+    if (!place && live.current.phase !== 'home' && live.current.phase !== 'held') { run.current++; setPhase('home'); setDoorOpen(false); setBubble(null); }
+    else if (place && !tucked && live.current.open && live.current.phase === 'home') comeOut(false);
+  }, [!!place, place?.where]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { const r = () => { if (live.current.phase === 'out' && live.current.pos) setPos((p) => clampPos(p)); }; addEventListener('resize', r); return () => removeEventListener('resize', r); }, []);
 
   const clampPos = (p) => { const { w, h } = size(); return { x: Math.max(4, Math.min(innerWidth - w - 4, p.x)), y: Math.max(4, Math.min(innerHeight - h - 4, p.y)) }; };
@@ -313,14 +350,25 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
 
   const { w, h } = size();
   const out = phase !== 'home' && phase !== 'knock' && pos;
+  const style = place ? { left: place.x, top: place.y, width: place.w, height: place.h } : undefined;
   return (
     <>
-      <button ref={houseRef} type="button" className={'ah-house' + (phase === 'knock' ? ' knock' : '')} onClick={clickHouse} onDoubleClick={knockHouse}
+      {place && tucked && (
+        <button type="button" className="ah-badge" style={{ left: place.x, top: place.y + place.h - 44 }} onClick={() => setTucked(false)} aria-label="Show the atlas house" title="Show the atlas house">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 18L20 7L35 18Z" fill="#a9a3ad" stroke="#4a2f24" strokeWidth="2.4" strokeLinejoin="round" /><rect x="10" y="18" width="20" height="15" fill="#f8ecd8" stroke="#4a2f24" strokeWidth="2.4" /><rect x="16.5" y="23" width="7" height="10" fill="#e8a65e" stroke="#4a2f24" strokeWidth="2" /></svg>
+        </button>
+      )}
+      <button ref={houseRef} type="button" style={style} hidden={!place || tucked} className={'ah-house' + (phase === 'knock' ? ' knock' : '') + (place ? ` in-${place.where}` : '')} onClick={clickHouse} onDoubleClick={knockHouse}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); knockHouse(); } }}
         aria-label="Atlas assistant: double-click the house (or press Enter) to knock" title="Atlas assistant · double-click to knock">
         <House season={season} open={doorOpen} knocking={phase === 'knock'} />
         {phase === 'knock' && <><span className="ah-kon a" aria-hidden="true">コン</span><span className="ah-kon b" aria-hidden="true">コン</span></>}
       </button>
+      {place && !tucked && phase === 'home' && (
+        <button type="button" className="ah-tuck" style={{ left: place.x + place.w - 16, top: place.y + 2 }} onClick={() => setTucked(true)} aria-label="Tuck the house away" title="Tuck the house away">
+          <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5L6 7.5L9 4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+      )}
       {out && (
         <div ref={girlRef} className={`ah-girl ${phase}` + (drop ? ` drop${drop % 2}` : '')} style={{ left: pos.x, top: pos.y, width: w, height: h }}
           onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
@@ -330,7 +378,7 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
         </div>
       )}
       {bubble && (
-        <div className={'ah-bubble' + (out ? '' : ' at-house')} style={out ? { left: pos.x + w * 0.78, top: pos.y - 14 } : undefined} role="status">{bubble}</div>
+        <div className="ah-bubble" style={out ? { left: pos.x + w * 0.78, top: pos.y - 14 } : place ? { left: place.x + place.w * 0.3, top: place.y - 30 } : { display: 'none' }} role="status">{bubble}</div>
       )}
     </>
   );

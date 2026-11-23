@@ -1188,11 +1188,11 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
     hidden: getComputedStyle(document.querySelector('#dashboard > .top')).visibility, photo: document.querySelector('.tp-scene').classList.contains('photo'),
     pinned: document.querySelectorAll('.ema.pinned').length, add: document.querySelectorAll('.ema.add').length, hint: !!document.querySelector('.tp-hint'),
     sub: document.querySelector('.tp-feat h3').textContent, cards: [...document.querySelectorAll('.tp-worth .pc')].map((c) => !!c.querySelector('.im').style.backgroundImage), title: document.querySelector('.tp-worth h4').textContent,
-    rail: [...document.querySelectorAll('.tp-rail button')].map((b) => b.textContent.trim()), dock: [...document.querySelectorAll('.tp-dock button')].map((b) => b.textContent.trim()), support: getComputedStyle(document.querySelector('.tp-support')).display, house: !!document.querySelector('.ah-house'),
+    rail: [...document.querySelectorAll('.tp-rail button')].map((b) => b.textContent.trim()), dock: [...document.querySelectorAll('.tp-dock button')].map((b) => b.textContent.trim()), support: getComputedStyle(document.querySelector('.tp-support')).visibility, house: !!document.querySelector('.ah-house'),
   }));
   await tp.screenshot({ path: `${out}/20-trip-empty.png` });
   check('trip: "Plan your trip" in the panel switches the whole dashboard behind shoji doors; not planned yet, the ema are pinned on the board with a hint', doors && e0.hidden === 'hidden' && !e0.photo && e0.pinned === 4 && e0.add === 1 && e0.hint && e0.sub === 'Not planned yet', JSON.stringify(e0));
-  check('trip: rail is Trip, Agenda, Trip map, Dashboard; dock is Play day, hours, +, Best order, Export; the atlas house at the bottom left in place of Support; popular places have photos', JSON.stringify(e0.rail) === JSON.stringify(['Trip', 'Agenda', 'Trip map', 'Dashboard']) && e0.dock.length === 5 && /Play day/.test(e0.dock[0]) && /Best order/.test(e0.dock[3]) && /Export/.test(e0.dock[4]) && e0.support === 'none' && e0.house && e0.cards.length === 4 && e0.cards.every(Boolean) && /Popular in/.test(e0.title), JSON.stringify(e0));
+  check('trip: rail is Trip, Agenda, Trip map, Dashboard; dock is Play day, hours, +, Best order, Export; the atlas house at the bottom left in place of Support; popular places have photos', JSON.stringify(e0.rail) === JSON.stringify(['Trip', 'Agenda', 'Trip map', 'Dashboard']) && e0.dock.length === 5 && /Play day/.test(e0.dock[0]) && /Best order/.test(e0.dock[3]) && /Export/.test(e0.dock[4]) && e0.support === 'hidden' && e0.house && e0.cards.length === 4 && e0.cards.every(Boolean) && /Popular in/.test(e0.title), JSON.stringify(e0));
 
   // an ema opens its day's strip (a thread runs from the ema, the trip card steps aside); the "+" ema adds a day
   await tp.locator('.ema.add').click();
@@ -1370,11 +1370,11 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   const hErr = []; hp.on('pageerror', (e) => hErr.push(e.message));
   await hp.route('**/api/assistant/status', (r) => r.fulfill({ json: { configured: true, model: 'gemini-4-hydrogen', thinking: { default: 'medium', planning: 'high', allowed: ['medium', 'high'] }, service_tier: 'standard', billing_currency: { code: 'MYR', symbol: 'RM', per_usd: 4.122961 }, limits: { max_cost_per_day: 3 }, today: { requests: 0, usd: 0 } } }));
   await hp.goto(url);
-  await hp.waitForSelector('.ah-house', { timeout: 60000 });
-  const where = async () => hp.evaluate(() => { const r = document.querySelector('.ah-house').getBoundingClientRect(); return { left: Math.round(r.left), gap: Math.round(innerHeight - r.bottom), w: Math.round(r.width), pos: getComputedStyle(document.querySelector('.ah-house')).position }; });
+  await hp.waitForSelector('.ah-house', { timeout: 60000, state: 'attached' });
+  const where = async () => hp.evaluate(() => { const h = document.querySelector('.ah-house'); if (!h || h.hidden) return null; const r = h.getBoundingClientRect(), m = document.querySelector('#dashboard .center').getBoundingClientRect(); return { w: Math.round(r.width), inMap: r.left >= m.left && r.bottom <= m.bottom - 20 && r.left - m.left < 30 && m.bottom - r.bottom < 40 }; });
   const spots = {};
-  for (const id of ['seasons', 'explore', 'dashboard']) { await hp.evaluate((i) => document.getElementById(i).scrollIntoView(), id); await hp.waitForTimeout(700); spots[id] = await where(); }
-  check('house: fixed at the bottom-left of every page (seasons, Explore, the dashboard)', Object.values(spots).every((x) => x.pos === 'fixed' && x.left <= 14 && x.gap <= 10 && x.w >= 140), JSON.stringify(spots));
+  for (const id of ['seasons', 'explore', 'dashboard']) { await hp.evaluate((i) => document.getElementById(i).scrollIntoView(), id); await hp.waitForTimeout(900); spots[id] = await where(); }
+  check('house: only in the map\'s bottom-left corner (above its credit line), about 96 px; not on the season or Explore pages', !spots.seasons && !spots.explore && spots.dashboard?.inMap && spots.dashboard.w === 96, JSON.stringify(spots));
   await hp.waitForTimeout(1500);
   const hb = await hp.locator('.ah-house').boundingBox();
   await hp.mouse.click(hb.x + hb.width / 2, hb.y + hb.height * 0.75);
@@ -1422,10 +1422,18 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   await hp.waitForSelector('.ah-girl', { timeout: 5000 }).catch(() => {});
   const kimono = await hp.evaluate(() => document.querySelector('.ah-girl-svg path[fill]')?.getAttribute('fill'));
   check('house: the season changes the branch (snow in winter) and her kimono; Enter on the house knocks as well', winter.snow > 0 && winter.roof && kimono === '#a796d2', JSON.stringify({ winter, kimono }));
-  // phone: smaller, a little higher so the map credit stays readable
-  await hp.setViewportSize({ width: 390, height: 844 }); await hp.waitForTimeout(500);
+  // tuck it away into a small round badge and bring it back (remembered)
+  await hp.locator('.as-h [aria-label="Close the assistant"]').click().catch(() => {}); await hp.waitForTimeout(1600);
+  await hp.locator('.ah-house').hover(); await hp.waitForTimeout(250);
+  await hp.locator('.ah-tuck').click(); await hp.waitForTimeout(300);
+  const tk = await hp.evaluate(() => ({ badge: !!document.querySelector('.ah-badge'), house: !document.querySelector('.ah-house').hidden, kept: localStorage.getItem('kyoto-house-tucked') }));
+  await hp.locator('.ah-badge').click(); await hp.waitForTimeout(300);
+  const tk2 = await hp.evaluate(() => ({ badge: !!document.querySelector('.ah-badge'), house: !document.querySelector('.ah-house').hidden }));
+  check('house: it can be tucked into a small badge and brought back', tk.badge && !tk.house && tk.kept === '1' && !tk2.badge && tk2.house, JSON.stringify({ tk, tk2 }));
+  // phone: smaller
+  await hp.setViewportSize({ width: 390, height: 844 }); await hp.evaluate(() => document.getElementById('dashboard').scrollIntoView()); await hp.waitForTimeout(900);
   const ph = await where();
-  check('house, phone: smaller and raised above the map credit line', ph.w <= 100 && ph.gap >= 20 && ph.left <= 14, JSON.stringify(ph));
+  check('house, phone: smaller, still in the map corner', ph && ph.w === 64 && ph.inMap, JSON.stringify(ph));
   check('house: no page errors', hErr.length === 0, hErr.join(' | '));
   await hp.close();
 }
@@ -1503,8 +1511,8 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   const kept = await ap.evaluate(() => document.querySelectorAll('.as-msg').length);
   await ap.locator('.as-help').click();
   await ap.waitForSelector('.tp-sheet.help', { timeout: 5000 });
-  const r3 = await ap.evaluate(() => ({ help: document.querySelector('.tp-sheet.help')?.textContent || '', support: getComputedStyle(document.querySelector('.tp-support')).display }));
-  check('assistant: the house opens the same conversation again; in the trip planner the chat links to the planner\'s help (the old Support button is gone)', kept >= 6 && /saved in this browser only/.test(r3.help) && r3.support === 'none', JSON.stringify({ kept, support: r3.support }));
+  const r3 = await ap.evaluate(() => ({ help: document.querySelector('.tp-sheet.help')?.textContent || '', support: getComputedStyle(document.querySelector('.tp-support')).visibility }));
+  check('assistant: the house opens the same conversation again; in the trip planner the chat links to the planner\'s help (the old Support button is gone)', kept >= 6 && /saved in this browser only/.test(r3.help) && r3.support === 'hidden', JSON.stringify({ kept, support: r3.support }));
   check('assistant: no page errors', aErr.length === 0, aErr.join(' | '));
   await ap.close();
 }
