@@ -39,7 +39,7 @@ export default function Panorama({ onNext }) {
         <h2 id="pano-title">Look across Kyoto</h2>
         <p className="pano-lead">Mountains on the skyline, a town of tiled roofs below, and a row of gates climbing the hill.</p>
         <p className="pano-hint"><span className="pano-mouse" aria-hidden="true"><i /></span>Move the pointer to look left and right. Scroll to walk on.</p>
-        <button type="button" className="pano-next" onClick={onNext}>Seven places to start <i aria-hidden="true">↓</i></button>
+        <button type="button" className="pano-next" onClick={onNext}>Fifteen cities to start <i aria-hidden="true">↓</i></button>
       </div>
       <p className="pano-note">Illustration drawn for this project · not to scale · landmarks are symbols, not map data</p>
     </section>

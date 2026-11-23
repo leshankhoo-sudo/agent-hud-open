@@ -1,0 +1,26 @@
+{
+  "model": "gemini-4-hydrogen",
+  "thinking": {
+    "default": "medium",
+    "planning": "high",
+    "allowed": ["medium", "high"]
+  },
+  "service_tier": "standard",
+  "price_usd_per_million_tokens": {
+    "input": 1.5,
+    "cached_input": 0.075,
+    "output_including_thinking": 7.5,
+    "source": "Gemini API pricing, Standard paid tier, gemini-4-hydrogen (https://ai.google.dev/gemini-api/docs/pricing), checked 2026-11-23"
+  },
+  "limits": {
+    "max_requests_per_day": 200,
+    "max_usd_per_day": 1.0,
+    "max_tool_rounds_per_question": 6,
+    "max_tool_calls_per_question": 12,
+    "max_history_turns": 6,
+    "max_output_tokens": 8192,
+    "timeout_seconds": 90,
+    "retries": 2,
+    "duplicate_window_seconds": 5
+  }
+}

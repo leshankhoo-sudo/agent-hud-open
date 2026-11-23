@@ -12,11 +12,14 @@ import { useScene } from './lib/depth.js';
 // autumn and spring images were removed so that all four seasons share one typeface.
 export const SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'];
 export const SCENES = {
-  spring: { ja: '春', en: 'Spring', kigo: '春霞', kigoR: 'Harugasumi', kigoEn: 'spring haze', focus: [0.52, 0.5], zoom: 0.16, textDepth: 0.6, cardY: 0.5 },
-  summer: { ja: '夏', en: 'Summer', kigo: '木漏れ日', kigoR: 'Komorebi', kigoEn: 'sunlight through leaves', focus: [0.53, 0.43], zoom: 0.34, textDepth: 0.44, cardY: 0.43 },
-  autumn: { ja: '秋', en: 'Autumn', kigo: '紅葉', kigoR: 'Kōyō', kigoEn: 'autumn leaves', focus: [0.58, 0.62], zoom: 0.3, textDepth: 0.5, cardY: 0.36 },
-  winter: { ja: '冬', en: 'Winter', kigo: '雪景色', kigoR: 'Yukigeshiki', kigoEn: 'snow scene', focus: [0.58, 0.6], zoom: 0.28, textDepth: 0.62, cardY: 0.4 },
+  spring: { ja: '春', en: 'Spring', kigo: '春霞', kigoR: 'Harugasumi', kigoEn: 'spring haze', focus: [0.52, 0.5], zoom: 0.16, textDepth: 0.6 },
+  summer: { ja: '夏', en: 'Summer', kigo: '木漏れ日', kigoR: 'Komorebi', kigoEn: 'sunlight through leaves', focus: [0.53, 0.43], zoom: 0.34, textDepth: 0.44 },
+  autumn: { ja: '秋', en: 'Autumn', kigo: '紅葉', kigoR: 'Kōyō', kigoEn: 'autumn leaves', focus: [0.58, 0.62], zoom: 0.3, textDepth: 0.5 },
+  winter: { ja: '冬', en: 'Winter', kigo: '雪景色', kigoR: 'Yukigeshiki', kigoEn: 'snow scene', focus: [0.58, 0.6], zoom: 0.28, textDepth: 0.62 },
 };
+// All four names sit on the same line of their card (40% from the top), so the four titles line up
+// across the row; only the picture moves behind them.
+const TITLE_Y = 0.4;
 const FONT = '"Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif';
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const ease = (t) => 1 - Math.pow(1 - clamp(t), 3);
@@ -105,11 +108,8 @@ function makeCard(canvas, key, base) {
     const zoom = sc.zoom * ease(p * 1.1) + 0.02 + Math.sin(time * 0.45 + key.length) * 0.01;
     // lettering at its depth plane
     tg.setTransform(1, 0, 0, 1, 0, 0); tg.clearRect(0, 0, W, H);
-    const kT = 1 + zoom * (0.45 + 0.55 * sc.textDepth);
-    // the name is placed in the card's own frame (the picture may be cropped top and bottom) and
-    // grows with the camera like anything else at its depth
-    const fyC = by + sc.focus[1] * bh;
-    const tyS = (fyC + (sc.cardY - fyC) * kT) * H;
+    // the name keeps one height in every card (TITLE_Y); the picture still moves behind it by depth
+    const tyS = TITLE_Y * H;
     const word = sc.en.toUpperCase();
     tg.font = `600 100px ${FONT}`;
     const at100 = [...word].reduce((a, ch) => a + tg.measureText(ch).width, 0) + 10 * (word.length - 1);
@@ -363,7 +363,7 @@ export default function SeasonStory({ season = 'autumn', autoSeason = 'autumn', 
             <span data-count={n(counts?.stops)} data-in="0.38,0.54"><b>0</b> bus and rail stops</span>
           </div>
           <p className="sl" data-in="0.52,0.66"><span>Two questions: where do attractions cluster, and how far is the walk to the nearest stop?</span></p>
-          <p className="sl cta" data-in="0.64,0.76"><button type="button" onClick={onExplore}>Explore seven places <i aria-hidden="true">↓</i></button></p>
+          <p className="sl cta" data-in="0.64,0.76"><button type="button" onClick={onExplore}>Explore fifteen cities <i aria-hidden="true">↓</i></button></p>
         </div>
         <p className="story-credit">Images: Pinterest, original authors unknown · coursework use only · illustrative, not verified photos of particular places · title lettering removed, movement from estimated depth maps</p>
       </div>

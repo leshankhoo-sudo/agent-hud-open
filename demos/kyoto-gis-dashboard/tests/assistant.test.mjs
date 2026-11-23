@@ -3,10 +3,13 @@
 // on the real files in public/data.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile, readdir, stat } from 'node:fs/promises';
+import { readFile, readdir, stat, mkdtemp, writeFile } from 'node:fs/promises';
+import { readFileSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assistantMiddleware, DEFAULT_MODEL } from '../server/assistantRelay.js';
-import { askAssistant, MAX_STEPS, SYSTEM } from '../src/lib/assistant.js';
+import { assistantMiddleware, loadConfig, usageOf, shapeRequest, localDay, DEFAULTS } from '../server/assistantRelay.js';
+import { askAssistant, SYSTEM, thinkingFor, isPlanning, trimHistory } from '../src/lib/assistant.js';
 import { DECLARATIONS, makeHandlers, actionLabel } from '../src/assistantTools.js';
 import { loadAll } from '../src/lib/data.js';
 import { indexWalking } from '../src/lib/walking.js';
@@ -18,44 +21,148 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 function call(mw, { url = '/api/assistant', method = 'POST', body = '' } = {}) {
   return new Promise((resolve) => {
     const req = { url, method, async *[Symbol.asyncIterator]() { if (body) yield Buffer.from(body); } };
-    const res = { statusCode: 0, headers: {}, setHeader(k, v) { this.headers[k] = v; }, end(t) { resolve({ status: this.statusCode, body: t, next: false }); } };
+    const res = { statusCode: 0, headers: {}, setHeader(k, v) { this.headers[k] = v; }, end(t) { resolve({ status: this.statusCode, body: t, json: (() => { try { return JSON.parse(t); } catch { return null; } })() }); } };
     mw(req, res, () => resolve({ next: true }));
   });
 }
-const cfg = (key) => () => ({ key, model: DEFAULT_MODEL, base: 'https://stand-in.test' });
+const conf = (over = {}) => ({ ...structuredClone(DEFAULTS), ...over, limits: { ...DEFAULTS.limits, ...over.limits } });
+const KEY = 'SECRET-KEY-123';
+const pageBody = (text = 'Where is Kiyomizu-dera?', extra = {}) => JSON.stringify({ contents: [{ role: 'user', parts: [{ text }] }], generationConfig: { thinkingConfig: { thinkingLevel: 'medium' }, maxOutputTokens: 8192 }, serviceTier: 'standard', ...extra });
+const gemini = (status = 200, usage = { promptTokenCount: 1000, candidatesTokenCount: 200, thoughtsTokenCount: 300, totalTokenCount: 1500 }) =>
+  new Response(JSON.stringify(status === 200 ? { candidates: [{ content: { role: 'model', parts: [{ text: 'ok' }] } }], usageMetadata: usage, modelVersion: 'gemini-4-hydrogen' } : { error: { message: `stand-in error ${status}` } }), { status, headers: { 'Content-Type': 'application/json' } });
+async function relay({ over = {}, fetchImpl, key = KEY, clock } = {}) {
+  const dir = await mkdtemp(join(tmpdir(), 'atlas-relay-'));
+  const logFile = join(dir, 'usage.jsonl');
+  const sent = [];
+  const t = clock || { now: Date.parse('2026-11-23T12:00:00Z') };
+  const f = fetchImpl || (async (u, o) => { sent.push({ u, o, body: JSON.parse(o.body) }); return gemini(); });
+  const mw = assistantMiddleware({ fetchImpl: async (u, o) => { if (fetchImpl) sent.push({ u, o, body: JSON.parse(o.body) }); return f(u, o); }, config: () => conf(over), key: () => key, logFile, base: () => 'https://stand-in.test', now: () => t.now, sleep: async () => {} });
+  return { mw, logFile, sent, t, log: () => (existsSync(logFile) ? readFileSync(logFile, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []) };
+}
 
-test('relay: status says whether a key is set and which model, and never shows the key', async () => {
-  const off = await call(assistantMiddleware(null, cfg('')), { url: '/api/assistant/status', method: 'GET' });
-  assert.deepEqual(JSON.parse(off.body), { configured: false, model: 'gemini-4-hydrogen' });
-  const on = await call(assistantMiddleware(null, cfg('SECRET-KEY-123')), { url: '/api/assistant/status', method: 'GET' });
-  assert.deepEqual(JSON.parse(on.body), { configured: true, model: 'gemini-4-hydrogen' });
+test('config: gemini-4-hydrogen, medium thinking (high for planning), Standard tier, Standard prices and limits', () => {
+  const c = loadConfig(undefined, () => '');
+  assert.equal(c.model, 'gemini-4-hydrogen');
+  assert.deepEqual(c.thinking, { default: 'medium', planning: 'high', allowed: ['medium', 'high'] });
+  assert.equal(c.service_tier, 'standard');
+  assert.deepEqual([c.price_usd_per_million_tokens.input, c.price_usd_per_million_tokens.cached_input, c.price_usd_per_million_tokens.output_including_thinking], [1.5, 0.075, 7.5]);
+  assert.ok(c.limits.max_requests_per_day > 0 && c.limits.max_usd_per_day > 0 && c.limits.max_tool_rounds_per_question > 0 && c.limits.timeout_seconds > 0);
+  assert.equal(loadConfig(undefined, (n) => (n === 'GEMINI_MODEL' ? 'gemini-3.8-flash' : '')).model, 'gemini-3.8-flash');
+});
+
+test('relay: status tells the page the model, thinking, tier, limits and today\'s use, and never the key', async () => {
+  const off = await call((await relay({ key: '' })).mw, { url: '/api/assistant/status', method: 'GET' });
+  assert.equal(off.json.configured, false);
+  const { mw } = await relay();
+  const on = await call(mw, { url: '/api/assistant/status', method: 'GET' });
+  assert.equal(on.json.configured, true);
+  assert.equal(on.json.model, 'gemini-4-hydrogen');
+  assert.equal(on.json.thinking.default, 'medium');
+  assert.equal(on.json.service_tier, 'standard');
+  assert.deepEqual(on.json.today, { requests: 0, usd: 0 });
   assert.ok(!on.body.includes('SECRET'));
 });
 
 test('relay: without a key it answers 503 and sends nothing; other paths pass through; only POST', async () => {
-  let sent = 0;
-  const f = async () => { sent++; return new Response('{}'); };
-  const r = await call(assistantMiddleware(f, cfg('')), { body: '{"contents":[]}' });
+  const r0 = await relay({ key: '' });
+  const r = await call(r0.mw, { body: pageBody() });
   assert.equal(r.status, 503);
-  assert.match(JSON.parse(r.body).error.message, /GEMINI_API_KEY/);
-  assert.equal(sent, 0);
-  assert.deepEqual(await call(assistantMiddleware(f, cfg('k')), { url: '/data/photos.json', method: 'GET' }), { next: true });
-  assert.equal((await call(assistantMiddleware(f, cfg('k')), { method: 'GET' })).status, 405);
+  assert.match(r.json.error.message, /GEMINI_API_KEY/);
+  assert.equal(r0.sent.length, 0);
+  const { mw } = await relay();
+  assert.deepEqual(await call(mw, { url: '/data/photos.json', method: 'GET' }), { next: true });
+  assert.equal((await call(mw, { method: 'GET' })).status, 405);
 });
 
-test('relay: adds the key as a header (never in the URL), forwards the body unchanged and returns Google\'s answer as it is', async () => {
-  let seen;
-  const f = async (u, o) => { seen = { u, o }; return new Response('{"error":{"message":"quota"}}', { status: 429 }); };
-  const body = JSON.stringify({ contents: [{ role: 'user', parts: [{ text: '清水寺' }] }] });
-  const r = await call(assistantMiddleware(f, cfg('SECRET-KEY-123')), { body });
-  assert.equal(seen.u, 'https://stand-in.test/v1beta/models/gemini-4-hydrogen:generateContent');
-  assert.ok(!seen.u.includes('SECRET'));
-  assert.equal(seen.o.headers['x-goog-api-key'], 'SECRET-KEY-123');
-  assert.equal(Buffer.from(seen.o.body).toString(), body);
-  assert.equal(r.status, 429);
-  assert.equal(r.body, '{"error":{"message":"quota"}}');
-  const down = await call(assistantMiddleware(async () => { throw new Error('offline'); }, cfg('k')), { body });
-  assert.equal(down.status, 502);
+test('relay: the key goes only in a header; Standard tier and thinking go to Google; usage and cost come back and are logged without the text or key', async () => {
+  const r0 = await relay();
+  const r = await call(r0.mw, { body: pageBody('清水寺はどこ？') });
+  assert.equal(r.status, 200);
+  const s = r0.sent[0];
+  assert.equal(s.u, 'https://stand-in.test/v1beta/models/gemini-4-hydrogen:generateContent');
+  assert.equal(s.o.headers['x-goog-api-key'], KEY);
+  assert.ok(!s.u.includes('SECRET'));
+  assert.equal(s.body.serviceTier, 'standard');
+  assert.deepEqual(s.body.generationConfig, { thinkingConfig: { thinkingLevel: 'medium' }, maxOutputTokens: 8192 });
+  assert.equal(s.body.contents[0].parts[0].text, '清水寺はどこ？');
+  // 1,000 input at $1.50/M + (200 output + 300 thinking) at $7.50/M = $0.00525
+  const u = r.json.atlasUsage;
+  assert.deepEqual([u.input, u.output, u.thinking_tokens, u.total, u.usd, u.thinking, u.tier, u.attempts], [1000, 200, 300, 1500, 0.00525, 'medium', 'standard', 1]);
+  assert.deepEqual(u.today, { requests: 1, usd: 0.00525 });
+  const log = r0.log();
+  assert.equal(log.length, 1);
+  const raw = readFileSync(r0.logFile, 'utf8');
+  assert.ok(!raw.includes('清水寺') && !raw.includes('SECRET'));
+  // a request with no generationConfig gets the defaults
+  const r1 = await relay();
+  await call(r1.mw, { body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'hi' }] }] }) });
+  assert.deepEqual([r1.sent[0].body.serviceTier, r1.sent[0].body.generationConfig.thinkingConfig.thinkingLevel, r1.sent[0].body.generationConfig.maxOutputTokens], ['standard', 'medium', 8192]);
+});
+
+test('relay: Priority, a thinking level that is not allowed, or a missing or too large output cap are refused and nothing is sent', async () => {
+  const r0 = await relay();
+  const bad = [
+    pageBody('a', { serviceTier: 'priority' }), pageBody('b', { service_tier: 'priority' }),
+    pageBody('c', { generationConfig: { thinkingConfig: { thinkingLevel: 'xhigh' }, maxOutputTokens: 100 } }),
+    pageBody('d', { generationConfig: { thinkingConfig: {}, maxOutputTokens: 100 } }),
+    pageBody('e', { generationConfig: { thinkingConfig: { thinkingLevel: 'high' } } }),
+    pageBody('f', { generationConfig: { thinkingConfig: { thinkingLevel: 'high' }, maxOutputTokens: 60000 } }),
+    '{"contents":[]}', 'not json',
+  ];
+  for (const b of bad) assert.equal((await call(r0.mw, { body: b })).status, 400, b);
+  assert.equal(r0.sent.length, 0);
+  assert.equal(shapeRequest(JSON.parse(pageBody('g', { generationConfig: { thinkingConfig: { thinkingLevel: 'HIGH' }, maxOutputTokens: 4000 } })), conf()).thinking, 'high');
+});
+
+test('relay: the same request twice within the window is sent once; after the window it is sent again', async () => {
+  const r0 = await relay();
+  assert.equal((await call(r0.mw, { body: pageBody() })).status, 200);
+  const dup = await call(r0.mw, { body: pageBody() });
+  assert.equal(dup.status, 409);
+  assert.equal(r0.sent.length, 1);
+  r0.t.now += 6000;
+  assert.equal((await call(r0.mw, { body: pageBody() })).status, 200);
+  assert.equal(r0.sent.length, 2);
+});
+
+test('relay: busy or failing answers are retried (2 retries), billing and request errors are not; a timeout is reported', async () => {
+  let n = 0;
+  const busy = await relay({ fetchImpl: async () => (++n < 3 ? gemini(503) : gemini()) });
+  const ok = await call(busy.mw, { body: pageBody() });
+  assert.deepEqual([ok.status, ok.json.atlasUsage.attempts, busy.sent.length], [200, 3, 3]);
+  const pay = await relay({ fetchImpl: async () => gemini(402) });
+  const p = await call(pay.mw, { body: pageBody() });
+  assert.deepEqual([p.status, pay.sent.length, p.json.error.message], [402, 1, 'stand-in error 402']);
+  assert.equal(pay.log()[0].error, 'stand-in error 402');
+  const down = await relay({ fetchImpl: async () => { throw new TypeError('fetch failed'); } });
+  const d = await call(down.mw, { body: pageBody() });
+  assert.equal(d.status, 502);
+  assert.match(d.json.error.message, /Tried 3 times/);
+  const slow = await relay({ fetchImpl: async () => { throw new DOMException('The operation timed out.', 'TimeoutError'); } });
+  const s = await call(slow.mw, { body: pageBody() });
+  assert.equal(s.status, 504);
+  assert.match(s.json.error.message, /did not answer within 90 s/);
+});
+
+test('relay: daily limits on requests and estimated dollars stop further calls', async () => {
+  const r0 = await relay({ over: { limits: { max_requests_per_day: 2 } } });
+  assert.equal((await call(r0.mw, { body: pageBody('1') })).status, 200);
+  assert.equal((await call(r0.mw, { body: pageBody('2') })).status, 200);
+  const third = await call(r0.mw, { body: pageBody('3') });
+  assert.equal(third.status, 429);
+  assert.match(third.json.error.message, /Daily limit reached: 2 Gemini requests today/);
+  assert.equal(r0.sent.length, 2);
+  const r1 = await relay({ over: { limits: { max_usd_per_day: 0.01 } } });
+  await writeFile(r1.logFile, JSON.stringify({ day: localDay(r1.t.now), usd: 0.0101 }) + '\n' + JSON.stringify({ day: '2026-11-22', usd: 5 }) + '\n');
+  const over = await call(r1.mw, { body: pageBody() });
+  assert.equal(over.status, 429);
+  assert.match(over.json.error.message, /about \$0\.0101 spent today/);
+  assert.equal(r1.sent.length, 0);
+});
+
+test('cost: thinking tokens are billed as output, cached input at the cached price', () => {
+  assert.deepEqual(usageOf({ promptTokenCount: 2_000_000, cachedContentTokenCount: 1_000_000, candidatesTokenCount: 100_000, thoughtsTokenCount: 100_000 }), { input: 2_000_000, cached: 1_000_000, output: 100_000, thinking_tokens: 100_000, total: 2_200_000, usd: 1.5 + 0.075 + 1.5 });
+  assert.equal(usageOf(undefined).usd, 0);
 });
 
 test('no API key is written in the code or the data', async () => {
@@ -75,16 +182,25 @@ test('no API key is written in the code or the data', async () => {
 
 // ---------- the conversation loop ----------
 const reply = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'Content-Type': 'application/json' } });
-const modelCall = (name, args, id) => ({ candidates: [{ content: { role: 'model', parts: [{ functionCall: { name, args, id }, thoughtSignature: 'opaque-signature' }] } }] });
-const modelText = (text) => ({ candidates: [{ content: { role: 'model', parts: [{ text }] } }] });
+const use = { input: 1000, output: 100, thinking_tokens: 50, total: 1150, usd: 0.002, today: { requests: 1, usd: 0.002 } };
+const modelCall = (name, args, id) => ({ candidates: [{ content: { role: 'model', parts: [{ functionCall: { name, args, id }, thoughtSignature: 'opaque-signature' }] } }], atlasUsage: use });
+const modelText = (text) => ({ candidates: [{ content: { role: 'model', parts: [{ text }] } }], atlasUsage: use });
 
-test('loop: runs the tool Gemini asks for, sends the result back with the call\'s id and the model turn unchanged, then returns the text', async () => {
+test('thinking: medium by default; high for multi-day itineraries and route planning; a chosen level wins', () => {
+  for (const q of ['Plan a 3-day trip in Kyoto', 'Make me a two day itinerary', 'Best route for my day 2', '帮我安排三天行程', '京都 2天 路线规划', '3日間のプランを作って']) assert.equal(thinkingFor(q, 'auto'), 'high', q);
+  for (const q of ['What is the weather at Uji tomorrow?', 'Where is Kiyomizu-dera?', 'Add Ginkaku-ji to day 2']) assert.equal(thinkingFor(q, 'auto'), 'medium', q);
+  assert.equal(thinkingFor('Plan a 3-day trip', 'medium'), 'medium');
+  assert.equal(thinkingFor('Where is it?', 'high'), 'high');
+  assert.ok(isPlanning('itinerary') && !isPlanning('weather'));
+});
+
+test('loop: runs the tool Gemini asks for, sends the result back with the call\'s id and the model turn unchanged, then returns the text and the summed usage', async () => {
   const bodies = [];
   const script = [modelCall('search_places', { query: 'Kiyomizu' }, 'c1'), modelText('Found it.')];
   const f = async (u, o) => { bodies.push(JSON.parse(o.body)); return reply(script.shift()); };
   const ran = [];
   const seen = [];
-  const r = await askAssistant({ text: 'Where is Kiyomizu-dera?', note: 'Today in Kyoto: 2026-11-23.', declarations: DECLARATIONS,
+  const r = await askAssistant({ text: 'Where is Kiyomizu-dera?', note: 'Today in Kyoto: 2026-11-23.', thinking: 'high', declarations: DECLARATIONS,
     handlers: { search_places: (a) => { ran.push(a); return { count: 1 }; } }, onAction: (a) => seen.push(a.name), fetchImpl: f });
   assert.equal(r.text, 'Found it.');
   assert.deepEqual(ran, [{ query: 'Kiyomizu' }]);
@@ -92,11 +208,14 @@ test('loop: runs the tool Gemini asks for, sends the result back with the call\'
   assert.equal(bodies.length, 2);
   assert.equal(bodies[0].systemInstruction.parts[0].text, SYSTEM);
   assert.equal(bodies[0].tools[0].functionDeclarations.length, DECLARATIONS.length);
+  assert.deepEqual(bodies[0].generationConfig, { thinkingConfig: { thinkingLevel: 'high' }, maxOutputTokens: 8192 });
+  assert.equal(bodies[0].serviceTier, 'standard');
   assert.equal(bodies[0].contents[0].parts[0].text, 'Where is Kiyomizu-dera?');
   assert.match(bodies[0].contents[0].parts[1].text, /Context, not from the user: Today in Kyoto: 2026-11-23/);
   assert.deepEqual(bodies[1].contents[1].parts[0].thoughtSignature, 'opaque-signature');
   assert.deepEqual(bodies[1].contents[2], { role: 'user', parts: [{ functionResponse: { name: 'search_places', id: 'c1', response: { result: { count: 1 } } } }] });
-  assert.equal(r.contents.length, 4);   // question, call, result, answer: the next question continues from here
+  assert.equal(r.contents.length, 4);
+  assert.deepEqual([r.usage.calls, r.usage.total, r.usage.thinking_tokens, r.usage.usd, r.usage.thinking], [2, 2300, 100, 0.004, 'high']);
 });
 
 test('loop: a failing or unknown tool goes back to Gemini as an error; HTTP errors and blocked answers are reported', async () => {
@@ -106,23 +225,50 @@ test('loop: a failing or unknown tool goes back to Gemini as an error; HTTP erro
     fetchImpl: async (u, o) => { bodies.push(JSON.parse(o.body)); return reply(script.shift()); } });
   assert.deepEqual(r.actions.map((a) => a.result.error), ['No record X.', 'Unknown tool no_such_tool']);
   assert.deepEqual(bodies[1].contents[2].parts[0].functionResponse.response, { result: { error: 'No record X.' } });
-  await assert.rejects(askAssistant({ text: 'q', declarations: [], handlers: {}, fetchImpl: async () => reply({ error: { message: 'API key not valid.' } }, 400) }), /API key not valid/);
+  await assert.rejects(askAssistant({ text: 'q', declarations: [], handlers: {}, fetchImpl: async () => reply({ error: { message: 'Your prepayment credits are depleted.' } }, 402) }), /prepayment credits are depleted/);
   await assert.rejects(askAssistant({ text: 'q', declarations: [], handlers: {}, fetchImpl: async () => reply({ promptFeedback: { blockReason: 'SAFETY' } }) }), /no answer \(SAFETY\)/);
   await assert.rejects(askAssistant({ text: 'q', declarations: [], handlers: {}, fetchImpl: async () => { throw new TypeError('fetch failed'); } }), /could not be reached/);
 });
 
-test(`loop: stops after ${MAX_STEPS} rounds of tools`, async () => {
-  let n = 0;
-  const r = await askAssistant({ text: 'q', declarations: DECLARATIONS, handlers: { get_trip: () => ({ days: [] }) }, fetchImpl: async () => { n++; return reply(modelCall('get_trip', {}, 'g' + n)); } });
-  assert.equal(n, MAX_STEPS + 1);
-  assert.equal(r.actions.length, MAX_STEPS);
-  assert.match(r.text, /stopped/);
+test('loop: a repeated call is answered from the first result, a round of only repeats ends the answer, and the history stays valid', async () => {
+  let n = 0, ran = 0;
+  const r = await askAssistant({ text: 'q', declarations: DECLARATIONS, handlers: { get_trip: () => { ran++; return { days: [] }; } },
+    fetchImpl: async () => reply(modelCall('get_trip', {}, 'g' + ++n)) });
+  assert.equal(ran, 1);
+  assert.equal(n, 2);
+  assert.deepEqual(r.actions.map((a) => a.repeat), [false, true]);
+  assert.match(r.text, /repeating the same steps/);
+  assert.deepEqual(r.contents.map((c) => c.role), ['user', 'model']);
+  assert.ok(!JSON.stringify(r.contents).includes('functionCall'));
 });
 
-test('the rules tell Gemini to answer only from the data and never to give a bus ride time', () => {
+test('loop: rounds and calls per question are capped', async () => {
+  let n = 0;
+  const r = await askAssistant({ text: 'q', limits: { max_tool_rounds_per_question: 3 }, declarations: DECLARATIONS, handlers: { get_place: (a) => ({ id: a.id }) },
+    fetchImpl: async () => { n++; return reply(modelCall('get_place', { id: 'A' + n }, 'p' + n)); } });
+  assert.equal(n, 4);
+  assert.equal(r.actions.length, 3);
+  assert.match(r.text, /stopped after 3 rounds/);
+  assert.equal(r.contents.at(-1).role, 'model');
+  const many = { candidates: [{ content: { role: 'model', parts: Array.from({ length: 13 }, (_, i) => ({ functionCall: { name: 'get_place', args: { id: 'A' + i }, id: 'm' + i } })) } }] };
+  let ran = 0;
+  const r2 = await askAssistant({ text: 'q', declarations: DECLARATIONS, handlers: { get_place: () => { ran++; return {}; } }, fetchImpl: async () => reply(many) });
+  assert.equal(ran, 0);
+  assert.match(r2.text, /more than 12 steps/);
+});
+
+test('loop: only the last questions are sent again, cut at a question the user typed', () => {
+  const q = (t) => ({ role: 'user', parts: [{ text: t }] });
+  const h = [q('1'), { role: 'model', parts: [{ functionCall: {} }] }, { role: 'user', parts: [{ functionResponse: {} }] }, { role: 'model', parts: [{ text: 'a1' }] }, q('2'), { role: 'model', parts: [{ text: 'a2' }] }, q('3'), { role: 'model', parts: [{ text: 'a3' }] }];
+  assert.deepEqual(trimHistory(h, 2).map((c) => c.parts[0].text), ['2', 'a2', '3', 'a3']);
+  assert.equal(trimHistory(h, 5).length, h.length);
+});
+
+test('the rules tell Gemini to answer only from the data, never to give a bus ride time, and not to repeat calls', () => {
   assert.match(SYSTEM, /Answer only from what the tools return/);
   assert.match(SYSTEM, /never state a bus ride time/);
   assert.match(SYSTEM, /Never guess or invent/);
+  assert.match(SYSTEM, /never repeat a call/);
 });
 
 // ---------- the tools, on the real data ----------

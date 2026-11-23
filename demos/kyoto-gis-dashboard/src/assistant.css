@@ -83,6 +83,13 @@
 .as-send:disabled { opacity: .35; cursor: default; }
 .as-send:not(:disabled):active { transform: scale(.94); }
 .as-send.stop { background: var(--ink-2); color: var(--panel-solid); }
+.as-use { margin: 0; font-size: 10.5px; line-height: 1.4; color: var(--mute); font-variant-numeric: tabular-nums; }
+.as-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 7px 14px 0; }
+.as-think { display: inline-flex; padding: 2px; border-radius: 999px; background: var(--field); border: 1px solid var(--line); }
+.as-think button { border: 0; background: none; color: var(--ink-2); font-size: 11px; padding: 3px 9px; border-radius: 999px; cursor: pointer; }
+.as-think button.on { background: color-mix(in srgb, var(--vermilion) 85%, transparent); color: #fff; }
+.as-today { font-size: 10.5px; color: var(--mute); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.as.min .as-meta { display: none; }
 .as-foot { margin: 0; padding: 7px 16px 11px; font-size: 10.5px; color: var(--mute); text-align: center; }
 
 /* on the map the chat sits at the left, over the map: the information panel it opens is on the right, and the

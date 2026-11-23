@@ -17,6 +17,11 @@ import { useScene } from './lib/depth.js';
 const LEAN = [-11, 8, -6, 13, -9, 6, -13];   // how far each card leans when it is not the chosen one (degrees)
 const reduceMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// The ring has seven places, evenly spaced as when there were seven cards. With more cards than that, the
+// others wait out of sight behind the ring: as it turns, the card leaving and the card arriving cross-fade
+// at the back, so the ring never shows a gap. The fan shows every card.
+const SLOTS = 7;
+
 export default function Explore({ places, attractions, stops, near, onEnter }) {
   const root = useRef(null);
   useScene(root);
@@ -47,6 +52,7 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
     const a = anim.current, mix = a.mix, W = a.W || 900, H = a.H || 420, cx = a.cx, cy = a.cy;
     const g = Math.min(1, Math.abs(v) / 4.2), dir = Math.sign(v) || 1;
     const yaw = -cx * 0.17, cyw = Math.cos(yaw), syw = Math.sin(yaw);   // camera yaw about the ring's centre, radians
+    const S = Math.min(n, SLOTS);
     cards.current.forEach((el, i) => {
       if (!el) return;
       let o = (i - r) % n;
@@ -54,7 +60,7 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
       const d = Math.abs(o), d1 = Math.min(d, 1);
       const lean = LEAN[i % LEAN.length];
       // orbit: a ring in depth seen from a little above, turned by the camera yaw
-      const th = o * ((Math.PI * 2) / n), co = Math.cos(th), si = Math.sin(th);
+      const th = o * ((Math.PI * 2) / S), co = Math.cos(th), si = Math.sin(th);
       const R = W * 0.4 * (1 - 0.2 * g);
       const rx0 = si * R, rz0 = co * R * 1.1;                           // position relative to the ring's centre
       const rxp = rx0 * cyw + rz0 * syw, rzp = rz0 * cyw - rx0 * syw;   // after the camera yaw
@@ -77,13 +83,12 @@ export default function Explore({ places, attractions, stops, near, onEnter }) {
       rz += g * dir * 9 * (0.4 + 0.6 * Math.abs(si)); ry += g * dir * 14 * co; sc *= 1 - 0.05 * g;
       y -= H * 0.13 * bump; z += 170 * bump; rz += 26 * bump * (i % 2 ? 1 : -1); ry += 22 * bump * (o < 0 ? -1 : 1); sc *= 1 + 0.05 * bump;
       const bl = 0;   // no blur: switching a filter on and off made the cards flash
-      const opk = n > 9 ? Math.max(0, Math.min(1, 1 - (d - 4.2) / 1.4)) : 1;
-      const key = `${opk.toFixed(2)}|${ms.toFixed(2)}|${x.toFixed(1)}|${y.toFixed(1)}|${z.toFixed(1)}|${ry.toFixed(2)}|${rxd.toFixed(2)}|${rz.toFixed(2)}|${sc.toFixed(3)}|${br.toFixed(3)}|${bl.toFixed(2)}|${ms.toFixed(3)}`;
+      // on the ring: fully shown up to the last place before the back, then cross-fading at the back
+      const oop = n > S ? Math.max(0, Math.min(1, (S + 1) / 2 - d)) : 1;
+      const key = `${oop.toFixed(2)}|${ms.toFixed(2)}|${x.toFixed(1)}|${y.toFixed(1)}|${z.toFixed(1)}|${ry.toFixed(2)}|${rxd.toFixed(2)}|${rz.toFixed(2)}|${sc.toFixed(3)}|${br.toFixed(3)}|${bl.toFixed(2)}|${ms.toFixed(3)}`;
       if (el._k === key) return;   // nothing changed: no style write
       el._k = key;
       const st = el.style;
-      // with many cards, the ones at the back of the ring fade out so the ring stays readable (the fan shows all)
-      const oop = n > 9 ? Math.max(0, Math.min(1, 1 - (d - 4.2) / 1.4)) : 1;
       st.setProperty('--op', L(oop, 1).toFixed(3));
       st.pointerEvents = L(oop, 1) < 0.05 ? 'none' : '';
       st.setProperty('--o', o.toFixed(3));

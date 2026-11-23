@@ -11,3 +11,6 @@ __pycache__/
 # previews made for checking viewpoint photos by eye (scripts/fetch_photos_sites.py --dry-run)
 data/cache/viewpoint_photo_review/
 data/cache/nearby_photo_review/
+
+# the assistant relay's usage log (token counts and estimated cost per Gemini call; no questions, answers or keys)
+logs/

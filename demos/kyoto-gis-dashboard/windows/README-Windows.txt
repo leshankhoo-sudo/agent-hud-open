@@ -55,6 +55,14 @@ ccr-bd068911-ydjxlc 分支，demos/kyoto-gis-dashboard 文件夹里：
        setx GEMINI_API_KEY "你的key"
 3. 回到助手按 Check again。如果还是显示没连上，关掉黑色窗口，再双击 Start-Dashboard.bat。
 - 想换模型：setx GEMINI_MODEL "模型名"（默认 gemini-4-hydrogen）。
+- assistant-config.json（在这个文件夹里）是助手的设定：模型 gemini-4-hydrogen、思考等级
+  （平时 medium，多日行程和路线规划用 high）、只用 Standard 服务（不用更贵的 Priority）、
+  估算费用用的价格，还有上限：每天最多 200 次、约 1 美元，每次 90 秒超时，忙碌时最多重试 2 次。
+  可以用记事本改数字，改完下一次提问就生效。
+- 每次调用的用量会记在 assistant-usage.jsonl（这个文件夹里）：tokens 数、估算费用、状态。
+  不记录你问了什么、回答了什么，也不记录 key。
+- 如果助手显示 "Your prepayment credits are depleted"，表示 Google 项目的预付额度用完了，
+  要到 AI Studio 的 Billing 加额度。
 - key 不会出现在网页里，也不在这个文件夹的任何文件里：网页把问题交给 serve.ps1，
   serve.ps1 加上 key 再转给 Google。不要把 key 发给别人或贴进聊天。
 - 费用和额度按 Google 的规定，请在 AI Studio 查看。
@@ -63,6 +71,7 @@ ccr-bd068911-ydjxlc 分支，demos/kyoto-gis-dashboard 文件夹里：
 文件夹说明
 ----------
 Start-Dashboard.bat   双击启动（会调用 serve.ps1）
+assistant-config.json 助手的设定（模型、思考等级、Standard 服务、价格、每天上限）
 serve.ps1             本机小网页服务器，只有你自己的电脑能访问，不会开放给网络；
                       也负责把助手的问题加上你的 key 转给 Gemini
 site\                 已经构建好的完整网站，包括 data\ 里全部运行用的数据、开场视频和四季图片

@@ -49,7 +49,7 @@ npm run preview      # 本地预览 dist/，http://localhost:4173
 | OpenStreetMap 标准瓦片 | 备选底图 | 不需要 | 社区服务器，有[使用政策](https://operations.osmfoundation.org/policies/tiles/)，只适合低流量。不保证可用于正式生产 |
 | Wikidata / Wikimedia Commons | 景点照片（构建时抓取并打包，浏览器不连外网） | 不需要 | 免费；每张照片按授权标注作者与授权，只使用 CC0、公有领域、CC BY、CC BY-SA |
 | Open-Meteo Forecast API | 天气 | 不需要 | 非商业用途免费，有每日、每小时请求上限（[terms](https://open-meteo.com/en/terms)、[pricing](https://open-meteo.com/en/pricing)）。数据按 CC BY 4.0 授权，页面已注明出处 |
-| Google Gemini API（默认模型 gemini-4-hydrogen） | Atlas assistant（助手） | **需要**自己的 API key（Google AI Studio 免费申请），只放在这台电脑的环境变量 `GEMINI_API_KEY`，由本机服务器转发，不进页面、不进仓库 | 按 Google 的价格和额度（[pricing](https://ai.google.dev/gemini-api/docs/pricing)、[rate limits](https://ai.google.dev/gemini-api/docs/rate-limits)）；这个模型是否有免费额度请在 AI Studio 确认，可用 `GEMINI_MODEL` 换成 Flash 系列。在线预览里不可用 |
+| Google Gemini API（gemini-4-hydrogen，Standard 层） | Atlas assistant（助手） | **需要**自己的 API key（Google AI Studio），只放在这台电脑的环境变量 `GEMINI_API_KEY`，由本机服务器转发，不进页面、不进仓库 | Standard 付费层：输入 $1.50、输出（含 thinking）$7.50、缓存输入 $0.075，每百万 tokens（[pricing](https://ai.google.dev/gemini-api/docs/pricing)，2026-11-23 查）；每天的次数和美元上限在 `server/assistant-config.json`。项目用预付（Prepay）时余额为 0 就回 402，不会自动降回免费层。在线预览里不可用 |
 
 默认的 Night 底图是用 OpenFreeMap 的 OSM 矢量数据重新配色画出来的：深色陆地、青色水体、绿色公园、细线道路，地图上只保留少量城市名，不显示道路名和 POI 文字；地下河道和隧道也隐藏了。GSI / OSM 栅格底图在显示时会被反色、调成深蓝，瓦片本身和上面的地理内容都没有改。
 
@@ -733,3 +733,20 @@ kyoto-gis-dashboard/
 - **测试**：`tests/assistant.test.mjs`（14 个）：转发器（没有 key 时 503、key 只在头里、内容原样转发、Google 的错误原样传回、状态不泄露 key）、对话循环（工具结果带 call id 送回、Gemini 的回合原样送回以保留 thought signature、错误、8 轮上限）、工具在真实数据上的结果（搜索排序、宇治市不会匹配到宇治田原町、步行距离与文件一致、巴士没有时间、行程增删改、最多 7 天）。浏览器测试加了 7 个检查，用假的 Gemini 回答跑完整流程。`windows/serve.ps1` 的转发也用假的服务器测过：状态、405、转发内容和 key、错误 400 原样传回、静态页面照常。**没有用真的 key 测过真正的 Gemini 回答**。
 - **在真实 Gemini 上试过**：这台电脑已经设好 `GEMINI_API_KEY`，key 被 Google 接受，但这个 Google 项目的预付额度已经用完，所以 gemini-4-hydrogen（还有试过的 gemini-3.8-flash、gemini-3.5-flash-lite）都回答 HTTP 402「Your prepayment credits are depleted」。助手会把这句话原样显示在对话里。在 AI Studio 的 Billing 里加额度后，不需要改任何代码。
 - **Windows ZIP 和在线预览**（2026-11-23 第三次）：`Kyoto-Prefecture-Travel-Atlas-Windows-2026-11-23.zip`（895 个文件，95.6 MB），用自带启动服务器跑完整浏览器测试 220/220，逻辑测试 56/56。开发服务器上的完整测试 219/220，没过的是「翻面时标题栏不动」：当时 Ask 按钮放在标题栏，1440 px 宽时按钮那一行会换行；按钮改到地图工具栏后，这个检查在 ZIP 上通过。在线预览更新到第 42 版（同一个链接），助手在预览里显示「需要本机服务器」的说明。
+
+## 7h. 2026-11-23：助手的模型、思考等级、用量记录和上限
+
+- **模型**：`gemini-4-hydrogen`（官方 ID）。用这把 key 查 Google 的模型列表确认可用：输入上限 1,048,576 tokens，输出 65,536，支持 thinking。设置在 `server/assistant-config.json`（Windows ZIP 里是 `assistant-config.json`，在 serve.ps1 旁边）；环境变量 `GEMINI_MODEL` 可以临时换。
+- **思考等级**：每个请求都写 `generationConfig.thinkingConfig.thinkingLevel`（Google 会验证这个字段：写错的值回 400）。这个模型不设时默认是 high，所以明确设成 **medium**；问题像多日行程或路线规划（例如 “Plan a 3-day trip”、“帮我安排三天行程”、“2天 路线规划”）时用 **high**。对话框下方可以选 Auto / Medium / High（Auto 就是上面的规则），选择记在浏览器里。转发器只接受 config 里允许的等级（medium、high）。
+- **只用 Standard**：每个请求写 `serviceTier: "standard"`（Google 也验证这个字段），转发器拒绝 Priority（两种写法 `serviceTier` 和 `service_tier` 都检查）。Priority 比 Standard 贵 75–100%。
+- **用量和费用**：每次调用 Gemini，转发器从回答的 `usageMetadata` 取 input、cached、output、thinking、total tokens，按 config 里的 Standard 价格估算美元（thinking 按输出计价），写进 `logs/assistant-usage.jsonl`（开发服务器；`logs/` 在 .gitignore 里）或 ZIP 里的 `assistant-usage.jsonl`。每行还有时间、模型、thinking、tier（Google 回传的 `x-gemini-service-tier`）、状态、尝试次数和耗时。**不记录问题、回答和 key**；错误信息里如果出现 key 会被换成 `[key]`。每个回答下面显示这一问用了几次调用、多少 tokens（其中多少是 thinking）和估算费用，下方显示今天累计。
+- **上限和保护**（都在 config 的 `limits` 里，可以改）：每天最多 200 次请求、约 $1.00（到了回 429，不再发出去）；每个问题最多 6 轮工具、12 次工具调用；只带最近 6 个问题的历史（截断只在用户提问处，不会切开工具调用和结果）；输出上限 8,192 tokens；每次请求 90 秒超时；忙碌或暂时故障（429、500、502、503、504、网络错误、超时）最多重试 2 次（遵守 Retry-After），402、400、403 不重试；同一个请求 5 秒内再来一次会被挡下（409）。页面这边：同一工具同样参数再叫一次，不再执行，直接用第一次的结果；一整轮都是重复就停止；任何停止都会把历史整理好，不留下没有回答的工具调用。
+- **用真的 Gemini 检查的结果**（2026-11-23）：本机服务器读得到 `GEMINI_API_KEY`（只检查有没有、长度，没有输出内容）；模型列表里有 gemini-4-hydrogen；Google 接受完整请求（系统规则、13 个工具的定义、high thinking、standard tier；故意写错的工具定义会被 400 拒绝，所以检查是真的）。但这个项目的预付额度是 $0，所有生成请求都回 **402「Your prepayment credits are depleted」**，问答、地图操作和改行程还没能用真的 Gemini 跑。这些测试消耗 0 tokens、$0（402 不计费）。在 AI Studio 的 Billing 加额度后，不用改代码。
+- **测试**：`tests/assistant.test.mjs` 23 个（config、转发器的规则、重复保护、重试、超时、每日上限、费用计算、日志不含文字和 key、思考等级的选择、工具重复、轮数和次数上限、历史截断、工具在真实数据上的结果）。`windows/serve.ps1` 的同一套规则用假的 Gemini 服务器测了 11 项。浏览器测试的助手部分 8 项（包括 medium/high 的选择、每个回答的 tokens 和费用、今天累计）。
+- `scripts/make_windows_zip.py`：做 Windows ZIP 的脚本（以前只在临时文件夹里），现在也把 `assistant-config.json` 放进 ZIP。
+
+## 7i. 2026-11-23：四季卡片的标题对齐、Explore 环恢复成 7 个位置
+
+- **四季卡片**：四张卡片的季节名（SPRING、SUMMER、AUTUMN、WINTER）原本每张高度不同（各自的 cardY，再跟着各自图片的焦点移动）。现在四个名字都在卡片 40% 高度的同一条线上，图片照样在后面按深度移动，近处的树枝、鸟居、竹子照样会挡在字前面。
+- **Explore 环**：15 张卡原来全部挤在一个环上（每张相隔 24°），后面的卡淡出，环后面留下一个缺口。现在环只有 7 个位置，像最早 7 张卡的时候一样每张相隔约 51°；其余 8 张在看不见的地方等着。转动时，离开的卡和进来的卡在环的最后面交叉淡入淡出，所以环一直是完整的，没有缺口。Fan 模式照样显示全部 15 张。
+- 四季页和全景页的按钮文字从 “Explore seven places”、“Seven places to start” 改成 “Explore fifteen cities”、“Fifteen cities to start”。
