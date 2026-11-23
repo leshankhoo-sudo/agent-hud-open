@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Atlas house · cartoon sample</title>
+<!-- An original cartoon girl in a kimono and a small Japanese house, drawn in SVG in the style of the user's
+     references (thick brown outlines, flat colours, round faces, dot eyes, pink cheeks). render(t) draws the
+     whole interaction at time t (seconds), so the frames can be captured one by one. -->
+<style>
+  body { margin: 0; background: #2a2433; font-family: 'Microsoft YaHei', 'Yu Gothic UI', sans-serif; }
+  #scene { position: relative; width: 600px; height: 400px; overflow: hidden; background: #f6f1e7; }
+  svg { position: absolute; inset: 0; }
+  .ol { stroke: #4a2f24; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+  .ol2 { stroke: #4a2f24; stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+  #hint { position: absolute; left: 150px; top: 40px; font: 600 13px 'Yu Gothic UI', sans-serif; color: #8a6a55; background: #fffaf1; border: 2px solid #4a2f24; border-radius: 10px; padding: 3px 9px; }
+  #bubble { position: absolute; font: 700 15px 'Yu Gothic UI', sans-serif; color: #4a2f24; background: #fff; border: 3px solid #4a2f24; border-radius: 16px; padding: 7px 13px; white-space: nowrap; }
+  #bubble::after { content: ''; position: absolute; left: 16px; bottom: -12px; border: 9px solid transparent; border-top-color: #4a2f24; border-bottom: 0; }
+  #chat { position: absolute; top: 18px; width: 270px; height: 318px; border-radius: 18px; background: #fffaf1; border: 3px solid #4a2f24; box-shadow: 0 6px 0 rgba(74,47,36,.18); }
+  #chat .h { display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-bottom: 2px dashed #e4d3bd; }
+  #chat .m { width: 30px; height: 30px; border-radius: 50%; background: #ec6d4f; color: #fff; display: grid; place-items: center; font: 700 15px 'Yu Mincho', serif; border: 2px solid #4a2f24; }
+  #chat b { font: 700 15px 'Yu Gothic UI', sans-serif; color: #4a2f24; display: block; }
+  #chat small { font: 12px 'Yu Gothic UI', sans-serif; color: #9a8270; }
+  #chat .s { margin: 10px 14px 0; padding: 7px 11px; border-radius: 12px; border: 2px solid #ead9c2; background: #fff; font: 12.5px 'Yu Gothic UI', sans-serif; color: #5a4436; }
+  #chat .i { position: absolute; left: 14px; right: 14px; bottom: 14px; padding: 9px 12px; border-radius: 14px; border: 2px solid #4a2f24; background: #fff; font: 12.5px 'Yu Gothic UI', sans-serif; color: #b09a88; }
+  #cap { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; background: rgba(42,36,51,.92); color: #fff4e6; font: 700 15px 'Microsoft YaHei', sans-serif; display: flex; align-items: center; padding: 0 14px; }
+  .knock { position: absolute; font: 800 22px 'Yu Gothic UI', sans-serif; color: #b0532f; }
+</style>
+</head>
+<body>
+<div id="scene">
+<svg viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <!-- a small sakura flower -->
+    <g id="saku"><g fill="#fff3e6"><circle cx="0" cy="-3.2" r="2.6"/><circle cx="3" cy="-1" r="2.6"/><circle cx="1.9" cy="2.6" r="2.6"/><circle cx="-1.9" cy="2.6" r="2.6"/><circle cx="-3" cy="-1" r="2.6"/></g><circle r="1.3" fill="#f39a9a"/></g>
+    <g id="blossom"><g fill="#ffc4d2" stroke="#e98aa3" stroke-width="1"><circle cx="0" cy="-4" r="3.6"/><circle cx="3.8" cy="-1.2" r="3.6"/><circle cx="2.4" cy="3.3" r="3.6"/><circle cx="-2.4" cy="3.3" r="3.6"/><circle cx="-3.8" cy="-1.2" r="3.6"/></g><circle r="1.6" fill="#e0587a"/></g>
+    <clipPath id="doorway"><rect x="80" y="172" width="110" height="90"/></clipPath>
+    <clipPath id="kimonoClip"><path d="M31 78 Q 26 110 28 140 L 72 140 Q 74 110 69 78 Z M33 80 Q 13 86 13 112 Q 13 127 27 127 L 37 124 Z M67 80 Q 87 86 87 112 Q 87 127 73 127 L 63 124 Z"/></clipPath>
+    <radialGradient id="warm" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#ffe2a6"/><stop offset="1" stop-color="#e79a52"/></radialGradient>
+    <radialGradient id="glow"><stop offset="0" stop-color="#ffd98a" stop-opacity=".9"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient>
+  </defs>
+
+  <!-- the page behind: a faint map -->
+  <g stroke="#ebe2d2" stroke-width="2" fill="none">
+    <path d="M0 60 L600 90 M0 160 L600 190 M0 260 L600 290 M80 0 L130 400 M240 0 L290 400 M400 0 L450 400 M540 0 L590 400"/>
+  </g>
+  <path d="M150 0 C 220 80 300 150 420 170 S 560 190 600 200" stroke="#dccbb0" stroke-width="5" fill="none"/>
+  <circle cx="420" cy="90" r="9" fill="#e07a5f" opacity=".55"/>
+
+  <!-- the house: bottom-left of the page -->
+  <g id="house" transform="translate(14 62)">
+    <ellipse cx="135" cy="276" rx="150" ry="16" fill="#e8dfcf"/>
+    <!-- upper floor -->
+    <rect x="40" y="66" width="190" height="78" fill="#f8ecd8" class="ol"/>
+    <rect x="54" y="80" width="62" height="48" rx="3" fill="#fff6e4" class="ol2"/>
+    <path d="M85 80 V128 M54 96 H116 M54 112 H116 M70 80 V128 M100 80 V128" stroke="#c89a6a" stroke-width="2"/>
+    <rect x="148" y="78" width="72" height="50" rx="3" fill="url(#warm)" class="ol2"/>
+    <path d="M172 78 V128 M196 78 V128 M148 96 H220" stroke="#b9773f" stroke-width="2"/>
+    <rect x="140" y="112" width="88" height="8" rx="2" fill="#b5653d" class="ol2"/>
+    <path d="M148 120 V142 M158 120 V142 M168 120 V142 M178 120 V142 M188 120 V142 M198 120 V142 M208 120 V142 M218 120 V142" class="ol2" fill="none"/>
+    <path d="M40 66 H230 M40 142 H230 M134 66 V142" stroke="#9a6a45" stroke-width="4"/>
+    <!-- main roof with turned-up eaves -->
+    <path d="M2 74 Q 16 72 30 62 L 78 22 H 192 L 240 62 Q 254 72 268 74 L 262 82 H 8 Z" fill="#a9a3ad" class="ol"/>
+    <path d="M44 58 L 84 26 M60 62 L 96 26 M76 64 L 108 26 M92 66 L 120 26 M108 66 L 132 26 M124 66 L 144 26 M140 66 L 156 26 M156 66 L 168 26 M172 66 L 180 26 M188 64 L 190 26 M204 62 L 200 28 M220 60 L 210 34" stroke="#8d8794" stroke-width="2.5"/>
+    <path d="M8 82 H262" stroke="#7d7684" stroke-width="5"/>
+    <rect x="74" y="15" width="122" height="10" rx="4" fill="#7d7684" class="ol2"/>
+    <circle cx="74" cy="20" r="7" fill="#7d7684" class="ol2"/><circle cx="196" cy="20" r="7" fill="#7d7684" class="ol2"/>
+    <!-- ground floor -->
+    <rect x="20" y="160" width="230" height="104" fill="#f8ecd8" class="ol"/>
+    <rect x="20" y="236" width="230" height="28" fill="#d9a877" class="ol2"/>
+    <path d="M40 236 V264 M60 236 V264 M210 236 V264 M230 236 V264" stroke="#b3804f" stroke-width="2"/>
+    <!-- doorway: warm inside, two wooden sliding doors -->
+    <g id="inside" opacity="0">
+      <rect x="80" y="172" width="110" height="90" fill="#6a4535"/>
+      <rect x="86" y="176" width="98" height="86" fill="url(#warm)" opacity=".85"/>
+      <path d="M96 190 H128 M96 206 H128 M150 196 H178" stroke="#a5683e" stroke-width="3"/>
+      <circle cx="112" cy="185" r="4" fill="#8f5a3a"/><rect x="156" y="186" width="10" height="9" fill="#8f5a3a"/>
+    </g>
+    <g clip-path="url(#doorway)">
+      <g id="doorL"><rect x="80" y="172" width="55" height="90" fill="#e8a65e" class="ol2"/><rect x="86" y="178" width="43" height="44" fill="#fff6e4" class="ol2"/><path d="M100 178 V222 M114 178 V222 M86 192 H129 M86 207 H129" stroke="#c89a6a" stroke-width="2"/><circle cx="130" cy="240" r="2.6" fill="#7a4a2d"/></g>
+      <g id="doorR"><rect x="135" y="172" width="55" height="90" fill="#e8a65e" class="ol2"/><rect x="141" y="178" width="43" height="44" fill="#fff6e4" class="ol2"/><path d="M155 178 V222 M169 178 V222 M141 192 H184 M141 207 H184" stroke="#c89a6a" stroke-width="2"/><circle cx="140" cy="240" r="2.6" fill="#7a4a2d"/></g>
+    </g>
+    <rect x="80" y="172" width="110" height="90" fill="none" class="ol2"/>
+    <path d="M20 160 H250 M76 160 V264 M194 160 V264" stroke="#9a6a45" stroke-width="5"/>
+    <!-- lower roof -->
+    <path d="M-4 168 Q 8 166 18 152 L 30 140 H 240 L 252 152 Q 262 166 274 168 L 268 174 H 2 Z" fill="#a9a3ad" class="ol"/>
+    <path d="M40 166 L 50 142 M62 168 L 68 142 M84 168 L 88 142 M106 168 L 108 142 M128 168 L 128 142 M150 168 L 148 142 M172 168 L 168 142 M194 168 L 188 142 M216 168 L 208 142 M234 166 L 226 142" stroke="#8d8794" stroke-width="2.5"/>
+    <path d="M2 174 H268" stroke="#7d7684" stroke-width="4"/>
+    <!-- lanterns -->
+    <g id="lanterns">
+      <circle cx="50" cy="196" r="22" fill="url(#glow)" class="halo"/><circle cx="220" cy="196" r="22" fill="url(#glow)" class="halo"/>
+      <path d="M50 174 V182 M220 174 V182" class="ol2"/>
+      <rect x="40" y="182" width="20" height="26" rx="9" fill="#ffd36e" class="ol2"/><path d="M41 190 H59 M41 199 H59" stroke="#e7a23c" stroke-width="2"/>
+      <rect x="210" y="182" width="20" height="26" rx="9" fill="#ffd36e" class="ol2"/><path d="M211 190 H229 M211 199 H229" stroke="#e7a23c" stroke-width="2"/>
+    </g>
+    <!-- step, plants -->
+    <rect x="96" y="262" width="78" height="12" rx="3" fill="#cfc6b8" class="ol2"/>
+    <g><path d="M24 270 L 30 246 H 58 L 64 270 Z" fill="#d98a5c" class="ol2"/><ellipse cx="44" cy="232" rx="20" ry="13" fill="#7cae64" class="ol2"/><ellipse cx="34" cy="226" rx="11" ry="8" fill="#94c477" class="ol2"/><path d="M44 245 V236" class="ol2"/></g>
+    <g><path d="M206 274 Q 196 248 212 236 H 246 Q 262 248 252 274 Z" fill="#d9573f" class="ol2"/><ellipse cx="229" cy="230" rx="24" ry="12" fill="#5f8f55" class="ol2"/>
+      <circle cx="216" cy="226" r="4" fill="#ff8aa0" class="ol2"/><circle cx="230" cy="221" r="4" fill="#ffd36e" class="ol2"/><circle cx="243" cy="227" r="4" fill="#ff8aa0" class="ol2"/></g>
+    <!-- sakura branch over the roof -->
+    <path d="M300 -4 C 250 10 210 0 170 20 C 140 34 110 30 86 46" fill="none" stroke="#7a4e36" stroke-width="7" stroke-linecap="round"/>
+    <path d="M214 8 C 224 26 236 34 250 38 M150 28 C 146 40 150 52 160 60" fill="none" stroke="#7a4e36" stroke-width="4" stroke-linecap="round"/>
+    <g id="blossoms"></g>
+  </g>
+
+  <!-- the girl (100 x 150 drawing units) -->
+  <g id="girl" opacity="0">
+    <g id="gbody">
+      <g id="feet"><ellipse cx="42" cy="142" rx="6.5" ry="4" fill="#fffaf1" class="ol2"/><ellipse cx="58" cy="142" rx="6.5" ry="4" fill="#fffaf1" class="ol2"/><rect x="35" y="145" width="14" height="4" rx="2" fill="#9a6a45"/><rect x="51" y="145" width="14" height="4" rx="2" fill="#9a6a45"/></g>
+      <path d="M31 78 Q 26 110 28 140 L 72 140 Q 74 110 69 78 Z" fill="#ec6d4f" class="ol"/>
+      <path d="M33 80 Q 13 86 13 112 Q 13 127 27 127 L 37 124 Z" fill="#ec6d4f" class="ol"/>
+      <g id="armR"><path d="M67 80 Q 87 86 87 112 Q 87 127 73 127 L 63 124 Z" fill="#ec6d4f" class="ol"/><circle id="handUp" cx="80" cy="128" r="5.5" fill="#ffe5d2" class="ol2" opacity="0"/></g>
+      <g clip-path="url(#kimonoClip)"><use href="#saku" x="36" y="118"/><use href="#saku" x="60" y="128"/><use href="#saku" x="22" y="104"/><use href="#saku" x="78" y="110"/><use href="#saku" x="64" y="88"/><use href="#saku" x="20" y="120"/><use href="#saku" x="47" y="133"/></g>
+      <path d="M29 132 Q 50 135 71 132 L 72 140 L 28 140 Z" fill="#c9503a"/>
+      <path d="M40 78 L 50 94 L 60 78" fill="none" stroke="#fffaf1" stroke-width="5"/><path d="M43 78 L 50 89 L 57 78" fill="none" stroke="#d64545" stroke-width="2"/>
+      <rect x="29" y="92" width="42" height="14" rx="3" fill="#f5c451" class="ol2"/><path d="M30 99 H70" stroke="#d64545" stroke-width="2.4"/><circle cx="50" cy="99" r="2.6" fill="#7cc7b8" class="ol2"/>
+      <g id="hands"><circle cx="45" cy="106" r="5.3" fill="#ffe5d2" class="ol2"/><circle cx="55" cy="106" r="5.3" fill="#ffe5d2" class="ol2"/></g>
+    </g>
+    <g id="ghead">
+      <ellipse cx="50" cy="50" rx="38" ry="35" fill="#4a3328" class="ol"/>
+      <circle cx="50" cy="17" r="13" fill="#4a3328" class="ol"/>
+      <ellipse cx="50" cy="27" rx="12" ry="3.5" fill="#e0503a" class="ol2"/>
+      <use href="#saku" x="66" y="20" transform="translate(66 20) scale(2) translate(-66 -20)"/>
+      <circle cx="58" cy="10" r="3.6" fill="#ff9fb4" class="ol2"/>
+      <path d="M71 26 V36 M75 25 V33" stroke="#e8b84a" stroke-width="2"/><circle cx="71" cy="37" r="1.8" fill="#e8b84a"/><circle cx="75" cy="34" r="1.8" fill="#e8b84a"/>
+      <ellipse cx="50" cy="56" rx="32" ry="27" fill="#ffe5d2" class="ol"/>
+      <path d="M17 54 Q 16 26 50 24 Q 84 26 83 54 Q 78 44 69 46 Q 61 38 50 43 Q 39 38 31 46 Q 22 44 17 54 Z" fill="#4a3328" class="ol"/>
+      <path d="M17 50 Q 11 66 18 78 Q 24 72 22 58 Z M83 50 Q 89 66 82 78 Q 76 72 78 58 Z" fill="#4a3328" class="ol"/>
+      <path d="M33 31 Q 42 27 50 28" stroke="#6b5040" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <g id="eyesOpen"><ellipse cx="38" cy="59" rx="3.6" ry="4.4" fill="#2a1a16"/><ellipse cx="62" cy="59" rx="3.6" ry="4.4" fill="#2a1a16"/><circle cx="36.8" cy="57.4" r="1.3" fill="#fff"/><circle cx="60.8" cy="57.4" r="1.3" fill="#fff"/></g>
+      <g id="eyesHappy" opacity="0" fill="none" stroke="#2a1a16" stroke-width="2.6" stroke-linecap="round"><path d="M33.5 60 Q 38 54 42.5 60"/><path d="M57.5 60 Q 62 54 66.5 60"/></g>
+      <g id="eyesShut" opacity="0" fill="none" stroke="#2a1a16" stroke-width="2.6" stroke-linecap="round"><path d="M34 59 Q 38 61 42 59"/><path d="M58 59 Q 62 61 66 59"/></g>
+      <g id="eyesWide" opacity="0"><circle cx="38" cy="59" r="4.6" fill="#fff" class="ol2"/><circle cx="62" cy="59" r="4.6" fill="#fff" class="ol2"/><circle cx="38" cy="59.5" r="2.4" fill="#2a1a16"/><circle cx="62" cy="59.5" r="2.4" fill="#2a1a16"/></g>
+      <ellipse id="cheekL" cx="29" cy="66" rx="6.5" ry="4" fill="#ff9e9e" opacity=".75"/><ellipse id="cheekR" cx="71" cy="66" rx="6.5" ry="4" fill="#ff9e9e" opacity=".75"/>
+      <path id="mouth" d="M46 66 Q 50 70 54 66" fill="none" stroke="#4a2f24" stroke-width="2.2" stroke-linecap="round"/>
+      <ellipse id="mouthO" cx="50" cy="68" rx="2.4" ry="3" fill="#c9503a" class="ol2" opacity="0"/>
+    </g>
+  </g>
+
+  <g id="fx"></g>
+  <!-- cursor -->
+  <g id="cursor" opacity="0">
+    <path id="arrow" d="M0 0 L0 22 L6 17 L10 26 L14 24 L10 15 L17 15 Z" fill="#fff" stroke="#222" stroke-width="1.6" stroke-linejoin="round"/>
+    <path id="hand" opacity="0" d="M4 10 V2 H7 V9 L8 0 H11 V9 L12 1 H15 V10 L16 4 H19 V16 L15 24 H7 L2 16 L0 12 L3 10 Z" fill="#fff" stroke="#222" stroke-width="1.6" stroke-linejoin="round"/>
+  </g>
+</svg>
+<div id="hint">Double-click to knock</div>
+<div id="bubble" style="opacity:0">How can I help?</div>
+<div id="chat" style="left:600px">
+  <div class="h"><span class="m">問</span><span><b>Atlas assistant</b><small>Gemini · standard</small></span></div>
+  <div class="s">Walking routes from Kiyomizu-dera</div>
+  <div class="s">Add Fushimi Inari to Day 1</div>
+  <div class="s">What will the weather be in Uji?</div>
+  <div class="i">Ask about Kyoto…</div>
+</div>
+<div class="knock" id="k1" style="opacity:0">コン</div><div class="knock" id="k2" style="opacity:0">コン</div>
+<div id="cap"></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+// blossoms on the branch
+const B = [[262,8],[244,0],[228,14],[204,6],[188,20],[170,14],[156,30],[140,24],[124,36],[106,34],[94,46],[250,34],[236,40],[150,50],[162,62],[214,24],[276,14],[196,30],[132,44],[116,44]];
+$('blossoms').innerHTML = B.map(([x, y], i) => `<use href="#blossom" transform="translate(${x} ${y}) scale(${0.9 + (i % 3) * 0.25})"/>`).join('');
+
+const HX = 14, HY = 62;                       // house position in the scene
+const STAND = { x: HX + 135 - 40, y: HY + 270 - 120 };   // the girl (scale .8 → 80 x 120) on the step
+const S = 0.8;
+const DX = 210;                               // where she is dragged to: the open ground right of the house
+const ease = (k) => (k < 0 ? 0 : k > 1 ? 1 : 1 - Math.pow(1 - k, 3));
+const seg = (t, a, b) => Math.max(0, Math.min(1, (t - a) / (b - a)));
+function setEyes(kind) { for (const k of ['Open', 'Happy', 'Shut', 'Wide']) $('eyes' + k).setAttribute('opacity', k === kind ? 1 : 0); }
+function girlAt(x, y, rot = 0) { $('girl').setAttribute('transform', `translate(${x} ${y}) rotate(${rot} ${50 * S} ${10 * S}) scale(${S})`); }
+function cursorAt(x, y, kind = 'arrow') { $('cursor').setAttribute('opacity', 1); $('cursor').setAttribute('transform', `translate(${x} ${y})`); $('arrow').setAttribute('opacity', kind === 'arrow' ? 1 : 0); $('hand').setAttribute('opacity', kind === 'hand' ? 1 : 0); }
+const CAP = [
+  [0, '1  小屋固定在页面左下角；鼠标移上去会提示 “Double-click to knock”'], [1.6, '2  双击小屋'], [2.2, '3  敲门：门抖两下，有「コンコン」的声音（跟网站的音量）'],
+  [3.5, '4  拉门打开，屋里透出暖光'], [4.3, '5  小人走出来，鞠躬'], [6.0, '6  挥挥手：“How can I help?”'], [7.4, '7  对话框在她旁边打开（可以折叠或关掉）'],
+  [8.9, '8  可以用鼠标抓起来拖到别的地方（被提起来的样子，脚会晃）'], [10.4, '8  放下来：小跳一下落地'], [11.0, '9  摸摸头：开心、脸红、冒出爱心'], [12.5, '10  她自己走回小屋，门关上'],
+];
+window.DURATION = 14.4;
+window.render = function (t) {
+  $('cap').textContent = CAP.filter(([a]) => t >= a).at(-1)[1];
+  // reset
+  $('cursor').setAttribute('opacity', 0); $('fx').innerHTML = ''; $('hint').style.opacity = 0; $('bubble').style.opacity = 0;
+  $('k1').style.opacity = 0; $('k2').style.opacity = 0; setEyes('Open'); $('mouth').setAttribute('opacity', 1); $('mouthO').setAttribute('opacity', 0);
+  $('hands').setAttribute('opacity', 1); $('handUp').setAttribute('opacity', 0); $('armR').setAttribute('transform', ''); $('ghead').setAttribute('transform', ''); $('feet').setAttribute('transform', '');
+  $('cheekL').setAttribute('opacity', .75); $('cheekR').setAttribute('opacity', .75);
+  document.querySelectorAll('.halo').forEach((h) => h.setAttribute('opacity', .55 + .45 * Math.abs(Math.sin(t * 2.2))));
+  // doors: shake while knocking, slide open, close at the end
+  let open = ease(seg(t, 3.5, 4.3)) - ease(seg(t, 13.3, 14.0));
+  let shake = t > 2.2 && t < 3.4 ? [2, -2, 2, 0][Math.floor(t * 14) % 4] * (Math.floor((t - 2.2) / 0.6) % 2 === 0 ? 1 : 0) : 0;
+  $('doorL').setAttribute('transform', `translate(${-50 * open + shake} 0)`); $('doorR').setAttribute('transform', `translate(${50 * open + shake} 0)`);
+  $('inside').setAttribute('opacity', open);
+  if (t < 1.6) { $('hint').style.opacity = 1; cursorAt(HX + 175, HY + 215); }
+  else if (t < 2.2) { const k = (t - 1.6) / 0.6; cursorAt(HX + 135, HY + 205); $('fx').innerHTML = `<circle cx="${HX + 135}" cy="${HY + 205}" r="${8 + k * 26}" fill="none" stroke="#e0503a" stroke-width="3" opacity="${1 - k}"/>`; }
+  else if (t < 3.4) { const n = (t - 2.2) / 0.6; for (const [i, el] of [[0, $('k1')], [1, $('k2')]]) { const k = n - i; if (k > 0 && k < 1) { el.style.opacity = 1 - k * 0.6; el.style.left = (HX + 150 + i * 34) + 'px'; el.style.top = (HY + 150 - k * 14) + 'px'; } } }
+  // the girl
+  const g = $('girl');
+  if (t < 4.3 || t > 13.3) { g.setAttribute('opacity', 0); return; }
+  g.setAttribute('opacity', 1);
+  let x = STAND.x, y = STAND.y, rot = 0;
+  if (t < 4.9) { const k = ease(seg(t, 4.3, 4.9)); y = STAND.y - 14 + 14 * k; g.setAttribute('opacity', k); }
+  else if (t < 6.0) { const b = Math.sin(Math.PI * seg(t, 5.0, 5.9)); $('ghead').setAttribute('transform', `rotate(${14 * b} 50 84) translate(0 ${3 * b})`); if (b > 0.3) setEyes('Shut'); }
+  else if (t < 7.4) { $('hands').setAttribute('opacity', 0); $('handUp').setAttribute('opacity', 1); $('armR').setAttribute('transform', `rotate(${-130 + 14 * Math.sin(t * 9)} 66 82)`); $('bubble').style.opacity = 1; $('bubble').style.left = (x + 70) + 'px'; $('bubble').style.top = (y - 30) + 'px'; }
+  if (t >= 7.4 && t < 9.0) { const c = ease(seg(t, 7.4, 8.2)) - ease(seg(t, 8.6, 8.95)); $('chat').style.left = (600 - 300 * c) + 'px'; } else $('chat').style.left = '600px';
+  if (t >= 7.4 && t < 8.8) { if (Math.floor(t * 3) % 5 === 0) setEyes('Shut'); }
+  if (t >= 8.9 && t < 10.4) {   // dragged by the collar
+    const k = seg(t, 8.9, 10.4);
+    x = STAND.x + DX * k; y = STAND.y - 70 * Math.sin(Math.PI * k) - 6 * k; rot = -9 + 4 * Math.sin(t * 7);
+    $('feet').setAttribute('transform', `rotate(${12 * Math.sin(t * 11)} 50 136)`); setEyes('Wide'); $('mouth').setAttribute('opacity', 0); $('mouthO').setAttribute('opacity', 1);
+    cursorAt(x + 30, y - 4, 'hand');
+  } else if (t >= 10.4 && t < 11.0) {
+    const k = seg(t, 10.4, 11.0); x = STAND.x + DX; y = STAND.y - 6 - 10 * Math.abs(Math.sin(Math.PI * 2 * k)) * (1 - k);
+    if (k < 0.5) $('fx').innerHTML = [-1, 1].map((s) => `<ellipse cx="${x + 40 + s * (34 + k * 30)}" cy="${STAND.y + 116}" rx="${7 - k * 6}" ry="${4 - k * 3}" fill="#e2d6c2" stroke="#4a2f24" stroke-width="1.5"/>`).join('');
+  } else if (t >= 11.0 && t < 12.6) {   // petted
+    x = STAND.x + DX; y = STAND.y - 6;
+    setEyes('Happy'); $('cheekL').setAttribute('opacity', 1); $('cheekR').setAttribute('opacity', 1);
+    cursorAt(x + 22 + 18 * Math.abs(Math.sin(t * 5)), y + 2, 'hand');
+    $('fx').innerHTML = [0, 1, 2].map((i) => { const k = ((t - 11.0) * 0.8 + i * 0.33) % 1; return `<path transform="translate(${x + 86 + i * 12} ${y + 40 - k * 60}) scale(${0.8 + 0.3 * i})" opacity="${1 - k}" d="M0 3 C -6 -4 -12 2 0 10 C 12 2 6 -4 0 3 Z" fill="#ff6f92" stroke="#4a2f24" stroke-width="1.5"/>`; }).join('');
+  } else if (t >= 12.5) { const k = seg(t, 12.5, 13.2); x = STAND.x + DX * (1 - k); y = STAND.y - 6 * (1 - k) - 3 * Math.abs(Math.sin(t * 12)); g.setAttribute('opacity', 1 - seg(t, 13.1, 13.3)); }
+  girlAt(x, y, rot);
+};
+render(0);
+</script>
+</body>
+</html>
