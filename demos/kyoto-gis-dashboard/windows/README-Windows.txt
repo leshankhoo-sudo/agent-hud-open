@@ -1,4 +1,4 @@
-﻿京都府旅游 GIS Dashboard（完整版）—— Windows 使用说明
+﻿Kyoto Prefecture Travel Atlas · 京都府 旅の地図（完整版）—— Windows 使用说明
 ==========================================================
 
 完整版和在线预览版的区别：完整版有真实底图（地理院瓦片 / OpenStreetMap），
@@ -9,7 +9,7 @@
 ------------------------------------------------
 1. 在下载好的 ZIP 上按右键 → 选择"全部解压缩(Extract All)"。
    注意：必须先解压。不要在 ZIP 预览窗口里直接双击文件。
-2. 打开解压出来的 Kyoto-GIS-Dashboard 文件夹，
+2. 打开解压出来的 Kyoto-Prefecture-Travel-Atlas 文件夹，
    双击 Start-Dashboard.bat。
 3. 会弹出一个黑色窗口，浏览器随后会自动打开
    http://localhost:8765/ （端口被占用时会自动改用 8766、8767……）。

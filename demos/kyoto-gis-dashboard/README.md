@@ -12,7 +12,7 @@
 
 ## 0. Windows 最简单的方式
 
-下载 `Kyoto-GIS-Dashboard-Windows.zip`，解压后双击 `Start-Dashboard.bat`，不需要安装任何软件。详细步骤见 ZIP 里的 `README-Windows.txt`（源文件在 `windows/` 文件夹）。
+下载 `Kyoto-Prefecture-Travel-Atlas-Windows-<日期>.zip`（2026-11-23 之前叫 `Kyoto-GIS-Dashboard-Windows-<日期>.zip`），解压后双击 `Start-Dashboard.bat`，不需要安装任何软件。详细步骤见 ZIP 里的 `README-Windows.txt`（源文件在 `windows/` 文件夹）。
 
 ## 1. 运行
 
@@ -710,3 +710,4 @@ kyoto-gis-dashboard/
   - 15 张卡在 Orbit 环里太挤，所以环后面距离超过 4 张的卡会淡出；Fan 模式照常全部显示。
   - 在线预览的文件数有上限，所以预览里小卡片直接用大图（`pack_preview.py` 第 0 步），每个市少一个文件。
 - **测试**：浏览器测试里 Explore 的检查改成 15 个市（选第 4 张是舞鶴市，检查照片内容、面积、景点数、观光人数和作者）。
+- **Windows ZIP 和在线预览**（2026-11-23 第二次）：Windows ZIP 改名为 `Kyoto-Prefecture-Travel-Atlas-Windows-2026-11-23.zip`（895 个文件，95.6 MB；解压出来的文件夹也叫 Kyoto-Prefecture-Travel-Atlas），用自带启动服务器跑完整浏览器测试 213/213，逻辑测试 42/42。开发服务器上的完整测试 212/213，没过的是结尾页搭建的时间检查（负载下的时间问题），单独重跑 2 次都通过。在线预览更新到第 41 版（同一个链接）：新代码、15 张城市照片、`explore_places.json`，再多去掉 1 个罕用字的明朝体子集，共 511 个文件。
