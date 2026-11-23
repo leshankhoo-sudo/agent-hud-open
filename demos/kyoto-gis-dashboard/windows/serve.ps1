@@ -33,9 +33,9 @@ Start-Process $url
 # reaches the browser and is not in any file of the site.
 # assistant-config.json next to this script sets the model (gemini-4-hydrogen; GEMINI_MODEL overrides it),
 # the allowed thinking levels (medium by default, high for planning), the Standard service tier (never
-# Priority), the prices for the cost estimate and the limits: requests and US dollars per day, output
-# tokens, timeout, retries and the duplicate guard. Each call is logged to assistant-usage.jsonl here:
-# token counts and the estimated cost only (no question, answer or key). GEMINI_API_BASE is only for tests.
+# Priority), the prices for the cost estimate, the billing currency (RM) and the limits: requests and cost
+# per day, output tokens, timeout, retries and the duplicate guard. Each call is logged to
+# assistant-usage.jsonl here: token counts and the estimated cost only (no question, answer or key). GEMINI_API_BASE is only for tests.
 try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch { }
 $AssistantLog = Join-Path $PSScriptRoot 'assistant-usage.jsonl'
 $Inv = [Globalization.CultureInfo]::InvariantCulture
@@ -61,8 +61,8 @@ function Get-Num($x) { return ([double]$x).ToString($Inv) }
 function Send-Error($res, $code, $message) { Send-Json $res $code ('{"error":{"message":' + (Get-JsonText $message) + '}}') }
 function Get-AssistantConfig {
   $c = @{ model = 'gemini-4-hydrogen'; tDefault = 'medium'; tPlanning = 'high'; allowed = @('medium', 'high'); tier = 'standard'
-    pIn = 1.5; pCached = 0.075; pOut = 7.5
-    max_requests_per_day = 200; max_usd_per_day = 1.0; max_tool_rounds_per_question = 6; max_tool_calls_per_question = 12
+    pIn = 1.5; pCached = 0.075; pOut = 7.5; curCode = 'USD'; curSymbol = '$'; perUsd = 1.0
+    max_requests_per_day = 200; max_cost_per_day = 1.0; max_tool_rounds_per_question = 6; max_tool_calls_per_question = 12
     max_history_turns = 6; max_output_tokens = 8192; timeout_seconds = 90; retries = 2; duplicate_window_seconds = 5 }
   $f = Join-Path $PSScriptRoot 'assistant-config.json'
   if (Test-Path -LiteralPath $f) {
@@ -79,7 +79,13 @@ function Get-AssistantConfig {
         if ($null -ne $pr.cached_input) { $c.pCached = [double]$pr.cached_input }
         if ($null -ne $pr.output_including_thinking) { $c.pOut = [double]$pr.output_including_thinking }
       }
-      if ($j.limits) { foreach ($k in @('max_requests_per_day', 'max_usd_per_day', 'max_tool_rounds_per_question', 'max_tool_calls_per_question', 'max_history_turns', 'max_output_tokens', 'timeout_seconds', 'retries', 'duplicate_window_seconds')) { if ($null -ne $j.limits.$k) { $c[$k] = [double]$j.limits.$k } } }
+      $bc = $j.billing_currency
+      if ($bc) {
+        if ($bc.code) { $c.curCode = [string]$bc.code }
+        if ($bc.symbol) { $c.curSymbol = [string]$bc.symbol }
+        if ($null -ne $bc.per_usd) { $c.perUsd = [double]$bc.per_usd }
+      }
+      if ($j.limits) { foreach ($k in @('max_requests_per_day', 'max_cost_per_day', 'max_tool_rounds_per_question', 'max_tool_calls_per_question', 'max_history_turns', 'max_output_tokens', 'timeout_seconds', 'retries', 'duplicate_window_seconds')) { if ($null -ne $j.limits.$k) { $c[$k] = [double]$j.limits.$k } } }
     } catch { }
   }
   $m = Get-UserSetting 'GEMINI_MODEL'
@@ -87,7 +93,7 @@ function Get-AssistantConfig {
   return $c
 }
 # today's calls and estimated cost, from the usage log
-function Get-AssistantToday($day) {
+function Get-AssistantToday($day, $perUsd) {
   $n = 0; $usd = 0.0
   if (Test-Path -LiteralPath $AssistantLog) {
     foreach ($line in [IO.File]::ReadAllLines($AssistantLog)) {
@@ -97,9 +103,9 @@ function Get-AssistantToday($day) {
       if ($mm.Success) { $usd += [double]::Parse($mm.Groups[1].Value, $Inv) }
     }
   }
-  return @{ requests = $n; usd = [math]::Round($usd, 6) }
+  return @{ requests = $n; usd = [math]::Round($usd, 6); cost = [math]::Round($usd * $perUsd, 6) }
 }
-function Get-TodayJson($t) { return '{"requests":' + $t.requests + ',"usd":' + (Get-Num $t.usd) + '}' }
+function Get-TodayJson($t) { return '{"requests":' + $t.requests + ',"usd":' + (Get-Num $t.usd) + ',"cost":' + (Get-Num $t.cost) + '}' }
 function Invoke-AssistantRelay($ctx) {
   $res = $ctx.Response
   $c = Get-AssistantConfig
@@ -109,10 +115,11 @@ function Invoke-AssistantRelay($ctx) {
   if ($ctx.Request.Url.AbsolutePath.EndsWith('/status')) {
     $conf = 'false'; if ($key) { $conf = 'true' }
     $allowed = ($c.allowed | ForEach-Object { Get-JsonText $_ }) -join ','
-    $lim = (@('max_requests_per_day', 'max_usd_per_day', 'max_tool_rounds_per_question', 'max_tool_calls_per_question', 'max_history_turns', 'max_output_tokens', 'timeout_seconds', 'retries', 'duplicate_window_seconds') | ForEach-Object { '"' + $_ + '":' + (Get-Num $c[$_]) }) -join ','
+    $lim = (@('max_requests_per_day', 'max_cost_per_day', 'max_tool_rounds_per_question', 'max_tool_calls_per_question', 'max_history_turns', 'max_output_tokens', 'timeout_seconds', 'retries', 'duplicate_window_seconds') | ForEach-Object { '"' + $_ + '":' + (Get-Num $c[$_]) }) -join ','
     $st = '{"configured":' + $conf + ',"model":' + (Get-JsonText $c.model) + ',"thinking":{"default":' + (Get-JsonText $c.tDefault) + ',"planning":' + (Get-JsonText $c.tPlanning) + ',"allowed":[' + $allowed + ']}' +
       ',"service_tier":' + (Get-JsonText $c.tier) + ',"limits":{' + $lim + '},"price_usd_per_million_tokens":{"input":' + (Get-Num $c.pIn) + ',"cached_input":' + (Get-Num $c.pCached) + ',"output_including_thinking":' + (Get-Num $c.pOut) + '}' +
-      ',"today":' + (Get-TodayJson (Get-AssistantToday $day)) + '}'
+      ',"billing_currency":{"code":' + (Get-JsonText $c.curCode) + ',"symbol":' + (Get-JsonText $c.curSymbol) + ',"per_usd":' + (Get-Num $c.perUsd) + '}' +
+      ',"today":' + (Get-TodayJson (Get-AssistantToday $day $c.perUsd)) + '}'
     Send-Json $res 200 $st; return
   }
   if ($ctx.Request.HttpMethod -ne 'POST') { Send-Error $res 405 'Use POST.'; return }
@@ -144,9 +151,9 @@ function Invoke-AssistantRelay($ctx) {
   $sha = [System.Security.Cryptography.SHA256]::Create()
   $hash = [BitConverter]::ToString($sha.ComputeHash($rawBytes))
   if ($script:LastRequest.Hash -eq $hash -and ($now - $script:LastRequest.At).TotalSeconds -lt $c.duplicate_window_seconds) { Send-Error $res 409 ('The same request arrived twice within ' + (Get-Num $c.duplicate_window_seconds) + ' s; the second one was not sent to Gemini.'); return }
-  $today = Get-AssistantToday $day
+  $today = Get-AssistantToday $day $c.perUsd
   if ($today.requests -ge $c.max_requests_per_day) { Send-Error $res 429 ('Daily limit reached: ' + $today.requests + ' Gemini requests today (max_requests_per_day in assistant-config.json).'); return }
-  if ($today.usd -ge $c.max_usd_per_day) { Send-Error $res 429 ('Daily limit reached: about $' + $today.usd.ToString('0.0000', $Inv) + ' spent today (max_usd_per_day is $' + (Get-Num $c.max_usd_per_day) + ' in assistant-config.json).'); return }
+  if ($today.cost -ge $c.max_cost_per_day) { Send-Error $res 429 ('Daily limit reached: about ' + $c.curSymbol + $today.cost.ToString('0.0000', $Inv) + ' (US$' + $today.usd.ToString('0.0000', $Inv) + ') spent today; max_cost_per_day is ' + $c.curSymbol + (Get-Num $c.max_cost_per_day) + ' in assistant-config.json.'); return }
   $script:LastRequest = @{ Hash = $hash; At = $now }
   $base = Get-UserSetting 'GEMINI_API_BASE'
   if (-not $base) { $base = 'https://generativelanguage.googleapis.com' }
@@ -203,13 +210,13 @@ function Invoke-AssistantRelay($ctx) {
   if (-not $tierHdr) { $tierHdr = $c.tier }
   $entry = '{"time":' + (Get-JsonText ([DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ', $Inv))) + ',"day":' + (Get-JsonText $day) + ',"model":' + (Get-JsonText $c.model) +
     ',"model_version":' + (Get-JsonText $mv) + ',"thinking":' + (Get-JsonText $level) + ',"tier":' + (Get-JsonText $tierHdr) + ',"status":' + $status + ',"attempts":' + $attempts + ',"ms":' + $elapsed +
-    ',"input":' + (Get-Num ($pt + $tt)) + ',"cached":' + (Get-Num $ct) + ',"output":' + (Get-Num $ot) + ',"thinking_tokens":' + (Get-Num $th) + ',"total":' + (Get-Num $tot) + ',"usd":' + (Get-Num $usd) + ',"error":' + (Get-JsonText $errMsg) + '}'
+    ',"input":' + (Get-Num ($pt + $tt)) + ',"cached":' + (Get-Num $ct) + ',"output":' + (Get-Num $ot) + ',"thinking_tokens":' + (Get-Num $th) + ',"total":' + (Get-Num $tot) + ',"usd":' + (Get-Num $usd) + ',"currency":' + (Get-JsonText $c.curCode) + ',"cost":' + (Get-Num ([math]::Round($usd * $c.perUsd, 6))) + ',"error":' + (Get-JsonText $errMsg) + '}'
   try { [IO.File]::AppendAllText($AssistantLog, $entry + "`n", (New-Object System.Text.UTF8Encoding($false))) } catch { }
   if ($status -eq 0) {
     if ($timedOut) { Send-Error $res 504 ($errMsg + ' Tried ' + $attempts + ' times.') } else { Send-Error $res 502 ('Could not reach the Gemini API (' + $errMsg + '). Tried ' + $attempts + ' times.') }
     return
   }
-  $usage = $entry.Substring(0, $entry.Length - 1) + ',"today":' + (Get-TodayJson (Get-AssistantToday $day)) + '}'
+  $usage = $entry.Substring(0, $entry.Length - 1) + ',"today":' + (Get-TodayJson (Get-AssistantToday $day $c.perUsd)) + '}'
   $tr = $respText.TrimStart()
   if ($tr.StartsWith('{')) {
     $rest = $tr.Substring(1).TrimStart()

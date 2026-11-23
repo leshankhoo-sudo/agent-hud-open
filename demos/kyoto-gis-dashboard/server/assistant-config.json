@@ -3,7 +3,10 @@
   "thinking": {
     "default": "medium",
     "planning": "high",
-    "allowed": ["medium", "high"]
+    "allowed": [
+      "medium",
+      "high"
+    ]
   },
   "service_tier": "standard",
   "price_usd_per_million_tokens": {
@@ -12,9 +15,15 @@
     "output_including_thinking": 7.5,
     "source": "Gemini API pricing, Standard paid tier, gemini-4-hydrogen (https://ai.google.dev/gemini-api/docs/pricing), checked 2026-11-23"
   },
+  "billing_currency": {
+    "code": "MYR",
+    "symbol": "RM",
+    "per_usd": 4.122961,
+    "source": "x-rates.com mid-market rate, 1 USD = 4.122961 MYR, 2026-11-23 14:17 UTC. Google bills in MYR at its own rate, so costs here are estimates."
+  },
   "limits": {
     "max_requests_per_day": 200,
-    "max_usd_per_day": 1.0,
+    "max_cost_per_day": 3,
     "max_tool_rounds_per_question": 6,
     "max_tool_calls_per_question": 12,
     "max_history_turns": 6,

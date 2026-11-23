@@ -49,9 +49,9 @@ export function trimHistory(contents, turns) {
 const errText = (j, status) => j?.error?.message || `The assistant relay answered HTTP ${status}.`;
 const addUsage = (u, a) => {
   if (!a) return u;
-  return { ...u, calls: u.calls + 1, input: u.input + (a.input || 0), output: u.output + (a.output || 0), thinking_tokens: u.thinking_tokens + (a.thinking_tokens || 0), total: u.total + (a.total || 0), usd: u.usd + (a.usd || 0), today: a.today || u.today, model: a.model_version || a.model || u.model, tier: a.tier || u.tier };
+  return { ...u, calls: u.calls + 1, input: u.input + (a.input || 0), output: u.output + (a.output || 0), thinking_tokens: u.thinking_tokens + (a.thinking_tokens || 0), total: u.total + (a.total || 0), usd: u.usd + (a.usd || 0), cost: u.cost + (a.cost || 0), currency: a.currency || u.currency, today: a.today || u.today, model: a.model_version || a.model || u.model, tier: a.tier || u.tier };
 };
-const NO_USAGE = { calls: 0, input: 0, output: 0, thinking_tokens: 0, total: 0, usd: 0, today: null, model: null, tier: null };
+const NO_USAGE = { calls: 0, input: 0, output: 0, thinking_tokens: 0, total: 0, usd: 0, cost: 0, currency: null, today: null, model: null, tier: null };
 
 // history: Gemini contents so far. note: what the dashboard shows right now and today's date, sent with the
 // question so "this place" or "tomorrow" can be understood. thinking: 'medium' | 'high'.

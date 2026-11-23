@@ -6,10 +6,12 @@
 // What the relay enforces (server/assistant-config.json; the ZIP has a copy next to serve.ps1):
 //   - the model (gemini-4-hydrogen unless GEMINI_MODEL is set) and the Standard service tier, never Priority
 //   - the thinking level: one of the allowed levels (medium by default, high for planning), and an output cap
-//   - daily limits on requests and estimated US dollars, and a guard against the same request sent twice
+//   - daily limits on requests and estimated cost (in the billing currency, RM by default), and a guard
+//     against the same request sent twice
 //   - a timeout per request and a few retries when Google is busy or briefly unavailable
 //   - a usage log (logs/assistant-usage.jsonl): for each call the token counts (input, cached, output,
-//     thinking) and the estimated cost. No question, answer or key is written there.
+//     thinking) and the estimated cost in US dollars and the billing currency. No question, answer or key
+//     is written there.
 //
 //   GEMINI_API_KEY   the key from Google AI Studio (required; never put it in the code or the repository)
 //   GEMINI_MODEL     optional, another model id
@@ -31,7 +33,8 @@ export const DEFAULTS = {
   thinking: { default: 'medium', planning: 'high', allowed: ['medium', 'high'] },
   service_tier: 'standard',
   price_usd_per_million_tokens: { input: 1.5, cached_input: 0.075, output_including_thinking: 7.5 },
-  limits: { max_requests_per_day: 200, max_usd_per_day: 1, max_tool_rounds_per_question: 6, max_tool_calls_per_question: 12, max_history_turns: 6, max_output_tokens: 8192, timeout_seconds: 90, retries: 2, duplicate_window_seconds: 5 },
+  billing_currency: { code: 'USD', symbol: '$', per_usd: 1 },
+  limits: { max_requests_per_day: 200, max_cost_per_day: 1, max_tool_rounds_per_question: 6, max_tool_calls_per_question: 12, max_history_turns: 6, max_output_tokens: 8192, timeout_seconds: 90, retries: 2, duplicate_window_seconds: 5 },
 };
 
 // On Windows, `setx GEMINI_API_KEY ...` writes the user's environment; a terminal opened earlier does not
@@ -49,7 +52,7 @@ function userEnv(name) {
 export function loadConfig(file = CONFIG_FILE, env = userEnv) {
   let f = {};
   try { f = JSON.parse(readFileSync(file, 'utf8')); } catch { /* the defaults below */ }
-  const c = { ...DEFAULTS, ...f, thinking: { ...DEFAULTS.thinking, ...f.thinking }, price_usd_per_million_tokens: { ...DEFAULTS.price_usd_per_million_tokens, ...f.price_usd_per_million_tokens }, limits: { ...DEFAULTS.limits, ...f.limits } };
+  const c = { ...DEFAULTS, ...f, thinking: { ...DEFAULTS.thinking, ...f.thinking }, price_usd_per_million_tokens: { ...DEFAULTS.price_usd_per_million_tokens, ...f.price_usd_per_million_tokens }, billing_currency: { ...DEFAULTS.billing_currency, ...f.billing_currency }, limits: { ...DEFAULTS.limits, ...f.limits } };
   const m = env('GEMINI_MODEL');
   if (m) c.model = m;
   c.thinking.allowed = c.thinking.allowed.map((x) => String(x).toLowerCase());
@@ -59,16 +62,16 @@ export function loadConfig(file = CONFIG_FILE, env = userEnv) {
 const pad = (n) => String(n).padStart(2, '0');
 export const localDay = (ms) => { const t = new Date(ms); return `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())}`; };
 
-// Today's calls and estimated cost, from the usage log.
-export function readToday(file, day) {
+// Today's calls and estimated cost (US dollars, and the billing currency at per_usd), from the usage log.
+export function readToday(file, day, perUsd = 1) {
   let text = '';
-  try { text = readFileSync(file, 'utf8'); } catch { return { requests: 0, usd: 0 }; }
+  try { text = readFileSync(file, 'utf8'); } catch { return { requests: 0, usd: 0, cost: 0 }; }
   let requests = 0, usd = 0;
   for (const line of text.split('\n')) {
     if (!line.includes(`"day":"${day}"`)) continue;
     try { const e = JSON.parse(line); requests++; usd += e.usd || 0; } catch { /* a broken line is skipped */ }
   }
-  return { requests, usd: Math.round(usd * 1e6) / 1e6 };
+  return { requests, usd: Math.round(usd * 1e6) / 1e6, cost: Math.round(usd * perUsd * 1e6) / 1e6 };
 }
 
 // Token counts from Gemini's usageMetadata and the estimated cost at the configured Standard prices.
@@ -116,8 +119,9 @@ export function assistantMiddleware({
     if (!path.endsWith('/api/assistant') && !path.endsWith('/api/assistant/status')) return next();
     const conf = config(), k = key();
     const day = localDay(now());
+    const cur = conf.billing_currency, today0 = () => readToday(logFile, day, cur.per_usd);
     if (path.endsWith('/status')) {
-      return send(res, 200, { configured: !!k, model: conf.model, thinking: conf.thinking, service_tier: conf.service_tier, limits: conf.limits, price_usd_per_million_tokens: conf.price_usd_per_million_tokens, today: readToday(logFile, day) });
+      return send(res, 200, { configured: !!k, model: conf.model, thinking: conf.thinking, service_tier: conf.service_tier, limits: conf.limits, price_usd_per_million_tokens: conf.price_usd_per_million_tokens, billing_currency: cur, today: today0() });
     }
     if (req.method !== 'POST') return fail(res, 405, 'Use POST.');
     let size = 0;
@@ -136,9 +140,9 @@ export function assistantMiddleware({
     for (const [h, at] of recent) if (t - at > conf.limits.duplicate_window_seconds * 1000) recent.delete(h);
     if (recent.has(hash)) return fail(res, 409, `The same request arrived twice within ${conf.limits.duplicate_window_seconds} s; the second one was not sent to Gemini.`);
 
-    const today = readToday(logFile, day);
+    const today = today0();
     if (today.requests >= conf.limits.max_requests_per_day) return fail(res, 429, `Daily limit reached: ${today.requests} Gemini requests today (max_requests_per_day in assistant-config.json).`);
-    if (today.usd >= conf.limits.max_usd_per_day) return fail(res, 429, `Daily limit reached: about $${today.usd.toFixed(4)} spent today (max_usd_per_day is $${conf.limits.max_usd_per_day} in assistant-config.json).`);
+    if (today.cost >= conf.limits.max_cost_per_day) return fail(res, 429, `Daily limit reached: about ${cur.symbol}${today.cost.toFixed(4)} (US$${today.usd.toFixed(4)}) spent today; max_cost_per_day is ${cur.symbol}${conf.limits.max_cost_per_day} in assistant-config.json.`);
     recent.set(hash, t);
 
     const url = `${base()}/v1beta/models/${encodeURIComponent(conf.model)}:generateContent`;
@@ -164,12 +168,14 @@ export function assistantMiddleware({
       time: new Date(t).toISOString(), day, model: conf.model, model_version: j?.modelVersion || null, thinking: shaped.thinking,
       tier: r?.headers?.get?.('x-gemini-service-tier') || conf.service_tier, status: r ? r.status : 0, attempts, ms: now() - t,
       ...usageOf(j?.usageMetadata, conf.price_usd_per_million_tokens),
+      currency: cur.code,
       error: err ? clean(timedOut ? `Gemini did not answer within ${conf.limits.timeout_seconds} s.` : err.message) : (r.ok ? null : clean(j?.error?.message || `HTTP ${r.status}`)),
     };
+    entry.cost = Math.round(entry.usd * cur.per_usd * 1e6) / 1e6;
     log(entry);
     if (!r) return fail(res, timedOut ? 504 : 502, timedOut ? `${entry.error} Tried ${attempts} times.` : `Could not reach the Gemini API (${entry.error}). Tried ${attempts} times.`);
     if (!j) return send(res, r.status, text);
-    j.atlasUsage = { ...entry, today: readToday(logFile, day) };
+    j.atlasUsage = { ...entry, today: today0() };
     return send(res, r.status, j);
   };
 }

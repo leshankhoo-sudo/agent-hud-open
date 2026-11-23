@@ -40,13 +40,14 @@ async function relay({ over = {}, fetchImpl, key = KEY, clock } = {}) {
   return { mw, logFile, sent, t, log: () => (existsSync(logFile) ? readFileSync(logFile, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []) };
 }
 
-test('config: gemini-4-hydrogen, medium thinking (high for planning), Standard tier, Standard prices and limits', () => {
+test('config: gemini-4-hydrogen, medium thinking (high for planning), Standard tier, Standard prices, a daily cap of RM3 and limits', () => {
   const c = loadConfig(undefined, () => '');
   assert.equal(c.model, 'gemini-4-hydrogen');
   assert.deepEqual(c.thinking, { default: 'medium', planning: 'high', allowed: ['medium', 'high'] });
   assert.equal(c.service_tier, 'standard');
   assert.deepEqual([c.price_usd_per_million_tokens.input, c.price_usd_per_million_tokens.cached_input, c.price_usd_per_million_tokens.output_including_thinking], [1.5, 0.075, 7.5]);
-  assert.ok(c.limits.max_requests_per_day > 0 && c.limits.max_usd_per_day > 0 && c.limits.max_tool_rounds_per_question > 0 && c.limits.timeout_seconds > 0);
+  assert.deepEqual([c.billing_currency.code, c.billing_currency.symbol, c.billing_currency.per_usd, c.limits.max_cost_per_day], ['MYR', 'RM', 4.122961, 3]);
+  assert.ok(c.limits.max_requests_per_day > 0 && c.limits.max_tool_rounds_per_question > 0 && c.limits.timeout_seconds > 0);
   assert.equal(loadConfig(undefined, (n) => (n === 'GEMINI_MODEL' ? 'gemini-3.8-flash' : '')).model, 'gemini-3.8-flash');
 });
 
@@ -59,7 +60,7 @@ test('relay: status tells the page the model, thinking, tier, limits and today\'
   assert.equal(on.json.model, 'gemini-4-hydrogen');
   assert.equal(on.json.thinking.default, 'medium');
   assert.equal(on.json.service_tier, 'standard');
-  assert.deepEqual(on.json.today, { requests: 0, usd: 0 });
+  assert.deepEqual(on.json.today, { requests: 0, usd: 0, cost: 0 });
   assert.ok(!on.body.includes('SECRET'));
 });
 
@@ -88,7 +89,8 @@ test('relay: the key goes only in a header; Standard tier and thinking go to Goo
   // 1,000 input at $1.50/M + (200 output + 300 thinking) at $7.50/M = $0.00525
   const u = r.json.atlasUsage;
   assert.deepEqual([u.input, u.output, u.thinking_tokens, u.total, u.usd, u.thinking, u.tier, u.attempts], [1000, 200, 300, 1500, 0.00525, 'medium', 'standard', 1]);
-  assert.deepEqual(u.today, { requests: 1, usd: 0.00525 });
+  assert.deepEqual([u.cost, u.currency], [0.00525, 'USD']);
+  assert.deepEqual(u.today, { requests: 1, usd: 0.00525, cost: 0.00525 });
   const log = r0.log();
   assert.equal(log.length, 1);
   const raw = readFileSync(r0.logFile, 'utf8');
@@ -144,7 +146,7 @@ test('relay: busy or failing answers are retried (2 retries), billing and reques
   assert.match(s.json.error.message, /did not answer within 90 s/);
 });
 
-test('relay: daily limits on requests and estimated dollars stop further calls', async () => {
+test('relay: daily limits on requests and on the estimated cost in the billing currency (RM) stop further calls', async () => {
   const r0 = await relay({ over: { limits: { max_requests_per_day: 2 } } });
   assert.equal((await call(r0.mw, { body: pageBody('1') })).status, 200);
   assert.equal((await call(r0.mw, { body: pageBody('2') })).status, 200);
@@ -152,11 +154,11 @@ test('relay: daily limits on requests and estimated dollars stop further calls',
   assert.equal(third.status, 429);
   assert.match(third.json.error.message, /Daily limit reached: 2 Gemini requests today/);
   assert.equal(r0.sent.length, 2);
-  const r1 = await relay({ over: { limits: { max_usd_per_day: 0.01 } } });
+  const r1 = await relay({ over: { billing_currency: { code: 'MYR', symbol: 'RM', per_usd: 4 }, limits: { max_cost_per_day: 0.04 } } });
   await writeFile(r1.logFile, JSON.stringify({ day: localDay(r1.t.now), usd: 0.0101 }) + '\n' + JSON.stringify({ day: '2026-11-22', usd: 5 }) + '\n');
   const over = await call(r1.mw, { body: pageBody() });
   assert.equal(over.status, 429);
-  assert.match(over.json.error.message, /about \$0\.0101 spent today/);
+  assert.match(over.json.error.message, /about RM0\.0404 \(US\$0\.0101\) spent today; max_cost_per_day is RM0\.04/);
   assert.equal(r1.sent.length, 0);
 });
 

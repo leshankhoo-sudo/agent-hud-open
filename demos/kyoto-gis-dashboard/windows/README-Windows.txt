@@ -57,7 +57,8 @@ ccr-bd068911-ydjxlc 分支，demos/kyoto-gis-dashboard 文件夹里：
 - 想换模型：setx GEMINI_MODEL "模型名"（默认 gemini-4-hydrogen）。
 - assistant-config.json（在这个文件夹里）是助手的设定：模型 gemini-4-hydrogen、思考等级
   （平时 medium，多日行程和路线规划用 high）、只用 Standard 服务（不用更贵的 Priority）、
-  估算费用用的价格，还有上限：每天最多 200 次、约 1 美元，每次 90 秒超时，忙碌时最多重试 2 次。
+  估算费用用的价格和汇率，还有上限：每天最多 200 次、估算费用最多 RM3，每次 90 秒超时，
+  忙碌时最多重试 2 次。
   可以用记事本改数字，改完下一次提问就生效。
 - 每次调用的用量会记在 assistant-usage.jsonl（这个文件夹里）：tokens 数、估算费用、状态。
   不记录你问了什么、回答了什么，也不记录 key。

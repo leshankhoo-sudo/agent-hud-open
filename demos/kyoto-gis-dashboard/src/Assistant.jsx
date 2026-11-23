@@ -22,9 +22,11 @@ const isPhone = () => matchMedia('(max-width: 640px)').matches;
 const THINK_KEY = 'kyoto-assistant-thinking';
 const THINK_MODES = [['auto', 'Auto', 'Medium, or High for multi-day itineraries and route planning'], ['medium', 'Medium', 'Medium thinking for every question'], ['high', 'High', 'High thinking for every question (slower, more output tokens)']];
 const n0 = (v) => Math.round(v || 0).toLocaleString('en-US');
-const usd = (v) => `≈ $${(v || 0) < 0.01 ? (v || 0).toFixed(4) : (v || 0).toFixed(3)}`;
+const amt = (v) => ((v || 0) < 0.01 ? (v || 0).toFixed(4) : (v || 0).toFixed(3));
+// the estimate in the billing currency (RM by default, assistant-config.json) and in US dollars
+const money = (usd, cur) => (cur && cur.code !== 'USD' ? `≈ ${cur.symbol}${amt(usd * cur.per_usd)} (US$${amt(usd)})` : `≈ $${amt(usd)}`);
 // what one answer cost: the thinking level, the Gemini calls, the tokens and the estimated price
-const usageLine = (u) => (u && u.calls ? `${u.thinking} thinking · ${u.calls} call${u.calls > 1 ? 's' : ''} · ${n0(u.total)} tokens (${n0(u.input)} in, ${n0(u.output)} out, ${n0(u.thinking_tokens)} thinking) · ${usd(u.usd)}` : '');
+const usageLine = (u, cur) => (u && u.calls ? `${u.thinking} thinking · ${u.calls} call${u.calls > 1 ? 's' : ''} · ${n0(u.total)} tokens (${n0(u.input)} in, ${n0(u.output)} out, ${n0(u.thinking_tokens)} thinking) · ${money(u.usd, cur)}` : '');
 const plain = (t) => (t || '').replace(/[*`#]/g, '').replace(/\s+/g, ' ').trim();
 
 // a small, safe subset of Markdown: paragraphs, lists, **bold** and `code` (no HTML is ever injected)
@@ -212,7 +214,7 @@ export default function Assistant({ open, onClose, getCtx, side = 'right' }) {
               <Actions acts={m.actions || []} />
               {m.text && <div className="as-txt"><Rich text={m.text} /></div>}
               {m.error && <p className="as-err" role="alert">{m.error}{m.retry && <button type="button" onClick={() => send(m.retry)} disabled={busy}>Try again</button>}</p>}
-              {usageLine(m.usage) && <p className="as-use" title="Token counts from Gemini; the price is an estimate at the Standard rates in assistant-config.json">{usageLine(m.usage)}</p>}
+              {usageLine(m.usage, status?.billing_currency) && <p className="as-use" title="Token counts from Gemini; the price is an estimate at the Standard rates and the exchange rate in assistant-config.json">{usageLine(m.usage, status?.billing_currency)}</p>}
             </div>
           )))}
         {busy && (
@@ -235,7 +237,7 @@ export default function Assistant({ open, onClose, getCtx, side = 'right' }) {
           <div className="as-think" role="radiogroup" aria-label="Thinking level">
             {THINK_MODES.map(([k, l, t]) => <button key={k} type="button" role="radio" aria-checked={mode === k} className={mode === k ? 'on' : ''} title={t} onClick={() => setMode(k)}>{l}</button>)}
           </div>
-          {status?.today && <span className="as-today" title={`Daily limits: ${status.limits?.max_requests_per_day} requests, $${status.limits?.max_usd_per_day} (assistant-config.json)`}>Today {status.today.requests} call{status.today.requests === 1 ? '' : 's'} · {usd(status.today.usd)} of ${status.limits?.max_usd_per_day}</span>}
+          {status?.today && (() => { const cur = status.billing_currency || { code: 'USD', symbol: '$', per_usd: 1 }; return <span className="as-today" title={`Daily limits: ${status.limits?.max_requests_per_day} requests, ${cur.symbol}${status.limits?.max_cost_per_day} (assistant-config.json)`}>Today {status.today.requests} call{status.today.requests === 1 ? '' : 's'} · ≈ {cur.symbol}{amt(status.today.usd * cur.per_usd)} of {cur.symbol}{status.limits?.max_cost_per_day}</span>; })()}
         </div>
       )}
       <p className="as-foot">Answers are AI-generated from this atlas’s data and can be wrong. Check what matters.</p>
