@@ -1,5 +1,9 @@
 {
   "model": "gemini-4-hydrogen",
+  "fallback_models": [
+    "gemini-3.8-flash",
+    "gemini-3.6-flash"
+  ],
   "thinking": {
     "default": "medium",
     "planning": "high",
@@ -10,10 +14,24 @@
   },
   "service_tier": "standard",
   "price_usd_per_million_tokens": {
-    "input": 1.5,
-    "cached_input": 0.075,
-    "output_including_thinking": 7.5,
-    "source": "Gemini API pricing, Standard paid tier, gemini-4-hydrogen (https://ai.google.dev/gemini-api/docs/pricing), checked 2026-11-23"
+    "gemini-4-hydrogen": {
+      "input": 1.5,
+      "cached_input": 0.075,
+      "output_including_thinking": 7.5
+    },
+    "gemini-3.8-flash": {
+      "input": 0.75,
+      "cached_input": 0.075,
+      "output_including_thinking": 3.75,
+      "note": "through 2026-12-31; from 2027-01-01 input 1.50, cached 0.15, output 7.50"
+    },
+    "gemini-3.6-flash": {
+      "input": 0.75,
+      "cached_input": 0.075,
+      "output_including_thinking": 3.75,
+      "note": "through 2026-12-31; from 2027-01-01 input 1.50, cached 0.15, output 7.50"
+    },
+    "source": "Gemini API pricing, Standard paid tier (https://ai.google.dev/gemini-api/docs/pricing), checked 2026-11-23"
   },
   "billing_currency": {
     "code": "MYR",
@@ -28,8 +46,11 @@
     "max_tool_calls_per_question": 12,
     "max_history_turns": 6,
     "max_output_tokens": 8192,
-    "timeout_seconds": 90,
-    "retries": 2,
+    "timeout_seconds": 60,
+    "retries": 3,
+    "backoff_seconds": 1,
+    "max_total_seconds": 150,
+    "cooldown_seconds": 180,
     "duplicate_window_seconds": 5
   }
 }

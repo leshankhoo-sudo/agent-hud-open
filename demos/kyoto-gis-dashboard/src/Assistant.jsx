@@ -3,7 +3,7 @@
 // assistantTools.js, some of which operate the dashboard. Every answer carries a small "AI" tag and lists
 // what the assistant did (searched, opened a place, changed the trip), so nothing happens unseen.
 import { useEffect, useRef, useState } from 'react';
-import { askAssistant, assistantStatus, thinkingFor } from './lib/assistant.js';
+import { askAssistant, assistantStatus, thinkingFor, ERROR_TITLE } from './lib/assistant.js';
 import { DECLARATIONS, makeHandlers, actionLabel } from './assistantTools.js';
 import { tokyoDate } from './lib/trip.js';
 import './assistant.css';
@@ -26,7 +26,7 @@ const amt = (v) => ((v || 0) < 0.01 ? (v || 0).toFixed(4) : (v || 0).toFixed(3))
 // the estimate in the billing currency (RM by default, assistant-config.json) and in US dollars
 const money = (usd, cur) => (cur && cur.code !== 'USD' ? `≈ ${cur.symbol}${amt(usd * cur.per_usd)} (US$${amt(usd)})` : `≈ $${amt(usd)}`);
 // what one answer cost: the thinking level, the Gemini calls, the tokens and the estimated price
-const usageLine = (u, cur) => (u && u.calls ? `${u.thinking} thinking · ${u.calls} call${u.calls > 1 ? 's' : ''} · ${n0(u.total)} tokens (${n0(u.input)} in, ${n0(u.output)} out, ${n0(u.thinking_tokens)} thinking) · ${money(u.usd, cur)}` : '');
+const usageLine = (u, cur) => (u && u.calls ? `${u.model ? `${u.model}${u.fallback ? ' (fallback)' : ''} · ` : ''}${u.thinking} thinking · ${u.calls} call${u.calls > 1 ? 's' : ''} · ${n0(u.total)} tokens (${n0(u.input)} in, ${n0(u.output)} out, ${n0(u.thinking_tokens)} thinking) · ${money(u.usd, cur)}` : '');
 const plain = (t) => (t || '').replace(/[*`#]/g, '').replace(/\s+/g, ' ').trim();
 
 // a small, safe subset of Markdown: paragraphs, lists, **bold** and `code` (no HTML is ever injected)
@@ -82,6 +82,7 @@ export default function Assistant({ open, onClose, getCtx, side = 'right' }) {
   const [live, setLive] = useState(null);         // actions of the answer being prepared
   const [text, setText] = useState('');
   const contents = useRef([]);
+  const convModel = useRef('');   // the model this conversation is on (the relay may have used a fallback)
   const ctl = useRef(null);
   const body = useRef(null);
   const input = useRef(null);
@@ -128,24 +129,25 @@ export default function Assistant({ open, onClose, getCtx, side = 'right' }) {
     const today = (u) => { if (u?.today) setStatus((s) => (s ? { ...s, today: u.today } : s)); };
     try {
       const r = await askAssistant({
-        history: contents.current, text: q, note: `Today in Kyoto: ${tokyoDate()}. ${ctx.note()}`, thinking, limits: status?.limits,
+        history: contents.current, text: q, note: `Today in Kyoto: ${tokyoDate()}. ${ctx.note()}`, thinking, limits: status?.limits, model: convModel.current,
         declarations: DECLARATIONS, handlers: makeHandlers(ctx), signal: ac.signal,
         onAction: (a) => { acts.push(a); setLive([...acts]); },
       });
       contents.current = r.contents;
+      if (r.usage?.model) convModel.current = r.usage.model;
       today(r.usage);
       setMsgs((m) => [...m, { role: 'ai', text: r.text, actions: r.actions, usage: r.usage }]);
       if (isPhone() && r.actions.some((a) => OPERATE.has(a.name) && !a.result?.error)) setMin(true);
     } catch (e) {
       const stopped = e?.name === 'AbortError';
       today(e?.usage);
-      setMsgs((m) => [...m, { role: 'ai', text: '', actions: acts, usage: e?.usage, error: stopped ? 'Stopped.' : e.message, retry: stopped ? null : q }]);
+      setMsgs((m) => [...m, { role: 'ai', text: '', actions: acts, usage: e?.usage, error: stopped ? 'Stopped.' : e.message, kind: stopped ? null : e?.kind, retry: stopped ? null : q }]);
     } finally {
       ctl.current = null;
       setLive(null);
     }
   };
-  const fresh = () => { ctl.current?.abort(); contents.current = []; setMsgs([]); setText(''); };
+  const fresh = () => { ctl.current?.abort(); contents.current = []; convModel.current = ''; setMsgs([]); setText(''); };
   const onKey = (e) => {
     if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(); }
     if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
@@ -213,7 +215,14 @@ export default function Assistant({ open, onClose, getCtx, side = 'right' }) {
               <span className="as-tag" title="Written by Google's Gemini from this atlas's data">AI</span>
               <Actions acts={m.actions || []} />
               {m.text && <div className="as-txt"><Rich text={m.text} /></div>}
-              {m.error && <p className="as-err" role="alert">{m.error}{m.retry && <button type="button" onClick={() => send(m.retry)} disabled={busy}>Try again</button>}</p>}
+              {m.error && (
+                <div className="as-err" role="alert">
+                  {m.kind && ERROR_TITLE[m.kind] && <b>{ERROR_TITLE[m.kind]}</b>}
+                  <p>{m.error}</p>
+                  {m.kind && <p className="as-err-note">The map, the analysis and the trip planner keep working without the assistant.</p>}
+                  {m.retry && <button type="button" onClick={() => send(m.retry)} disabled={busy}>Try again</button>}
+                </div>
+              )}
               {usageLine(m.usage, status?.billing_currency) && <p className="as-use" title="Token counts from Gemini; the price is an estimate at the Standard rates and the exchange rate in assistant-config.json">{usageLine(m.usage, status?.billing_currency)}</p>}
             </div>
           )))}

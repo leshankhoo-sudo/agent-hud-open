@@ -7,6 +7,8 @@
 // multi-day itineraries and route planning), older turns are dropped from the history, a tool call repeated
 // with the same arguments is answered from the first result instead of running again, a round of nothing
 // but repeats ends the answer, and the rounds and calls per question are capped.
+// The relay may answer with a fallback model when the main one is overloaded; the page then tells it, with
+// each request, which model the conversation is on, so the rest of the answer stays on that model.
 // Nothing here holds a key, and nothing is sent anywhere but the relay.
 
 export const MAX_STEPS = 6;
@@ -20,6 +22,8 @@ Rules:
 - When the user wants to see something, operate the dashboard with the tools (show_place, show_map_layer, open_trip and so on) instead of only describing it.
 - When the user asks to change the trip, change it with the trip tools, then say briefly what changed.
 - Find a place's id with search_places before using it. If several places match, pick the clearest match or ask.
+- Kinds come from OpenStreetMap tags and can differ from what a place is usually called (a famous shrine can be stored as a viewpoint, a temple as an attraction). Take the best name match search_places returns instead of searching again for another kind.
+- To add or show several places, look them all up first (several tool calls in one step are fine), then act on them.
 - Use as few tool calls as you need, and never repeat a call with the same arguments.
 - Reply in the language the user writes in. Keep replies short: a few sentences or a short list.`;
 
@@ -47,22 +51,25 @@ export function trimHistory(contents, turns) {
 }
 
 const errText = (j, status) => j?.error?.message || `The assistant relay answered HTTP ${status}.`;
+// a short name for what went wrong, shown above the message
+export const ERROR_TITLE = { billing: 'Billing (402)', rate_limit: 'Rate limit (429)', overloaded: 'Gemini overloaded (503)', server: 'Gemini service error', timeout: 'No answer in time',
+  network: 'No connection', auth: 'API key refused', not_found: 'Model not found', bad_request: 'Request not accepted', daily_limit: 'Daily limit reached', duplicate: 'Sent twice', no_key: 'No API key', relay: 'Relay not reachable' };
 const addUsage = (u, a) => {
   if (!a) return u;
-  return { ...u, calls: u.calls + 1, input: u.input + (a.input || 0), output: u.output + (a.output || 0), thinking_tokens: u.thinking_tokens + (a.thinking_tokens || 0), total: u.total + (a.total || 0), usd: u.usd + (a.usd || 0), cost: u.cost + (a.cost || 0), currency: a.currency || u.currency, today: a.today || u.today, model: a.model_version || a.model || u.model, tier: a.tier || u.tier };
+  return { ...u, calls: u.calls + 1, input: u.input + (a.input || 0), output: u.output + (a.output || 0), thinking_tokens: u.thinking_tokens + (a.thinking_tokens || 0), total: u.total + (a.total || 0), usd: u.usd + (a.usd || 0), cost: u.cost + (a.cost || 0), currency: a.currency || u.currency, today: a.today || u.today, model: a.status && a.status < 300 ? a.model : u.model, fallback: a.status && a.status < 300 ? !!a.fallback : u.fallback, tier: a.tier || u.tier };
 };
-const NO_USAGE = { calls: 0, input: 0, output: 0, thinking_tokens: 0, total: 0, usd: 0, cost: 0, currency: null, today: null, model: null, tier: null };
+const NO_USAGE = { fallback: false, calls: 0, input: 0, output: 0, thinking_tokens: 0, total: 0, usd: 0, cost: 0, currency: null, today: null, model: null, tier: null };
 
 // history: Gemini contents so far. note: what the dashboard shows right now and today's date, sent with the
 // question so "this place" or "tomorrow" can be understood. thinking: 'medium' | 'high'.
 // Returns { text, contents, actions, usage }. onAction({ name, args, result, repeat }) is called after each
 // tool, so the chat can show it at once.
-export async function askAssistant({ history = [], text, note, thinking = 'medium', limits = DEFAULT_LIMITS, declarations, handlers, onAction, signal, fetchImpl = fetch }) {
+export async function askAssistant({ history = [], text, note, thinking = 'medium', limits = DEFAULT_LIMITS, model = '', declarations, handlers, onAction, signal, fetchImpl = fetch }) {
   const L = { ...DEFAULT_LIMITS, ...limits };
   const contents = [...trimHistory(history, Math.max(0, L.max_history_turns - 1)), { role: 'user', parts: [{ text }, ...(note ? [{ text: `(Context, not from the user: ${note})` }] : [])] }];
   const actions = [];
   const done = new Map();   // name + arguments -> result, for repeated calls
-  let usage = { ...NO_USAGE, thinking };
+  let usage = { ...NO_USAGE, thinking, model: model || null };
   const finish = (t) => ({ text: t, contents, actions, usage });
   // a stop in the middle of tool calls: the history keeps the question and this short answer, and none of the
   // unanswered calls (the next question would otherwise be refused)
@@ -75,15 +82,15 @@ export async function askAssistant({ history = [], text, note, thinking = 'mediu
     };
     let r;
     try {
-      r = await fetchImpl(url(''), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal });
+      r = await fetchImpl(url(''), { method: 'POST', headers: { 'Content-Type': 'application/json', ...(usage.model ? { 'X-Atlas-Model': usage.model } : {}) }, body: JSON.stringify(body), signal });
     } catch (e) {
       if (e?.name === 'AbortError') throw e;
-      throw Object.assign(new Error('The assistant relay on this computer could not be reached.'), { usage });
+      throw Object.assign(new Error('The assistant relay on this computer could not be reached.'), { usage, kind: 'relay' });
     }
     let j = null;
     try { j = await r.json(); } catch { /* handled below */ }
     usage = addUsage(usage, j?.atlasUsage);
-    if (!r.ok) throw Object.assign(new Error(errText(j, r.status)), { usage, status: r.status });
+    if (!r.ok) throw Object.assign(new Error(errText(j, r.status)), { usage, status: r.status, kind: j?.error?.kind || null, tried: j?.error?.tried || null });
     const cand = j?.candidates?.[0];
     if (!cand?.content) {
       const why = j?.promptFeedback?.blockReason || cand?.finishReason;

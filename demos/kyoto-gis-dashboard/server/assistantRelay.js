@@ -4,11 +4,14 @@
 // environment and passes the request on to Google's Gemini API.
 //
 // What the relay enforces (server/assistant-config.json; the ZIP has a copy next to serve.ps1):
-//   - the model (gemini-4-hydrogen unless GEMINI_MODEL is set) and the Standard service tier, never Priority
+//   - the model (gemini-4-hydrogen unless GEMINI_MODEL is set) and the Standard service tier, never Priority;
+//     when the model is overloaded, rate-limited or failing, the fallback models in order (a model that
+//     fails is skipped for a few minutes, so later questions go straight to one that answers)
 //   - the thinking level: one of the allowed levels (medium by default, high for planning), and an output cap
 //   - daily limits on requests and estimated cost (in the billing currency, RM by default), and a guard
 //     against the same request sent twice
-//   - a timeout per request and a few retries when Google is busy or briefly unavailable
+//   - a timeout per attempt and at most 3 retries with exponential backoff (1 s, 2 s, 4 s), never more;
+//     a billing (402), key (401/403) or request (400) error is not retried
 //   - a usage log (logs/assistant-usage.jsonl): for each call the token counts (input, cached, output,
 //     thinking) and the estimated cost in US dollars and the billing currency. No question, answer or key
 //     is written there.
@@ -27,14 +30,43 @@ export const CONFIG_FILE = join(HERE, 'assistant-config.json');
 export const LOG_FILE = join(HERE, '..', 'logs', 'assistant-usage.jsonl');
 export const DEFAULT_MODEL = 'gemini-4-hydrogen';
 const MAX_BODY = 2 * 1024 * 1024;
-const RETRY_STATUS = new Set([429, 500, 502, 503, 504]);
+// Gemini attaches thought signatures to its turns; another model rejects them ("Corrupted thought
+// signature"), so when the conversation moves to another model they are replaced by the placeholder Google
+// documents for conversations carried over from another model.
+export const SIGNATURE_PLACEHOLDER = 'skip_thought_signature_validator';
+// what went wrong, from the status of an attempt
+export function errorKind(status, err) {
+  if (!status) return err && (err.name === 'TimeoutError' || err.name === 'AbortError') ? 'timeout' : 'network';
+  if (status < 300) return 'ok';
+  return { 402: 'billing', 429: 'rate_limit', 503: 'overloaded', 400: 'bad_request', 401: 'auth', 403: 'auth', 404: 'not_found' }[status] || (status >= 500 ? 'server' : 'error');
+}
+const RETRY_KINDS = new Set(['overloaded', 'rate_limit', 'server', 'timeout', 'network', 'not_found']);
+const COOL_KINDS = new Set(['overloaded', 'rate_limit', 'server', 'timeout']);
+export function failMessage(kind, status, google, tried, conf) {
+  const why = {
+    billing: 'Billing: the Google project has no prepaid credit left (HTTP 402). Add credit in AI Studio > Billing.',
+    rate_limit: 'Rate limit or quota reached (HTTP 429). Wait a minute and ask again.',
+    overloaded: 'Gemini is overloaded right now (HTTP 503). This is on Google\'s side; try again in a few minutes.',
+    server: `The Gemini service had an error (HTTP ${status}). Try again in a few minutes.`,
+    timeout: `Gemini did not answer within ${conf.limits.timeout_seconds} s.`,
+    network: 'This computer could not reach the Gemini API (network error). Check the internet connection or a firewall.',
+    auth: `Google refused the API key (HTTP ${status}). Check GEMINI_API_KEY on this computer.`,
+    not_found: 'The model was not found (HTTP 404). Check the model names in assistant-config.json.',
+    bad_request: 'Gemini could not read the request (HTTP 400).',
+  }[kind] || `Gemini answered HTTP ${status}.`;
+  return `${why} Models tried: ${tried}.${google ? ` Google said: ${google}` : ''}`;
+}
+export function withPlaceholderSignatures(body) {
+  return { ...body, contents: body.contents.map((c) => ({ ...c, parts: (c.parts || []).map((p) => (p.thoughtSignature ? { ...p, thoughtSignature: SIGNATURE_PLACEHOLDER } : p)) })) };
+}
 export const DEFAULTS = {
   model: DEFAULT_MODEL,
   thinking: { default: 'medium', planning: 'high', allowed: ['medium', 'high'] },
   service_tier: 'standard',
-  price_usd_per_million_tokens: { input: 1.5, cached_input: 0.075, output_including_thinking: 7.5 },
+  fallback_models: [],
+  price_usd_per_million_tokens: { 'gemini-4-hydrogen': { input: 1.5, cached_input: 0.075, output_including_thinking: 7.5 } },
   billing_currency: { code: 'USD', symbol: '$', per_usd: 1 },
-  limits: { max_requests_per_day: 200, max_cost_per_day: 1, max_tool_rounds_per_question: 6, max_tool_calls_per_question: 12, max_history_turns: 6, max_output_tokens: 8192, timeout_seconds: 90, retries: 2, duplicate_window_seconds: 5 },
+  limits: { max_requests_per_day: 200, max_cost_per_day: 1, max_tool_rounds_per_question: 6, max_tool_calls_per_question: 12, max_history_turns: 6, max_output_tokens: 8192, timeout_seconds: 60, retries: 3, backoff_seconds: 1, max_total_seconds: 150, cooldown_seconds: 180, duplicate_window_seconds: 5 },
 };
 
 // On Windows, `setx GEMINI_API_KEY ...` writes the user's environment; a terminal opened earlier does not
@@ -56,6 +88,7 @@ export function loadConfig(file = CONFIG_FILE, env = userEnv) {
   const m = env('GEMINI_MODEL');
   if (m) c.model = m;
   c.thinking.allowed = c.thinking.allowed.map((x) => String(x).toLowerCase());
+  c.fallback_models = (c.fallback_models || []).filter((x) => x && x !== c.model);
   return c;
 }
 
@@ -74,9 +107,10 @@ export function readToday(file, day, perUsd = 1) {
   return { requests, usd: Math.round(usd * 1e6) / 1e6, cost: Math.round(usd * perUsd * 1e6) / 1e6 };
 }
 
-// Token counts from Gemini's usageMetadata and the estimated cost at the configured Standard prices.
+// Token counts from Gemini's usageMetadata and the estimated cost at the model's Standard prices.
 // Thinking tokens are billed as output.
-export function usageOf(meta, price = DEFAULTS.price_usd_per_million_tokens) {
+export const priceOf = (conf, model) => conf.price_usd_per_million_tokens[model] || conf.price_usd_per_million_tokens[conf.model] || DEFAULTS.price_usd_per_million_tokens[DEFAULT_MODEL];
+export function usageOf(meta, price = DEFAULTS.price_usd_per_million_tokens[DEFAULT_MODEL]) {
   const m = meta || {};
   const prompt = m.promptTokenCount || 0, cached = m.cachedContentTokenCount || 0, tool = m.toolUsePromptTokenCount || 0;
   const output = m.candidatesTokenCount || 0, thinking = m.thoughtsTokenCount || 0;
@@ -105,7 +139,7 @@ export function shapeRequest(body, conf) {
 }
 
 const send = (res, code, obj) => { res.statusCode = code; res.setHeader('Content-Type', 'application/json; charset=utf-8'); res.end(typeof obj === 'string' ? obj : JSON.stringify(obj)); };
-const fail = (res, code, message) => send(res, code, { error: { message } });
+const fail = (res, code, message, kind, extra = {}) => send(res, code, { error: { message, ...(kind ? { kind } : {}), ...extra } });
 
 export function assistantMiddleware({
   fetchImpl = globalThis.fetch, config = () => loadConfig(), key = () => userEnv('GEMINI_API_KEY'), logFile = LOG_FILE,
@@ -113,6 +147,7 @@ export function assistantMiddleware({
   now = () => Date.now(), sleep = (ms) => new Promise((r) => setTimeout(r, ms)),
 } = {}) {
   const recent = new Map();   // request hash -> when it was sent (duplicate guard)
+  const cooling = new Map();  // model -> until when it is skipped (it was overloaded or failing)
   const log = (entry) => { try { mkdirSync(dirname(logFile), { recursive: true }); appendFileSync(logFile, JSON.stringify(entry) + '\n'); } catch { /* the answer still goes back */ } };
   return async (req, res, next) => {
     const path = (req.url || '').split('?')[0];
@@ -121,13 +156,14 @@ export function assistantMiddleware({
     const day = localDay(now());
     const cur = conf.billing_currency, today0 = () => readToday(logFile, day, cur.per_usd);
     if (path.endsWith('/status')) {
-      return send(res, 200, { configured: !!k, model: conf.model, thinking: conf.thinking, service_tier: conf.service_tier, limits: conf.limits, price_usd_per_million_tokens: conf.price_usd_per_million_tokens, billing_currency: cur, today: today0() });
+      const t0 = now(), cool = Object.fromEntries([...cooling].filter(([, u]) => u > t0).map(([m, u]) => [m, Math.round((u - t0) / 1000)]));
+      return send(res, 200, { configured: !!k, model: conf.model, fallback_models: conf.fallback_models, cooling: cool, thinking: conf.thinking, service_tier: conf.service_tier, limits: conf.limits, price_usd_per_million_tokens: conf.price_usd_per_million_tokens, billing_currency: cur, today: today0() });
     }
     if (req.method !== 'POST') return fail(res, 405, 'Use POST.');
     let size = 0;
     const chunks = [];
     for await (const c of req) { size += c.length; if (size > MAX_BODY) return fail(res, 413, 'The conversation is too long.'); chunks.push(c); }
-    if (!k) return fail(res, 503, 'GEMINI_API_KEY is not set on this computer. See Support for how to add it.');
+    if (!k) return fail(res, 503, 'GEMINI_API_KEY is not set on this computer. See Support for how to add it.', 'no_key');
     const raw = Buffer.concat(chunks);
     let parsed;
     try { parsed = JSON.parse(raw.toString('utf8')); } catch { return fail(res, 400, 'The request is not JSON.'); }
@@ -138,42 +174,63 @@ export function assistantMiddleware({
     const hash = createHash('sha256').update(raw).digest('hex');
     const t = now();
     for (const [h, at] of recent) if (t - at > conf.limits.duplicate_window_seconds * 1000) recent.delete(h);
-    if (recent.has(hash)) return fail(res, 409, `The same request arrived twice within ${conf.limits.duplicate_window_seconds} s; the second one was not sent to Gemini.`);
+    if (recent.has(hash)) return fail(res, 409, `The same request arrived twice within ${conf.limits.duplicate_window_seconds} s; the second one was not sent to Gemini.`, 'duplicate');
 
     const today = today0();
-    if (today.requests >= conf.limits.max_requests_per_day) return fail(res, 429, `Daily limit reached: ${today.requests} Gemini requests today (max_requests_per_day in assistant-config.json).`);
-    if (today.cost >= conf.limits.max_cost_per_day) return fail(res, 429, `Daily limit reached: about ${cur.symbol}${today.cost.toFixed(4)} (US$${today.usd.toFixed(4)}) spent today; max_cost_per_day is ${cur.symbol}${conf.limits.max_cost_per_day} in assistant-config.json.`);
+    if (today.requests >= conf.limits.max_requests_per_day) return fail(res, 429, `Daily limit reached: ${today.requests} Gemini requests today (max_requests_per_day in assistant-config.json).`, 'daily_limit');
+    if (today.cost >= conf.limits.max_cost_per_day) return fail(res, 429, `Daily limit reached: about ${cur.symbol}${today.cost.toFixed(4)} (US$${today.usd.toFixed(4)}) spent today; max_cost_per_day is ${cur.symbol}${conf.limits.max_cost_per_day} in assistant-config.json.`, 'daily_limit');
     recent.set(hash, t);
 
-    const url = `${base()}/v1beta/models/${encodeURIComponent(conf.model)}:generateContent`;
-    const body = JSON.stringify(shaped.body);
+    // which models to try: the one this conversation is on (the page says so), then the main model, then the
+    // fallbacks; a model that recently failed is skipped (unless every model has)
+    const hint = String(req.headers?.['x-atlas-model'] || '');
+    const order = [...new Set([...(hint && [conf.model, ...conf.fallback_models].includes(hint) ? [hint] : []), conf.model, ...conf.fallback_models])];
+    let cands = order.filter((m) => !(cooling.get(m) > t));
+    if (!cands.length) cands = order;
     const clean = (s) => String(s || '').split(k).join('[key]');
-    let attempts = 0, r = null, text = '', err = null;
-    while (true) {
-      attempts++;
-      err = null;
+    const tries = [];
+    let r = null, text = '', err = null, used = null, kind = null, google = null, j = null;
+    for (let i = 0; i <= conf.limits.retries; i++) {
+      const model = cands[i % cands.length];
+      const body = JSON.stringify(hint && model !== hint ? withPlaceholderSignatures(shaped.body) : shaped.body);
+      err = null; r = null; text = ''; j = null;
       try {
-        r = await fetchImpl(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': k }, body, signal: AbortSignal.timeout(conf.limits.timeout_seconds * 1000) });
+        r = await fetchImpl(`${base()}/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': k }, body, signal: AbortSignal.timeout(conf.limits.timeout_seconds * 1000) });
         text = await r.text();
       } catch (e) { r = null; err = e; }
-      const retry = err || RETRY_STATUS.has(r.status);
-      if (!retry || attempts > conf.limits.retries) break;
+      try { j = r ? JSON.parse(text) : null; } catch { /* not JSON */ }
+      kind = errorKind(r?.status, err);
+      tries.push({ model, status: r ? r.status : 0, kind });
+      if (kind === 'ok') { used = model; break; }
+      google = clean(j?.error?.message || err?.message || '');
+      if (COOL_KINDS.has(kind)) cooling.set(model, now() + conf.limits.cooldown_seconds * 1000);
+      if (kind === 'not_found') cooling.set(model, now() + 86400e3);
+      if (!RETRY_KINDS.has(kind) || i >= conf.limits.retries) break;
       const after = Number(r?.headers?.get?.('retry-after'));
-      await sleep(after > 0 ? Math.min(after, 10) * 1000 : 1500 * attempts);
+      const wait = kind === 'not_found' ? 0 : after > 0 ? Math.min(after, 10) * 1000 : conf.limits.backoff_seconds * 1000 * 2 ** i;
+      if (now() - t + wait > conf.limits.max_total_seconds * 1000) break;
+      if (wait) await sleep(wait);
     }
-    let j = null;
-    try { j = r ? JSON.parse(text) : null; } catch { /* not JSON */ }
-    const timedOut = err && (err.name === 'TimeoutError' || err.name === 'AbortError');
+    // a billing error on any model means the whole account: report that, not the last model's error
+    const billing = tries.find((x) => x.kind === 'billing');
+    if (billing && !used) kind = 'billing';
+    const model = used || tries[tries.length - 1].model;
+    const tried = tries.map((x) => `${x.model} ${x.status || x.kind}`).join(' > ');
     const entry = {
-      time: new Date(t).toISOString(), day, model: conf.model, model_version: j?.modelVersion || null, thinking: shaped.thinking,
-      tier: r?.headers?.get?.('x-gemini-service-tier') || conf.service_tier, status: r ? r.status : 0, attempts, ms: now() - t,
-      ...usageOf(j?.usageMetadata, conf.price_usd_per_million_tokens),
+      time: new Date(t).toISOString(), day, model, requested_model: conf.model, fallback: model !== conf.model, tried,
+      model_version: j?.modelVersion || null, thinking: shaped.thinking,
+      tier: r?.headers?.get?.('x-gemini-service-tier') || conf.service_tier, status: used ? r.status : (billing ? 402 : r ? r.status : 0), kind: used ? 'ok' : kind,
+      attempts: tries.length, ms: now() - t,
+      ...usageOf(used ? j?.usageMetadata : null, priceOf(conf, model)),
       currency: cur.code,
-      error: err ? clean(timedOut ? `Gemini did not answer within ${conf.limits.timeout_seconds} s.` : err.message) : (r.ok ? null : clean(j?.error?.message || `HTTP ${r.status}`)),
+      error: used ? null : google || null,
     };
     entry.cost = Math.round(entry.usd * cur.per_usd * 1e6) / 1e6;
     log(entry);
-    if (!r) return fail(res, timedOut ? 504 : 502, timedOut ? `${entry.error} Tried ${attempts} times.` : `Could not reach the Gemini API (${entry.error}). Tried ${attempts} times.`);
+    if (!used) {
+      const code = { billing: 402, rate_limit: 429, overloaded: 503, timeout: 504, network: 502 }[kind] || (r ? r.status : 502);
+      return send(res, code, { error: { message: failMessage(kind, entry.status, google, tried, conf), kind, status: entry.status, tried }, atlasUsage: { ...entry, today: today0() } });
+    }
     if (!j) return send(res, r.status, text);
     j.atlasUsage = { ...entry, today: today0() };
     return send(res, r.status, j);
