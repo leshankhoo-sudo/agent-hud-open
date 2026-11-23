@@ -751,3 +751,5 @@ kyoto-gis-dashboard/
 - **四季卡片**：四张卡片的季节名（SPRING、SUMMER、AUTUMN、WINTER）原本每张高度不同（各自的 cardY，再跟着各自图片的焦点移动）。现在四个名字都在卡片 40% 高度的同一条线上，图片照样在后面按深度移动，近处的树枝、鸟居、竹子照样会挡在字前面。
 - **Explore 环**：15 张卡原来全部挤在一个环上（每张相隔 24°），后面的卡淡出，环后面留下一个缺口。现在环只有 7 个位置，像最早 7 张卡的时候一样每张相隔约 51°；其余 8 张在看不见的地方等着。转动时，离开的卡和进来的卡在环的最后面交叉淡入淡出，所以环一直是完整的，没有缺口。Fan 模式照样显示全部 15 张。
 - 四季页和全景页的按钮文字从 “Explore seven places”、“Seven places to start” 改成 “Explore fifteen cities”、“Fifteen cities to start”。
+- **Windows ZIP 和在线预览**（2026-11-23 第四次）：`Kyoto-Prefecture-Travel-Atlas-Windows-2026-11-23.zip`（896 个文件，多了 `assistant-config.json`；95.6 MB），用自带启动服务器跑完整浏览器测试 222/222，逻辑测试 65/65，`serve.ps1` 的转发规则用假的 Gemini 测 11/11，RM 上限另外测过（上限调成 RM0.01，第二次请求回 429）。在线预览更新到第 44 版（同一个链接）。
+- **真实 Gemini 调用记录**（`logs/assistant-usage.jsonl`）：6 次调用、16 次尝试（含重试），1 次 402（充值前）、5 次 503（充值后，Google 容量不足），0 tokens，RM0。
