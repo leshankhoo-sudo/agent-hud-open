@@ -22,6 +22,7 @@ import MapRail from './MapRail.jsx';
 import SortStage, { SortCounters, makeSortBus } from './SortStage.jsx';
 import TripDashboard from './TripDashboard.jsx';
 import Assistant from './Assistant.jsx';
+import AtlasHouse from './AtlasHouse.jsx';
 import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
@@ -1143,7 +1144,8 @@ export default function App() {
       )}
       <TripDashboard open={tripOpen} onShown={setTripShown} onClose={() => setTripOpen(false)} d={d} byId={byId} A={A} Tr={Tr} theme={theme} seasonPick={seasonMode === 'auto' ? null : seasonMode} fetchBusVariant={fetchBusVariant} addRequest={tripAdd} goRequest={tripGo} onAsk={openAsk} />
     </div>
-    {askOn && <Assistant open={askOpen} onClose={() => setAskOpen(false)} getCtx={askCtx} side={tripShown ? 'right' : 'left'} />}
+    {askOn && <Assistant open={askOpen} onClose={() => setAskOpen(false)} getCtx={askCtx} side="house" onHelp={tripShown ? () => dispatchEvent(new CustomEvent('kyoto-trip-help')) : null} />}
+    <AtlasHouse open={askOpen} onOpen={openAsk} />
     <Seam mark="結" ja="結び" en="Closing" />
     <Outro manifest={d.manifest} />
     </>

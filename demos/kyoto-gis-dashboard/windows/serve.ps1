@@ -100,7 +100,7 @@ function Get-AssistantConfig {
   $c = @{ model = 'gemini-4-hydrogen'; fallbacks = @(); tDefault = 'medium'; tPlanning = 'high'; allowed = @('medium', 'high'); tier = 'standard'
     prices = @{ 'gemini-4-hydrogen' = @(1.5, 0.075, 7.5) }; curCode = 'USD'; curSymbol = '$'; perUsd = 1.0
     max_requests_per_day = 200; max_cost_per_day = 1.0; max_tool_rounds_per_question = 6; max_tool_calls_per_question = 12
-    max_history_turns = 6; max_output_tokens = 8192; timeout_seconds = 60; retries = 3; backoff_seconds = 1; max_total_seconds = 150
+    max_history_turns = 6; max_output_tokens = 8192; timeout_seconds = 45; retries = 3; backoff_seconds = 1; max_total_seconds = 100
     cooldown_seconds = 180; duplicate_window_seconds = 5 }
   $f = Join-Path $PSScriptRoot 'assistant-config.json'
   if (Test-Path -LiteralPath $f) {
@@ -207,8 +207,9 @@ function Invoke-AssistantRelay($ctx) {
   $order = @()
   if ($hint -and ($all -contains $hint)) { $order += $hint }
   foreach ($m in $all) { if ($order -notcontains $m) { $order += $m } }
-  $cands = @($order | Where-Object { -not ($script:Cooling.ContainsKey($_) -and $script:Cooling[$_] -gt $now) })
-  if ($cands.Count -eq 0) { $cands = $order }
+  # the models that have not failed lately first, then the ones that have
+  $fresh = @($order | Where-Object { -not ($script:Cooling.ContainsKey($_) -and $script:Cooling[$_] -gt $now) })
+  $cands = @($fresh) + @($order | Where-Object { $fresh -notcontains $_ })
   $tried = @(); $used = $null; $kind = $null; $google = $null; $billing = $false
   $status = 0; $respText = ''; $tierHdr = $null; $timedOut = $false
   $sw = [Diagnostics.Stopwatch]::StartNew()
@@ -219,13 +220,17 @@ function Invoke-AssistantRelay($ctx) {
     $body = [System.Text.Encoding]::UTF8.GetBytes($sendText)
     $url = $base.TrimEnd('/') + '/v1beta/models/' + [Uri]::EscapeDataString($model) + ':generateContent'
     $status = 0; $respText = ''; $errMsg = $null; $retryAfter = 0; $timedOut = $false
+    # an attempt never runs past the time left for the whole question
+    $left = $c.max_total_seconds * 1000 - $sw.ElapsedMilliseconds
+    if ($i -gt 0 -and $left -lt 5000) { break }
+    $tmo = [int][Math]::Max(5000, [Math]::Min($c.timeout_seconds * 1000, $left))
     try {
       $wr = [System.Net.HttpWebRequest]::Create($url)
       $wr.Method = 'POST'
       $wr.ContentType = 'application/json'
       $wr.Headers.Add('x-goog-api-key', $key)
-      $wr.Timeout = [int]($c.timeout_seconds * 1000)
-      $wr.ReadWriteTimeout = [int]($c.timeout_seconds * 1000)
+      $wr.Timeout = $tmo
+      $wr.ReadWriteTimeout = $tmo
       $wr.ContentLength = $body.Length
       $rs = $wr.GetRequestStream(); $rs.Write($body, 0, $body.Length); $rs.Close()
       try { $resp = $wr.GetResponse() } catch [System.Net.WebException] { $resp = $_.Exception.Response; if (-not $resp) { throw } }

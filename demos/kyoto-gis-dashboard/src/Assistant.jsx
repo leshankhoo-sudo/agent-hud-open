@@ -76,7 +76,7 @@ function Actions({ acts }) {
 }
 
 // side: 'left' on the map (the information panel the assistant opens is on the right), 'right' over the trip planner
-export default function Assistant({ open, onClose, getCtx, side = 'right' }) {
+export default function Assistant({ open, onClose, getCtx, side = 'right', onHelp = null }) {
   const [status, setStatus] = useState(PREVIEW ? { reachable: false, preview: true } : null);
   const [msgs, setMsgs] = useState([]);           // { role: 'me' | 'ai', text, actions, error }
   const [live, setLive] = useState(null);         // actions of the answer being prepared
@@ -163,6 +163,7 @@ export default function Assistant({ open, onClose, getCtx, side = 'right' }) {
           <h4>Atlas assistant</h4>
           <p>{min ? (busy ? 'Working…' : plain([...msgs].reverse().find((m) => m.role === 'ai')?.text) || 'Tap to open') : status?.model ? `Gemini · ${status.model}${status.service_tier ? ` · ${status.service_tier}` : ''}` : 'Gemini'}</p>
         </div>
+        {onHelp && !min && <button type="button" className="as-ic as-help" onClick={onHelp} title="How the trip planner works · data sources" aria-label="How the trip planner works"><b aria-hidden="true">?</b></button>}
         <button type="button" className="as-ic" onClick={() => setMin(!min)} aria-expanded={!min} aria-label={min ? 'Open the chat' : 'Fold the chat'} title={min ? 'Open the chat' : 'Fold the chat'}>
           <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true" style={{ transform: min ? 'rotate(180deg)' : undefined }}><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
@@ -206,6 +207,7 @@ export default function Assistant({ open, onClose, getCtx, side = 'right' }) {
           <div className="as-hello">
             <p>Ask about places, weather, buses and fares, or have me plan your days. I can also open the right panel on the map for you.</p>
             <div className="as-sugs">{SUGGEST.map((s) => <button key={s} type="button" onClick={() => send(s)}>{s}</button>)}</div>
+            {onHelp && <button type="button" className="as-help-link" onClick={onHelp}>How the trip planner works · data sources</button>}
           </div>
         )}
         {msgs.map((m, i) => (m.role === 'me'

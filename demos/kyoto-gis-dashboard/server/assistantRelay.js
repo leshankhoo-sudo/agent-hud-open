@@ -66,7 +66,7 @@ export const DEFAULTS = {
   fallback_models: [],
   price_usd_per_million_tokens: { 'gemini-4-hydrogen': { input: 1.5, cached_input: 0.075, output_including_thinking: 7.5 } },
   billing_currency: { code: 'USD', symbol: '$', per_usd: 1 },
-  limits: { max_requests_per_day: 200, max_cost_per_day: 1, max_tool_rounds_per_question: 6, max_tool_calls_per_question: 12, max_history_turns: 6, max_output_tokens: 8192, timeout_seconds: 60, retries: 3, backoff_seconds: 1, max_total_seconds: 150, cooldown_seconds: 180, duplicate_window_seconds: 5 },
+  limits: { max_requests_per_day: 200, max_cost_per_day: 1, max_tool_rounds_per_question: 6, max_tool_calls_per_question: 12, max_history_turns: 6, max_output_tokens: 8192, timeout_seconds: 45, retries: 3, backoff_seconds: 1, max_total_seconds: 100, cooldown_seconds: 180, duplicate_window_seconds: 5 },
 };
 
 // On Windows, `setx GEMINI_API_KEY ...` writes the user's environment; a terminal opened earlier does not
@@ -185,8 +185,8 @@ export function assistantMiddleware({
     // fallbacks; a model that recently failed is skipped (unless every model has)
     const hint = String(req.headers?.['x-atlas-model'] || '');
     const order = [...new Set([...(hint && [conf.model, ...conf.fallback_models].includes(hint) ? [hint] : []), conf.model, ...conf.fallback_models])];
-    let cands = order.filter((m) => !(cooling.get(m) > t));
-    if (!cands.length) cands = order;
+    // the models that have not failed lately first, then the ones that have (still better than trying one model 4 times)
+    const cands = [...order.filter((m) => !(cooling.get(m) > t)), ...order.filter((m) => cooling.get(m) > t)];
     const clean = (s) => String(s || '').split(k).join('[key]');
     const tries = [];
     let r = null, text = '', err = null, used = null, kind = null, google = null, j = null;
@@ -195,7 +195,10 @@ export function assistantMiddleware({
       const body = JSON.stringify(hint && model !== hint ? withPlaceholderSignatures(shaped.body) : shaped.body);
       err = null; r = null; text = ''; j = null;
       try {
-        r = await fetchImpl(`${base()}/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': k }, body, signal: AbortSignal.timeout(conf.limits.timeout_seconds * 1000) });
+        // an attempt never runs past the time left for the whole question
+        const left = conf.limits.max_total_seconds * 1000 - (now() - t);
+        if (i > 0 && left < 5000) break;
+        r = await fetchImpl(`${base()}/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': k }, body, signal: AbortSignal.timeout(Math.max(5000, Math.min(conf.limits.timeout_seconds * 1000, left))) });
         text = await r.text();
       } catch (e) { r = null; err = e; }
       try { j = r ? JSON.parse(text) : null; } catch { /* not JSON */ }

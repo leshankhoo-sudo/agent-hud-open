@@ -161,7 +161,7 @@ test('relay: 429, network errors and timeouts are told apart', async () => {
   const slow = await relay({ fetchImpl: async () => { throw new DOMException('The operation timed out.', 'TimeoutError'); } });
   const s1 = await call(slow.mw, { body: pageBody() });
   assert.deepEqual([s1.status, s1.json.error.kind], [504, 'timeout']);
-  assert.match(s1.json.error.message, /did not answer within 60 s/);
+  assert.match(s1.json.error.message, /did not answer within 45 s/);
 });
 
 const FALLBACK = { fallback_models: ['gemini-3.8-flash', 'gemini-3.6-flash'], price_usd_per_million_tokens: { ...DEFAULTS.price_usd_per_million_tokens, 'gemini-3.8-flash': { input: 0.75, cached_input: 0.075, output_including_thinking: 3.75 }, 'gemini-3.6-flash': { input: 0.75, cached_input: 0.075, output_including_thinking: 3.75 } } };

@@ -511,6 +511,8 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
   }, [byId, pm, photos]);
   const ctx = useMemo(() => ({ xy: (id) => byId.get(id)?.f.geometry.coordinates || null, bus: d.bus, fetchBusVariant, legCache }), [byId, d.bus, fetchBusVariant, legCache]);
   useEffect(() => { if (addRequest?.id) { onUsed(addRequest.n); addPlace(addRequest.id, addRequest.day ?? di); } }, [addRequest?.n]); // eslint-disable-line react-hooks/exhaustive-deps
+  // the planner's help now opens from the assistant's chat (the house took the Support button's place)
+  useEffect(() => { const f = () => setSheet('help'); addEventListener('kyoto-trip-help', f); return () => removeEventListener('kyoto-trip-help', f); }, []);
   // the assistant changes the saved plan (assistantTools.js) and says so: read it again
   useEffect(() => {
     const f = () => setTripState(TP.loadTrip());

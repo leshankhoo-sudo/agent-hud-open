@@ -46,10 +46,10 @@
     "max_tool_calls_per_question": 12,
     "max_history_turns": 6,
     "max_output_tokens": 8192,
-    "timeout_seconds": 60,
+    "timeout_seconds": 45,
     "retries": 3,
     "backoff_seconds": 1,
-    "max_total_seconds": 150,
+    "max_total_seconds": 100,
     "cooldown_seconds": 180,
     "duplicate_window_seconds": 5
   }

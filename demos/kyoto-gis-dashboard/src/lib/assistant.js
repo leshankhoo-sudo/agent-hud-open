@@ -12,6 +12,7 @@
 // Nothing here holds a key, and nothing is sent anywhere but the relay.
 
 export const MAX_STEPS = 6;
+export const TOOL_TIMEOUT_MS = 20000;
 export const DEFAULT_LIMITS = { max_tool_rounds_per_question: MAX_STEPS, max_tool_calls_per_question: 12, max_history_turns: 6, max_output_tokens: 8192 };
 const url = (p) => `${import.meta.env?.BASE_URL ?? './'}api/assistant${p}`;
 
@@ -112,7 +113,8 @@ export async function askAssistant({ history = [], text, note, thinking = 'mediu
       else {
         fresh++;
         const h = handlers[fc.name];
-        try { result = h ? await h(args) : { error: `Unknown tool ${fc.name}` }; } catch (e) { result = { error: String(e?.message || e) }; }
+        // a tool that waits on an outside service (routes, weather) gives up after TOOL_TIMEOUT_MS, so the answer never hangs
+        try { result = h ? await Promise.race([Promise.resolve().then(() => h(args)), new Promise((_, no) => setTimeout(() => no(new Error(`The ${fc.name} step took longer than ${TOOL_TIMEOUT_MS / 1000} s and was stopped.`)), TOOL_TIMEOUT_MS))]) : { error: `Unknown tool ${fc.name}` }; } catch (e) { result = { error: String(e?.message || e) }; }
         done.set(k, result);
       }
       const act = { name: fc.name, args, result, repeat };
