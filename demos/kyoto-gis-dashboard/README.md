@@ -49,6 +49,7 @@ npm run preview      # 本地预览 dist/，http://localhost:4173
 | OpenStreetMap 标准瓦片 | 备选底图 | 不需要 | 社区服务器，有[使用政策](https://operations.osmfoundation.org/policies/tiles/)，只适合低流量。不保证可用于正式生产 |
 | Wikidata / Wikimedia Commons | 景点照片（构建时抓取并打包，浏览器不连外网） | 不需要 | 免费；每张照片按授权标注作者与授权，只使用 CC0、公有领域、CC BY、CC BY-SA |
 | Open-Meteo Forecast API | 天气 | 不需要 | 非商业用途免费，有每日、每小时请求上限（[terms](https://open-meteo.com/en/terms)、[pricing](https://open-meteo.com/en/pricing)）。数据按 CC BY 4.0 授权，页面已注明出处 |
+| Google Gemini API（默认模型 gemini-4-hydrogen） | Atlas assistant（助手） | **需要**自己的 API key（Google AI Studio 免费申请），只放在这台电脑的环境变量 `GEMINI_API_KEY`，由本机服务器转发，不进页面、不进仓库 | 按 Google 的价格和额度（[pricing](https://ai.google.dev/gemini-api/docs/pricing)、[rate limits](https://ai.google.dev/gemini-api/docs/rate-limits)）；这个模型是否有免费额度请在 AI Studio 确认，可用 `GEMINI_MODEL` 换成 Flash 系列。在线预览里不可用 |
 
 默认的 Night 底图是用 OpenFreeMap 的 OSM 矢量数据重新配色画出来的：深色陆地、青色水体、绿色公园、细线道路，地图上只保留少量城市名，不显示道路名和 POI 文字；地下河道和隧道也隐藏了。GSI / OSM 栅格底图在显示时会被反色、调成深蓝，瓦片本身和上面的地理内容都没有改。
 
@@ -711,3 +712,22 @@ kyoto-gis-dashboard/
   - 在线预览的文件数有上限，所以预览里小卡片直接用大图（`pack_preview.py` 第 0 步），每个市少一个文件。
 - **测试**：浏览器测试里 Explore 的检查改成 15 个市（选第 4 张是舞鶴市，检查照片内容、面积、景点数、观光人数和作者）。
 - **Windows ZIP 和在线预览**（2026-11-23 第二次）：Windows ZIP 改名为 `Kyoto-Prefecture-Travel-Atlas-Windows-2026-11-23.zip`（895 个文件，95.6 MB；解压出来的文件夹也叫 Kyoto-Prefecture-Travel-Atlas），用自带启动服务器跑完整浏览器测试 213/213，逻辑测试 42/42。开发服务器上的完整测试 212/213，没过的是结尾页搭建的时间检查（负载下的时间问题），单独重跑 2 次都通过。在线预览更新到第 41 版（同一个链接）：新代码、15 张城市照片、`explore_places.json`，再多去掉 1 个罕用字的明朝体子集，共 511 个文件。
+
+## 7g. 2026-11-23：Atlas assistant（Gemini 助手）
+
+一个可以对话的助手：回答景点问题、帮你排行程（直接加进某一天）、解释和展示数据，也会替不会操作的人打开对应的面板。界面文字是英文，回答用提问的语言。
+
+- **入口**：地图左边工具栏最下面的 **Ask the atlas**（闪光图标，放在工具栏而不是标题栏，因为标题栏在 1440 px 宽时已经放满，再加按钮会换行）；行程规划 dashboard 左下角 **Support** 里最上面的 **Ask the assistant**。两个入口打开的是同一段对话，关掉再打开对话还在（重新整理页面才清空）。
+- **怎样连到 Gemini（key 不进页面）**：页面把对话发给这台电脑上的 `/api/assistant`，由本机服务器加上 key 再转给 Google。开发和预览服务器用 `server/assistantRelay.js`（`vite.config.js` 里注册），Windows ZIP 用 `windows/serve.ps1` 里同样的转发。key 只从环境变量读：
+  - `GEMINI_API_KEY`（必须）：在 https://aistudio.google.com/ 按 Get API key → Create API key，然后在 PowerShell 执行 `setx GEMINI_API_KEY "你的key"`。服务器每次都重新读取，所以设好后在助手里按 **Check again** 即可；如果还是显示没连上，关掉启动窗口再开一次。
+  - `GEMINI_MODEL`（可选）：默认 `gemini-4-hydrogen`，可以换成别的模型名。
+  - `GEMINI_API_BASE`（只给测试用）：换成假的服务器。
+  - key 只放在 HTTP 头 `x-goog-api-key` 里，不在网址里，也不会回传给页面（`/api/assistant/status` 只回答有没有设和模型名）。测试会扫描 src、server、windows、public/data、tests，确认没有写进任何 key。
+- **助手能做的事**（`src/assistantTools.js`，13 个工具，全部用项目自己的数据或操作页面）：
+  - 查：`search_places`（按日文或英文名、类别、市町村找景点和站点；同一个巴士站的多个站台记录只列一次）、`get_place`（名称、类别、所在市区、照片作者、到最近巴士站和铁路站的步行路线——直接取步行文件里的距离和时间、站点的巴士路线、所在市的观光人数）、`get_weather`（Open-Meteo，现在 / 某天 / 某小时）、`route_between`（OSRM 步行、自行车、开车的距离和时间）、`bus_between`（市营巴士：路线号、上下车站、站数、官方票价，**没有乘车时间**）、`get_trip`。
+  - 改行程：`add_to_trip`（加进第几天，可指定交通方式、停留时间、到达时间；需要时自动加天数，最多 7 天）、`remove_from_trip`、`set_trip_day`（开始结束时间、出发地点、第一天的日期）。改动存在浏览器里，行程规划页面会立刻重新读取。
+  - 操作页面：`show_place`（回到地图、选中地点、打开 More about this place 的 Overview / Walking Routes / Weather / Bus / Journeys）、`show_map_layer`（密度、热力图、步行路线、研究区范围、全部关闭）、`open_trip`（打开某一天、Agenda 或 Trip map）、`open_section`（地图、Data & Sources、Journeys & Fares）。
+- **数据诚信**（第 1.1 节）：给 Gemini 的规则是只根据工具返回的内容回答，资料里没有的（营业时间、门票、时刻表、人潮、评价）就直接说没有，不猜、不编名称和数字，巴士不说乘车时间；工具找不到记录会回传错误，让它先用 `search_places` 找正确的 ID。每个回答都标着小小的 **AI**，下面列出它做过的每个动作（搜索、打开、加入行程；失败的用红点），所以页面上的变化都看得到来源。最多连续用 8 轮工具，之后停下。
+- **位置**：在地图上，对话框在左边（右边是它打开的信息面板），不挡住地图下方的出处；它打开某个地点时，地图把那个地点放在没被挡住的那一半中间。在行程规划上它在右边。标题栏可以拖动，也可以折叠成一行（显示最后一个回答）。手机上是底部面板，助手操作了页面后会自动折叠，让你看到结果。
+- **在线预览不能用**：预览没有本机服务器，助手会说明要用 Windows ZIP（Start-Dashboard.bat）或开发服务器。
+- **测试**：`tests/assistant.test.mjs`（14 个）：转发器（没有 key 时 503、key 只在头里、内容原样转发、Google 的错误原样传回、状态不泄露 key）、对话循环（工具结果带 call id 送回、Gemini 的回合原样送回以保留 thought signature、错误、8 轮上限）、工具在真实数据上的结果（搜索排序、宇治市不会匹配到宇治田原町、步行距离与文件一致、巴士没有时间、行程增删改、最多 7 天）。浏览器测试加了 7 个检查，用假的 Gemini 回答跑完整流程。`windows/serve.ps1` 的转发也用假的服务器测过：状态、405、转发内容和 key、错误 400 原样传回、静态页面照常。**没有用真的 key 测过真正的 Gemini 回答**。

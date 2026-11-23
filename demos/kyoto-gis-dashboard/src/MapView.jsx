@@ -613,8 +613,9 @@ export default function MapView({ theme = 'dark', active = true, focus = null, d
     lastSel.current = selected.id;
     if (!isNew) return;
     const z = Math.max(map.getZoom(), 13.5);
-    if (selected.fly !== false && map.getPitch() > 0) { map.flyTo({ center: selected.coords, zoom: z, pitch: 0, bearing: 0, duration: prefersReducedMotion() ? 0 : 1100, essential: true }); return; }
-    if (selected.fly !== false) map.flyTo({ center: selected.coords, zoom: z, duration: prefersReducedMotion() ? 0 : 1100, essential: true, offset: [0, innerWidth <= 760 ? -map.getContainer().clientHeight * 0.27 : 0] }); // on phones the details sheet covers the lower map
+    // shift: the assistant's chat covers the left of the map, so the place goes to the middle of the rest
+    if (selected.fly !== false && map.getPitch() > 0) { map.flyTo({ center: selected.coords, zoom: z, pitch: 0, bearing: 0, duration: prefersReducedMotion() ? 0 : 1100, essential: true, offset: [selected.shift || 0, 0] }); return; }
+    if (selected.fly !== false) map.flyTo({ center: selected.coords, zoom: z, duration: prefersReducedMotion() ? 0 : 1100, essential: true, offset: [selected.shift || 0, innerWidth <= 760 ? -map.getContainer().clientHeight * 0.27 : 0] }); // on phones the details sheet covers the lower map
   }, [selected]);
 
   return <div ref={el} className="map" role="region" aria-label="Map of Kyoto Prefecture" />;

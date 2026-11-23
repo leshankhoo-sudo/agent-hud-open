@@ -21,6 +21,7 @@ import Density3D from './Density3D.jsx';
 import MapRail from './MapRail.jsx';
 import SortStage, { SortCounters, makeSortBus } from './SortStage.jsx';
 import TripDashboard from './TripDashboard.jsx';
+import Assistant from './Assistant.jsx';
 import { installGlassGlow } from './lib/glassGlow.js';
 import { SeasonBadge } from './Season.jsx';
 import { seasonFor, initialSeasonMode, rememberSeasonMode } from './lib/season.js';
@@ -351,7 +352,7 @@ export default function App() {
     const [lon, lat] = hit.f.geometry.coordinates;
     const p = hit.f.properties;
     const ph = d?.photos?.photos?.[s.id];
-    setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, label: recordLabel(p), en: !!(p.name && englishPart(p.name, p.name_en)), sub: CATEGORY_LABEL[p.category],
+    setSel({ id: s.id, layer: hit.layer, coords: [lon, lat], fly, shift: s.shift || 0, label: recordLabel(p), en: !!(p.name && englishPart(p.name, p.name_en)), sub: CATEGORY_LABEL[p.category],
       photo: ph ? { src: `${import.meta.env.BASE_URL}${ph.src}`, related: ph.match === 'wikidata-related' ? ph.matched_label : ph.match === 'site-contains' ? ph.site : null, credit: `${ph.artist} · ${ph.license}` } : null });
     openPanel('place');
     if (hit.layer !== 'attraction') setTab((t) => (t === 'walk' ? 'overview' : t));
@@ -366,6 +367,13 @@ export default function App() {
   const [tripShown, setTripShown] = useState(false);
   const [tripAdd, setTripAdd] = useState(null);
   const openTrip = (id) => { if (id) setTripAdd({ id, n: Date.now() }); toMapSide(); setTripOpen(true); };
+  // The atlas assistant (Assistant.jsx): it reads the data through assistantTools.js and operates the dashboard
+  // with the functions in askRef, which always hold this render's state.
+  const [askOpen, setAskOpen] = useState(false);
+  const [askOn, setAskOn] = useState(false);       // mounted once opened, so the conversation stays when it is closed
+  const [tripGo, setTripGo] = useState(null);      // the assistant asks the trip planner to show a day or a view
+  const askRef = useRef(null);
+  const openAsk = () => { setAskOn(true); setAskOpen(true); };
   const [face, setFace] = useState('front');   // the side that is showing
   const [side, setSide] = useState('front');   // the side being turned to (the header follows this at once)
   const [flipping, setFlipping] = useState(false);
@@ -689,6 +697,34 @@ export default function App() {
   const toggleCoverage = () => setCovShow((c) => ({ on: !c.on, token: c.token + 1 }));
   const replayCoverage = () => setCovShow((c) => ({ on: true, token: c.token + 1 }));
   const routePad = null;
+
+  // ---------- what the assistant can do on the dashboard ----------
+  const toDashboard = () => { setTripOpen(false); setSheet(null); toMapSide(); go('dashboard'); };
+  const PLACE_TAB = { overview: 'overview', walking: 'walk', weather: 'weather', bus: 'bus', journeys: 'journeys' };
+  askRef.current = {
+    showPlace: (id, section) => {
+      toDashboard(); setPicking(false);
+      // the chat sits over the left of the map: the place goes to the middle of the part that stays in view
+      const c = document.querySelector('.as.on:not(.min)')?.getBoundingClientRect(), m = mapRef.current?.getContainer().getBoundingClientRect();
+      const shift = c && m && !isPhone() && c.left < m.left + m.width / 2 ? Math.max(0, Math.round((Math.min(c.right, m.right) - m.left) / 2)) : 0;
+      select({ id, shift }); setMoreOpen(true); setTab(PLACE_TAB[section] || 'overview');
+    },
+    showLayer: (layer) => {
+      toDashboard();
+      if (d3 && layer !== 'study_area') toggle3d();
+      if (layer === 'none') { setDensityMode('off'); setWalkShow(false); setCovShow((c) => ({ ...c, on: false })); return; }
+      if (layer === 'study_area') { replayCoverage(); return; }
+      if (layer === 'walking_routes') { openFeature('walk'); return; }
+      openFeature('density');
+      if (layer === 'heatmap') setDensityMode('heat');
+    },
+    openTrip: ({ day, view }) => { setSheet(null); toMapSide(); go('dashboard'); setTripGo({ day, view, n: Date.now() }); setTripOpen(true); },
+    openSection: (name) => { toDashboard(); if (name === 'map') resetView(); else setSheet(name); },
+    note: () => (tripOpen ? 'On screen: the trip planner.' : sel ? `On screen: the map with the place panel of ${sel.label} (${sel.id}).` : 'On screen: the atlas (map dashboard).'),
+  };
+  const askCtx = () => ({ A, Tr, byId, d, walkIndex,
+    showPlace: (...a) => askRef.current.showPlace(...a), showLayer: (...a) => askRef.current.showLayer(...a),
+    openTrip: (...a) => askRef.current.openTrip(...a), openSection: (...a) => askRef.current.openSection(...a), note: () => askRef.current.note() });
 
   return (
     <>
@@ -1027,7 +1063,7 @@ export default function App() {
         ) : (
           <div className="alert big" role="alert"><b>Map data could not be loaded.</b>{failed.map(([k, v]) => <span key={k}>{v.file}: {v.error}</span>)}</div>
         )}
-        <MapRail legend={legend} setLegend={setLegend} cinematic={cinematic} setCinematic={setCinematic} d3={d3} toggle3d={toggle3d} tilted={tilted} topDown={topDown} resetView={resetView} />
+        <MapRail legend={legend} setLegend={setLegend} cinematic={cinematic} setCinematic={setCinematic} d3={d3} toggle3d={toggle3d} tilted={tilted} topDown={topDown} resetView={resetView} onAsk={() => (askOpen ? setAskOpen(false) : openAsk())} askOpen={askOpen} />
         {core && <Density3D mapRef={mapRef} on={d3} theme={theme} d={d} />}
         {picking && <div className="pick-bar" role="status">Click a place on the map to set the route start. <button type="button" className="link" onClick={() => setPicking(false)}>Cancel</button></div>}
         {legend && (
@@ -1105,8 +1141,9 @@ export default function App() {
           ))}
         </>
       )}
-      <TripDashboard open={tripOpen} onShown={setTripShown} onClose={() => setTripOpen(false)} d={d} byId={byId} A={A} Tr={Tr} theme={theme} seasonPick={seasonMode === 'auto' ? null : seasonMode} fetchBusVariant={fetchBusVariant} addRequest={tripAdd} />
+      <TripDashboard open={tripOpen} onShown={setTripShown} onClose={() => setTripOpen(false)} d={d} byId={byId} A={A} Tr={Tr} theme={theme} seasonPick={seasonMode === 'auto' ? null : seasonMode} fetchBusVariant={fetchBusVariant} addRequest={tripAdd} goRequest={tripGo} onAsk={openAsk} />
     </div>
+    {askOn && <Assistant open={askOpen} onClose={() => setAskOpen(false)} getCtx={askCtx} side={tripShown ? 'right' : 'left'} />}
     <Seam mark="結" ja="結び" en="Closing" />
     <Outro manifest={d.manifest} />
     </>

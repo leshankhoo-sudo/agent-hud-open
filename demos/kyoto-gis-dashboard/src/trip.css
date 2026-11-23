@@ -289,6 +289,10 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
 .tp-sheet .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .tp-sheet.help li { margin-bottom: 6px; line-height: 1.5; font-size: 13.5px; }
 .tp-sheet.help p { font-size: 13.5px; }
+.tp-ask { display: flex; align-items: center; gap: 14px; margin: 12px 0 4px; padding: 12px 14px; border-radius: 14px; background: var(--tp-tint); }
+.tp-ask h5 { margin: 0 0 3px; }
+.tp-ask p { margin: 0; font-size: 12.5px !important; line-height: 1.45; }
+.tp-ask .tp-btn { flex: none; }
 .tp-toast { position: absolute; z-index: 40; left: 50%; bottom: 96px; transform: translateX(-50%); margin: 0; background: #16201f; color: #fff; border-radius: 999px; padding: 9px 18px; font-size: 13px; box-shadow: 0 10px 24px rgba(0, 0, 0, .25); animation: tpPopT .35s cubic-bezier(.3, 1.6, .5, 1) both; }
 @keyframes tpPopT { from { opacity: 0; transform: translate(-50%, 10px); } }
 

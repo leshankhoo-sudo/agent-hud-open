@@ -45,15 +45,31 @@ ccr-bd068911-ydjxlc 分支，demos/kyoto-gis-dashboard 文件夹里：
     npm run build        生成新的网站（dist 文件夹），复制过来替换 site 文件夹即可
 
 
+助手（Ask）：连上 Google Gemini
+--------------------------------
+地图左边工具栏的 Ask the atlas，或行程规划左下角 Support 里的 Ask the assistant，会打开助手。
+它回答景点问题、帮你把地点加进行程的某一天、解释数据，也会替你打开对应的面板。
+它用你自己的 Gemini API key，key 只放在这台电脑里：
+1. 打开 https://aistudio.google.com/ ，按 Get API key → Create API key。
+2. 在开始菜单打开 PowerShell，输入（引号里换成你的 key）：
+       setx GEMINI_API_KEY "你的key"
+3. 回到助手按 Check again。如果还是显示没连上，关掉黑色窗口，再双击 Start-Dashboard.bat。
+- 想换模型：setx GEMINI_MODEL "模型名"（默认 gemini-4-hydrogen）。
+- key 不会出现在网页里，也不在这个文件夹的任何文件里：网页把问题交给 serve.ps1，
+  serve.ps1 加上 key 再转给 Google。不要把 key 发给别人或贴进聊天。
+- 费用和额度按 Google 的规定，请在 AI Studio 查看。
+- 在线预览版没有这个本机服务器，所以助手只能在这个 ZIP（或开发服务器）里用。
+
 文件夹说明
 ----------
 Start-Dashboard.bat   双击启动（会调用 serve.ps1）
-serve.ps1             本机小网页服务器，只有你自己的电脑能访问，不会开放给网络
+serve.ps1             本机小网页服务器，只有你自己的电脑能访问，不会开放给网络；
+                      也负责把助手的问题加上你的 key 转给 Gemini
 site\                 已经构建好的完整网站，包括 data\ 里全部运行用的数据、开场视频和四季图片
 
 需要知道的事
 ------------
-- 底图和天气都不需要账号或 API key。但它们都有免费使用额度，并且要求注明出处。
+- 底图和天气都不需要账号或 API key（只有助手需要你自己的 Gemini key，见上面）。但它们都有免费使用额度，并且要求注明出处。
 - 天气是 Open-Meteo 的模型预报，不是景点现场的实测。
   如果显示"Weather unavailable"，等一会儿再点 Refresh。
 - 右上角的茶室小窗是背景音乐：左右拖动玻璃透镜调音量（往右拖会开始播放），按一下透镜是播放或暂停。音量同时推进窗里的像素风小故事「紅葉の小さな奇跡」；音乐播放时风铃会按节拍发出声波，还有动作音效。点窗里的猫、蜡烛、枫树、风铃也有反应。

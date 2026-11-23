@@ -1361,6 +1361,76 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   await tph.close();
 }
 
+// ---------- the atlas assistant: Gemini through the relay on this computer (a scripted stand-in answers here) ----------
+{
+  const ap = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const aErr = []; ap.on('pageerror', (e) => aErr.push(e.message));
+  let configured = false;
+  const bodies = [], sentKey = [], script = [];
+  await ap.route('**/api/assistant/status', (r) => r.fulfill({ json: { configured, model: 'gemini-4-hydrogen' } }));
+  await ap.route('**/api/assistant', (r) => {
+    const b = r.request().postDataJSON(); bodies.push(b);
+    sentKey.push(r.request().headers()['x-goog-api-key'] || (r.request().url().includes('key=') ? 'in url' : null));
+    let next = script.shift(); if (typeof next === 'function') next = next(b);
+    r.fulfill(next.status ? { status: next.status, json: next.json } : { json: next });
+  });
+  const call = (name, args, id) => ({ candidates: [{ content: { role: 'model', parts: [{ functionCall: { name, args, id }, thoughtSignature: 'sig-' + id }] } }] });
+  const say = (text) => ({ candidates: [{ content: { role: 'model', parts: [{ text }] } }] });
+  const ask = async (q) => { const n = await ap.locator('.as-msg.ai').count(); await ap.locator('.as-in textarea').fill(q); await ap.keyboard.press('Enter'); await ap.waitForFunction((k) => document.querySelectorAll('.as-msg.ai:not(.live)').length > k, n, { timeout: 15000 }); await ap.waitForTimeout(1600); };
+  await ap.goto(url);
+  await ap.evaluate(() => localStorage.removeItem('kyoto-gis-trip-v1'));
+  await ap.waitForSelector('.map-tools .ask-rail', { timeout: 60000 });
+  await ap.evaluate(() => document.getElementById('dashboard').scrollIntoView());
+  await ap.waitForTimeout(800);
+  await ap.locator('.map-tools .ask-rail').click();
+  await ap.waitForSelector('.as.on .as-setup', { timeout: 5000 });
+  const setup = await ap.evaluate(() => ({ h: document.querySelector('.as-setup h5').textContent, cmd: document.querySelector('.as-cmd')?.textContent, off: document.querySelector('.as-in textarea').disabled }));
+  await ap.screenshot({ path: `${out}/24-assistant-setup.png` });
+  check('assistant: "Ask the atlas" in the map tools opens it; without a key it shows how to connect Gemini (setx GEMINI_API_KEY) and the box is off', setup.h === 'Connect Gemini' && /setx GEMINI_API_KEY/.test(setup.cmd) && setup.off, JSON.stringify(setup));
+
+  configured = true;
+  await ap.locator('.as-setup .as-btn').click();
+  await ap.waitForSelector('.as-sugs button', { timeout: 5000 });
+  script.push(call('search_places', { query: '清水寺' }, 'c1'),
+    (b) => call('show_place', { id: b.contents.at(-1).parts[0].functionResponse.response.result.results[0].id, section: 'walking' }, 'c2'),
+    call('add_to_trip', { id: 'A00560', day: 2, way: 'bus', stay_minutes: 90 }, 'c3'),
+    say('Opened **Kiyomizu-dera** at its walking routes and added it to Day 2:\n- by bus\n- 90 minutes'));
+  await ask('Show me the walking routes from Kiyomizu-dera and add it to day 2');
+  const r1 = await ap.evaluate(() => ({
+    acts: [...document.querySelectorAll('.as-msg.ai .as-acts li')].map((l) => l.textContent), tag: document.querySelector('.as-msg.ai .as-tag')?.textContent,
+    bold: document.querySelector('.as-txt b')?.textContent, items: document.querySelectorAll('.as-txt li').length,
+    place: document.querySelector('.place-h')?.textContent || '', fold: document.querySelector('.pmore .fold-h')?.getAttribute('aria-expanded'), tab: document.querySelector('.pmore [role=tab][aria-selected=true]')?.textContent,
+    stops: JSON.parse(localStorage.getItem('kyoto-gis-trip-v1') || 'null')?.days[1]?.stops.map((s) => `${s.id}:${s.mode}:${s.stay}`),
+    clear: (() => { const c = document.querySelector('.as').getBoundingClientRect(), p = document.querySelector('#details').getBoundingClientRect(), r = document.querySelector('.map-tools.rail').getBoundingClientRect(); return c.right <= p.left && c.top >= r.bottom; })(),
+  }));
+  await ap.screenshot({ path: `${out}/25-assistant-place.png` });
+  check('assistant: it finds the place, opens its panel at Walking Routes (the chat sits on the map, clear of that panel and below the map tools) and adds it to Day 2; the answer has an AI tag and lists the three actions', r1.acts.length === 3 && /Searched/.test(r1.acts[0]) && /Opened .*walking/.test(r1.acts[1]) && /Added .* to Day 2/.test(r1.acts[2]) && r1.tag === 'AI' && r1.bold === 'Kiyomizu-dera' && r1.items === 2 && r1.place.includes('清水寺') && r1.fold === 'true' && r1.tab === 'Walking Routes' && JSON.stringify(r1.stops) === '["A00560:bus:90"]' && r1.clear, JSON.stringify(r1));
+  check('assistant: Gemini\'s own turn goes back unchanged (thought signature) with each result under its call id; the page never sends a key', bodies.length === 4 && bodies[1].contents[1].parts[0].thoughtSignature === 'sig-c1' && bodies[1].contents[2].parts[0].functionResponse.id === 'c1' && /Today in Kyoto: \d{4}-\d{2}-\d{2}/.test(bodies[0].contents[0].parts[1].text) && sentKey.every((k) => k == null), JSON.stringify({ n: bodies.length, sentKey }));
+
+  script.push(call('open_trip', { day: 2 }, 'c4'), say('Here is Day 2.'));
+  await ask('Open day 2 of my trip');
+  await ap.waitForSelector('.tp-strip', { timeout: 10000 });
+  await ap.waitForTimeout(1200);
+  const r2 = await ap.evaluate(() => ({ strip: document.querySelector('.tp-strip')?.textContent || '', on: document.querySelector('.as')?.classList.contains('on'), z: [getComputedStyle(document.querySelector('.as')).zIndex, getComputedStyle(document.querySelector('.trip-root')).zIndex] }));
+  check('assistant: it opens Day 2 of the trip planner, which shows the place it added; the chat stays on top', /Kiyomizu/.test(r2.strip) && r2.on && +r2.z[0] > +r2.z[1], JSON.stringify(r2));
+
+  script.push({ status: 400, json: { error: { code: 400, message: 'API key not valid. Please pass a valid API key.' } } });
+  await ask('What is the weather at Kiyomizu-dera?');
+  const err = await ap.evaluate(() => [...document.querySelectorAll('.as-err')].map((e) => e.textContent).join(' '));
+  check('assistant: an error from Gemini (here a bad key) is shown as it is, with Try again', /API key not valid/.test(err) && /Try again/.test(err), err);
+
+  await ap.locator('.as-h [aria-label="Close the assistant"]').click();
+  await ap.waitForTimeout(500);
+  await ap.locator('.tp-support').click();
+  await ap.waitForSelector('.tp-ask .tp-btn', { timeout: 5000 });
+  await ap.locator('.tp-ask .tp-btn').click();
+  await ap.waitForTimeout(600);
+  const r3 = await ap.evaluate(() => ({ on: document.querySelector('.as').classList.contains('on'), support: !!document.querySelector('.tp-sheet.help'), kept: document.querySelectorAll('.as-msg').length }));
+  check('assistant: Support in the trip planner has "Ask the assistant", which opens the same conversation', r3.on && !r3.support && r3.kept >= 6, JSON.stringify(r3));
+  check('assistant: no page errors', aErr.length === 0, aErr.join(' | '));
+  await ap.close();
+}
+
 check('no page errors', errors.length === 0, errors.join(' | '));
 await browser.close();
 const failed = results.filter((r) => !r.ok).length;

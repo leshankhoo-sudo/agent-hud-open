@@ -430,11 +430,12 @@ function useForecast(spots) {
 }
 
 // ---------- the dashboard ----------
-export default function TripDashboard({ open, onShown, onClose, d, byId, A, Tr, theme, seasonPick, fetchBusVariant, addRequest }) {
+export default function TripDashboard({ open, onShown, onClose, d, byId, A, Tr, theme, seasonPick, fetchBusVariant, addRequest, goRequest, onAsk }) {
   const [vis, setVis] = useState(false);
   const doors = useRef(null);
   const busy = useRef(false);
   const usedAdd = useRef(0);   // an "Add to trip" request is used once
+  const usedGo = useRef(0);    // so is a request from the assistant to open a day or a view
   // shoji doors: they slide shut over whichever side is showing, the sides swap, and they slide open.
   // One run at a time; if the wish changes while the doors move (a quick second click), the same run
   // goes round again for the latest wish, so the two sides never end up out of step.
@@ -469,13 +470,14 @@ export default function TripDashboard({ open, onShown, onClose, d, byId, A, Tr, 
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="trip-root">
-      {vis && <Trip d={d} byId={byId} A={A} Tr={Tr} theme={theme} seasonPick={seasonPick} fetchBusVariant={fetchBusVariant} onClose={onClose} addRequest={addRequest && addRequest.n !== usedAdd.current ? addRequest : null} onUsed={(n) => { usedAdd.current = n; }} />}
+      {vis && <Trip d={d} byId={byId} A={A} Tr={Tr} theme={theme} seasonPick={seasonPick} fetchBusVariant={fetchBusVariant} onClose={onClose} addRequest={addRequest && addRequest.n !== usedAdd.current ? addRequest : null} onUsed={(n) => { usedAdd.current = n; }}
+        goRequest={goRequest && goRequest.n !== usedGo.current ? goRequest : null} onGoUsed={(n) => { usedGo.current = n; }} onAsk={onAsk} />}
       <div className="tp-doors" ref={doors} aria-hidden="true"><i /><i /></div>
     </div>
   );
 }
 
-function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, addRequest, onUsed }) {
+function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, addRequest, onUsed, goRequest, onGoUsed, onAsk }) {
   const rootRef = useRef(null);
   useMist(rootRef);
   const base = useMemo(() => ({ outline: d.outline, attractions: d.attractions }), [d.outline, d.attractions]);
@@ -509,6 +511,21 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
   }, [byId, pm, photos]);
   const ctx = useMemo(() => ({ xy: (id) => byId.get(id)?.f.geometry.coordinates || null, bus: d.bus, fetchBusVariant, legCache }), [byId, d.bus, fetchBusVariant, legCache]);
   useEffect(() => { if (addRequest?.id) { onUsed(addRequest.n); addPlace(addRequest.id, addRequest.day ?? di); } }, [addRequest?.n]); // eslint-disable-line react-hooks/exhaustive-deps
+  // the assistant changes the saved plan (assistantTools.js) and says so: read it again
+  useEffect(() => {
+    const f = () => setTripState(TP.loadTrip());
+    addEventListener('kyoto-trip-changed', f);
+    return () => removeEventListener('kyoto-trip-changed', f);
+  }, []);
+  // the assistant asks to show one day's plan, the list of days or the map of all days
+  useEffect(() => {
+    if (!goRequest) return;
+    onGoUsed(goRequest.n);
+    setSheet(null);
+    if (goRequest.view === 'agenda' || goRequest.view === 'map') { setPlanner(null); setFocus(null); setView(goRequest.view); return; }
+    setView('trip');
+    if (goRequest.day) { const i = Math.max(0, Math.min(TP.loadTrip().days.length - 1, goRequest.day - 1)); setActive(i); setFocus(null); setPlanner(i); }
+  }, [goRequest?.n]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- the active day ----
   const legs = useLegs(day, ctx);
@@ -874,7 +891,7 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
           )}
         </div></div>
       )}
-      {sheet === 'help' && <Help onClose={() => setSheet(null)} onReset={() => { setTrip(TP.emptyTrip()); legCache.clear(); setActive(0); setPlanner(null); setSheet(null); say('Your plan was cleared.'); }} />}
+      {sheet === 'help' && <Help onClose={() => setSheet(null)} onAsk={onAsk} onReset={() => { setTrip(TP.emptyTrip()); legCache.clear(); setActive(0); setPlanner(null); setSheet(null); say('Your plan was cleared.'); }} />}
       {drag?.moved && <div className="tp-ghost" style={{ left: drag.x, top: drag.y }}>{info(drag.id)?.name}</div>}
       {toast && <p className="tp-toast" role="status">{toast}</p>}
     </section>
@@ -1089,12 +1106,21 @@ function Agenda({ trip, info, allLegs, onOpen }) {
 }
 
 // ---------- Support ----------
-function Help({ onClose, onReset }) {
+function Help({ onClose, onReset, onAsk }) {
   const [sure, setSure] = useState(false);
   return (
     <div className="tp-modal" role="dialog" aria-label="Support" onPointerDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="tp-sheet help">
         <header><h4>Support</h4><button type="button" className="x" onClick={onClose} aria-label="Close"><Ic k="x" /></button></header>
+        {onAsk && (
+          <div className="tp-ask">
+            <div>
+              <h5>Ask the assistant</h5>
+              <p>Ask about places, weather, buses and fares, or have it add places to a day for you. It uses Google’s Gemini with this atlas’s data, and shows everything it does.</p>
+            </div>
+            <button type="button" className="tp-btn sm" onClick={() => { onClose(); onAsk(); }}>Ask</button>
+          </div>
+        )}
         <h5>Planning</h5>
         <ol>
           <li>Click an ema (or the board) to open that day's plan. The “+” ema adds a day (up to {TP.MAX_DAYS}).</li>

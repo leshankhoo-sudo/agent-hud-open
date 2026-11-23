@@ -9,11 +9,12 @@ const ICONS = {
   legend: <><circle cx="5" cy="5" r="2" fill="currentColor" /><circle cx="5" cy="10" r="2" fill="currentColor" opacity=".6" /><circle cx="5" cy="15" r="2" fill="currentColor" opacity=".35" /><path d="M10 5h7M10 10h7M10 15h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></>,
   cine: <><path d="M2.5 15.5 6 8h8l3.5 7.5z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /><path d="M10 3.5v3M7.8 5.2 10 3.2l2.2 2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></>,
   d3: <><path d="M2.5 16.5h15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><path d="M3.5 16 7.5 7l3 5 2-3.5 4 7.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" /></>,
+  ask: <path d="M10 2.5l1.6 4.4 4.4 1.6-4.4 1.6L10 14.5l-1.6-4.4L4 8.5l4.4-1.6zM15.5 13l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" fill="currentColor" />,
   top: <><path d="M3 14.5h14l-2.5 3h-9z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /><path d="M10 2.5v8M7 7.8l3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></>,
 };
 const Ico = ({ k }) => <i className="ri" aria-hidden="true"><svg viewBox="0 0 20 20" width="16" height="16">{ICONS[k]}</svg></i>;
 
-export default function MapRail({ legend, setLegend, cinematic, setCinematic, d3, toggle3d, tilted, topDown, resetView }) {
+export default function MapRail({ legend, setLegend, cinematic, setCinematic, d3, toggle3d, tilted, topDown, resetView, onAsk, askOpen }) {
   const rail = useRef(null);
   const move = (e) => {
     const el = rail.current;
@@ -45,6 +46,7 @@ export default function MapRail({ legend, setLegend, cinematic, setCinematic, d3
         <Ico k="d3" /><span>3D density</span><i className="tg" aria-hidden="true" />
       </button>
       {tilted && <button type="button" style={{ '--i': i++ }} className="arrive" onClick={topDown} title="Back to a top-down view"><Ico k="top" /><span>Top-down</span></button>}
+      {onAsk && <button type="button" style={{ '--i': i++ }} className={'ask-rail' + (askOpen ? ' on' : '')} onClick={onAsk} aria-expanded={!!askOpen} title="Ask the atlas assistant (Google Gemini): it answers from this atlas's data and can open panels for you"><Ico k="ask" /><span>Ask the atlas</span></button>}
     </nav>
   );
 }
