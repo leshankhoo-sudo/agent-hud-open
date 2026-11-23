@@ -4,6 +4,7 @@ Run after:  VITE_TARGET=artifact npx vite build --outDir dist-artifact
             python scripts/pack_preview.py [dist-artifact] [--limit 511]
 
 Nothing here changes what the data says; it only changes how the preview build is packaged:
+  0. the Explore city cards use their main image as the small image too (one file per city instead of two);
   1. the 175 bus route variants (data/bus/variants/<id>.json) go into one file, data/bus/variants.json,
      keyed by the same ids; App.jsx reads that file when VITE_TARGET is 'artifact';
   2. files under data/ that the page never loads (review tables for people, .gitattributes) are left out;
@@ -43,6 +44,19 @@ if os.path.isdir(vdir):
     os.rmdir(vdir)
     json.dump(packed, open(os.path.join(root, 'data', 'bus', 'variants.json'), 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     print('bus variants packed:', len(packed))
+
+# the Explore section's small card images: the preview uses the main image for the small card too
+# (same photo, larger file), which saves one file per city
+ep = os.path.join(root, 'data', 'explore_places.json')
+if os.path.exists(ep):
+    d = json.load(open(ep, encoding='utf-8'))
+    for p in d['places']:
+        t = os.path.join(root, p['thumb'])
+        if p['thumb'] != p['src'] and os.path.exists(t):
+            os.remove(t)
+        p['thumb'] = p['src']
+    json.dump(d, open(ep, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    print('explore: small card images use the main image:', len(d['places']))
 
 # git settings files copied from public/ (.gitattributes) are not part of the site
 for p in files():

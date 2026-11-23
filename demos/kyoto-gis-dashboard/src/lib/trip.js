@@ -268,7 +268,7 @@ const fold = (line) => {
 // days: [{ day, tl, names: [name per point], legText: [text per point] }]
 export function toICS(trip, days, { stamp = new Date() } = {}) {
   const now = stamp.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
-  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Kyoto Prefecture Tourism GIS//Plan your trip//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', `X-WR-CALNAME:${icsEsc(trip.title || 'Kyoto trip')}`];
+  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Kyoto Prefecture Travel Atlas//Plan your trip//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', `X-WR-CALNAME:${icsEsc(trip.title || 'Kyoto trip')}`];
   days.forEach(({ day, tl, names, legText }, di) => {
     const pts = dayPoints(day);
     if (!pts.length) return;

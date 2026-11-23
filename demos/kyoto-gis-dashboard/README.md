@@ -1,4 +1,6 @@
-# Kyoto Prefecture Tourism GIS Dashboard
+# Kyoto Prefecture Travel Atlas · 京都府 旅の地図
+
+（2026-11-23 起的名称；之前叫 Kyoto Prefecture Tourism GIS Dashboard。）
 
 > 新对话或接手开发前，请先读 [PROJECT_HANDOFF.md](PROJECT_HANDOFF.md)：项目状态、数据清单、关联方式、已知问题和下一步任务。
 
@@ -697,3 +699,14 @@ kyoto-gis-dashboard/
   - 去掉照片加载里一个没用的计时器。
   - 地图工具侧边栏上跟着鼠标走的水滴高光（玻璃小药丸）移除；侧边栏保留半透明玻璃和鼠标附近图标放大的效果。
 - **Windows ZIP 和在线预览**（2026-11-23）：Windows ZIP `Kyoto-GIS-Dashboard-Windows-2026-11-23.zip`（879 个文件，93.3 MB），解压后用自带启动服务器跑完整浏览器测试 213/213，逻辑测试 42/42。在线预览更新到第 40 版（同一个链接；只换了 3 个代码文件，其余和第 38 版相同，共 511 个文件）。
+
+## 7f. 2026-11-23：新名称 Kyoto Prefecture Travel Atlas；Explore 改成研究区的 15 个市
+
+- **名称**：dashboard 改名为 **Kyoto Prefecture Travel Atlas · 京都府 旅の地図**（网页标题、开场页、标题栏、结尾页、Windows 启动窗口、日历文件的 PRODID）。标题栏副标题是「京都府 旅の地図 · a university GIS project」。内容已经不只是观光点：地图分析、步行、巴士、天气、行程规划和数据整理，所以用 Atlas（地图集）加 Travel。
+- **Explore 区**：从 7 个地点改成研究区里全部 15 个市（`study_area_coverage.json` 里 type 为 city 的 15 个；10 个町和 1 个村不放），每个市一张卡，京都市在前，其余从北到南。
+  - **照片**（`scripts/fetch_explore_photos.py`）：每张是 Wikimedia Commons 的文件，多数是一个 Wikidata 景点项目的主图（P18），南丹市是一张有拍摄坐标的美山かやぶきの里照片。脚本用照片自己的坐标（没有时用 Wikidata 项目的坐标）对照 N03 边界，**必须落在那个市里面**（京都市是 11 个区之一），否则停止；只接受 CC0、公有领域、CC BY、CC BY-SA。作者、许可证、来源页都保留；作者栏只写「投稿者が撮影」的那张写成「the uploader (投稿者が撮影)」。
+  - **卡片信息**：市名（日文和英文）、所属地区（丹後、中丹、南丹、京都市、山城）、照片拍的是什么、一句位置说明；下面四个数字都来自项目数据：面积（研究区表，京都市加上 11 个区）、地图上的景点数和交通站点数（按点所在的市町村，京都市合计 11 个区）、京都府观光报告里该市的观光人数（2025 年，旧基准；是全市合计，不是照片里那一处）。
+  - 按 "Explore Kyoto" 会把地图缩放到整个市的范围。
+  - 15 张卡在 Orbit 环里太挤，所以环后面距离超过 4 张的卡会淡出；Fan 模式照常全部显示。
+  - 在线预览的文件数有上限，所以预览里小卡片直接用大图（`pack_preview.py` 第 0 步），每个市少一个文件。
+- **测试**：浏览器测试里 Explore 的检查改成 15 个市（选第 4 张是舞鶴市，检查照片内容、面积、景点数、观光人数和作者）。

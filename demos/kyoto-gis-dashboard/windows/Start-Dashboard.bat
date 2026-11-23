@@ -1,8 +1,8 @@
 @echo off
-title Kyoto Prefecture Tourism GIS
+title Kyoto Prefecture Travel Atlas
 cd /d "%~dp0"
 echo.
-echo   Kyoto Prefecture Tourism GIS - starting...
+echo   Kyoto Prefecture Travel Atlas - starting...
 echo.
 
 if not exist "%~dp0site\index.html" goto notunzipped

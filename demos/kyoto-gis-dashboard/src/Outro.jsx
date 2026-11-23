@@ -201,7 +201,7 @@ export default function Outro({ manifest }) {
         )}
         <div className={'outro-card' + (step >= 9 ? ' on' : '') + (step >= 10 ? ' fill chips' : '') + (step >= 11 ? ' done' : '')} ref={card}>
           <p className="ist-eb">THANK YOU · ありがとう</p>
-          <h2 ref={heading}>Kyoto Prefecture Tourism GIS</h2>
+          <h2 ref={heading}>Kyoto Prefecture Travel Atlas</h2>
           <p className="oc-by">Prepared by</p>
           <ul className="oc-team" ref={team}>{TEAM.map((n, i) => <li key={n} style={{ '--j': i }}>{n}</li>)}</ul>
           <p className="oc-src">Data: OpenStreetMap contributors (ODbL), MLIT N03 2026, Kyoto City Transportation Bureau, Open-Meteo, Wikimedia Commons{manifest ? ` · ${manifest.attractions.records} + ${manifest.transport.records} records` : ''}</p>

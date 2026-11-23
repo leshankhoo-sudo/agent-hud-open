@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Photos for the "Explore Kyoto" opening section -> public/explore/*.jpg + public/data/explore_places.json
+"""Photos for the "Explore Kyoto" opening section, one card per city of the study area -> public/explore/*.jpg
++ public/data/explore_places.json
 
-Every photo is a Wikimedia Commons file that is the main image (P18) of a Wikidata item located in
-Kyoto Prefecture. The location is checked against the raw N03 boundary polygons using the photo's own
-coordinates when it has them, otherwise the coordinates of the linked Wikidata item. Only CC0,
+Every photo is a Wikimedia Commons file: the main image (P18) of a Wikidata item inside the city, or a
+geotagged Commons photo. The location is checked against the raw N03 boundary polygons using the photo's own
+coordinates when it has them, otherwise the coordinates of the linked Wikidata item, and it must fall inside
+that city (for Kyoto City: inside one of its wards). Only CC0,
 public-domain, CC BY and CC BY-SA files are accepted; author, licence and source page are kept.
 These are area photos for the introduction. They are not attached to attraction records.
 
@@ -27,31 +29,46 @@ OUT = os.path.join(ROOT, 'public', 'explore')
 UA = 'kyoto-gis-dashboard/1.0 (university GIS prototype; image credits lookup)'
 OK_LICENCE = re.compile(r'^(CC0|Public domain|CC BY(-SA)? \d\.\d)')
 
-# key, Commons file, Wikidata item + its coordinates, labels and the map view opened by "Explore Kyoto"
-PLACES = [
-    dict(key='kiyomizu', file='Kiyomizu-dera, Kyoto, November 2016 -02.jpg', wikidata='Q221716', item_xy=[135.785003, 34.994831],
-         ja='清水寺', en='Kiyomizu-dera', tag='Temple', view=[135.7850, 34.9948, 15.2],
-         text='A wooden stage on the hillside above the old streets of Higashiyama. Its road-network walking routes to the nearest bus stop and rail station are in the dashboard.'),
-    dict(key='sanneizaka', file='Sanneizaka-kyoto.JPG', wikidata='Q11574990', item_xy=[135.780931, 34.996472],
-         ja='産寧坂', en='Sannenzaka', tag='Old street', view=[135.7809, 34.9965, 16],
-         text='A stone-paved slope lined with wooden townhouses on the way up to Kiyomizu-dera.'),
-    dict(key='sagano', file='2021 Sagano Bamboo forest in Arashiyama, Kyoto, Japan.jpg', wikidata='Q11477322', item_xy=[135.672917, 35.018333],
-         ja='嵯峨野 竹林の小径', en='Sagano Bamboo Grove', tag='Nature', view=[135.6720, 35.0170, 14.6],
-         text='A path through tall bamboo in the west of Kyoto City, near Arashiyama.'),
-    dict(key='byodoin', file='Phoenix Hall, Byodo-in, November 2016 -01.jpg', wikidata='Q61094', item_xy=[135.807778, 34.889444],
-         ja='平等院', en='Byodo-in', tag='Temple', view=[135.8077, 34.8893, 14.8],
-         text='The Phoenix Hall and its pond in Uji, south of Kyoto City.'),
-    dict(key='amanohashidate', file='Amanohashidate view from Mt Moju02s3s4592.jpg', wikidata='Q259727', item_xy=[135.192008, 35.569561],
-         ja='天橋立', en='Amanohashidate', tag='Coast', view=[135.1900, 35.5650, 12.6],
-         text='A pine-covered sandbar across Miyazu Bay, on the Sea of Japan coast in the north of the prefecture.'),
-    dict(key='ine', file='Funaya in Ine Town, Yosa District, Kyoto Prefecture 003.jpg', wikidata='Q11379620', item_xy=[135.286697, 35.6752],
-         ja='伊根の舟屋', en='Ine Boat Houses', tag='Fishing village', view=[135.2867, 35.6752, 14],
-         text='Boat houses built directly on the water around Ine Bay.'),
-    dict(key='randen', file='Sai station 2024 5.jpg', wikidata='Q10883225', item_xy=[135.71708, 35.0084],
-         ja='嵐電', en='Randen tram', tag='Public transport', view=[135.7170, 35.0100, 13.6],
-         text='A Keifuku "Randen" tram at Sai Station. Tram stops, railway stations and bus stops are the three transit types on the map.'),
+# The fifteen cities of the study area (MLIT N03, study_area_coverage.json), one card each, ordered from Kyoto
+# City and then north to south. Each photo is the Commons main image (P18) of a Wikidata item inside the
+# city, or a geotagged Commons photo; the check below requires the photo's own coordinates (or, if it has
+# none, the item's) to fall inside that city's own N03 polygon. Region: the prefecture's own administrative
+# areas (Tango, Chutan, Nantan, Kyoto City, Yamashiro). The text says only what the photo shows and where
+# the city lies; the numbers on the card come from the project data, not from this list.
+CITIES = [
+    dict(key='kyoto', code='26100', ja='京都市', en='Kyoto City', region=('京都市', 'Kyoto City'), file='Kiyomizu-dera, Kyoto, November 2016 -02.jpg', wikidata='Q221716', item_xy=[135.785003, 34.994831],
+         subject=('清水寺', 'Kiyomizu-dera'), text='The prefectural capital, eleven wards from the northern mountains to Fushimi in the south.'),
+    dict(key='kyotango', code='26212', ja='京丹後市', en='Kyotango City', region=('丹後', 'Tango'), file='Kyougamisaki 04.jpg', wikidata='Q28374560', item_xy=[135.2233611, 35.7771389],
+         subject=('経ヶ岬灯台', 'Kyōgamisaki Lighthouse'), text='The north of the Tango Peninsula, facing the Sea of Japan.'),
+    dict(key='miyazu', code='26205', ja='宮津市', en='Miyazu City', region=('丹後', 'Tango'), file='Amanohashidate view from Mt Moju02s3s4592.jpg', wikidata='Q259727', item_xy=[135.192008, 35.569561],
+         subject=('天橋立', 'Amanohashidate'), text='On Miyazu Bay, where a pine-covered sandbar crosses the water.'),
+    dict(key='maizuru', code='26202', ja='舞鶴市', en='Maizuru City', region=('中丹', 'Chūtan'), file='Red brick museum01s3200.jpg', wikidata='Q11635286', item_xy=[135.387444, 35.476083],
+         subject=('赤れんが博物館', 'Maizuru Red Brick Museum'), text='A port city on Maizuru Bay, with its red-brick warehouses.'),
+    dict(key='fukuchiyama', code='26201', ja='福知山市', en='Fukuchiyama City', region=('中丹', 'Chūtan'), file='Fukuchiyama castle19.jpg', wikidata='Q2969288', item_xy=[135.129625, 35.296753],
+         subject=('福知山城', 'Fukuchiyama Castle'), text='A castle town on the Yura River, in the middle of the prefecture.'),
+    dict(key='ayabe', code='26203', ja='綾部市', en='Ayabe City', region=('中丹', 'Chūtan'), file='Koumyouji5501.JPG', wikidata='Q107020578', item_xy=[135.4421, 35.38741],
+         subject=('光明寺二王門', 'Niō Gate of Kōmyō-ji'), text='Hills and the Yura River valley, east of Fukuchiyama.'),
+    dict(key='nantan', code='26213', ja='南丹市', en='Nantan City', region=('南丹', 'Nantan'), file='かやぶきの里2021-01-04.jpg', wikidata=None, item_xy=None,
+         subject=('かやぶきの里（美山）', 'Thatched farmhouses of Miyama'), text='Wooded mountains north of Kameoka, with the thatched village of Miyama.'),
+    dict(key='kameoka', code='26206', ja='亀岡市', en='Kameoka City', region=('南丹', 'Nantan'), file='Izumo-daijingū keidai.JPG', wikidata='Q10896675', item_xy=[135.578382, 35.059248],
+         subject=('出雲大神宮', 'Izumo-daijingū'), text='A basin just west of Kyoto City, where the Hozu River boat ride starts.'),
+    dict(key='muko', code='26208', ja='向日市', en='Muko City', region=('山城', 'Yamashiro'), file='Muko-jinja, shaden.jpg', wikidata='Q11415986', item_xy=[135.69712, 34.944148],
+         subject=('向日神社', 'Mukō Shrine'), text='South-west of Kyoto City, on the low hills of Otokuni.'),
+    dict(key='nagaokakyo', code='26209', ja='長岡京市', en='Nagaokakyo City', region=('山城', 'Yamashiro'), file='NagaokaTenmangu.jpg', wikidata='Q11652030', item_xy=[135.686333, 34.922833],
+         subject=('長岡天満宮', 'Nagaoka Tenmangū'), text='Named after Nagaoka-kyō, the capital before Kyoto, south-west of Kyoto City.'),
+    dict(key='uji', code='26204', ja='宇治市', en='Uji City', region=('山城', 'Yamashiro'), file='Phoenix Hall, Byodo-in, November 2016 -01.jpg', wikidata='Q61094', item_xy=[135.807778, 34.889444],
+         subject=('平等院', 'Byōdō-in'), text='On the Uji River south of Kyoto City, known for its green tea.'),
+    dict(key='joyo', code='26207', ja='城陽市', en='Joyo City', region=('山城', 'Yamashiro'), file='Mito-Jinja (Joyo), keidai.jpg', wikidata='Q11548558', item_xy=[135.789565, 34.854739],
+         subject=('水度神社', 'Mito Shrine'), text='Between Uji and Kyotanabe, east of the Kizu River.'),
+    dict(key='yawata', code='26210', ja='八幡市', en='Yawata City', region=('山城', 'Yamashiro'), file='Iwashimizu Hachimangu4.jpg', wikidata='Q710098', item_xy=[135.7, 34.879722],
+         subject=('石清水八幡宮', 'Iwashimizu Hachimangū'), text='Where the Katsura, Uji and Kizu rivers meet, below Mount Otokoyama.'),
+    dict(key='kyotanabe', code='26211', ja='京田辺市', en='Kyotanabe City', region=('山城', 'Yamashiro'), file='Ikkyuji Somon DSCN1286 20101117.JPG', wikidata='Q11644421', item_xy=[135.75755556, 34.82102778],
+         subject=('酬恩庵（一休寺）', 'Ikkyū-ji (Shūon-an)'), text='In the south of the prefecture, between Kyoto and Nara.'),
+    dict(key='kizugawa', code='26214', ja='木津川市', en='Kizugawa City', region=('山城', 'Yamashiro'), file='Joruriji Kizugawa Kyoto pref Japan02s3.jpg', wikidata='Q1093645', item_xy=[135.87305556, 34.71611111],
+         subject=('浄瑠璃寺', 'Jōruri-ji'), text='The southern edge of the prefecture, next to Nara.'),
 ]
 
+PLACES = CITIES
 
 def get(url, binary=False):
     for k in range(8):
@@ -91,26 +108,40 @@ def commons_meta():
 
 def main():
     meta = commons_meta()
-    polys = [(shape(f['geometry']), f['properties']) for f in json.load(open(os.path.join(ROOT, 'data', 'raw', 'kyoto_boundary.geojson'), encoding='utf-8'))['features']]
+    feats = json.load(open(os.path.join(ROOT, 'data', 'raw', 'kyoto_boundary.geojson'), encoding='utf-8'))['features']
+    polys = [(shape(f['geometry']), f['properties']) for f in feats]
 
     def muni(xy):
         for g, pr in polys:
             if g.contains(Point(xy)):
                 return pr.get('N03_007')
         return None
+    city_of = lambda code: '26100' if code and code.startswith('261') else code   # Kyoto City wards -> Kyoto City
 
-    names = json.load(open(os.path.join(ROOT, 'public', 'data', 'names_en.json'), encoding='utf-8'))['municipalities']
-    ja = json.load(open(os.path.join(ROOT, 'public', 'data', 'point_municipality.json'), encoding='utf-8'))['names']
-    os.makedirs(OUT, exist_ok=True)
+    def bbox(code):
+        b = [180, 90, -180, -90]
+        for g, pr in polys:
+            if city_of(pr.get('N03_007')) == code:
+                x0, y0, x1, y1 = g.bounds
+                b = [min(b[0], x0), min(b[1], y0), max(b[2], x1), max(b[3], y1)]
+        return [round(v, 5) for v in b]
+
+    cov = {m['code']: m for m in json.load(open(os.path.join(ROOT, 'public', 'data', 'study_area_coverage.json'), encoding='utf-8'))['municipalities']}
+    for f in os.listdir(OUT):
+        if f.endswith('.jpg'):
+            os.remove(os.path.join(OUT, f))
     out = []
     for p in PLACES:
         m = meta[p['file']]
         if not OK_LICENCE.match(m['license']):
             raise SystemExit(f"{p['key']}: licence not accepted: {m['license']}")
         by_photo = muni(m['photo_gps']) if m.get('photo_gps') else None
-        code = by_photo or muni(p['item_xy'])
-        if not code:
-            raise SystemExit(f"{p['key']}: location is not inside the Kyoto Prefecture boundary")
+        code = city_of(by_photo or (muni(p['item_xy']) if p['item_xy'] else None))
+        if code != p['code']:
+            raise SystemExit(f"{p['key']}: the photo is not inside {p['en']} ({code})")
+        c = cov[p['code']]
+        if c['type'] != 'city':
+            raise SystemExit(f"{p['key']}: {p['code']} is not a city in study_area_coverage.json")
         src = os.path.join(CACHE, p['key'] + '.jpg')
         if not os.path.exists(src):
             open(src, 'wb').write(get(m['thumb'], binary=True))
@@ -124,22 +155,23 @@ def main():
             t.save(buf, 'JPEG', quality=q, optimize=True, progressive=True)
             open(os.path.join(OUT, f"{p['key']}{suffix}.jpg"), 'wb').write(buf.getvalue())
             sizes[suffix or 'main'] = [t.width, t.height, len(buf.getvalue())]
-        # average colour, used as the placeholder while loading or if the file cannot be loaded
         r, g_, b = im.resize((1, 1)).getpixel((0, 0))
         out.append({
-            'key': p['key'], 'ja': p['ja'], 'en': p['en'], 'tag': p['tag'], 'text': p['text'], 'view': p['view'],
-            'municipality': {'code': code, 'ja': ja[code], 'en': names[code]['en']},
+            'key': p['key'], 'code': p['code'], 'ja': p['ja'], 'en': p['en'], 'tag': p['region'][1], 'region': {'ja': p['region'][0], 'en': p['region'][1]},
+            'subject': {'ja': p['subject'][0], 'en': p['subject'][1]}, 'text': p['text'], 'area_km2': c['area_km2'], 'wards': len(c.get('wards') or []),
+            'bbox': bbox(p['code']), 'municipality': {'code': p['code'], 'ja': p['ja'], 'en': p['en']},
             'src': f"explore/{p['key']}.jpg", 'thumb': f"explore/{p['key']}-s.jpg", 'width': sizes['main'][0], 'height': sizes['main'][1],
             'bytes': sizes['main'][2], 'color': f'#{r:02x}{g_:02x}{b:02x}',
-            'credit': {'artist': m['artist'], 'license': m['license'], 'license_url': m['license_url'], 'page': m['page'], 'file': p['file'],
+            # public-domain files have no licence page, so the licence link goes to the file page;
+            # a file whose author field only says "taken by the uploader" is credited to its uploader as such
+            'credit': {'artist': 'the uploader (投稿者が撮影)' if m['artist'] == '投稿者が撮影' else m['artist'], 'license': m['license'], 'license_url': m['license_url'] or m['page'], 'page': m['page'], 'file': p['file'],
                        'taken': m.get('date', '')[:10], 'changes': 'resized and recompressed'},
             'verified': {'wikidata': p['wikidata'],
-                         'method': 'photo coordinates inside the N03 polygon' if by_photo else 'file description and linked Wikidata item (item coordinates inside the N03 polygon); the file has no coordinates'},
+                         'method': 'photo coordinates inside the N03 polygon of the city' if by_photo else 'file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates'},
         })
-        print(p['key'], code, ja[code], m['license'], m['artist'], sizes)
-    json.dump({'generated': time.strftime('%Y-%m-%dT%H:%M:%S%z'), 'note': 'Area photos for the introduction; not attached to attraction records.', 'places': out},
+        print(p['key'], code, m['license'], m['artist'][:30], sizes['main'])
+    json.dump({'generated': time.strftime('%Y-%m-%dT%H:%M:%S%z'), 'note': 'One area photo per city of the study area, for the introduction; not attached to attraction records. Area from study_area_coverage.json.', 'places': out},
               open(os.path.join(ROOT, 'public', 'data', 'explore_places.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-
 
 if __name__ == '__main__':
     main()

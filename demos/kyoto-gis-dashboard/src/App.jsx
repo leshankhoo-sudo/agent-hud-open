@@ -614,16 +614,24 @@ export default function App() {
     toMapSide();
     document.getElementById('dashboard')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
     if (!place) return;
-    const [lon, lat, zoom] = place.view;
-    setTimeout(() => mapRef.current?.flyTo({ center: [lon, lat], zoom, duration: reduce ? 0 : 1800, essential: true }), reduce ? 300 : dashSeen ? 900 : 3300);
+    const b = place.bbox;   // a city: frame the whole city
+    setTimeout(() => mapRef.current?.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: 40, duration: reduce ? 0 : 1800, essential: true }), reduce ? 300 : dashSeen ? 900 : 3300);
   };
-  // Counts of our own records within 1 km of a place shown in the Explore section (plain great-circle distance).
-  const nearPlace = (pl) => {
-    const [lon, lat] = pl.view, kx = 111320 * Math.cos(lat * Math.PI / 180);
-    const within = (f) => Math.hypot((f.geometry.coordinates[0] - lon) * kx, (f.geometry.coordinates[1] - lat) * 110574) <= 1000;
-    const bb = d?.walking?.pilot?.bbox;
-    return { a: A.filter(within).length, s: Tr.filter(within).length, pilot: !!bb && lon >= bb[0] && lon <= bb[2] && lat >= bb[1] && lat <= bb[3] };
-  };
+  // Facts for a city card in the Explore section, from the project's own data: its records on the map (by the
+  // N03 point-in-municipality join; Kyoto City counts all eleven wards) and the prefecture's published tourism count.
+  const cityFacts = useMemo(() => {
+    const pts = d?.pointMuni?.points || {}, city = (c) => (c && c.startsWith('261') ? '26100' : c);
+    const a = {}, s = {};
+    for (const f of A) { const c = city(pts[f.properties.id]); if (c) a[c] = (a[c] || 0) + 1; }
+    for (const f of Tr) { const c = city(pts[f.properties.id]); if (c) s[c] = (s[c] || 0) + 1; }
+    const counts = d?.tourism?.municipalities?.counts || {}, years = d?.tourism?.municipalities?.years || [];
+    return (pl) => {
+      const t = counts[pl.en];
+      const y = years.find((yy) => t?.[yy] != null);
+      return { a: a[pl.code] || 0, s: s[pl.code] || 0, area: pl.area_km2, tourism: t && y ? { year: y, n: t[y] } : null };
+    };
+  }, [A, Tr, d?.pointMuni, d?.tourism]); // eslint-disable-line react-hooks/exhaustive-deps
+  const nearPlace = (pl) => cityFacts(pl);
   // Feature strip: each panel opens its part of the dashboard.
   const features = [
     { key: 'map', hue: 232, title: 'Map & filters', action: 'Open the map', text: `${A.length.toLocaleString('en-US')} attraction records and ${Tr.length.toLocaleString('en-US')} transit stops across Kyoto Prefecture. Search by Japanese or English name and filter by category or transit type.`, note: 'Preliminary OpenStreetMap records, not official counts.' },
@@ -700,8 +708,8 @@ export default function App() {
         <div className="brand">
           <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><rect x="3" y="7" width="26" height="3.4" rx="1.4" fill="#ff7a45" /><rect x="6" y="12.5" width="20" height="2.4" rx="1" fill="#ff7a45" /><rect x="8.4" y="10" width="2.6" height="18" rx="1" fill="#ff7a45" /><rect x="21" y="10" width="2.6" height="18" rx="1" fill="#ff7a45" /></svg>
           <div>
-            <h1>Kyoto Prefecture Tourism GIS</h1>
-            <p>京都府 · university GIS prototype</p>
+            <h1>Kyoto Prefecture Travel Atlas</h1>
+            <p>京都府 旅の地図 · a university GIS project</p>
           </div>
         </div>
         {side === 'back' && d.sort ? <SortCounters bus={sortBus} story={d.sort} /> : (

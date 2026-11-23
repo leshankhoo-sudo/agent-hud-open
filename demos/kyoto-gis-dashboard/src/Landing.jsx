@@ -165,7 +165,7 @@ export default function Landing({ counts, onOpenMap, onStory, onNav }) {
       <nav className="ld-nav" aria-label="Sections">
         <a className="ld-brand" href="#top" onClick={(e) => { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }}>
           <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><rect x="3" y="7" width="26" height="3.4" rx="1.4" fill="currentColor" /><rect x="6" y="12.5" width="20" height="2.4" rx="1" fill="currentColor" /><rect x="8.4" y="10" width="2.6" height="18" rx="1" fill="currentColor" /><rect x="21" y="10" width="2.6" height="18" rx="1" fill="currentColor" /></svg>
-          <span><b>Kyoto</b><small>Tourism GIS</small></span>
+          <span><b>Kyoto</b><small>Travel Atlas</small></span>
         </a>
         <ul>
           {[['seasons', 'Seasons'], ['explore', 'Places'], ['dashboard', 'Map'], ['sources', 'Data'], ['credits', 'Team']].map(([k, l]) => (
@@ -176,7 +176,7 @@ export default function Landing({ counts, onOpenMap, onStory, onNav }) {
 
       <div className="ld-copy">
         <p className="ld-kicker"><span lang="ja">京都府</span> · Kyoto Prefecture</p>
-        <h1 id="ld-title" className="ld-title">Kyoto Prefecture<br />Tourism GIS</h1>
+        <h1 id="ld-title" className="ld-title">Kyoto Prefecture<br />Travel Atlas</h1>
         <p className="ld-lead">A university GIS project mapping attractions, public transport and walking access across Kyoto Prefecture, for visitors from Japan and abroad.</p>
         <div className="ld-btns">
           <WaterButton onClick={onOpenMap} scene={`${base}season/autumn.webp`}>Open the map</WaterButton>

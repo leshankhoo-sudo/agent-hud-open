@@ -1,4 +1,4 @@
-# Kyoto Prefecture Tourism GIS - local web server for Windows (no install needed).
+# Kyoto Prefecture Travel Atlas - local web server for Windows (no install needed).
 # Serves the "site" folder at http://localhost:8765/ using Windows PowerShell 5.1+.
 $ErrorActionPreference = 'Stop'
 $root = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'site'))
@@ -21,7 +21,7 @@ if ($null -eq $listener) {
 }
 $url = "http://localhost:$port/"
 Write-Host ''
-Write-Host '  Kyoto Prefecture Tourism GIS is running.'
+Write-Host '  Kyoto Prefecture Travel Atlas is running.'
 Write-Host "  Address: $url"
 Write-Host '  Keep this window open while you use the dashboard.'
 Write-Host '  Close this window to stop it.'

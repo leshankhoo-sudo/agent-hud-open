@@ -1,25 +1,37 @@
 {
- "generated": "2026-11-11T15:55:06+0000",
- "note": "Area photos for the introduction; not attached to attraction records.",
+ "generated": "2026-11-23T19:57:38+0800",
+ "note": "One area photo per city of the study area, for the introduction; not attached to attraction records. Area from study_area_coverage.json.",
  "places": [
   {
-   "key": "kiyomizu",
-   "ja": "清水寺",
-   "en": "Kiyomizu-dera",
-   "tag": "Temple",
-   "text": "A wooden stage on the hillside above the old streets of Higashiyama. Its road-network walking routes to the nearest bus stop and rail station are in the dashboard.",
-   "view": [
-    135.785,
-    34.9948,
-    15.2
+   "key": "kyoto",
+   "code": "26100",
+   "ja": "京都市",
+   "en": "Kyoto City",
+   "tag": "Kyoto City",
+   "region": {
+    "ja": "京都市",
+    "en": "Kyoto City"
+   },
+   "subject": {
+    "ja": "清水寺",
+    "en": "Kiyomizu-dera"
+   },
+   "text": "The prefectural capital, eleven wards from the northern mountains to Fushimi in the south.",
+   "area_km2": 827.67,
+   "wards": 11,
+   "bbox": [
+    135.55901,
+    34.87492,
+    135.87844,
+    35.32124
    ],
    "municipality": {
-    "code": "26105",
-    "ja": "京都市 東山区",
-    "en": "Higashiyama Ward, Kyoto City"
+    "code": "26100",
+    "ja": "京都市",
+    "en": "Kyoto City"
    },
-   "src": "explore/kiyomizu.jpg",
-   "thumb": "explore/kiyomizu-s.jpg",
+   "src": "explore/kyoto.jpg",
+   "thumb": "explore/kyoto-s.jpg",
    "width": 1400,
    "height": 925,
    "bytes": 316209,
@@ -35,135 +47,87 @@
    },
    "verified": {
     "wikidata": "Q221716",
-    "method": "photo coordinates inside the N03 polygon"
+    "method": "photo coordinates inside the N03 polygon of the city"
    }
   },
   {
-   "key": "sanneizaka",
-   "ja": "産寧坂",
-   "en": "Sannenzaka",
-   "tag": "Old street",
-   "text": "A stone-paved slope lined with wooden townhouses on the way up to Kiyomizu-dera.",
-   "view": [
-    135.7809,
-    34.9965,
-    16
+   "key": "kyotango",
+   "code": "26212",
+   "ja": "京丹後市",
+   "en": "Kyotango City",
+   "tag": "Tango",
+   "region": {
+    "ja": "丹後",
+    "en": "Tango"
+   },
+   "subject": {
+    "ja": "経ヶ岬灯台",
+    "en": "Kyōgamisaki Lighthouse"
+   },
+   "text": "The north of the Tango Peninsula, facing the Sea of Japan.",
+   "area_km2": 502.13,
+   "wards": 0,
+   "bbox": [
+    134.85373,
+    35.51168,
+    135.23318,
+    35.77926
    ],
    "municipality": {
-    "code": "26105",
-    "ja": "京都市 東山区",
-    "en": "Higashiyama Ward, Kyoto City"
+    "code": "26212",
+    "ja": "京丹後市",
+    "en": "Kyotango City"
    },
-   "src": "explore/sanneizaka.jpg",
-   "thumb": "explore/sanneizaka-s.jpg",
+   "src": "explore/kyotango.jpg",
+   "thumb": "explore/kyotango-s.jpg",
    "width": 1400,
-   "height": 933,
-   "bytes": 215736,
-   "color": "#616563",
+   "height": 1039,
+   "bytes": 237916,
+   "color": "#818c93",
    "credit": {
-    "artist": "Aporon999",
+    "artist": "NKNS",
     "license": "CC BY-SA 3.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
-    "page": "https://commons.wikimedia.org/wiki/File:Sanneizaka-kyoto.JPG",
-    "file": "Sanneizaka-kyoto.JPG",
-    "taken": "2013-05-08",
+    "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "page": "https://commons.wikimedia.org/wiki/File:Kyougamisaki_04.jpg",
+    "file": "Kyougamisaki 04.jpg",
+    "taken": "2005-03-10",
     "changes": "resized and recompressed"
    },
    "verified": {
-    "wikidata": "Q11574990",
-    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon); the file has no coordinates"
+    "wikidata": "Q28374560",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
    }
   },
   {
-   "key": "sagano",
-   "ja": "嵯峨野 竹林の小径",
-   "en": "Sagano Bamboo Grove",
-   "tag": "Nature",
-   "text": "A path through tall bamboo in the west of Kyoto City, near Arashiyama.",
-   "view": [
-    135.672,
-    35.017,
-    14.6
-   ],
-   "municipality": {
-    "code": "26108",
-    "ja": "京都市 右京区",
-    "en": "Ukyo Ward, Kyoto City"
+   "key": "miyazu",
+   "code": "26205",
+   "ja": "宮津市",
+   "en": "Miyazu City",
+   "tag": "Tango",
+   "region": {
+    "ja": "丹後",
+    "en": "Tango"
    },
-   "src": "explore/sagano.jpg",
-   "thumb": "explore/sagano-s.jpg",
-   "width": 1400,
-   "height": 957,
-   "bytes": 514997,
-   "color": "#6e8251",
-   "credit": {
-    "artist": "Naokijp",
-    "license": "CC BY-SA 4.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-    "page": "https://commons.wikimedia.org/wiki/File:2021_Sagano_Bamboo_forest_in_Arashiyama,_Kyoto,_Japan.jpg",
-    "file": "2021 Sagano Bamboo forest in Arashiyama, Kyoto, Japan.jpg",
-    "taken": "2021-06-03",
-    "changes": "resized and recompressed"
+   "subject": {
+    "ja": "天橋立",
+    "en": "Amanohashidate"
    },
-   "verified": {
-    "wikidata": "Q11477322",
-    "method": "photo coordinates inside the N03 polygon"
-   }
-  },
-  {
-   "key": "byodoin",
-   "ja": "平等院",
-   "en": "Byodo-in",
-   "tag": "Temple",
-   "text": "The Phoenix Hall and its pond in Uji, south of Kyoto City.",
-   "view": [
-    135.8077,
-    34.8893,
-    14.8
-   ],
-   "municipality": {
-    "code": "26204",
-    "ja": "宇治市",
-    "en": "Uji City"
-   },
-   "src": "explore/byodoin.jpg",
-   "thumb": "explore/byodoin-s.jpg",
-   "width": 1400,
-   "height": 732,
-   "bytes": 190654,
-   "color": "#7a808b",
-   "credit": {
-    "artist": "Martin Falbisoner",
-    "license": "CC BY-SA 4.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-    "page": "https://commons.wikimedia.org/wiki/File:Phoenix_Hall,_Byodo-in,_November_2016_-01.jpg",
-    "file": "Phoenix Hall, Byodo-in, November 2016 -01.jpg",
-    "taken": "2016-11-18",
-    "changes": "resized and recompressed"
-   },
-   "verified": {
-    "wikidata": "Q61094",
-    "method": "photo coordinates inside the N03 polygon"
-   }
-  },
-  {
-   "key": "amanohashidate",
-   "ja": "天橋立",
-   "en": "Amanohashidate",
-   "tag": "Coast",
-   "text": "A pine-covered sandbar across Miyazu Bay, on the Sea of Japan coast in the north of the prefecture.",
-   "view": [
-    135.19,
-    35.565,
-    12.6
+   "text": "On Miyazu Bay, where a pine-covered sandbar crosses the water.",
+   "area_km2": 172.94,
+   "wards": 0,
+   "bbox": [
+    135.12341,
+    35.45536,
+    135.28848,
+    35.69478
    ],
    "municipality": {
     "code": "26205",
     "ja": "宮津市",
     "en": "Miyazu City"
    },
-   "src": "explore/amanohashidate.jpg",
-   "thumb": "explore/amanohashidate-s.jpg",
+   "src": "explore/miyazu.jpg",
+   "thumb": "explore/miyazu-s.jpg",
    "width": 1400,
    "height": 932,
    "bytes": 224112,
@@ -179,79 +143,583 @@
    },
    "verified": {
     "wikidata": "Q259727",
-    "method": "photo coordinates inside the N03 polygon"
+    "method": "photo coordinates inside the N03 polygon of the city"
    }
   },
   {
-   "key": "ine",
-   "ja": "伊根の舟屋",
-   "en": "Ine Boat Houses",
-   "tag": "Fishing village",
-   "text": "Boat houses built directly on the water around Ine Bay.",
-   "view": [
-    135.2867,
-    35.6752,
-    14
+   "key": "maizuru",
+   "code": "26202",
+   "ja": "舞鶴市",
+   "en": "Maizuru City",
+   "tag": "Chūtan",
+   "region": {
+    "ja": "中丹",
+    "en": "Chūtan"
+   },
+   "subject": {
+    "ja": "赤れんが博物館",
+    "en": "Maizuru Red Brick Museum"
+   },
+   "text": "A port city on Maizuru Bay, with its red-brick warehouses.",
+   "area_km2": 342.02,
+   "wards": 0,
+   "bbox": [
+    135.15926,
+    35.38003,
+    135.48686,
+    35.71441
    ],
    "municipality": {
-    "code": "26463",
-    "ja": "与謝郡 伊根町",
-    "en": "Ine Town, Yosa District"
+    "code": "26202",
+    "ja": "舞鶴市",
+    "en": "Maizuru City"
    },
-   "src": "explore/ine.jpg",
-   "thumb": "explore/ine-s.jpg",
+   "src": "explore/maizuru.jpg",
+   "thumb": "explore/maizuru-s.jpg",
    "width": 1400,
-   "height": 790,
-   "bytes": 344597,
-   "color": "#626362",
+   "height": 937,
+   "bytes": 316560,
+   "color": "#776e65",
    "credit": {
-    "artist": "Naokijp",
-    "license": "CC BY-SA 4.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-    "page": "https://commons.wikimedia.org/wiki/File:Funaya_in_Ine_Town,_Yosa_District,_Kyoto_Prefecture_003.jpg",
-    "file": "Funaya in Ine Town, Yosa District, Kyoto Prefecture 003.jpg",
-    "taken": "2023-02-12",
+    "artist": "663highland",
+    "license": "CC BY 2.5",
+    "license_url": "https://creativecommons.org/licenses/by/2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:Red_brick_museum01s3200.jpg",
+    "file": "Red brick museum01s3200.jpg",
+    "taken": "2007-07-28",
     "changes": "resized and recompressed"
    },
    "verified": {
-    "wikidata": "Q11379620",
-    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon); the file has no coordinates"
+    "wikidata": "Q11635286",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
    }
   },
   {
-   "key": "randen",
-   "ja": "嵐電",
-   "en": "Randen tram",
-   "tag": "Public transport",
-   "text": "A Keifuku \"Randen\" tram at Sai Station. Tram stops, railway stations and bus stops are the three transit types on the map.",
-   "view": [
-    135.717,
-    35.01,
-    13.6
+   "key": "fukuchiyama",
+   "code": "26201",
+   "ja": "福知山市",
+   "en": "Fukuchiyama City",
+   "tag": "Chūtan",
+   "region": {
+    "ja": "中丹",
+    "en": "Chūtan"
+   },
+   "subject": {
+    "ja": "福知山城",
+    "en": "Fukuchiyama Castle"
+   },
+   "text": "A castle town on the Yura River, in the middle of the prefecture.",
+   "area_km2": 552.51,
+   "wards": 0,
+   "bbox": [
+    134.91709,
+    35.16061,
+    135.32514,
+    35.46973
    ],
    "municipality": {
-    "code": "26108",
-    "ja": "京都市 右京区",
-    "en": "Ukyo Ward, Kyoto City"
+    "code": "26201",
+    "ja": "福知山市",
+    "en": "Fukuchiyama City"
    },
-   "src": "explore/randen.jpg",
-   "thumb": "explore/randen-s.jpg",
+   "src": "explore/fukuchiyama.jpg",
+   "thumb": "explore/fukuchiyama-s.jpg",
+   "width": 1400,
+   "height": 1037,
+   "bytes": 245531,
+   "color": "#757372",
+   "credit": {
+    "artist": "the uploader (投稿者が撮影)",
+    "license": "Public domain",
+    "license_url": "https://commons.wikimedia.org/wiki/File:Fukuchiyama_castle19.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Fukuchiyama_castle19.jpg",
+    "file": "Fukuchiyama castle19.jpg",
+    "taken": "2010-05-04",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q2969288",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
+   }
+  },
+  {
+   "key": "ayabe",
+   "code": "26203",
+   "ja": "綾部市",
+   "en": "Ayabe City",
+   "tag": "Chūtan",
+   "region": {
+    "ja": "中丹",
+    "en": "Chūtan"
+   },
+   "subject": {
+    "ja": "光明寺二王門",
+    "en": "Niō Gate of Kōmyō-ji"
+   },
+   "text": "Hills and the Yura River valley, east of Fukuchiyama.",
+   "area_km2": 347.07,
+   "wards": 0,
+   "bbox": [
+    135.17281,
+    35.26385,
+    135.53477,
+    35.45449
+   ],
+   "municipality": {
+    "code": "26203",
+    "ja": "綾部市",
+    "en": "Ayabe City"
+   },
+   "src": "explore/ayabe.jpg",
+   "thumb": "explore/ayabe-s.jpg",
+   "width": 1400,
+   "height": 931,
+   "bytes": 339345,
+   "color": "#5a5852",
+   "credit": {
+    "artist": "Nnn at Japanese Wikipedia",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Koumyouji5501.JPG",
+    "file": "Koumyouji5501.JPG",
+    "taken": "12 October",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q107020578",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
+   }
+  },
+  {
+   "key": "nantan",
+   "code": "26213",
+   "ja": "南丹市",
+   "en": "Nantan City",
+   "tag": "Nantan",
+   "region": {
+    "ja": "南丹",
+    "en": "Nantan"
+   },
+   "subject": {
+    "ja": "かやぶきの里（美山）",
+    "en": "Thatched farmhouses of Miyama"
+   },
+   "text": "Wooded mountains north of Kameoka, with the thatched village of Miyama.",
+   "area_km2": 616.3,
+   "wards": 0,
+   "bbox": [
+    135.36873,
+    35.02455,
+    135.79519,
+    35.37787
+   ],
+   "municipality": {
+    "code": "26213",
+    "ja": "南丹市",
+    "en": "Nantan City"
+   },
+   "src": "explore/nantan.jpg",
+   "thumb": "explore/nantan-s.jpg",
+   "width": 1400,
+   "height": 788,
+   "bytes": 235458,
+   "color": "#8b888b",
+   "credit": {
+    "artist": "経済特区",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:%E3%81%8B%E3%82%84%E3%81%B6%E3%81%8D%E3%81%AE%E9%87%8C2021-01-04.jpg",
+    "file": "かやぶきの里2021-01-04.jpg",
+    "taken": "2021-01-02",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": null,
+    "method": "photo coordinates inside the N03 polygon of the city"
+   }
+  },
+  {
+   "key": "kameoka",
+   "code": "26206",
+   "ja": "亀岡市",
+   "en": "Kameoka City",
+   "tag": "Nantan",
+   "region": {
+    "ja": "南丹",
+    "en": "Nantan"
+   },
+   "subject": {
+    "ja": "出雲大神宮",
+    "en": "Izumo-daijingū"
+   },
+   "text": "A basin just west of Kyoto City, where the Hozu River boat ride starts.",
+   "area_km2": 224.76,
+   "wards": 0,
+   "bbox": [
+    135.37765,
+    34.91517,
+    135.64675,
+    35.10129
+   ],
+   "municipality": {
+    "code": "26206",
+    "ja": "亀岡市",
+    "en": "Kameoka City"
+   },
+   "src": "explore/kameoka.jpg",
+   "thumb": "explore/kameoka-s.jpg",
+   "width": 1400,
+   "height": 1050,
+   "bytes": 275963,
+   "color": "#92896f",
+   "credit": {
+    "artist": "Saigen Jiro",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "page": "https://commons.wikimedia.org/wiki/File:Izumo-daijing%C5%AB_keidai.JPG",
+    "file": "Izumo-daijingū keidai.JPG",
+    "taken": "2012-08-15",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q10896675",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
+   }
+  },
+  {
+   "key": "muko",
+   "code": "26208",
+   "ja": "向日市",
+   "en": "Muko City",
+   "tag": "Yamashiro",
+   "region": {
+    "ja": "山城",
+    "en": "Yamashiro"
+   },
+   "subject": {
+    "ja": "向日神社",
+    "en": "Mukō Shrine"
+   },
+   "text": "South-west of Kyoto City, on the low hills of Otokuni.",
+   "area_km2": 7.72,
+   "wards": 0,
+   "bbox": [
+    135.68298,
+    34.92906,
+    135.71835,
+    34.9695
+   ],
+   "municipality": {
+    "code": "26208",
+    "ja": "向日市",
+    "en": "Muko City"
+   },
+   "src": "explore/muko.jpg",
+   "thumb": "explore/muko-s.jpg",
+   "width": 1400,
+   "height": 931,
+   "bytes": 293149,
+   "color": "#747c75",
+   "credit": {
+    "artist": "Saigen Jiro",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "page": "https://commons.wikimedia.org/wiki/File:Muko-jinja,_shaden.jpg",
+    "file": "Muko-jinja, shaden.jpg",
+    "taken": "2017-08-19",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q11415986",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
+   }
+  },
+  {
+   "key": "nagaokakyo",
+   "code": "26209",
+   "ja": "長岡京市",
+   "en": "Nagaokakyo City",
+   "tag": "Yamashiro",
+   "region": {
+    "ja": "山城",
+    "en": "Yamashiro"
+   },
+   "subject": {
+    "ja": "長岡天満宮",
+    "en": "Nagaoka Tenmangū"
+   },
+   "text": "Named after Nagaoka-kyō, the capital before Kyoto, south-west of Kyoto City.",
+   "area_km2": 19.16,
+   "wards": 0,
+   "bbox": [
+    135.64316,
+    34.90216,
+    135.71738,
+    34.94668
+   ],
+   "municipality": {
+    "code": "26209",
+    "ja": "長岡京市",
+    "en": "Nagaokakyo City"
+   },
+   "src": "explore/nagaokakyo.jpg",
+   "thumb": "explore/nagaokakyo-s.jpg",
+   "width": 1400,
+   "height": 895,
+   "bytes": 259978,
+   "color": "#6b645b",
+   "credit": {
+    "artist": "PlusMinus",
+    "license": "CC BY 2.5",
+    "license_url": "https://creativecommons.org/licenses/by/2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:NagaokaTenmangu.jpg",
+    "file": "NagaokaTenmangu.jpg",
+    "taken": "2006-03-04",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q11652030",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
+   }
+  },
+  {
+   "key": "uji",
+   "code": "26204",
+   "ja": "宇治市",
+   "en": "Uji City",
+   "tag": "Yamashiro",
+   "region": {
+    "ja": "山城",
+    "en": "Yamashiro"
+   },
+   "subject": {
+    "ja": "平等院",
+    "en": "Byōdō-in"
+   },
+   "text": "On the Uji River south of Kyoto City, known for its green tea.",
+   "area_km2": 67.52,
+   "wards": 0,
+   "bbox": [
+    135.75965,
+    34.85792,
+    135.87992,
+    34.95737
+   ],
+   "municipality": {
+    "code": "26204",
+    "ja": "宇治市",
+    "en": "Uji City"
+   },
+   "src": "explore/uji.jpg",
+   "thumb": "explore/uji-s.jpg",
+   "width": 1400,
+   "height": 732,
+   "bytes": 190654,
+   "color": "#7a808b",
+   "credit": {
+    "artist": "Martin Falbisoner",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Phoenix_Hall,_Byodo-in,_November_2016_-01.jpg",
+    "file": "Phoenix Hall, Byodo-in, November 2016 -01.jpg",
+    "taken": "2016-11-18",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q61094",
+    "method": "photo coordinates inside the N03 polygon of the city"
+   }
+  },
+  {
+   "key": "joyo",
+   "code": "26207",
+   "ja": "城陽市",
+   "en": "Joyo City",
+   "tag": "Yamashiro",
+   "region": {
+    "ja": "山城",
+    "en": "Yamashiro"
+   },
+   "subject": {
+    "ja": "水度神社",
+    "en": "Mito Shrine"
+   },
+   "text": "Between Uji and Kyotanabe, east of the Kizu River.",
+   "area_km2": 32.7,
+   "wards": 0,
+   "bbox": [
+    135.74946,
+    34.8216,
+    135.8482,
+    34.87
+   ],
+   "municipality": {
+    "code": "26207",
+    "ja": "城陽市",
+    "en": "Joyo City"
+   },
+   "src": "explore/joyo.jpg",
+   "thumb": "explore/joyo-s.jpg",
    "width": 1400,
    "height": 933,
-   "bytes": 274456,
-   "color": "#7d7a76",
+   "bytes": 362110,
+   "color": "#605b49",
    "credit": {
-    "artist": "Smiley.toerist",
-    "license": "CC BY-SA 4.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-    "page": "https://commons.wikimedia.org/wiki/File:Sai_station_2024_5.jpg",
-    "file": "Sai station 2024 5.jpg",
-    "taken": "20 May 202",
+    "artist": "Saigen Jiro",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "page": "https://commons.wikimedia.org/wiki/File:Mito-Jinja_(Joyo),_keidai.jpg",
+    "file": "Mito-Jinja (Joyo), keidai.jpg",
+    "taken": "2023-09-16",
     "changes": "resized and recompressed"
    },
    "verified": {
-    "wikidata": "Q10883225",
-    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon); the file has no coordinates"
+    "wikidata": "Q11548558",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
+   }
+  },
+  {
+   "key": "yawata",
+   "code": "26210",
+   "ja": "八幡市",
+   "en": "Yawata City",
+   "tag": "Yamashiro",
+   "region": {
+    "ja": "山城",
+    "en": "Yamashiro"
+   },
+   "subject": {
+    "ja": "石清水八幡宮",
+    "en": "Iwashimizu Hachimangū"
+   },
+   "text": "Where the Katsura, Uji and Kizu rivers meet, below Mount Otokoyama.",
+   "area_km2": 24.35,
+   "wards": 0,
+   "bbox": [
+    135.67992,
+    34.8222,
+    135.75288,
+    34.89923
+   ],
+   "municipality": {
+    "code": "26210",
+    "ja": "八幡市",
+    "en": "Yawata City"
+   },
+   "src": "explore/yawata.jpg",
+   "thumb": "explore/yawata-s.jpg",
+   "width": 1400,
+   "height": 1050,
+   "bytes": 273629,
+   "color": "#927466",
+   "credit": {
+    "artist": "KENPEI",
+    "license": "CC BY-SA 3.0",
+    "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "page": "https://commons.wikimedia.org/wiki/File:Iwashimizu_Hachimangu4.jpg",
+    "file": "Iwashimizu Hachimangu4.jpg",
+    "taken": "2008-08-15",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q710098",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
+   }
+  },
+  {
+   "key": "kyotanabe",
+   "code": "26211",
+   "ja": "京田辺市",
+   "en": "Kyotanabe City",
+   "tag": "Yamashiro",
+   "region": {
+    "ja": "山城",
+    "en": "Yamashiro"
+   },
+   "subject": {
+    "ja": "酬恩庵（一休寺）",
+    "en": "Ikkyū-ji (Shūon-an)"
+   },
+   "text": "In the south of the prefecture, between Kyoto and Nara.",
+   "area_km2": 42.91,
+   "wards": 0,
+   "bbox": [
+    135.7187,
+    34.75181,
+    135.80242,
+    34.85402
+   ],
+   "municipality": {
+    "code": "26211",
+    "ja": "京田辺市",
+    "en": "Kyotanabe City"
+   },
+   "src": "explore/kyotanabe.jpg",
+   "thumb": "explore/kyotanabe-s.jpg",
+   "width": 1400,
+   "height": 1050,
+   "bytes": 201598,
+   "color": "#6d6763",
+   "credit": {
+    "artist": "Ogiyoshisan",
+    "license": "Public domain",
+    "license_url": "https://commons.wikimedia.org/wiki/File:Ikkyuji_Somon_DSCN1286_20101117.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Ikkyuji_Somon_DSCN1286_20101117.JPG",
+    "file": "Ikkyuji Somon DSCN1286 20101117.JPG",
+    "taken": "2010-11-17",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q11644421",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
+   }
+  },
+  {
+   "key": "kizugawa",
+   "code": "26214",
+   "ja": "木津川市",
+   "en": "Kizugawa City",
+   "tag": "Yamashiro",
+   "region": {
+    "ja": "山城",
+    "en": "Yamashiro"
+   },
+   "subject": {
+    "ja": "浄瑠璃寺",
+    "en": "Jōruri-ji"
+   },
+   "text": "The southern edge of the prefecture, next to Nara.",
+   "area_km2": 85.11,
+   "wards": 0,
+   "bbox": [
+    135.77398,
+    34.70575,
+    135.92207,
+    34.80335
+   ],
+   "municipality": {
+    "code": "26214",
+    "ja": "木津川市",
+    "en": "Kizugawa City"
+   },
+   "src": "explore/kizugawa.jpg",
+   "thumb": "explore/kizugawa-s.jpg",
+   "width": 1400,
+   "height": 933,
+   "bytes": 432040,
+   "color": "#6d6145",
+   "credit": {
+    "artist": "663highland",
+    "license": "CC BY 2.5",
+    "license_url": "https://creativecommons.org/licenses/by/2.5",
+    "page": "https://commons.wikimedia.org/wiki/File:Joruriji_Kizugawa_Kyoto_pref_Japan02s3.jpg",
+    "file": "Joruriji Kizugawa Kyoto pref Japan02s3.jpg",
+    "taken": "2012-11-10",
+    "changes": "resized and recompressed"
+   },
+   "verified": {
+    "wikidata": "Q1093645",
+    "method": "file description and linked Wikidata item (item coordinates inside the N03 polygon of the city); the file has no coordinates"
    }
   }
  ]

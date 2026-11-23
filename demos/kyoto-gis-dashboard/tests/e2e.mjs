@@ -48,7 +48,7 @@ const op = await page.evaluate(async () => {
   return { can: !!v.canPlayType('video/mp4; codecs="avc1.640034"'), loop: v.loop, muted: v.muted, w: v.videoWidth, h: v.videoHeight, adv: +((t1 - t0 + (t1 < t0 ? v.duration : 0)).toFixed(2)), title: document.querySelector('.ld-title').innerText, stats: document.querySelector('.ld-stats')?.innerText ?? '', team: !!document.querySelector('.ld-team'), menu: [...document.querySelectorAll('.ld-nav li button')].map((b) => b.textContent).join(','), btns: document.querySelectorAll('.ld-btns .wbtn').length, credit: document.querySelector('.ld-credit').innerText };
 });
 check('page 1: the cherry video loops, muted, full screen (1920x1080 cut on wide screens) and is playing', op.can ? op.loop && op.muted && op.w === 1920 && op.h === 1080 && op.adv > 0.8 : op.loop && op.muted, JSON.stringify({ ...op, title: undefined, stats: undefined, credit: undefined }) + (op.can ? '' : ' (this browser has no H.264 decoder; run with PW_CHANNEL=msedge)'));
-check('page 1: title, menu, two water buttons, video credit; the counts and team line are no longer repeated here', op.title.includes('Tourism GIS') && op.menu === 'Seasons,Places,Map,Data,Team' && op.stats === '' && !op.team && op.btns === 2 && op.credit.includes('Pixabay'), op.menu);
+check('page 1: title, menu, two water buttons, video credit; the counts and team line are no longer repeated here', op.title.includes('Travel Atlas') && op.menu === 'Seasons,Places,Map,Data,Team' && op.stats === '' && !op.team && op.btns === 2 && op.credit.includes('Pixabay'), op.menu);
 await page.hover('.ld-btns .wbtn');
 await page.waitForTimeout(1500);
 const water = await page.evaluate(() => +getComputedStyle(document.querySelector('.ld-btns .wbtn')).getPropertyValue('--fill'));
@@ -133,19 +133,19 @@ const ex = await page.evaluate(async () => {
   const order = [...document.querySelectorAll('#top, #seasons, #explore, #features, #dashboard, #credits')].map((e) => e.id);
   return { n: d.places.length, licences: [...new Set(d.places.map((p) => p.credit.license))], allCredited: d.places.every((p) => p.credit.artist && p.credit.page && p.credit.license_url && p.municipality.code && p.verified.method), thumbs: sec.querySelectorAll('.ex-dot').length, order, imgOk: [...sec.querySelectorAll('.ex-card.front img')].every((i) => i.complete && i.naturalWidth > 0) };
 });
-check('explore: 7 place photos, each with author, licence, source and a checked municipality', ex.n === 7 && ex.allCredited && ex.licences.every((l) => /^(CC0|Public domain|CC BY)/.test(l)), ex.licences.join(', '));
-check('page order: video, seasons, explore, features, dashboard, credits; front photo loaded', ex.order.join('>') === 'top>seasons>explore>features>dashboard>credits' && ex.thumbs === 7 && ex.imgOk, ex.order.join('>'));
+check('explore: 15 city photos, one per city of the study area, each with author, licence, source and a location check', ex.n === 15 && ex.allCredited && ex.licences.every((l) => /^(CC0|Public domain|CC BY)/.test(l)), ex.licences.join(', '));
+check('page order: video, seasons, explore, features, dashboard, credits; front photo loaded', ex.order.join('>') === 'top>seasons>explore>features>dashboard>credits' && ex.thumbs === 15 && ex.imgOk, ex.order.join('>'));
 await page.locator('.ex-dot').nth(3).click();
 await page.waitForTimeout(2500); // the deck glides to its place
 await page.waitForFunction(() => { const c = [...document.querySelectorAll('.ex-card')].find((e) => e.classList.contains('front')); return c && Math.abs(+c.style.getPropertyValue('--o')) < 0.02; }, null, { timeout: 15000 }).catch(() => {});   // until the deck has settled
 const exText = await page.locator('#explore').innerText();
-check('picking a place shows its name, municipality and photo credit', exText.includes('平等院') && exText.includes('Uji City') && exText.includes('Martin Falbisoner') && exText.includes('CC BY-SA 4.0') && /\d+ attractions? within 1 km/.test(exText));
+check('picking a city shows its name, what the photo shows, its facts and the photo credit', exText.includes('舞鶴市') && exText.includes('Maizuru City') && exText.includes('赤れんが博物館') && exText.includes('663highland') && exText.includes('CC BY 2.5') && /\d+ attractions? on the map/.test(exText) && /km²/.test(exText) && /M visits \(20\d\d\)/.test(exText), exText.slice(0, 300));
 const ringA = await page.evaluate(() => ({ rot: +document.querySelectorAll('.ex-card')[3].style.getPropertyValue('--o'), side: +document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--o'), front: document.querySelector('.ex-card.front .ex-cap strong').innerText, bg: [...document.querySelectorAll('.ex-bg i')].findIndex((e) => e.classList.contains('on')), h: document.getElementById('explore').offsetHeight }));
-check('picking a place glides the card deck there and swaps the blurred backdrop; the section is one screen tall', Math.abs(ringA.rot) < 0.06 && Math.abs(ringA.side - 1) < 0.06 && ringA.front === '平等院' && ringA.bg === 3 && ringA.h <= 920, JSON.stringify(ringA));
+check('picking a place glides the card deck there and swaps the blurred backdrop; the section is one screen tall', Math.abs(ringA.rot) < 0.06 && Math.abs(ringA.side - 1) < 0.06 && ringA.front === '舞鶴市' && ringA.bg === 3 && ringA.h <= 920, JSON.stringify(ringA));
 // the cards stand on a ring: neighbours are further back and turned away, the ring is endless, quick choices never queue
 await page.evaluate(() => document.getElementById('explore').dispatchEvent(new PointerEvent('pointerleave'))); await page.waitForTimeout(1800);   // pointer orbit back to centre
 const ringB = await page.evaluate(() => { const c = [...document.querySelectorAll('.ex-card')].map((e) => ({ z: parseFloat(e.style.getPropertyValue('--z')), ry: parseFloat(e.style.getPropertyValue('--ry')), op: +e.style.getPropertyValue('--op') })); return { front: c[3], side: c[4], far: c[6], persp: getComputedStyle(document.querySelector('.ex-deck')).perspective }; });
-check('explore scene: the chosen card faces the viewer in the middle; the others stand behind it, leaning and darker; all inside one perspective panel', Math.abs(ringB.front.z) < 1 && Math.abs(ringB.front.ry) < 1 && ringB.side.z < -60 && Math.abs(ringB.side.ry) > 8 && ringB.far.z < ringB.side.z - 200 && ringB.persp !== 'none', JSON.stringify(ringB));
+check('explore scene: the chosen card faces the viewer in the middle; the others stand behind it, leaning and darker; all inside one perspective panel', Math.abs(ringB.front.z) < 1 && Math.abs(ringB.front.ry) < 1 && ringB.side.z < -20 && Math.abs(ringB.side.ry) > 8 && ringB.far.z < ringB.side.z - 150 && ringB.persp !== 'none', JSON.stringify(ringB));
 await page.locator('.ex-seg button').nth(0).click(); await page.evaluate(() => document.getElementById('explore').dispatchEvent(new PointerEvent('pointerleave')));
 await page.waitForFunction(() => Math.abs(parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--rz')) - 10.5) < 0.6, null, { timeout: 12000 }).catch(() => {});   // the switch is slower when frames are slow (software rendering)
 const fanA = await page.evaluate(() => ({ rz: parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--rz')), ry: parseFloat(document.querySelectorAll('.ex-card')[4].style.getPropertyValue('--ry')), on: document.querySelector('.ex-seg .on').innerText }));
@@ -161,7 +161,7 @@ check('explore scene: the pointer turns the ring in depth (the front card yaws a
 for (let i = 0; i < 5; i++) { await page.locator('.ex-arrow').nth(1).click(); await page.waitForTimeout(50); }
 await page.waitForTimeout(2600); await page.waitForFunction(() => { const c = [...document.querySelectorAll('.ex-card')].find((e) => e.classList.contains('front')); return c && Math.abs(+c.style.getPropertyValue('--o')) < 0.02; }, null, { timeout: 15000 }).catch(() => {});   // until the deck has settled
 const ringC = await page.evaluate(() => { const cs = [...document.querySelectorAll('.ex-card')]; const f = cs.findIndex((e) => e.classList.contains('front')); return { f, o: +cs[f].style.getPropertyValue('--o'), card: cs[f].querySelector('.ex-cap span').innerText, bar: document.querySelector('.ex-place h3 span').innerText, dot: [...document.querySelectorAll('.ex-dot')].findIndex((d) => d.classList.contains('on')), bg: [...document.querySelectorAll('.ex-bg i')].findIndex((e) => e.classList.contains('on')), cta: document.querySelector('.ex-cta small').textContent }; });
-check('explore scene: five quick clicks from place 4 go round past the end to place 2; card, text, dot, backdrop and map button agree', ringC.f === 1 && Math.abs(ringC.o) < 0.06 && ringC.bar.includes(ringC.card) && ringC.dot === 1 && ringC.bg === 1 && ringC.cta.includes(ringC.card), JSON.stringify(ringC));
+check('explore scene: five quick clicks from city 4 go to city 9; card, text, dot, backdrop and map button agree', ringC.f === 8 && Math.abs(ringC.o) < 0.06 && ringC.bar.includes(ringC.card) && ringC.dot === 8 && ringC.bg === 8 && ringC.cta.includes(ringC.card), JSON.stringify(ringC));
 await page.locator('.ex-dot').nth(3).click();
 await page.waitForTimeout(2500); await page.waitForFunction(() => { const c = [...document.querySelectorAll('.ex-card')].find((e) => e.classList.contains('front')); return c && Math.abs(+c.style.getPropertyValue('--o')) < 0.02; }, null, { timeout: 15000 }).catch(() => {});   // until the deck has settled
 const dk = await page.locator('.ex-deck').boundingBox();
@@ -170,16 +170,16 @@ await page.mouse.down();
 for (let i = 1; i <= 8; i++) { await page.mouse.move(dk.x + dk.width / 2 + i * 22, dk.y + dk.height / 2); await page.waitForTimeout(30); }
 await page.mouse.up();
 await page.waitForTimeout(1500);
-check('dragging the deck sideways moves to the previous card', (await page.locator('.ex-card.front .ex-cap strong').innerText()) === '嵯峨野 竹林の小径');
+check('dragging the deck sideways moves to the previous card', (await page.locator('.ex-card.front .ex-cap strong').innerText()) === '宮津市');
 await page.locator('.ex-dot').nth(3).click();
 await page.waitForTimeout(1800);
 await page.locator('.ex-card.front .ex-flip').click();
 await page.waitForTimeout(1100);
-check('the front card flips to its photo credit', await page.evaluate(() => document.querySelector('.ex-card.front .ex-flip').classList.contains('flipped') && document.querySelector('.ex-card.front .ex-back').innerText.includes('Martin Falbisoner')));
+check('the front card flips to its photo credit', await page.evaluate(() => document.querySelector('.ex-card.front .ex-flip').classList.contains('flipped') && document.querySelector('.ex-card.front .ex-back').innerText.includes('663highland')));
 await page.getByRole('button', { name: /Explore Kyoto/ }).click();
 await page.waitForTimeout(7000);
 const exGo = await page.evaluate(() => { const m = window.__kyotoMap; const c = m.getCenter(); return { top: Math.round(document.getElementById('dashboard').getBoundingClientRect().top), lon: c.lng, lat: c.lat, z: m.getZoom() }; });
-check('"Explore Kyoto" opens the dashboard with the map at the chosen place', Math.abs(exGo.top) < 3 && Math.abs(exGo.lon - 135.8077) < 0.01 && Math.abs(exGo.lat - 34.8893) < 0.01 && exGo.z > 14, JSON.stringify(exGo));
+check('"Explore Kyoto" opens the dashboard with the map framed on the chosen city (Maizuru)', Math.abs(exGo.top) < 3 && Math.abs(exGo.lon - (135.15926 + 135.48686) / 2) < 0.02 && Math.abs(exGo.lat - (35.38003 + 35.71441) / 2) < 0.02 && exGo.z > 9 && exGo.z < 12.5, JSON.stringify(exGo));
 await page.evaluate(() => window.__kyotoMap.fitBounds([[134.85, 34.7], [136.06, 35.79]], { padding: 24, duration: 0 }));
 
 // 0c. feature strip and music
