@@ -18,9 +18,9 @@ import * as TP from '../src/lib/trip.js';
 const root = fileURLToPath(new URL('..', import.meta.url));
 
 // ---------- relay ----------
-function call(mw, { url = '/api/assistant', method = 'POST', body = '' } = {}) {
+function call(mw, { url = '/api/assistant', method = 'POST', body = '', headers = {} } = {}) {
   return new Promise((resolve) => {
-    const req = { url, method, async *[Symbol.asyncIterator]() { if (body) yield Buffer.from(body); } };
+    const req = { url, method, headers, async *[Symbol.asyncIterator]() { if (body) yield Buffer.from(body); } };
     const res = { statusCode: 0, headers: {}, setHeader(k, v) { this.headers[k] = v; }, end(t) { resolve({ status: this.statusCode, body: t, json: (() => { try { return JSON.parse(t); } catch { return null; } })() }); } };
     mw(req, res, () => resolve({ next: true }));
   });
@@ -33,11 +33,11 @@ const gemini = (status = 200, usage = { promptTokenCount: 1000, candidatesTokenC
 async function relay({ over = {}, fetchImpl, key = KEY, clock } = {}) {
   const dir = await mkdtemp(join(tmpdir(), 'atlas-relay-'));
   const logFile = join(dir, 'usage.jsonl');
-  const sent = [];
+  const sent = [], waits = [];
   const t = clock || { now: Date.parse('2026-11-23T12:00:00Z') };
   const f = fetchImpl || (async (u, o) => { sent.push({ u, o, body: JSON.parse(o.body) }); return gemini(); });
-  const mw = assistantMiddleware({ fetchImpl: async (u, o) => { if (fetchImpl) sent.push({ u, o, body: JSON.parse(o.body) }); return f(u, o); }, config: () => conf(over), key: () => key, logFile, base: () => 'https://stand-in.test', now: () => t.now, sleep: async () => {} });
-  return { mw, logFile, sent, t, log: () => (existsSync(logFile) ? readFileSync(logFile, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []) };
+  const mw = assistantMiddleware({ fetchImpl: async (u, o) => { if (fetchImpl) sent.push({ u, o, body: JSON.parse(o.body) }); return f(u, o); }, config: () => conf(over), key: () => key, logFile, base: () => 'https://stand-in.test', now: () => t.now, sleep: async (ms) => { waits.push(ms); } });
+  return { mw, logFile, sent, t, waits, log: () => (existsSync(logFile) ? readFileSync(logFile, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []) };
 }
 
 test('config: gemini-4-hydrogen, medium thinking (high for planning), Standard tier, Standard prices, a daily cap of RM3 and limits', () => {
@@ -45,7 +45,11 @@ test('config: gemini-4-hydrogen, medium thinking (high for planning), Standard t
   assert.equal(c.model, 'gemini-4-hydrogen');
   assert.deepEqual(c.thinking, { default: 'medium', planning: 'high', allowed: ['medium', 'high'] });
   assert.equal(c.service_tier, 'standard');
-  assert.deepEqual([c.price_usd_per_million_tokens.input, c.price_usd_per_million_tokens.cached_input, c.price_usd_per_million_tokens.output_including_thinking], [1.5, 0.075, 7.5]);
+  const pr = (m) => [c.price_usd_per_million_tokens[m].input, c.price_usd_per_million_tokens[m].cached_input, c.price_usd_per_million_tokens[m].output_including_thinking];
+  assert.deepEqual(pr('gemini-4-hydrogen'), [1.5, 0.075, 7.5]);
+  assert.deepEqual(c.fallback_models, ['gemini-3.8-flash', 'gemini-3.6-flash']);
+  assert.deepEqual([pr('gemini-3.8-flash'), pr('gemini-3.6-flash')], [[0.75, 0.075, 3.75], [0.75, 0.075, 3.75]]);
+  assert.deepEqual([c.limits.retries, c.limits.backoff_seconds, c.limits.cooldown_seconds], [3, 1, 180]);
   assert.deepEqual([c.billing_currency.code, c.billing_currency.symbol, c.billing_currency.per_usd, c.limits.max_cost_per_day], ['MYR', 'RM', 4.122961, 3]);
   assert.ok(c.limits.max_requests_per_day > 0 && c.limits.max_tool_rounds_per_question > 0 && c.limits.timeout_seconds > 0);
   assert.equal(loadConfig(undefined, (n) => (n === 'GEMINI_MODEL' ? 'gemini-3.8-flash' : '')).model, 'gemini-3.8-flash');
@@ -127,23 +131,76 @@ test('relay: the same request twice within the window is sent once; after the wi
   assert.equal(r0.sent.length, 2);
 });
 
-test('relay: busy or failing answers are retried (2 retries), billing and request errors are not; a timeout is reported', async () => {
+test('relay: busy answers are retried with exponential backoff (1 s, 2 s, 4 s), at most 3 times; billing and request errors are not retried', async () => {
   let n = 0;
-  const busy = await relay({ fetchImpl: async () => (++n < 3 ? gemini(503) : gemini()) });
+  const busy = await relay({ fetchImpl: async () => (++n < 4 ? gemini(503) : gemini()) });
   const ok = await call(busy.mw, { body: pageBody() });
-  assert.deepEqual([ok.status, ok.json.atlasUsage.attempts, busy.sent.length], [200, 3, 3]);
+  assert.deepEqual([ok.status, ok.json.atlasUsage.attempts, busy.sent.length, busy.waits], [200, 4, 4, [1000, 2000, 4000]]);
+  const always = await relay({ fetchImpl: async () => gemini(503) });
+  const a = await call(always.mw, { body: pageBody() });
+  assert.deepEqual([a.status, a.json.error.kind, always.sent.length], [503, 'overloaded', 4]);
+  assert.match(a.json.error.message, /^Gemini is overloaded right now \(HTTP 503\)\. .* Models tried: gemini-4-hydrogen 503 > gemini-4-hydrogen 503 > gemini-4-hydrogen 503 > gemini-4-hydrogen 503\. Google said: stand-in error 503$/);
   const pay = await relay({ fetchImpl: async () => gemini(402) });
   const p = await call(pay.mw, { body: pageBody() });
-  assert.deepEqual([p.status, pay.sent.length, p.json.error.message], [402, 1, 'stand-in error 402']);
+  assert.deepEqual([p.status, pay.sent.length, p.json.error.kind], [402, 1, 'billing']);
+  assert.match(p.json.error.message, /^Billing: the Google project has no prepaid credit left \(HTTP 402\)/);
   assert.equal(pay.log()[0].error, 'stand-in error 402');
+  const bad = await relay({ fetchImpl: async () => gemini(400) });
+  assert.deepEqual([(await call(bad.mw, { body: pageBody() })).json.error.kind, bad.sent.length], ['bad_request', 1]);
+});
+
+test('relay: 429, network errors and timeouts are told apart', async () => {
+  const rl = await relay({ fetchImpl: async () => gemini(429) });
+  const r = await call(rl.mw, { body: pageBody() });
+  assert.deepEqual([r.status, r.json.error.kind], [429, 'rate_limit']);
+  assert.match(r.json.error.message, /^Rate limit or quota reached \(HTTP 429\)/);
   const down = await relay({ fetchImpl: async () => { throw new TypeError('fetch failed'); } });
   const d = await call(down.mw, { body: pageBody() });
-  assert.equal(d.status, 502);
-  assert.match(d.json.error.message, /Tried 3 times/);
+  assert.deepEqual([d.status, d.json.error.kind, down.sent.length], [502, 'network', 4]);
+  assert.match(d.json.error.message, /could not reach the Gemini API \(network error\)/);
   const slow = await relay({ fetchImpl: async () => { throw new DOMException('The operation timed out.', 'TimeoutError'); } });
-  const s = await call(slow.mw, { body: pageBody() });
-  assert.equal(s.status, 504);
-  assert.match(s.json.error.message, /did not answer within 90 s/);
+  const s1 = await call(slow.mw, { body: pageBody() });
+  assert.deepEqual([s1.status, s1.json.error.kind], [504, 'timeout']);
+  assert.match(s1.json.error.message, /did not answer within 60 s/);
+});
+
+const FALLBACK = { fallback_models: ['gemini-3.8-flash', 'gemini-3.6-flash'], price_usd_per_million_tokens: { ...DEFAULTS.price_usd_per_million_tokens, 'gemini-3.8-flash': { input: 0.75, cached_input: 0.075, output_including_thinking: 3.75 }, 'gemini-3.6-flash': { input: 0.75, cached_input: 0.075, output_including_thinking: 3.75 } } };
+const modelOf = (u) => u.match(/models\/(.+):generateContent/)[1];
+
+test('fallback: when the main model is overloaded the next model answers; failing models are skipped for 3 minutes, then tried again', async () => {
+  const down = new Set(['gemini-4-hydrogen', 'gemini-3.8-flash']);
+  const r0 = await relay({ over: FALLBACK, fetchImpl: async (u) => (down.has(modelOf(u)) ? gemini(503) : gemini()) });
+  const a = await call(r0.mw, { body: pageBody('one') });
+  const u = a.json.atlasUsage;
+  assert.deepEqual([a.status, u.model, u.fallback, u.attempts, u.tried, r0.waits], [200, 'gemini-3.6-flash', true, 3, 'gemini-4-hydrogen 503 > gemini-3.8-flash 503 > gemini-3.6-flash 200', [1000, 2000]]);
+  // priced at gemini-3.6-flash's rates: 1,000 in at $0.75/M + 500 out and thinking at $3.75/M
+  assert.equal(u.usd, 0.002625);
+  // the next question goes straight to the model that answered
+  await call(r0.mw, { body: pageBody('two') });
+  assert.deepEqual(r0.sent.slice(3).map((x) => modelOf(x.u)), ['gemini-3.6-flash']);
+  // after the cooldown the main model is tried first again
+  r0.t.now += 181_000; down.clear();
+  const c = await call(r0.mw, { body: pageBody('three') });
+  assert.deepEqual([c.json.atlasUsage.model, c.json.atlasUsage.fallback], ['gemini-4-hydrogen', false]);
+  const st = await call(r0.mw, { url: '/api/assistant/status', method: 'GET' });
+  assert.deepEqual(st.json.fallback_models, ['gemini-3.8-flash', 'gemini-3.6-flash']);
+});
+
+test('fallback: a model that does not exist (404) is passed over at once', async () => {
+  const r0 = await relay({ over: FALLBACK, fetchImpl: async (u) => (modelOf(u) === 'gemini-4-hydrogen' ? gemini(404) : gemini()) });
+  const a = await call(r0.mw, { body: pageBody() });
+  assert.deepEqual([a.json.atlasUsage.model, a.json.atlasUsage.tried, r0.waits], ['gemini-3.8-flash', 'gemini-4-hydrogen 404 > gemini-3.8-flash 200', []]);
+});
+
+test('fallback: a conversation stays on its model; when it has to move, earlier thought signatures become Google\'s placeholder', async () => {
+  const withSig = JSON.stringify({ contents: [{ role: 'user', parts: [{ text: 'q' }] }, { role: 'model', parts: [{ functionCall: { name: 'get_trip', args: {}, id: 'c1' }, thoughtSignature: 'SIG-FROM-3.6' }] }, { role: 'user', parts: [{ functionResponse: { name: 'get_trip', id: 'c1', response: { result: {} } } }] }], generationConfig: { thinkingConfig: { thinkingLevel: 'medium' }, maxOutputTokens: 8192 }, serviceTier: 'standard' });
+  const ok = await relay({ over: FALLBACK });
+  await call(ok.mw, { body: withSig, headers: { 'x-atlas-model': 'gemini-3.6-flash' } });
+  assert.deepEqual([modelOf(ok.sent[0].u), ok.sent[0].body.contents[1].parts[0].thoughtSignature], ['gemini-3.6-flash', 'SIG-FROM-3.6']);
+  const moved = await relay({ over: FALLBACK, fetchImpl: async (u) => (modelOf(u) === 'gemini-3.6-flash' ? gemini(503) : gemini()) });
+  const m = await call(moved.mw, { body: withSig, headers: { 'x-atlas-model': 'gemini-3.6-flash' } });
+  assert.equal(m.json.atlasUsage.model, 'gemini-4-hydrogen');
+  assert.equal(moved.sent[1].body.contents[1].parts[0].thoughtSignature, 'skip_thought_signature_validator');
 });
 
 test('relay: daily limits on requests and on the estimated cost in the billing currency (RM) stop further calls', async () => {
@@ -218,6 +275,17 @@ test('loop: runs the tool Gemini asks for, sends the result back with the call\'
   assert.deepEqual(bodies[1].contents[2], { role: 'user', parts: [{ functionResponse: { name: 'search_places', id: 'c1', response: { result: { count: 1 } } } }] });
   assert.equal(r.contents.length, 4);
   assert.deepEqual([r.usage.calls, r.usage.total, r.usage.thinking_tokens, r.usage.usd, r.usage.thinking], [2, 2300, 100, 0.004, 'high']);
+});
+
+test('loop: the page tells the relay which model the conversation is on, and follows a fallback', async () => {
+  const heads = [];
+  const fb = (o) => ({ ...o, atlasUsage: { ...use, model: 'gemini-3.6-flash', fallback: true, status: 200 } });
+  const script = [fb(modelCall('get_trip', {}, 'g1')), fb(modelText('ok'))];
+  const r = await askAssistant({ text: 'q', model: '', declarations: DECLARATIONS, handlers: { get_trip: () => ({ days: [] }) },
+    fetchImpl: async (u, o) => { heads.push(o.headers['X-Atlas-Model'] || null); return reply(script.shift()); } });
+  assert.deepEqual(heads, [null, 'gemini-3.6-flash']);
+  assert.deepEqual([r.usage.model, r.usage.fallback], ['gemini-3.6-flash', true]);
+  await assert.rejects(askAssistant({ text: 'q', declarations: [], handlers: {}, fetchImpl: async () => reply({ error: { message: 'Gemini is overloaded right now (HTTP 503).', kind: 'overloaded', tried: 'gemini-4-hydrogen 503' } }, 503) }), (e) => e.kind === 'overloaded' && e.tried === 'gemini-4-hydrogen 503');
 });
 
 test('loop: a failing or unknown tool goes back to Gemini as an error; HTTP errors and blocked answers are reported', async () => {
@@ -304,6 +372,17 @@ test('search: the clearest match comes first, and one bus stop\'s platforms are 
   assert.ok(uji.results.every((r) => r.kind === 'Museum' && r.city === '宇治市 (Uji City)'));
   assert.equal(tools.search_places({ query: '', kind: 'any', city: '宇治' }).count, 20);
   assert.equal(tools.search_places({ query: '', kind: 'any', city: 'Uji' }).count, 19);
+});
+
+test('search: when one kind finds nothing, records of other kinds with that name come back with a note (the shrine is stored as a viewpoint)', () => {
+  const r = tools.search_places({ query: '伏見稲荷大社', kind: 'shrine' });
+  assert.equal(r.count, 0);
+  assert.equal(r.other_kinds[0].id, 'A00306');
+  assert.equal(r.other_kinds[0].kind, 'Viewpoint');
+  assert.match(r.note, /OpenStreetMap/);
+  // 金閣寺's main record is named 金閣 (Golden Pavilion): the full name only finds the viewpoints that lie in it
+  assert.ok(tools.search_places({ query: '金閣寺', kind: 'temple' }).other_kinds.length > 0);
+  assert.equal(tools.search_places({ query: '金閣' }).results[0].id, 'A00265');
 });
 
 test('get_place: names, city, and the walking route to the nearest stop exactly as in the walking file', () => {

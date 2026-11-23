@@ -753,3 +753,15 @@ kyoto-gis-dashboard/
 - 四季页和全景页的按钮文字从 “Explore seven places”、“Seven places to start” 改成 “Explore fifteen cities”、“Fifteen cities to start”。
 - **Windows ZIP 和在线预览**（2026-11-23 第四次）：`Kyoto-Prefecture-Travel-Atlas-Windows-2026-11-23.zip`（896 个文件，多了 `assistant-config.json`；95.6 MB），用自带启动服务器跑完整浏览器测试 222/222，逻辑测试 65/65，`serve.ps1` 的转发规则用假的 Gemini 测 11/11，RM 上限另外测过（上限调成 RM0.01，第二次请求回 429）。在线预览更新到第 44 版（同一个链接）。
 - **真实 Gemini 调用记录**（`logs/assistant-usage.jsonl`）：6 次调用、16 次尝试（含重试），1 次 402（充值前）、5 次 503（充值后，Google 容量不足），0 tokens，RM0。
+
+## 7j. 2026-11-24：助手的备用模型、重试和错误原因
+
+- **用最简单的文字请求测每个模型**（2026-11-23 晚上，每个只试 1 次）：gemini-4-hydrogen、gemini-4-argon、carbon、neon、gemini-3.8-flash、gemini-3.5-flash-lite 都回 503「high demand」；**gemini-3.6-flash 回 200**（gemini-3.5-flash 也回 200，但 Google 实际是用 3.6-flash 回答的）。所以 key、额度、权限都没问题，是 Google 那边容量不足。
+- **备用模型**（`assistant-config.json` 的 `fallback_models`）：gemini-4-hydrogen → gemini-3.8-flash → gemini-3.6-flash。主模型 503（繁忙）、429（频率或配额）、5xx 或超时，就换下一个；失败的模型 3 分钟内跳过（`cooldown_seconds`），之后的问题直接交给能回答的模型，3 分钟后再试主模型。404（模型不存在）立刻换下一个。3.8-flash 和 3.6-flash 的 Standard 价格是输入 $0.75、输出 $3.75 每百万 tokens（到 2026-12-31，2027 年起 $1.50、$7.50），费用按实际回答的模型计算。
+- **指数退避**：最多重试 3 次，等 1 秒、2 秒、4 秒（Google 给 Retry-After 时照它，最多 10 秒），一个问题总共最多 150 秒；每次请求 60 秒超时。402（额度）、400（请求有误）、401/403（key 被拒）不重试，也不换模型（402 是整个账户的问题）。
+- **同一段对话换模型**：Gemini 在回答里附的 thought signature 只有原来的模型认得。实测：把别的模型的签名发给 3.6-flash 回 400「Corrupted thought signature」，换成 Google 文件里的占位值 `skip_thought_signature_validator` 就回 200。所以页面每次告诉本机服务器这段对话在用哪个模型（`X-Atlas-Model`），一个问题的几轮工具调用都留在同一个模型；必须换模型时，之前的签名改成占位值。
+- **错误原因分开显示**：402 Billing、429 Rate limit、503 Gemini overloaded、5xx 服务错误、超时、网络连不上、key 被拒、模型不存在、请求有误、每日上限、重复送出，各有标题，下面是说明、试过的模型和 Google 的原话，还有一句 “The map, the analysis and the trip planner keep working without the assistant.”。助手出错不影响地图、分析和行程规划。
+- **用真的 Gemini 测**：
+  - 自动换到 gemini-3.6-flash 后，问答和地图操作成功：问 “Show me the walking routes from Kiyomizu-dera”，它搜索、读资料，打开清水寺的 Walking Routes，地图显示路线，回答里的距离和地图一致（最近巴士站 789 m）。3 次调用、8,319 tokens、约 RM0.033。
+  - 行程规划第一次没完成：数据里伏見稲荷大社是 Viewpoint、金阁寺的主记录叫「金閣 (Golden Pavilion)」，它找不到 “shrine/temple” 就一直搜索，到每问 6 轮的上限停下（约 RM0.106，行程没被改）。已修改：按类别搜不到时，同名的其他类别记录会一起回来并说明原因；规则里也写了先把地点都找出来再一起加。之后再测两次时所有模型（包括 3.6-flash）都回 503，所以修改后的行程规划**还没在真的 Gemini 上测过**。
+- **测试**：`tests/assistant.test.mjs` 29 个（加了退避 1/2/4 秒、最多 4 次、402/400 不重试、429/网络/超时分开、备用模型和 3 分钟跳过、404 立刻换、签名占位、搜不到同类别时回其他类别、页面带上模型名）；逻辑测试共 71 个。`serve.ps1` 的同一套规则用假的 Gemini 测 12/12。

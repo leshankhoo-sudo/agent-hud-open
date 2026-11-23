@@ -31,7 +31,9 @@ Start-Process $url
 # the conversation to /api/assistant on this computer; this script adds the Gemini API key from this
 # computer's environment (GEMINI_API_KEY, set once with setx) and passes it on to Google. The key never
 # reaches the browser and is not in any file of the site.
-# assistant-config.json next to this script sets the model (gemini-4-hydrogen; GEMINI_MODEL overrides it),
+# assistant-config.json next to this script sets the model (gemini-4-hydrogen; GEMINI_MODEL overrides it)
+# and the fallback models used in order when it is overloaded, rate-limited or failing (a model that fails is
+# skipped for a few minutes), at most 3 retries with exponential backoff (1 s, 2 s, 4 s),
 # the allowed thinking levels (medium by default, high for planning), the Standard service tier (never
 # Priority), the prices for the cost estimate, the billing currency (RM) and the limits: requests and cost
 # per day, output tokens, timeout, retries and the duplicate guard. Each call is logged to
@@ -40,6 +42,10 @@ try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::S
 $AssistantLog = Join-Path $PSScriptRoot 'assistant-usage.jsonl'
 $Inv = [Globalization.CultureInfo]::InvariantCulture
 $script:LastRequest = @{ Hash = ''; At = [datetime]::MinValue }
+$script:Cooling = @{}   # model -> until when it is skipped
+# Gemini's thought signatures only work with the model that wrote them; when a conversation moves to another
+# model they are replaced by the placeholder Google documents for conversations from another model
+$SignaturePlaceholder = 'skip_thought_signature_validator'
 function Get-UserSetting($name) {
   $v = [Environment]::GetEnvironmentVariable($name, 'Process')
   if (-not $v) { $v = [Environment]::GetEnvironmentVariable($name, 'User') }
@@ -58,39 +64,74 @@ function Get-JsonText($s) {
   return '"' + ($t -replace '[\x00-\x1f]', ' ') + '"'
 }
 function Get-Num($x) { return ([double]$x).ToString($Inv) }
-function Send-Error($res, $code, $message) { Send-Json $res $code ('{"error":{"message":' + (Get-JsonText $message) + '}}') }
+function Send-Error($res, $code, $message, $kind) {
+  $k = ''; if ($kind) { $k = ',"kind":' + (Get-JsonText $kind) }
+  Send-Json $res $code ('{"error":{"message":' + (Get-JsonText $message) + $k + '}}')
+}
+# what went wrong, from the status of an attempt
+function Get-ErrorKind($status, $timedOut) {
+  if ($status -eq 0) { if ($timedOut) { return 'timeout' } else { return 'network' } }
+  if ($status -lt 300) { return 'ok' }
+  if ($status -eq 402) { return 'billing' }
+  if ($status -eq 429) { return 'rate_limit' }
+  if ($status -eq 503) { return 'overloaded' }
+  if ($status -eq 400) { return 'bad_request' }
+  if ($status -eq 401 -or $status -eq 403) { return 'auth' }
+  if ($status -eq 404) { return 'not_found' }
+  if ($status -ge 500) { return 'server' }
+  return 'error'
+}
+function Get-FailMessage($kind, $status, $google, $tried, $c) {
+  $why = 'Gemini answered HTTP ' + $status + '.'
+  if ($kind -eq 'billing') { $why = 'Billing: the Google project has no prepaid credit left (HTTP 402). Add credit in AI Studio > Billing.' }
+  elseif ($kind -eq 'rate_limit') { $why = 'Rate limit or quota reached (HTTP 429). Wait a minute and ask again.' }
+  elseif ($kind -eq 'overloaded') { $why = 'Gemini is overloaded right now (HTTP 503). This is on Google''s side; try again in a few minutes.' }
+  elseif ($kind -eq 'server') { $why = 'The Gemini service had an error (HTTP ' + $status + '). Try again in a few minutes.' }
+  elseif ($kind -eq 'timeout') { $why = 'Gemini did not answer within ' + (Get-Num $c.timeout_seconds) + ' s.' }
+  elseif ($kind -eq 'network') { $why = 'This computer could not reach the Gemini API (network error). Check the internet connection or a firewall.' }
+  elseif ($kind -eq 'auth') { $why = 'Google refused the API key (HTTP ' + $status + '). Check GEMINI_API_KEY on this computer.' }
+  elseif ($kind -eq 'not_found') { $why = 'The model was not found (HTTP 404). Check the model names in assistant-config.json.' }
+  elseif ($kind -eq 'bad_request') { $why = 'Gemini could not read the request (HTTP 400).' }
+  $m = $why + ' Models tried: ' + $tried + '.'
+  if ($google) { $m += ' Google said: ' + $google }
+  return $m
+}
 function Get-AssistantConfig {
-  $c = @{ model = 'gemini-4-hydrogen'; tDefault = 'medium'; tPlanning = 'high'; allowed = @('medium', 'high'); tier = 'standard'
-    pIn = 1.5; pCached = 0.075; pOut = 7.5; curCode = 'USD'; curSymbol = '$'; perUsd = 1.0
+  $c = @{ model = 'gemini-4-hydrogen'; fallbacks = @(); tDefault = 'medium'; tPlanning = 'high'; allowed = @('medium', 'high'); tier = 'standard'
+    prices = @{ 'gemini-4-hydrogen' = @(1.5, 0.075, 7.5) }; curCode = 'USD'; curSymbol = '$'; perUsd = 1.0
     max_requests_per_day = 200; max_cost_per_day = 1.0; max_tool_rounds_per_question = 6; max_tool_calls_per_question = 12
-    max_history_turns = 6; max_output_tokens = 8192; timeout_seconds = 90; retries = 2; duplicate_window_seconds = 5 }
+    max_history_turns = 6; max_output_tokens = 8192; timeout_seconds = 60; retries = 3; backoff_seconds = 1; max_total_seconds = 150
+    cooldown_seconds = 180; duplicate_window_seconds = 5 }
   $f = Join-Path $PSScriptRoot 'assistant-config.json'
   if (Test-Path -LiteralPath $f) {
     try {
       $j = [IO.File]::ReadAllText($f) | ConvertFrom-Json
       if ($j.model) { $c.model = [string]$j.model }
+      if ($j.fallback_models) { $c.fallbacks = @($j.fallback_models | ForEach-Object { [string]$_ }) }
       if ($j.thinking.default) { $c.tDefault = ([string]$j.thinking.default).ToLower() }
       if ($j.thinking.planning) { $c.tPlanning = ([string]$j.thinking.planning).ToLower() }
       if ($j.thinking.allowed) { $c.allowed = @($j.thinking.allowed | ForEach-Object { ([string]$_).ToLower() }) }
       if ($j.service_tier) { $c.tier = ([string]$j.service_tier).ToLower() }
       $pr = $j.price_usd_per_million_tokens
-      if ($pr) {
-        if ($null -ne $pr.input) { $c.pIn = [double]$pr.input }
-        if ($null -ne $pr.cached_input) { $c.pCached = [double]$pr.cached_input }
-        if ($null -ne $pr.output_including_thinking) { $c.pOut = [double]$pr.output_including_thinking }
-      }
+      if ($pr) { foreach ($p in $pr.PSObject.Properties) { if ($null -ne $p.Value.input) { $c.prices[$p.Name] = @([double]$p.Value.input, [double]$p.Value.cached_input, [double]$p.Value.output_including_thinking) } } }
       $bc = $j.billing_currency
       if ($bc) {
         if ($bc.code) { $c.curCode = [string]$bc.code }
         if ($bc.symbol) { $c.curSymbol = [string]$bc.symbol }
         if ($null -ne $bc.per_usd) { $c.perUsd = [double]$bc.per_usd }
       }
-      if ($j.limits) { foreach ($k in @('max_requests_per_day', 'max_cost_per_day', 'max_tool_rounds_per_question', 'max_tool_calls_per_question', 'max_history_turns', 'max_output_tokens', 'timeout_seconds', 'retries', 'duplicate_window_seconds')) { if ($null -ne $j.limits.$k) { $c[$k] = [double]$j.limits.$k } } }
+      if ($j.limits) { foreach ($k in @('max_requests_per_day', 'max_cost_per_day', 'max_tool_rounds_per_question', 'max_tool_calls_per_question', 'max_history_turns', 'max_output_tokens', 'timeout_seconds', 'retries', 'backoff_seconds', 'max_total_seconds', 'cooldown_seconds', 'duplicate_window_seconds')) { if ($null -ne $j.limits.$k) { $c[$k] = [double]$j.limits.$k } } }
     } catch { }
   }
   $m = Get-UserSetting 'GEMINI_MODEL'
   if ($m) { $c.model = $m }
+  $c.fallbacks = @($c.fallbacks | Where-Object { $_ -and $_ -ne $c.model })
   return $c
+}
+function Get-Price($c, $model) {
+  if ($c.prices.ContainsKey($model)) { return $c.prices[$model] }
+  if ($c.prices.ContainsKey($c.model)) { return $c.prices[$c.model] }
+  return @(1.5, 0.075, 7.5)
 }
 # today's calls and estimated cost, from the usage log
 function Get-AssistantToday($day, $perUsd) {
@@ -115,9 +156,11 @@ function Invoke-AssistantRelay($ctx) {
   if ($ctx.Request.Url.AbsolutePath.EndsWith('/status')) {
     $conf = 'false'; if ($key) { $conf = 'true' }
     $allowed = ($c.allowed | ForEach-Object { Get-JsonText $_ }) -join ','
-    $lim = (@('max_requests_per_day', 'max_cost_per_day', 'max_tool_rounds_per_question', 'max_tool_calls_per_question', 'max_history_turns', 'max_output_tokens', 'timeout_seconds', 'retries', 'duplicate_window_seconds') | ForEach-Object { '"' + $_ + '":' + (Get-Num $c[$_]) }) -join ','
+    $lim = (@('max_requests_per_day', 'max_cost_per_day', 'max_tool_rounds_per_question', 'max_tool_calls_per_question', 'max_history_turns', 'max_output_tokens', 'timeout_seconds', 'retries', 'backoff_seconds', 'max_total_seconds', 'cooldown_seconds', 'duplicate_window_seconds') | ForEach-Object { '"' + $_ + '":' + (Get-Num $c[$_]) }) -join ','
     $st = '{"configured":' + $conf + ',"model":' + (Get-JsonText $c.model) + ',"thinking":{"default":' + (Get-JsonText $c.tDefault) + ',"planning":' + (Get-JsonText $c.tPlanning) + ',"allowed":[' + $allowed + ']}' +
-      ',"service_tier":' + (Get-JsonText $c.tier) + ',"limits":{' + $lim + '},"price_usd_per_million_tokens":{"input":' + (Get-Num $c.pIn) + ',"cached_input":' + (Get-Num $c.pCached) + ',"output_including_thinking":' + (Get-Num $c.pOut) + '}' +
+      ',"service_tier":' + (Get-JsonText $c.tier) + ',"limits":{' + $lim + '},"price_usd_per_million_tokens":{' + (($c.prices.Keys | Sort-Object | ForEach-Object { (Get-JsonText $_) + ':{"input":' + (Get-Num $c.prices[$_][0]) + ',"cached_input":' + (Get-Num $c.prices[$_][1]) + ',"output_including_thinking":' + (Get-Num $c.prices[$_][2]) + '}' }) -join ',') + '}' +
+      ',"fallback_models":[' + (($c.fallbacks | ForEach-Object { Get-JsonText $_ }) -join ',') + ']' +
+      ',"cooling":{' + (($script:Cooling.Keys | Where-Object { $script:Cooling[$_] -gt $now } | ForEach-Object { (Get-JsonText $_) + ':' + [int](($script:Cooling[$_] - $now).TotalSeconds) }) -join ',') + '}' +
       ',"billing_currency":{"code":' + (Get-JsonText $c.curCode) + ',"symbol":' + (Get-JsonText $c.curSymbol) + ',"per_usd":' + (Get-Num $c.perUsd) + '}' +
       ',"today":' + (Get-TodayJson (Get-AssistantToday $day $c.perUsd)) + '}'
     Send-Json $res 200 $st; return
@@ -126,7 +169,7 @@ function Invoke-AssistantRelay($ctx) {
   $ms = New-Object System.IO.MemoryStream
   $ctx.Request.InputStream.CopyTo($ms)
   if ($ms.Length -gt 2MB) { Send-Error $res 413 'The conversation is too long.'; return }
-  if (-not $key) { Send-Error $res 503 'GEMINI_API_KEY is not set on this computer. See Support for how to add it.'; return }
+  if (-not $key) { Send-Error $res 503 'GEMINI_API_KEY is not set on this computer. See Support for how to add it.' 'no_key'; return }
   $rawBytes = $ms.ToArray()
   $text = [System.Text.Encoding]::UTF8.GetString($rawBytes)
   try { $req = $text | ConvertFrom-Json } catch { Send-Error $res 400 'The request is not JSON.'; return }
@@ -150,19 +193,32 @@ function Invoke-AssistantRelay($ctx) {
   # the same request twice in a few seconds (a double click, a loop) is not sent again
   $sha = [System.Security.Cryptography.SHA256]::Create()
   $hash = [BitConverter]::ToString($sha.ComputeHash($rawBytes))
-  if ($script:LastRequest.Hash -eq $hash -and ($now - $script:LastRequest.At).TotalSeconds -lt $c.duplicate_window_seconds) { Send-Error $res 409 ('The same request arrived twice within ' + (Get-Num $c.duplicate_window_seconds) + ' s; the second one was not sent to Gemini.'); return }
+  if ($script:LastRequest.Hash -eq $hash -and ($now - $script:LastRequest.At).TotalSeconds -lt $c.duplicate_window_seconds) { Send-Error $res 409 ('The same request arrived twice within ' + (Get-Num $c.duplicate_window_seconds) + ' s; the second one was not sent to Gemini.') 'duplicate'; return }
   $today = Get-AssistantToday $day $c.perUsd
-  if ($today.requests -ge $c.max_requests_per_day) { Send-Error $res 429 ('Daily limit reached: ' + $today.requests + ' Gemini requests today (max_requests_per_day in assistant-config.json).'); return }
-  if ($today.cost -ge $c.max_cost_per_day) { Send-Error $res 429 ('Daily limit reached: about ' + $c.curSymbol + $today.cost.ToString('0.0000', $Inv) + ' (US$' + $today.usd.ToString('0.0000', $Inv) + ') spent today; max_cost_per_day is ' + $c.curSymbol + (Get-Num $c.max_cost_per_day) + ' in assistant-config.json.'); return }
+  if ($today.requests -ge $c.max_requests_per_day) { Send-Error $res 429 ('Daily limit reached: ' + $today.requests + ' Gemini requests today (max_requests_per_day in assistant-config.json).') 'daily_limit'; return }
+  if ($today.cost -ge $c.max_cost_per_day) { Send-Error $res 429 ('Daily limit reached: about ' + $c.curSymbol + $today.cost.ToString('0.0000', $Inv) + ' (US$' + $today.usd.ToString('0.0000', $Inv) + ') spent today; max_cost_per_day is ' + $c.curSymbol + (Get-Num $c.max_cost_per_day) + ' in assistant-config.json.') 'daily_limit'; return }
   $script:LastRequest = @{ Hash = $hash; At = $now }
   $base = Get-UserSetting 'GEMINI_API_BASE'
   if (-not $base) { $base = 'https://generativelanguage.googleapis.com' }
-  $url = $base.TrimEnd('/') + '/v1beta/models/' + [Uri]::EscapeDataString($c.model) + ':generateContent'
-  $body = [System.Text.Encoding]::UTF8.GetBytes($text)
-  $attempts = 0; $status = 0; $respText = ''; $tierHdr = $null; $errMsg = $null; $timedOut = $false
+  # which models to try: the one this conversation is on (the page says so), then the main model, then the
+  # fallbacks; a model that recently failed is skipped (unless every model has)
+  $hint = [string]$ctx.Request.Headers['X-Atlas-Model']
+  $all = @($c.model) + @($c.fallbacks)
+  $order = @()
+  if ($hint -and ($all -contains $hint)) { $order += $hint }
+  foreach ($m in $all) { if ($order -notcontains $m) { $order += $m } }
+  $cands = @($order | Where-Object { -not ($script:Cooling.ContainsKey($_) -and $script:Cooling[$_] -gt $now) })
+  if ($cands.Count -eq 0) { $cands = $order }
+  $tried = @(); $used = $null; $kind = $null; $google = $null; $billing = $false
+  $status = 0; $respText = ''; $tierHdr = $null; $timedOut = $false
   $sw = [Diagnostics.Stopwatch]::StartNew()
-  while ($true) {
-    $attempts++; $status = 0; $errMsg = $null; $retryAfter = 0
+  for ($i = 0; $i -le $c.retries; $i++) {
+    $model = $cands[$i % $cands.Count]
+    $sendText = $text
+    if ($hint -and $model -ne $hint) { $sendText = [regex]::Replace($text, '"thoughtSignature"\s*:\s*"[^"]*"', '"thoughtSignature":"' + $SignaturePlaceholder + '"') }
+    $body = [System.Text.Encoding]::UTF8.GetBytes($sendText)
+    $url = $base.TrimEnd('/') + '/v1beta/models/' + [Uri]::EscapeDataString($model) + ':generateContent'
+    $status = 0; $respText = ''; $errMsg = $null; $retryAfter = 0; $timedOut = $false
     try {
       $wr = [System.Net.HttpWebRequest]::Create($url)
       $wr.Method = 'POST'
@@ -186,37 +242,59 @@ function Invoke-AssistantRelay($ctx) {
       $timedOut = ($e -is [System.Net.WebException]) -and ($e.Status -eq [System.Net.WebExceptionStatus]::Timeout)
       $errMsg = $e.Message
     }
-    $retry = ($status -eq 0) -or (@(429, 500, 502, 503, 504) -contains $status)
-    if (-not $retry -or $attempts -gt $c.retries) { break }
-    if ($retryAfter -gt 0) { Start-Sleep -Seconds ([Math]::Min($retryAfter, 10)) } else { Start-Sleep -Milliseconds (1500 * $attempts) }
+    $kind = Get-ErrorKind $status $timedOut
+    $label = [string]$status; if ($status -eq 0) { $label = $kind }
+    $tried += ($model + ' ' + $label)
+    if ($kind -eq 'ok') { $used = $model; break }
+    if ($kind -eq 'billing') { $billing = $true }
+    $google = $errMsg
+    if ($respText) { try { $ej = $respText | ConvertFrom-Json; if ($ej.error.message) { $google = [string]$ej.error.message } } catch { } }
+    if ($google) { $google = $google.Replace($key, '[key]') }
+    if (@('overloaded', 'rate_limit', 'server', 'timeout') -contains $kind) { $script:Cooling[$model] = (Get-Date).AddSeconds($c.cooldown_seconds) }
+    if ($kind -eq 'not_found') { $script:Cooling[$model] = (Get-Date).AddDays(1) }
+    if (@('overloaded', 'rate_limit', 'server', 'timeout', 'network', 'not_found') -notcontains $kind) { break }
+    if ($i -ge $c.retries) { break }
+    $wait = 0
+    if ($kind -ne 'not_found') { if ($retryAfter -gt 0) { $wait = [Math]::Min($retryAfter, 10) * 1000 } else { $wait = $c.backoff_seconds * 1000 * [Math]::Pow(2, $i) } }
+    if ($sw.ElapsedMilliseconds + $wait -gt $c.max_total_seconds * 1000) { break }
+    if ($wait -gt 0) { Start-Sleep -Milliseconds ([int]$wait) }
   }
   $elapsed = $sw.ElapsedMilliseconds
-  # token counts and the estimated cost (thinking tokens are billed as output)
-  $pt = 0.0; $ct = 0.0; $tt = 0.0; $ot = 0.0; $th = 0.0; $tot = 0.0; $mv = $null; $gErr = $null
-  if ($respText) {
+  if ($billing -and -not $used) { $kind = 'billing' }
+  $model = $used; if (-not $model) { $model = $cands[($tried.Count - 1) % $cands.Count] }
+  $triedText = $tried -join ' > '
+  # token counts and the estimated cost at that model's prices (thinking tokens are billed as output)
+  $pt = 0.0; $ct = 0.0; $tt = 0.0; $ot = 0.0; $th = 0.0; $tot = 0.0; $mv = $null
+  if ($used -and $respText) {
     try {
       $j = $respText | ConvertFrom-Json
       $um = $j.usageMetadata
       if ($um) { $pt = [double]$um.promptTokenCount; $ct = [double]$um.cachedContentTokenCount; $tt = [double]$um.toolUsePromptTokenCount; $ot = [double]$um.candidatesTokenCount; $th = [double]$um.thoughtsTokenCount; $tot = [double]$um.totalTokenCount }
       $mv = $j.modelVersion
-      if ($j.error) { $gErr = [string]$j.error.message }
     } catch { }
   }
   if ($tot -eq 0) { $tot = $pt + $tt + $ot + $th }
-  $usd = [math]::Round((($pt - $ct + $tt) * $c.pIn + $ct * $c.pCached + ($ot + $th) * $c.pOut) / 1e6, 6)
-  if ($status -eq 0) { if ($timedOut) { $errMsg = 'Gemini did not answer within ' + (Get-Num $c.timeout_seconds) + ' s.' } }
-  elseif ($status -ge 400) { $errMsg = $gErr; if (-not $errMsg) { $errMsg = 'HTTP ' + $status } }
-  if ($errMsg) { $errMsg = $errMsg.Replace($key, '[key]') }
+  $pr = Get-Price $c $model
+  $usd = [math]::Round((($pt - $ct + $tt) * $pr[0] + $ct * $pr[1] + ($ot + $th) * $pr[2]) / 1e6, 6)
   if (-not $tierHdr) { $tierHdr = $c.tier }
-  $entry = '{"time":' + (Get-JsonText ([DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ', $Inv))) + ',"day":' + (Get-JsonText $day) + ',"model":' + (Get-JsonText $c.model) +
-    ',"model_version":' + (Get-JsonText $mv) + ',"thinking":' + (Get-JsonText $level) + ',"tier":' + (Get-JsonText $tierHdr) + ',"status":' + $status + ',"attempts":' + $attempts + ',"ms":' + $elapsed +
-    ',"input":' + (Get-Num ($pt + $tt)) + ',"cached":' + (Get-Num $ct) + ',"output":' + (Get-Num $ot) + ',"thinking_tokens":' + (Get-Num $th) + ',"total":' + (Get-Num $tot) + ',"usd":' + (Get-Num $usd) + ',"currency":' + (Get-JsonText $c.curCode) + ',"cost":' + (Get-Num ([math]::Round($usd * $c.perUsd, 6))) + ',"error":' + (Get-JsonText $errMsg) + '}'
+  $final = $status; if ($billing -and -not $used) { $final = 402 }
+  $kindOut = 'ok'; $errOut = $null
+  if (-not $used) { $kindOut = $kind; $errOut = $google }
+  $fb = 'false'; if ($model -ne $c.model) { $fb = 'true' }
+  $entry = '{"time":' + (Get-JsonText ([DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ', $Inv))) + ',"day":' + (Get-JsonText $day) + ',"model":' + (Get-JsonText $model) +
+    ',"requested_model":' + (Get-JsonText $c.model) + ',"fallback":' + $fb + ',"tried":' + (Get-JsonText $triedText) +
+    ',"model_version":' + (Get-JsonText $mv) + ',"thinking":' + (Get-JsonText $level) + ',"tier":' + (Get-JsonText $tierHdr) + ',"status":' + $final + ',"kind":' + (Get-JsonText $kindOut) + ',"attempts":' + $tried.Count + ',"ms":' + $elapsed +
+    ',"input":' + (Get-Num ($pt + $tt)) + ',"cached":' + (Get-Num $ct) + ',"output":' + (Get-Num $ot) + ',"thinking_tokens":' + (Get-Num $th) + ',"total":' + (Get-Num $tot) + ',"usd":' + (Get-Num $usd) +
+    ',"currency":' + (Get-JsonText $c.curCode) + ',"cost":' + (Get-Num ([math]::Round($usd * $c.perUsd, 6))) + ',"error":' + (Get-JsonText $errOut) + '}'
   try { [IO.File]::AppendAllText($AssistantLog, $entry + "`n", (New-Object System.Text.UTF8Encoding($false))) } catch { }
-  if ($status -eq 0) {
-    if ($timedOut) { Send-Error $res 504 ($errMsg + ' Tried ' + $attempts + ' times.') } else { Send-Error $res 502 ('Could not reach the Gemini API (' + $errMsg + '). Tried ' + $attempts + ' times.') }
+  $usage = $entry.Substring(0, $entry.Length - 1) + ',"today":' + (Get-TodayJson (Get-AssistantToday $day $c.perUsd)) + '}'
+  if (-not $used) {
+    $code = $final
+    if ($kind -eq 'overloaded') { $code = 503 } elseif ($kind -eq 'rate_limit') { $code = 429 } elseif ($kind -eq 'timeout') { $code = 504 } elseif ($kind -eq 'network') { $code = 502 } elseif ($kind -eq 'billing') { $code = 402 }
+    $msg = Get-FailMessage $kind $final $google $triedText $c
+    Send-Json $res $code ('{"error":{"message":' + (Get-JsonText $msg) + ',"kind":' + (Get-JsonText $kind) + ',"status":' + $final + ',"tried":' + (Get-JsonText $triedText) + '},"atlasUsage":' + $usage + '}')
     return
   }
-  $usage = $entry.Substring(0, $entry.Length - 1) + ',"today":' + (Get-TodayJson (Get-AssistantToday $day $c.perUsd)) + '}'
   $tr = $respText.TrimStart()
   if ($tr.StartsWith('{')) {
     $rest = $tr.Substring(1).TrimStart()

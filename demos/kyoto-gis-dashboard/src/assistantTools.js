@@ -82,16 +82,8 @@ export function makeHandlers(ctx) {
   const tripSummary = (t) => t.days.map((x, i) => ({ day: i + 1, date: x.date, start: x.start, end: x.end, start_place: x.from ? nameOf(x.from) : null,
     places: x.stops.map((s) => ({ id: s.id, name: nameOf(s.id), way_there: s.mode, stay_minutes: s.stay, arrive: s.at || null })) }));
 
-  return {
-    search_places({ query = '', kind = 'any', city = '', limit = 6 }) {
+  const search = ({ query = '', kind = 'any', city = '', limit = 6 }) => {
       const n = Math.max(1, Math.min(10, limit || 6));
-      // OpenStreetMap's category can differ from what a place is called (a famous shrine stored as a viewpoint):
-      // when one kind finds nothing, the same search over every kind is returned with a note
-      if (kind && kind !== 'any' && kind !== 'station' && kind !== 'bus_stop' && query.trim()) {
-        const r = this.search_places({ query, kind: 'any_attraction', city, limit: n });
-        const same = r.results.filter((x) => x.kind === (CATEGORY_LABEL[kind] || kind));
-        if (!same.length && r.count) return { count: 0, results: [], other_kinds: r.results, note: `No record of kind ${kind} matches "${query}". These records match the name; their kind comes from OpenStreetMap tags and can differ from what the place is usually called. Use the best of them instead of searching again.` };
-      }
       let pool;
       if (kind === 'station') pool = filterTransport(Tr, ['rail', 'tram'], query);
       else if (kind === 'bus_stop') pool = filterTransport(Tr, ['bus'], query);
@@ -129,6 +121,18 @@ export function makeHandlers(ctx) {
         out.push(row);
       }
       return { count: pool.length, results: out };
+  };
+
+  return {
+    // OpenStreetMap's category can differ from what a place is called (a famous shrine stored as a viewpoint):
+    // when one kind finds nothing, the same search over every kind comes back with a note
+    search_places(args = {}) {
+      const r = search(args);
+      if (!r.count && args.kind && !['any', 'station', 'bus_stop'].includes(args.kind) && (args.query || '').trim()) {
+        const o = search({ ...args, kind: 'any_attraction' });
+        if (o.count) return { count: 0, results: [], other_kinds: o.results, note: `No record of kind ${args.kind} matches "${args.query}". These records match the name; their kind comes from OpenStreetMap tags and can differ from what the place is usually called. Use the best of them, or search once more with a shorter part of the name (金閣 finds 金閣寺's main record), instead of searching for another kind.` };
+      }
+      return r;
     },
     get_place({ id }) {
       const h = need(id), p = h.f.properties, ph = photos[id];
