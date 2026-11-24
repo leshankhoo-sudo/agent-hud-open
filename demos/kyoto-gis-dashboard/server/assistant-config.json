@@ -4,6 +4,10 @@
     "gemini-3.8-flash",
     "gemini-3.6-flash"
   ],
+  "selectable_models": [
+    "gemini-4-hydrogen",
+    "gemini-3.6-flash"
+  ],
   "thinking": {
     "default": "medium",
     "planning": "high",
@@ -13,6 +17,11 @@
     ]
   },
   "service_tier": "standard",
+  "service_tiers": [
+    "standard",
+    "priority"
+  ],
+  "service_tier_note": "Standard is the default. Priority is used only after the person confirms its prices in the assistant (the page then sends X-Atlas-Priority-Confirmed). The daily cost cap applies to both.",
   "price_usd_per_million_tokens": {
     "gemini-4-hydrogen": {
       "input": 1.5,
@@ -32,6 +41,26 @@
       "note": "through 2026-12-31; from 2027-01-01 input 1.50, cached 0.15, output 7.50"
     },
     "source": "Gemini API pricing, Standard paid tier (https://ai.google.dev/gemini-api/docs/pricing), checked 2026-11-23"
+  },
+  "price_usd_per_million_tokens_priority": {
+    "gemini-4-hydrogen": {
+      "input": 2.7,
+      "cached_input": 0.135,
+      "output_including_thinking": 13.5
+    },
+    "gemini-3.8-flash": {
+      "input": 1.35,
+      "cached_input": 0.135,
+      "output_including_thinking": 6.75,
+      "note": "not listed separately on the pricing page; taken as 1.8 x its Standard price, like the others"
+    },
+    "gemini-3.6-flash": {
+      "input": 1.35,
+      "cached_input": 0.135,
+      "output_including_thinking": 6.75,
+      "note": "through 2026-12-31; from 2027-01-01 input 2.70, cached 0.27, output 13.50"
+    },
+    "source": "Gemini API pricing, Priority (1.8 x Standard), https://aistudio.google.com/docs/pricing, checked 2026-11-24"
   },
   "billing_currency": {
     "code": "MYR",

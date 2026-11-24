@@ -7,8 +7,10 @@
 // multi-day itineraries and route planning), older turns are dropped from the history, a tool call repeated
 // with the same arguments is answered from the first result instead of running again, a round of nothing
 // but repeats ends the answer, and the rounds and calls per question are capped.
-// The relay may answer with a fallback model when the main one is overloaded; the page then tells it, with
-// each request, which model the conversation is on, so the rest of the answer stays on that model.
+// The person chooses the model (preferred: gemini-4-hydrogen or gemini-3.6-flash), whether the relay may fall
+// back to another model when it is overloaded (on by default), and the service tier (Standard; Priority only
+// after they accepted its prices, which the page then says with each request). The page also tells the relay
+// which model the conversation is on, so earlier turns' thought signatures can be handled.
 // Nothing here holds a key, and nothing is sent anywhere but the relay.
 
 export const MAX_STEPS = 6;
@@ -54,23 +56,32 @@ export function trimHistory(contents, turns) {
 const errText = (j, status) => j?.error?.message || `The assistant relay answered HTTP ${status}.`;
 // a short name for what went wrong, shown above the message
 export const ERROR_TITLE = { billing: 'Billing (402)', rate_limit: 'Rate limit (429)', overloaded: 'Gemini overloaded (503)', server: 'Gemini service error', timeout: 'No answer in time',
-  network: 'No connection', auth: 'API key refused', not_found: 'Model not found', bad_request: 'Request not accepted', daily_limit: 'Daily limit reached', duplicate: 'Sent twice', no_key: 'No API key', relay: 'Relay not reachable' };
+  network: 'No connection', auth: 'API key refused', not_found: 'Model not found', bad_request: 'Request not accepted', daily_limit: 'Daily limit reached', duplicate: 'Sent twice', no_key: 'No API key', relay: 'Relay not reachable',
+  priority_unconfirmed: 'Priority not confirmed' };
 const addUsage = (u, a) => {
   if (!a) return u;
-  return { ...u, calls: u.calls + 1, input: u.input + (a.input || 0), output: u.output + (a.output || 0), thinking_tokens: u.thinking_tokens + (a.thinking_tokens || 0), total: u.total + (a.total || 0), usd: u.usd + (a.usd || 0), cost: u.cost + (a.cost || 0), currency: a.currency || u.currency, today: a.today || u.today, model: a.status && a.status < 300 ? a.model : u.model, fallback: a.status && a.status < 300 ? !!a.fallback : u.fallback, tier: a.tier || u.tier };
+  const ok = a.status && a.status < 300;
+  return { ...u, calls: u.calls + 1, input: u.input + (a.input || 0), output: u.output + (a.output || 0), thinking_tokens: u.thinking_tokens + (a.thinking_tokens || 0), total: u.total + (a.total || 0), usd: u.usd + (a.usd || 0), cost: u.cost + (a.cost || 0), currency: a.currency || u.currency, today: a.today || u.today,
+    model: ok ? a.model : u.model, fallback: ok ? !!a.fallback : u.fallback, preferred: a.preferred_model || u.preferred, tier: a.tier || u.tier, tier_requested: a.tier_requested || u.tier_requested, status: a.status ?? u.status, kind: a.kind || u.kind, tried: a.tried || u.tried };
 };
-const NO_USAGE = { fallback: false, calls: 0, input: 0, output: 0, thinking_tokens: 0, total: 0, usd: 0, cost: 0, currency: null, today: null, model: null, tier: null };
+const NO_USAGE = { fallback: false, calls: 0, input: 0, output: 0, thinking_tokens: 0, total: 0, usd: 0, cost: 0, currency: null, today: null, model: null, preferred: null, tier: null, tier_requested: null, status: null, kind: null, tried: null };
 
 // history: Gemini contents so far. note: what the dashboard shows right now and today's date, sent with the
-// question so "this place" or "tomorrow" can be understood. thinking: 'medium' | 'high'.
+// question so "this place" or "tomorrow" can be understood. thinking: 'medium' | 'high'. model: the model the
+// conversation is on; preferred: the model the person chose; fallback: may the relay use another model;
+// tier: 'standard' | 'priority' (priority only once the person has confirmed its price).
 // Returns { text, contents, actions, usage }. onAction({ name, args, result, repeat }) is called after each
 // tool, so the chat can show it at once.
-export async function askAssistant({ history = [], text, note, thinking = 'medium', limits = DEFAULT_LIMITS, model = '', declarations, handlers, onAction, signal, fetchImpl = fetch }) {
+export async function askAssistant({ history = [], text, note, thinking = 'medium', limits = DEFAULT_LIMITS, model = '', preferred = '', fallback = true, tier = 'standard', declarations, handlers, onAction, signal, fetchImpl = fetch }) {
   const L = { ...DEFAULT_LIMITS, ...limits };
   const contents = [...trimHistory(history, Math.max(0, L.max_history_turns - 1)), { role: 'user', parts: [{ text }, ...(note ? [{ text: `(Context, not from the user: ${note})` }] : [])] }];
   const actions = [];
   const done = new Map();   // name + arguments -> result, for repeated calls
-  let usage = { ...NO_USAGE, thinking, model: model || null };
+  let usage = { ...NO_USAGE, thinking, model: model || null, preferred: preferred || null, tier_requested: tier };
+  const heads = () => ({
+    'Content-Type': 'application/json', ...(usage.model ? { 'X-Atlas-Model': usage.model } : {}), ...(preferred ? { 'X-Atlas-Preferred': preferred } : {}),
+    ...(fallback ? {} : { 'X-Atlas-Fallback': 'off' }), ...(tier === 'priority' ? { 'X-Atlas-Priority-Confirmed': 'yes' } : {}),
+  });
   const finish = (t) => ({ text: t, contents, actions, usage });
   // a stop in the middle of tool calls: the history keeps the question and this short answer, and none of the
   // unanswered calls (the next question would otherwise be refused)
@@ -79,11 +90,11 @@ export async function askAssistant({ history = [], text, note, thinking = 'mediu
   for (let step = 0; ; step++) {
     const body = {
       systemInstruction: { parts: [{ text: SYSTEM }] }, contents, tools: [{ functionDeclarations: declarations }],
-      generationConfig: { thinkingConfig: { thinkingLevel: thinking }, maxOutputTokens: L.max_output_tokens }, serviceTier: 'standard',
+      generationConfig: { thinkingConfig: { thinkingLevel: thinking }, maxOutputTokens: L.max_output_tokens }, serviceTier: tier === 'priority' ? 'priority' : 'standard',
     };
     let r;
     try {
-      r = await fetchImpl(url(''), { method: 'POST', headers: { 'Content-Type': 'application/json', ...(usage.model ? { 'X-Atlas-Model': usage.model } : {}) }, body: JSON.stringify(body), signal });
+      r = await fetchImpl(url(''), { method: 'POST', headers: heads(), body: JSON.stringify(body), signal });
     } catch (e) {
       if (e?.name === 'AbortError') throw e;
       throw Object.assign(new Error('The assistant relay on this computer could not be reached.'), { usage, kind: 'relay' });
@@ -91,7 +102,7 @@ export async function askAssistant({ history = [], text, note, thinking = 'mediu
     let j = null;
     try { j = await r.json(); } catch { /* handled below */ }
     usage = addUsage(usage, j?.atlasUsage);
-    if (!r.ok) throw Object.assign(new Error(errText(j, r.status)), { usage, status: r.status, kind: j?.error?.kind || null, tried: j?.error?.tried || null });
+    if (!r.ok) throw Object.assign(new Error(errText(j, r.status)), { usage, status: j?.error?.status || r.status, kind: j?.error?.kind || null, tried: j?.error?.tried || null });
     const cand = j?.candidates?.[0];
     if (!cand?.content) {
       const why = j?.promptFeedback?.blockReason || cand?.finishReason;

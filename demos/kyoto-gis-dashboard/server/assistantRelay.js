@@ -4,9 +4,13 @@
 // environment and passes the request on to Google's Gemini API.
 //
 // What the relay enforces (server/assistant-config.json; the ZIP has a copy next to serve.ps1):
-//   - the model (gemini-4-hydrogen unless GEMINI_MODEL is set) and the Standard service tier, never Priority;
-//     when the model is overloaded, rate-limited or failing, the fallback models in order (a model that
-//     fails is skipped for a few minutes, so later questions go straight to one that answers)
+//   - the model: the one the person chose in the page (X-Atlas-Preferred, one of selectable_models; else
+//     gemini-4-hydrogen unless GEMINI_MODEL is set); with automatic fallback on (the default; the page sends
+//     X-Atlas-Fallback: off to turn it off), when it is overloaded, rate-limited or failing, the other models in
+//     order (a model that fails is skipped for a few minutes, so later questions go straight to one that answers)
+//   - the service tier: Standard by default. Priority (about 1.8 times the price) only when the request says
+//     so AND carries X-Atlas-Priority-Confirmed: yes, which the page sends only after the person has seen
+//     and accepted the Priority prices; the cost is estimated at the tier Google reports it served
 //   - the thinking level: one of the allowed levels (medium by default, high for planning), and an output cap
 //   - daily limits on requests and estimated cost (in the billing currency, RM by default), and a guard
 //     against the same request sent twice
@@ -63,8 +67,11 @@ export const DEFAULTS = {
   model: DEFAULT_MODEL,
   thinking: { default: 'medium', planning: 'high', allowed: ['medium', 'high'] },
   service_tier: 'standard',
+  service_tiers: ['standard'],
   fallback_models: [],
+  selectable_models: [],
   price_usd_per_million_tokens: { 'gemini-4-hydrogen': { input: 1.5, cached_input: 0.075, output_including_thinking: 7.5 } },
+  price_usd_per_million_tokens_priority: {},
   billing_currency: { code: 'USD', symbol: '$', per_usd: 1 },
   limits: { max_requests_per_day: 200, max_cost_per_day: 1, max_tool_rounds_per_question: 6, max_tool_calls_per_question: 12, max_history_turns: 6, max_output_tokens: 8192, timeout_seconds: 45, retries: 3, backoff_seconds: 1, max_total_seconds: 100, cooldown_seconds: 180, duplicate_window_seconds: 5 },
 };
@@ -84,12 +91,25 @@ function userEnv(name) {
 export function loadConfig(file = CONFIG_FILE, env = userEnv) {
   let f = {};
   try { f = JSON.parse(readFileSync(file, 'utf8')); } catch { /* the defaults below */ }
-  const c = { ...DEFAULTS, ...f, thinking: { ...DEFAULTS.thinking, ...f.thinking }, price_usd_per_million_tokens: { ...DEFAULTS.price_usd_per_million_tokens, ...f.price_usd_per_million_tokens }, billing_currency: { ...DEFAULTS.billing_currency, ...f.billing_currency }, limits: { ...DEFAULTS.limits, ...f.limits } };
+  const c = { ...DEFAULTS, ...f, thinking: { ...DEFAULTS.thinking, ...f.thinking }, price_usd_per_million_tokens: { ...DEFAULTS.price_usd_per_million_tokens, ...f.price_usd_per_million_tokens }, price_usd_per_million_tokens_priority: { ...DEFAULTS.price_usd_per_million_tokens_priority, ...f.price_usd_per_million_tokens_priority }, billing_currency: { ...DEFAULTS.billing_currency, ...f.billing_currency }, limits: { ...DEFAULTS.limits, ...f.limits } };
   const m = env('GEMINI_MODEL');
   if (m) c.model = m;
   c.thinking.allowed = c.thinking.allowed.map((x) => String(x).toLowerCase());
+  c.service_tier = String(c.service_tier || 'standard').toLowerCase();
+  c.service_tiers = [...new Set([c.service_tier, ...(c.service_tiers || []).map((x) => String(x).toLowerCase())])];
   c.fallback_models = (c.fallback_models || []).filter((x) => x && x !== c.model);
+  c.selectable_models = [...new Set([c.model, ...(c.selectable_models || [])])].filter(Boolean);
   return c;
+}
+// every model the relay may call: the main one, the fallbacks and the ones the person can choose
+export const knownModels = (conf) => [...new Set([conf.model, ...conf.fallback_models, ...(conf.selectable_models || [])])];
+// the order to try models in: the person's choice (or, without one, the model the conversation is on), then,
+// with automatic fallback, the conversation's model, the main model and the fallbacks
+export function modelOrder(conf, { preferred = '', hint = '', fallback = true } = {}) {
+  const known = knownModels(conf);
+  const first = known.includes(preferred) ? preferred : known.includes(hint) ? hint : conf.model;
+  if (!fallback) return [first];
+  return [...new Set([first, ...(known.includes(hint) ? [hint] : []), conf.model, ...conf.fallback_models])];
 }
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -107,9 +127,9 @@ export function readToday(file, day, perUsd = 1) {
   return { requests, usd: Math.round(usd * 1e6) / 1e6, cost: Math.round(usd * perUsd * 1e6) / 1e6 };
 }
 
-// Token counts from Gemini's usageMetadata and the estimated cost at the model's Standard prices.
-// Thinking tokens are billed as output.
-export const priceOf = (conf, model) => conf.price_usd_per_million_tokens[model] || conf.price_usd_per_million_tokens[conf.model] || DEFAULTS.price_usd_per_million_tokens[DEFAULT_MODEL];
+// Token counts from Gemini's usageMetadata and the estimated cost at the model's prices for the tier that
+// served the request (Priority prices when Google reports Priority). Thinking tokens are billed as output.
+export const priceOf = (conf, model, tier = 'standard') => (tier === 'priority' && conf.price_usd_per_million_tokens_priority?.[model]) || conf.price_usd_per_million_tokens[model] || conf.price_usd_per_million_tokens[conf.model] || DEFAULTS.price_usd_per_million_tokens[DEFAULT_MODEL];
 export function usageOf(meta, price = DEFAULTS.price_usd_per_million_tokens[DEFAULT_MODEL]) {
   const m = meta || {};
   const prompt = m.promptTokenCount || 0, cached = m.cachedContentTokenCount || 0, tool = m.toolUsePromptTokenCount || 0;
@@ -119,23 +139,28 @@ export function usageOf(meta, price = DEFAULTS.price_usd_per_million_tokens[DEFA
 }
 
 // The relay's rules for a request. A request without generationConfig gets the defaults; one that names a
-// thinking level, output cap or service tier must stay within the configuration.
-export function shapeRequest(body, conf) {
+// thinking level, output cap or service tier must stay within the configuration. Priority needs the
+// person's confirmation of its price (priorityConfirmed: the page's X-Atlas-Priority-Confirmed header).
+export function shapeRequest(body, conf, { priorityConfirmed = false } = {}) {
   if (!body || typeof body !== 'object' || !Array.isArray(body.contents) || !body.contents.length) return { error: 'The request has no conversation.' };
-  for (const tier of [body.serviceTier, body.service_tier]) if (tier != null && String(tier).toLowerCase() !== conf.service_tier) return { error: `Only the ${conf.service_tier} service tier is allowed here (not ${tier}).` };
-  const out = { ...body, serviceTier: conf.service_tier };
+  const asked = [body.serviceTier, body.service_tier].filter((x) => x != null).map((x) => String(x).toLowerCase());
+  if (new Set(asked).size > 1) return { error: 'The request names two different service tiers.' };
+  const tier = asked[0] || conf.service_tier;
+  if (!conf.service_tiers.includes(tier)) return { error: `The ${tier} service tier is not allowed here (allowed: ${conf.service_tiers.join(', ')}).` };
+  if (tier === 'priority' && !priorityConfirmed) return { error: 'Priority costs more than Standard: it is used only after you confirm its price in the assistant.', kind: 'priority_unconfirmed' };
+  const out = { ...body, serviceTier: tier };
   delete out.service_tier;
   const g = body.generationConfig;
   if (!g) {
     out.generationConfig = { thinkingConfig: { thinkingLevel: conf.thinking.default }, maxOutputTokens: conf.limits.max_output_tokens };
-    return { body: out, thinking: conf.thinking.default };
+    return { body: out, thinking: conf.thinking.default, tier };
   }
   const level = String(g.thinkingConfig?.thinkingLevel || '').toLowerCase();
   if (!level) return { error: 'The request has no thinking level.' };
   if (!conf.thinking.allowed.includes(level)) return { error: `Thinking level ${level} is not allowed (allowed: ${conf.thinking.allowed.join(', ')}).` };
   if (!(g.maxOutputTokens > 0)) return { error: 'The request has no output token limit.' };
   if (g.maxOutputTokens > conf.limits.max_output_tokens) return { error: `The output limit is ${conf.limits.max_output_tokens} tokens.` };
-  return { body: out, thinking: level };
+  return { body: out, thinking: level, tier };
 }
 
 const send = (res, code, obj) => { res.statusCode = code; res.setHeader('Content-Type', 'application/json; charset=utf-8'); res.end(typeof obj === 'string' ? obj : JSON.stringify(obj)); };
@@ -157,7 +182,7 @@ export function assistantMiddleware({
     const cur = conf.billing_currency, today0 = () => readToday(logFile, day, cur.per_usd);
     if (path.endsWith('/status')) {
       const t0 = now(), cool = Object.fromEntries([...cooling].filter(([, u]) => u > t0).map(([m, u]) => [m, Math.round((u - t0) / 1000)]));
-      return send(res, 200, { configured: !!k, model: conf.model, fallback_models: conf.fallback_models, cooling: cool, thinking: conf.thinking, service_tier: conf.service_tier, limits: conf.limits, price_usd_per_million_tokens: conf.price_usd_per_million_tokens, billing_currency: cur, today: today0() });
+      return send(res, 200, { configured: !!k, model: conf.model, fallback_models: conf.fallback_models, selectable_models: conf.selectable_models, cooling: cool, thinking: conf.thinking, service_tier: conf.service_tier, service_tiers: conf.service_tiers, limits: conf.limits, price_usd_per_million_tokens: conf.price_usd_per_million_tokens, price_usd_per_million_tokens_priority: conf.price_usd_per_million_tokens_priority, billing_currency: cur, today: today0() });
     }
     if (req.method !== 'POST') return fail(res, 405, 'Use POST.');
     let size = 0;
@@ -167,8 +192,9 @@ export function assistantMiddleware({
     const raw = Buffer.concat(chunks);
     let parsed;
     try { parsed = JSON.parse(raw.toString('utf8')); } catch { return fail(res, 400, 'The request is not JSON.'); }
-    const shaped = shapeRequest(parsed, conf);
-    if (shaped.error) return fail(res, 400, shaped.error);
+    const head = (n) => String(req.headers?.[n] || '');
+    const shaped = shapeRequest(parsed, conf, { priorityConfirmed: head('x-atlas-priority-confirmed').toLowerCase() === 'yes' });
+    if (shaped.error) return fail(res, 400, shaped.error, shaped.kind);
 
     // the same request twice in a few seconds (a double click, a loop) is not sent again
     const hash = createHash('sha256').update(raw).digest('hex');
@@ -181,10 +207,12 @@ export function assistantMiddleware({
     if (today.cost >= conf.limits.max_cost_per_day) return fail(res, 429, `Daily limit reached: about ${cur.symbol}${today.cost.toFixed(4)} (US$${today.usd.toFixed(4)}) spent today; max_cost_per_day is ${cur.symbol}${conf.limits.max_cost_per_day} in assistant-config.json.`, 'daily_limit');
     recent.set(hash, t);
 
-    // which models to try: the one this conversation is on (the page says so), then the main model, then the
-    // fallbacks; a model that recently failed is skipped (unless every model has)
-    const hint = String(req.headers?.['x-atlas-model'] || '');
-    const order = [...new Set([...(hint && [conf.model, ...conf.fallback_models].includes(hint) ? [hint] : []), conf.model, ...conf.fallback_models])];
+    // which models to try: the person's choice (else the one this conversation is on), then, with automatic
+    // fallback, the others; a model that recently failed is tried after the others (unless every model has)
+    const hint = head('x-atlas-model'), preferred = knownModels(conf).includes(head('x-atlas-preferred')) ? head('x-atlas-preferred') : '';
+    const autoFallback = head('x-atlas-fallback').toLowerCase() !== 'off';
+    const order = modelOrder(conf, { preferred, hint, fallback: autoFallback });
+    const wanted = order[0];
     // the models that have not failed lately first, then the ones that have (still better than trying one model 4 times)
     const cands = [...order.filter((m) => !(cooling.get(m) > t)), ...order.filter((m) => cooling.get(m) > t)];
     const clean = (s) => String(s || '').split(k).join('[key]');
@@ -219,12 +247,14 @@ export function assistantMiddleware({
     if (billing && !used) kind = 'billing';
     const model = used || tries[tries.length - 1].model;
     const tried = tries.map((x) => `${x.model} ${x.status || x.kind}`).join(' > ');
+    // the tier Google says it served (a Priority request can be served, and billed, as Standard)
+    const tier = String(r?.headers?.get?.('x-gemini-service-tier') || shaped.tier).toLowerCase();
     const entry = {
-      time: new Date(t).toISOString(), day, model, requested_model: conf.model, fallback: model !== conf.model, tried,
+      time: new Date(t).toISOString(), day, model, preferred_model: wanted, requested_model: conf.model, fallback: model !== wanted, auto_fallback: autoFallback, tried,
       model_version: j?.modelVersion || null, thinking: shaped.thinking,
-      tier: r?.headers?.get?.('x-gemini-service-tier') || conf.service_tier, status: used ? r.status : (billing ? 402 : r ? r.status : 0), kind: used ? 'ok' : kind,
+      tier_requested: shaped.tier, tier, status: used ? r.status : (billing ? 402 : r ? r.status : 0), kind: used ? 'ok' : kind,
       attempts: tries.length, ms: now() - t,
-      ...usageOf(used ? j?.usageMetadata : null, priceOf(conf, model)),
+      ...usageOf(used ? j?.usageMetadata : null, priceOf(conf, model, tier)),
       currency: cur.code,
       error: used ? null : google || null,
     };

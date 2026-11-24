@@ -56,12 +56,16 @@ ccr-bd068911-ydjxlc 分支，demos/kyoto-gis-dashboard 文件夹里：
 3. 回到助手按 Check again。如果还是显示没连上，关掉黑色窗口，再双击 Start-Dashboard.bat。
 - 想换模型：setx GEMINI_MODEL "模型名"（默认 gemini-4-hydrogen）。
 - assistant-config.json（在这个文件夹里）是助手的设定：模型 gemini-4-hydrogen、思考等级
-  （平时 medium，多日行程和路线规划用 high）、只用 Standard 服务（不用更贵的 Priority）、
+  （平时 medium，多日行程和路线规划用 high）、服务层级（默认 Standard；Priority 贵约 1.8 倍，
+  只有在助手里看过价格并按 Use Priority 才会用，重新打开网页就回到 Standard）、
   估算费用用的价格和汇率，还有上限：每天最多 200 次、估算费用最多 RM3，每次 90 秒超时，
   忙碌时最多重试 2 次。
   可以用记事本改数字，改完下一次提问就生效。
 - Gemini 4 Hydrogen 太忙（503）时，会自动换成 gemini-3.8-flash，再换 gemini-3.6-flash；
   最多重试 3 次（等 1、2、4 秒）。助手的回答下面会写用的是哪个模型。
+- 助手顶部可以选模型（Gemini 4 Hydrogen 或 Gemini 3.6 Flash，默认 Hydrogen）、服务层级和
+  Auto fallback（默认开；关掉就只用选的模型）。下面一行显示首选模型、实际用的模型、连接状态
+  （出错时显示错误码，例如 503）和上一次的费用。
 - 助手出错时会写明原因：402 是额度用完，429 是请求太多，503 是 Google 那边太忙，
   还有网络连不上、超时等。助手出错时，地图和行程规划照常可以用。
 - 每次调用的用量会记在 assistant-usage.jsonl（这个文件夹里）：tokens 数、估算费用、状态。

@@ -186,6 +186,55 @@ test('fallback: when the main model is overloaded the next model answers; failin
   assert.deepEqual(st.json.fallback_models, ['gemini-3.8-flash', 'gemini-3.6-flash']);
 });
 
+const SELECT = { ...FALLBACK, selectable_models: ['gemini-4-hydrogen', 'gemini-3.6-flash'], service_tiers: ['standard', 'priority'],
+  price_usd_per_million_tokens_priority: { 'gemini-4-hydrogen': { input: 2.7, cached_input: 0.135, output_including_thinking: 13.5 }, 'gemini-3.6-flash': { input: 1.35, cached_input: 0.135, output_including_thinking: 6.75 } } };
+const served = (tier) => { const r = gemini(); r.headers.set('x-gemini-service-tier', tier); return r; };
+
+test('config: the person can choose gemini-4-hydrogen or gemini-3.6-flash; Standard by default, Priority allowed only with its own (higher) prices', () => {
+  const c = loadConfig(undefined, () => '');
+  assert.deepEqual(c.selectable_models, ['gemini-4-hydrogen', 'gemini-3.6-flash']);
+  assert.deepEqual([c.service_tier, c.service_tiers], ['standard', ['standard', 'priority']]);
+  const pp = (m) => { const x = c.price_usd_per_million_tokens_priority[m]; return [x.input, x.cached_input, x.output_including_thinking]; };
+  assert.deepEqual([pp('gemini-4-hydrogen'), pp('gemini-3.6-flash')], [[2.7, 0.135, 13.5], [1.35, 0.135, 6.75]]);
+});
+
+test('model choice: the chosen model is tried first; with automatic fallback off only that model is tried; "fallback" means another model than the chosen one', async () => {
+  const r0 = await relay({ over: SELECT });
+  const a = await call(r0.mw, { body: pageBody('one'), headers: { 'x-atlas-preferred': 'gemini-3.6-flash' } });
+  assert.deepEqual([modelOf(r0.sent[0].u), a.json.atlasUsage.preferred_model, a.json.atlasUsage.model, a.json.atlasUsage.fallback], ['gemini-3.6-flash', 'gemini-3.6-flash', 'gemini-3.6-flash', false]);
+  // a model that is not offered is ignored (the main model is used)
+  const b = await call(r0.mw, { body: pageBody('two'), headers: { 'x-atlas-preferred': 'gemini-9-ultra' } });
+  assert.equal(b.json.atlasUsage.model, 'gemini-4-hydrogen');
+  // Hydrogen chosen but overloaded: with fallback, the next model answers and it is marked as a fallback
+  const busy = await relay({ over: SELECT, fetchImpl: async (u) => (modelOf(u) === 'gemini-4-hydrogen' ? gemini(503) : gemini()) });
+  const c = await call(busy.mw, { body: pageBody('three'), headers: { 'x-atlas-preferred': 'gemini-4-hydrogen' } });
+  assert.deepEqual([c.status, c.json.atlasUsage.preferred_model, c.json.atlasUsage.model, c.json.atlasUsage.fallback, c.json.atlasUsage.auto_fallback], [200, 'gemini-4-hydrogen', 'gemini-3.8-flash', true, true]);
+  // without fallback: only Hydrogen, retried with backoff, then the 503 is reported with its kind
+  const solo = await relay({ over: SELECT, fetchImpl: async (u) => (modelOf(u) === 'gemini-4-hydrogen' ? gemini(503) : gemini()) });
+  const d = await call(solo.mw, { body: pageBody('four'), headers: { 'x-atlas-preferred': 'gemini-4-hydrogen', 'x-atlas-fallback': 'off' } });
+  assert.deepEqual([d.status, d.json.error.kind, d.json.error.status, [...new Set(solo.sent.map((x) => modelOf(x.u)))], solo.sent.length, d.json.atlasUsage.auto_fallback], [503, 'overloaded', 503, ['gemini-4-hydrogen'], 4, false]);
+  const st = await call(r0.mw, { url: '/api/assistant/status', method: 'GET' });
+  assert.deepEqual([st.json.selectable_models, st.json.service_tiers, st.json.price_usd_per_million_tokens_priority['gemini-4-hydrogen'].input], [['gemini-4-hydrogen', 'gemini-3.6-flash'], ['standard', 'priority'], 2.7]);
+});
+
+test('Priority: refused (and nothing sent) unless the person confirmed its price; then sent as Priority and priced at the tier Google reports', async () => {
+  const r0 = await relay({ over: SELECT, fetchImpl: async () => served('priority') });
+  const no = await call(r0.mw, { body: pageBody('p', { serviceTier: 'priority' }) });
+  assert.deepEqual([no.status, no.json.error.kind, r0.sent.length], [400, 'priority_unconfirmed', 0]);
+  assert.match(no.json.error.message, /confirm its price/);
+  const yes = await call(r0.mw, { body: pageBody('p', { serviceTier: 'priority' }), headers: { 'x-atlas-priority-confirmed': 'yes' } });
+  assert.equal(r0.sent[0].body.serviceTier, 'priority');
+  // 1,000 in at $2.70/M + 500 out and thinking at $13.50/M = $0.00945 (1.8 x the Standard $0.00525)
+  assert.deepEqual([yes.json.atlasUsage.tier_requested, yes.json.atlasUsage.tier, yes.json.atlasUsage.usd], ['priority', 'priority', 0.00945]);
+  // served as Standard after all (Google can downgrade a Priority request): priced at Standard
+  const down = await relay({ over: SELECT, fetchImpl: async () => served('standard') });
+  const dd = await call(down.mw, { body: pageBody('q', { serviceTier: 'priority' }), headers: { 'x-atlas-priority-confirmed': 'yes' } });
+  assert.deepEqual([dd.json.atlasUsage.tier_requested, dd.json.atlasUsage.tier, dd.json.atlasUsage.usd], ['priority', 'standard', 0.00525]);
+  // the default configuration has no Priority at all
+  const plain = await relay();
+  assert.equal((await call(plain.mw, { body: pageBody('r', { serviceTier: 'priority' }), headers: { 'x-atlas-priority-confirmed': 'yes' } })).status, 400);
+});
+
 test('fallback: a model that does not exist (404) is passed over at once', async () => {
   const r0 = await relay({ over: FALLBACK, fetchImpl: async (u) => (modelOf(u) === 'gemini-4-hydrogen' ? gemini(404) : gemini()) });
   const a = await call(r0.mw, { body: pageBody() });
@@ -286,6 +335,19 @@ test('loop: the page tells the relay which model the conversation is on, and fol
   assert.deepEqual(heads, [null, 'gemini-3.6-flash']);
   assert.deepEqual([r.usage.model, r.usage.fallback], ['gemini-3.6-flash', true]);
   await assert.rejects(askAssistant({ text: 'q', declarations: [], handlers: {}, fetchImpl: async () => reply({ error: { message: 'Gemini is overloaded right now (HTTP 503).', kind: 'overloaded', tried: 'gemini-4-hydrogen 503' } }, 503) }), (e) => e.kind === 'overloaded' && e.tried === 'gemini-4-hydrogen 503');
+});
+
+test('loop: the page sends the chosen model, whether fallback is allowed, and the tier; Priority goes with its confirmation', async () => {
+  const seen = [];
+  const go = (opts) => askAssistant({ text: 'q', declarations: [], handlers: {}, ...opts, fetchImpl: async (u, o) => { seen.push({ h: o.headers, tier: JSON.parse(o.body).serviceTier }); return reply({ ...modelText('ok'), atlasUsage: { ...use, model: opts.preferred, preferred_model: opts.preferred, status: 200, tier: opts.tier || 'standard' } }); } });
+  const a = await go({ preferred: 'gemini-4-hydrogen' });
+  const b = await go({ preferred: 'gemini-3.6-flash', fallback: false, tier: 'priority' });
+  assert.deepEqual(seen.map((x) => [x.h['X-Atlas-Preferred'], x.h['X-Atlas-Fallback'] || 'on', x.h['X-Atlas-Priority-Confirmed'] || null, x.tier]),
+    [['gemini-4-hydrogen', 'on', null, 'standard'], ['gemini-3.6-flash', 'off', 'yes', 'priority']]);
+  assert.deepEqual([a.usage.preferred, b.usage.preferred, b.usage.tier], ['gemini-4-hydrogen', 'gemini-3.6-flash', 'priority']);
+  // an error keeps Google's status code for the page (402 here, from the relay's error)
+  await assert.rejects(go2(), (e) => e.status === 402 && e.kind === 'billing');
+  function go2() { return askAssistant({ text: 'q', declarations: [], handlers: {}, fetchImpl: async () => reply({ error: { message: 'Billing', kind: 'billing', status: 402 } }, 402) }); }
 });
 
 test('loop: a failing or unknown tool goes back to Gemini as an error; HTTP errors and blocked answers are reported', async () => {

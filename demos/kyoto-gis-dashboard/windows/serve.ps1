@@ -31,11 +31,13 @@ Start-Process $url
 # the conversation to /api/assistant on this computer; this script adds the Gemini API key from this
 # computer's environment (GEMINI_API_KEY, set once with setx) and passes it on to Google. The key never
 # reaches the browser and is not in any file of the site.
-# assistant-config.json next to this script sets the model (gemini-4-hydrogen; GEMINI_MODEL overrides it)
-# and the fallback models used in order when it is overloaded, rate-limited or failing (a model that fails is
-# skipped for a few minutes), at most 3 retries with exponential backoff (1 s, 2 s, 4 s),
-# the allowed thinking levels (medium by default, high for planning), the Standard service tier (never
-# Priority), the prices for the cost estimate, the billing currency (RM) and the limits: requests and cost
+# assistant-config.json next to this script sets the model (gemini-4-hydrogen; GEMINI_MODEL overrides it),
+# the models the person can choose in the page (X-Atlas-Preferred) and the fallback models used in order when
+# the chosen one is overloaded, rate-limited or failing (unless the page sends X-Atlas-Fallback: off; a model
+# that fails is skipped for a few minutes), at most 3 retries with exponential backoff (1 s, 2 s, 4 s),
+# the allowed thinking levels (medium by default, high for planning), the service tier (Standard by default;
+# Priority only when the page sends X-Atlas-Priority-Confirmed: yes after the person accepted its prices),
+# the prices for the cost estimate, the billing currency (RM) and the limits: requests and cost
 # per day, output tokens, timeout, retries and the duplicate guard. Each call is logged to
 # assistant-usage.jsonl here: token counts and the estimated cost only (no question, answer or key). GEMINI_API_BASE is only for tests.
 try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12 } catch { }
@@ -97,8 +99,8 @@ function Get-FailMessage($kind, $status, $google, $tried, $c) {
   return $m
 }
 function Get-AssistantConfig {
-  $c = @{ model = 'gemini-4-hydrogen'; fallbacks = @(); tDefault = 'medium'; tPlanning = 'high'; allowed = @('medium', 'high'); tier = 'standard'
-    prices = @{ 'gemini-4-hydrogen' = @(1.5, 0.075, 7.5) }; curCode = 'USD'; curSymbol = '$'; perUsd = 1.0
+  $c = @{ model = 'gemini-4-hydrogen'; fallbacks = @(); selectable = @(); tDefault = 'medium'; tPlanning = 'high'; allowed = @('medium', 'high'); tier = 'standard'; tiers = @('standard')
+    prices = @{ 'gemini-4-hydrogen' = @(1.5, 0.075, 7.5) }; pricesPriority = @{}; curCode = 'USD'; curSymbol = '$'; perUsd = 1.0
     max_requests_per_day = 200; max_cost_per_day = 1.0; max_tool_rounds_per_question = 6; max_tool_calls_per_question = 12
     max_history_turns = 6; max_output_tokens = 8192; timeout_seconds = 45; retries = 3; backoff_seconds = 1; max_total_seconds = 100
     cooldown_seconds = 180; duplicate_window_seconds = 5 }
@@ -112,8 +114,12 @@ function Get-AssistantConfig {
       if ($j.thinking.planning) { $c.tPlanning = ([string]$j.thinking.planning).ToLower() }
       if ($j.thinking.allowed) { $c.allowed = @($j.thinking.allowed | ForEach-Object { ([string]$_).ToLower() }) }
       if ($j.service_tier) { $c.tier = ([string]$j.service_tier).ToLower() }
+      if ($j.service_tiers) { $c.tiers = @($j.service_tiers | ForEach-Object { ([string]$_).ToLower() }) }
+      if ($j.selectable_models) { $c.selectable = @($j.selectable_models | ForEach-Object { [string]$_ }) }
       $pr = $j.price_usd_per_million_tokens
       if ($pr) { foreach ($p in $pr.PSObject.Properties) { if ($null -ne $p.Value.input) { $c.prices[$p.Name] = @([double]$p.Value.input, [double]$p.Value.cached_input, [double]$p.Value.output_including_thinking) } } }
+      $pp = $j.price_usd_per_million_tokens_priority
+      if ($pp) { foreach ($p in $pp.PSObject.Properties) { if ($null -ne $p.Value.input) { $c.pricesPriority[$p.Name] = @([double]$p.Value.input, [double]$p.Value.cached_input, [double]$p.Value.output_including_thinking) } } }
       $bc = $j.billing_currency
       if ($bc) {
         if ($bc.code) { $c.curCode = [string]$bc.code }
@@ -126,9 +132,12 @@ function Get-AssistantConfig {
   $m = Get-UserSetting 'GEMINI_MODEL'
   if ($m) { $c.model = $m }
   $c.fallbacks = @($c.fallbacks | Where-Object { $_ -and $_ -ne $c.model })
+  $sel = @($c.model); foreach ($m in $c.selectable) { if ($m -and $sel -notcontains $m) { $sel += $m } }; $c.selectable = $sel
+  $ts = @($c.tier); foreach ($t in $c.tiers) { if ($t -and $ts -notcontains $t) { $ts += $t } }; $c.tiers = $ts
   return $c
 }
-function Get-Price($c, $model) {
+function Get-Price($c, $model, $tier) {
+  if ($tier -eq 'priority' -and $c.pricesPriority.ContainsKey($model)) { return $c.pricesPriority[$model] }
   if ($c.prices.ContainsKey($model)) { return $c.prices[$model] }
   if ($c.prices.ContainsKey($c.model)) { return $c.prices[$c.model] }
   return @(1.5, 0.075, 7.5)
@@ -160,6 +169,9 @@ function Invoke-AssistantRelay($ctx) {
     $st = '{"configured":' + $conf + ',"model":' + (Get-JsonText $c.model) + ',"thinking":{"default":' + (Get-JsonText $c.tDefault) + ',"planning":' + (Get-JsonText $c.tPlanning) + ',"allowed":[' + $allowed + ']}' +
       ',"service_tier":' + (Get-JsonText $c.tier) + ',"limits":{' + $lim + '},"price_usd_per_million_tokens":{' + (($c.prices.Keys | Sort-Object | ForEach-Object { (Get-JsonText $_) + ':{"input":' + (Get-Num $c.prices[$_][0]) + ',"cached_input":' + (Get-Num $c.prices[$_][1]) + ',"output_including_thinking":' + (Get-Num $c.prices[$_][2]) + '}' }) -join ',') + '}' +
       ',"fallback_models":[' + (($c.fallbacks | ForEach-Object { Get-JsonText $_ }) -join ',') + ']' +
+      ',"selectable_models":[' + (($c.selectable | ForEach-Object { Get-JsonText $_ }) -join ',') + ']' +
+      ',"service_tiers":[' + (($c.tiers | ForEach-Object { Get-JsonText $_ }) -join ',') + ']' +
+      ',"price_usd_per_million_tokens_priority":{' + (($c.pricesPriority.Keys | Sort-Object | ForEach-Object { (Get-JsonText $_) + ':{"input":' + (Get-Num $c.pricesPriority[$_][0]) + ',"cached_input":' + (Get-Num $c.pricesPriority[$_][1]) + ',"output_including_thinking":' + (Get-Num $c.pricesPriority[$_][2]) + '}' }) -join ',') + '}' +
       ',"cooling":{' + (($script:Cooling.Keys | Where-Object { $script:Cooling[$_] -gt $now } | ForEach-Object { (Get-JsonText $_) + ':' + [int](($script:Cooling[$_] - $now).TotalSeconds) }) -join ',') + '}' +
       ',"billing_currency":{"code":' + (Get-JsonText $c.curCode) + ',"symbol":' + (Get-JsonText $c.curSymbol) + ',"per_usd":' + (Get-Num $c.perUsd) + '}' +
       ',"today":' + (Get-TodayJson (Get-AssistantToday $day $c.perUsd)) + '}'
@@ -174,10 +186,16 @@ function Invoke-AssistantRelay($ctx) {
   $text = [System.Text.Encoding]::UTF8.GetString($rawBytes)
   try { $req = $text | ConvertFrom-Json } catch { Send-Error $res 400 'The request is not JSON.'; return }
   if ($null -eq $req.contents -or @($req.contents).Count -eq 0) { Send-Error $res 400 'The request has no conversation.'; return }
-  # the rules: Standard tier only, an allowed thinking level, an output cap within the limit
-  foreach ($tierIn in @($req.serviceTier, $req.service_tier)) { if ($null -ne $tierIn -and ([string]$tierIn).ToLower() -ne $c.tier) { Send-Error $res 400 ('Only the ' + $c.tier + ' service tier is allowed here (not ' + $tierIn + ').'); return } }
+  # the rules: an allowed service tier (Priority only after the person confirmed its price), an allowed
+  # thinking level, an output cap within the limit
+  $asked = @(@($req.serviceTier, $req.service_tier) | Where-Object { $null -ne $_ } | ForEach-Object { ([string]$_).ToLower() } | Select-Object -Unique)
+  if ($asked.Count -gt 1) { Send-Error $res 400 'The request names two different service tiers.'; return }
+  $reqTier = $c.tier; if ($asked.Count -eq 1) { $reqTier = $asked[0] }
+  if ($c.tiers -notcontains $reqTier) { Send-Error $res 400 ('The ' + $reqTier + ' service tier is not allowed here (allowed: ' + ($c.tiers -join ', ') + ').'); return }
+  if ($reqTier -eq 'priority' -and ([string]$ctx.Request.Headers['X-Atlas-Priority-Confirmed']).ToLower() -ne 'yes') { Send-Error $res 400 'Priority costs more than Standard: it is used only after you confirm its price in the assistant.' 'priority_unconfirmed'; return }
   $inject = ''
   if ($null -eq $req.serviceTier -and $null -eq $req.service_tier) { $inject += '"serviceTier":' + (Get-JsonText $c.tier) + ',' }
+  elseif ($null -ne $req.service_tier -and $null -eq $req.serviceTier) { $inject += '"serviceTier":' + (Get-JsonText $reqTier) + ',' }
   $g = $req.generationConfig
   if ($null -eq $g) {
     $level = $c.tDefault
@@ -189,6 +207,8 @@ function Invoke-AssistantRelay($ctx) {
     if (-not ([double]$g.maxOutputTokens -gt 0)) { Send-Error $res 400 'The request has no output token limit.'; return }
     if ([double]$g.maxOutputTokens -gt $c.max_output_tokens) { Send-Error $res 400 ('The output limit is ' + (Get-Num $c.max_output_tokens) + ' tokens.'); return }
   }
+  # Google takes serviceTier; a service_tier from the page is passed on under that name only
+  if ($null -ne $req.service_tier) { $text = [regex]::Replace([regex]::Replace($text, ',\s*"service_tier"\s*:\s*"[^"]*"', ''), '"service_tier"\s*:\s*"[^"]*"\s*,?', '') }
   if ($inject) { $t0 = $text.TrimStart(); $text = '{' + $inject + $t0.Substring(1) }
   # the same request twice in a few seconds (a double click, a loop) is not sent again
   $sha = [System.Security.Cryptography.SHA256]::Create()
@@ -200,13 +220,19 @@ function Invoke-AssistantRelay($ctx) {
   $script:LastRequest = @{ Hash = $hash; At = $now }
   $base = Get-UserSetting 'GEMINI_API_BASE'
   if (-not $base) { $base = 'https://generativelanguage.googleapis.com' }
-  # which models to try: the one this conversation is on (the page says so), then the main model, then the
-  # fallbacks; a model that recently failed is skipped (unless every model has)
+  # which models to try: the person's choice (else the one this conversation is on), then, with automatic
+  # fallback, the others; a model that recently failed is tried after the others (unless every model has)
   $hint = [string]$ctx.Request.Headers['X-Atlas-Model']
-  $all = @($c.model) + @($c.fallbacks)
-  $order = @()
-  if ($hint -and ($all -contains $hint)) { $order += $hint }
-  foreach ($m in $all) { if ($order -notcontains $m) { $order += $m } }
+  $pref = [string]$ctx.Request.Headers['X-Atlas-Preferred']
+  $autoFallback = ([string]$ctx.Request.Headers['X-Atlas-Fallback']).ToLower() -ne 'off'
+  $known = @($c.model) + @($c.fallbacks); foreach ($m in $c.selectable) { if ($known -notcontains $m) { $known += $m } }
+  $first = $c.model
+  if ($pref -and ($known -contains $pref)) { $first = $pref } elseif ($hint -and ($known -contains $hint)) { $first = $hint }
+  $order = @($first)
+  if ($autoFallback) {
+    if ($hint -and ($known -contains $hint) -and $order -notcontains $hint) { $order += $hint }
+    foreach ($m in (@($c.model) + @($c.fallbacks))) { if ($order -notcontains $m) { $order += $m } }
+  }
   # the models that have not failed lately first, then the ones that have
   $fresh = @($order | Where-Object { -not ($script:Cooling.ContainsKey($_) -and $script:Cooling[$_] -gt $now) })
   $cands = @($fresh) + @($order | Where-Object { $fresh -notcontains $_ })
@@ -279,16 +305,19 @@ function Invoke-AssistantRelay($ctx) {
     } catch { }
   }
   if ($tot -eq 0) { $tot = $pt + $tt + $ot + $th }
-  $pr = Get-Price $c $model
+  # the tier Google says it served (a Priority request can be served, and billed, as Standard)
+  if (-not $tierHdr) { $tierHdr = $reqTier }
+  $tierHdr = ([string]$tierHdr).ToLower()
+  $pr = Get-Price $c $model $tierHdr
   $usd = [math]::Round((($pt - $ct + $tt) * $pr[0] + $ct * $pr[1] + ($ot + $th) * $pr[2]) / 1e6, 6)
-  if (-not $tierHdr) { $tierHdr = $c.tier }
   $final = $status; if ($billing -and -not $used) { $final = 402 }
   $kindOut = 'ok'; $errOut = $null
   if (-not $used) { $kindOut = $kind; $errOut = $google }
-  $fb = 'false'; if ($model -ne $c.model) { $fb = 'true' }
+  $fb = 'false'; if ($model -ne $first) { $fb = 'true' }
+  $af = 'false'; if ($autoFallback) { $af = 'true' }
   $entry = '{"time":' + (Get-JsonText ([DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ss.fffZ', $Inv))) + ',"day":' + (Get-JsonText $day) + ',"model":' + (Get-JsonText $model) +
-    ',"requested_model":' + (Get-JsonText $c.model) + ',"fallback":' + $fb + ',"tried":' + (Get-JsonText $triedText) +
-    ',"model_version":' + (Get-JsonText $mv) + ',"thinking":' + (Get-JsonText $level) + ',"tier":' + (Get-JsonText $tierHdr) + ',"status":' + $final + ',"kind":' + (Get-JsonText $kindOut) + ',"attempts":' + $tried.Count + ',"ms":' + $elapsed +
+    ',"preferred_model":' + (Get-JsonText $first) + ',"requested_model":' + (Get-JsonText $c.model) + ',"fallback":' + $fb + ',"auto_fallback":' + $af + ',"tried":' + (Get-JsonText $triedText) +
+    ',"model_version":' + (Get-JsonText $mv) + ',"thinking":' + (Get-JsonText $level) + ',"tier_requested":' + (Get-JsonText $reqTier) + ',"tier":' + (Get-JsonText $tierHdr) + ',"status":' + $final + ',"kind":' + (Get-JsonText $kindOut) + ',"attempts":' + $tried.Count + ',"ms":' + $elapsed +
     ',"input":' + (Get-Num ($pt + $tt)) + ',"cached":' + (Get-Num $ct) + ',"output":' + (Get-Num $ot) + ',"thinking_tokens":' + (Get-Num $th) + ',"total":' + (Get-Num $tot) + ',"usd":' + (Get-Num $usd) +
     ',"currency":' + (Get-JsonText $c.curCode) + ',"cost":' + (Get-Num ([math]::Round($usd * $c.perUsd, 6))) + ',"error":' + (Get-JsonText $errOut) + '}'
   try { [IO.File]::AppendAllText($AssistantLog, $entry + "`n", (New-Object System.Text.UTF8Encoding($false))) } catch { }

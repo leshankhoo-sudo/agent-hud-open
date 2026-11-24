@@ -20,13 +20,23 @@ const SHOW_ACTS = 3;
 const OPERATE = new Set(['show_place', 'show_map_layer', 'open_trip', 'open_section']);
 const isPhone = () => matchMedia('(max-width: 640px)').matches;
 const THINK_KEY = 'kyoto-assistant-thinking';
+const MODEL_KEY = 'kyoto-assistant-model';
+const FALLBACK_KEY = 'kyoto-assistant-fallback';
+const MODELS = ['gemini-4-hydrogen', 'gemini-3.6-flash'];
+const LABEL = { 'gemini-4-hydrogen': 'Gemini 4 Hydrogen', 'gemini-3.6-flash': 'Gemini 3.6 Flash', 'gemini-3.8-flash': 'Gemini 3.8 Flash' };
+const label = (m) => LABEL[m] || m || '—';
+// a typical question for the price comparison: about 8,000 tokens in, 1,500 out (answer and thinking)
+const TYPICAL = { input: 8000, output: 1500 };
+const typicalUsd = (p) => (p ? (TYPICAL.input * p.input + TYPICAL.output * p.output_including_thinking) / 1e6 : 0);
+const keep = (k, v) => { try { localStorage.setItem(k, v); } catch { /* not kept */ } };
+const kept = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
 const THINK_MODES = [['auto', 'Auto', 'Medium, or High for multi-day itineraries and route planning'], ['medium', 'Medium', 'Medium thinking for every question'], ['high', 'High', 'High thinking for every question (slower, more output tokens)']];
 const n0 = (v) => Math.round(v || 0).toLocaleString('en-US');
 const amt = (v) => ((v || 0) < 0.01 ? (v || 0).toFixed(4) : (v || 0).toFixed(3));
 // the estimate in the billing currency (RM by default, assistant-config.json) and in US dollars
 const money = (usd, cur) => (cur && cur.code !== 'USD' ? `≈ ${cur.symbol}${amt(usd * cur.per_usd)} (US$${amt(usd)})` : `≈ $${amt(usd)}`);
 // what one answer cost: the thinking level, the Gemini calls, the tokens and the estimated price
-const usageLine = (u, cur) => (u && u.calls ? `${u.model ? `${u.model}${u.fallback ? ' (fallback)' : ''} · ` : ''}${u.thinking} thinking · ${u.calls} call${u.calls > 1 ? 's' : ''} · ${n0(u.total)} tokens (${n0(u.input)} in, ${n0(u.output)} out, ${n0(u.thinking_tokens)} thinking) · ${money(u.usd, cur)}` : '');
+const usageLine = (u, cur) => (u && u.calls ? `${u.model ? `${u.model}${u.fallback ? ' (fallback)' : ''} · ` : ''}${u.tier === 'priority' ? 'Priority · ' : ''}${u.thinking} thinking · ${u.calls} call${u.calls > 1 ? 's' : ''} · ${n0(u.total)} tokens (${n0(u.input)} in, ${n0(u.output)} out, ${n0(u.thinking_tokens)} thinking) · ${money(u.usd, cur)}` : '');
 const plain = (t) => (t || '').replace(/[*`#]/g, '').replace(/\s+/g, ' ').trim();
 
 // a small, safe subset of Markdown: paragraphs, lists, **bold** and `code` (no HTML is ever injected)
@@ -91,6 +101,15 @@ export default function Assistant({ open, onClose, getCtx, side = 'right', onHel
   const [mode, setModeState] = useState(() => { try { return localStorage.getItem(THINK_KEY) || 'auto'; } catch { return 'auto'; } });
   const setMode = (m) => { setModeState(m); try { localStorage.setItem(THINK_KEY, m); } catch { /* not kept */ } };
   const [off, setOff] = useState(null);           // where it was dragged to: { x, y } from its place
+  // the model the person prefers (remembered), automatic fallback (remembered, on by default) and the service
+  // tier (Standard; Priority only after the person accepted its prices, and only until the page is reloaded)
+  const [pref, setPrefState] = useState(() => kept(MODEL_KEY, 'gemini-4-hydrogen'));
+  const setPref = (m) => { setPrefState(m); keep(MODEL_KEY, m); };
+  const [autoFb, setAutoFbState] = useState(() => kept(FALLBACK_KEY, 'on') !== 'off');
+  const setAutoFb = (v) => { setAutoFbState(v); keep(FALLBACK_KEY, v ? 'on' : 'off'); };
+  const [tier, setTier] = useState('standard');
+  const [askPri, setAskPri] = useState(false);      // the Priority price confirmation is showing
+  const [last, setLast] = useState(null);           // the last request: { ok, status, kind, model, preferred, fallback, tier, usd }
   const root = useRef(null);
   useEffect(() => { setOff(null); }, [side]);
   useEffect(() => { if (open) setMin(false); }, [open]);
@@ -110,6 +129,11 @@ export default function Assistant({ open, onClose, getCtx, side = 'right', onHel
   };
 
   const check = () => { if (!PREVIEW) { setStatus(null); assistantStatus().then(setStatus); } };
+  // after each question: the relay's view again (which models are cooling down), without a "Checking" flash
+  const refresh = () => { if (!PREVIEW) assistantStatus().then((s) => { if (s.reachable) setStatus(s); }); };
+  const models = status?.selectable_models?.length ? status.selectable_models : MODELS;
+  const priorityOk = !!status?.service_tiers?.includes('priority') && !!status?.price_usd_per_million_tokens_priority?.[pref];
+  useEffect(() => { if (status?.selectable_models?.length && !status.selectable_models.includes(pref)) setPref(status.model); }, [status?.selectable_models]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (open && !status) check(); }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (open && status?.configured) input.current?.focus(); }, [open, status?.configured]);
   useEffect(() => { const b = body.current; if (b) b.scrollTop = b.scrollHeight; }, [msgs, live]);
@@ -130,6 +154,7 @@ export default function Assistant({ open, onClose, getCtx, side = 'right', onHel
     try {
       const r = await askAssistant({
         history: contents.current, text: q, note: `Today in Kyoto: ${tokyoDate()}. ${ctx.note()}`, thinking, limits: status?.limits, model: convModel.current,
+        preferred: pref, fallback: autoFb, tier: tier === 'priority' && priorityOk ? 'priority' : 'standard',
         declarations: DECLARATIONS, handlers: makeHandlers(ctx), signal: ac.signal,
         onAction: (a) => { acts.push(a); setLive([...acts]); },
       });
@@ -137,14 +162,17 @@ export default function Assistant({ open, onClose, getCtx, side = 'right', onHel
       if (r.usage?.model) convModel.current = r.usage.model;
       today(r.usage);
       setMsgs((m) => [...m, { role: 'ai', text: r.text, actions: r.actions, usage: r.usage }]);
+      setLast({ ok: true, status: 200, model: r.usage?.model, preferred: r.usage?.preferred || pref, fallback: !!r.usage?.fallback, tier: r.usage?.tier, usd: r.usage?.usd || 0 });
       if (isPhone() && r.actions.some((a) => OPERATE.has(a.name) && !a.result?.error)) setMin(true);
     } catch (e) {
       const stopped = e?.name === 'AbortError';
       today(e?.usage);
-      setMsgs((m) => [...m, { role: 'ai', text: '', actions: acts, usage: e?.usage, error: stopped ? 'Stopped.' : e.message, kind: stopped ? null : e?.kind, retry: stopped ? null : q }]);
+      setMsgs((m) => [...m, { role: 'ai', text: '', actions: acts, usage: e?.usage, error: stopped ? 'Stopped.' : e.message, kind: stopped ? null : e?.kind, status: stopped ? null : e?.status, retry: stopped ? null : q }]);
+      if (!stopped) setLast({ ok: false, status: e?.status || 0, kind: e?.kind || null, model: null, preferred: e?.usage?.preferred || pref, fallback: false, tier: e?.usage?.tier, usd: e?.usage?.usd || 0, tried: e?.tried || e?.usage?.tried || null });
     } finally {
       ctl.current = null;
       setLive(null);
+      refresh();
     }
   };
   const fresh = () => { ctl.current?.abort(); contents.current = []; convModel.current = ''; setMsgs([]); setText(''); };
@@ -161,7 +189,7 @@ export default function Assistant({ open, onClose, getCtx, side = 'right', onHel
         <span className="as-mark" aria-hidden="true">問</span>
         <div className="as-title">
           <h4>Atlas assistant</h4>
-          <p>{min ? (busy ? 'Working…' : plain([...msgs].reverse().find((m) => m.role === 'ai')?.text) || 'Tap to open') : status?.model ? `Gemini · ${status.model}${status.service_tier ? ` · ${status.service_tier}` : ''}` : 'Gemini'}</p>
+          <p>{min ? (busy ? 'Working…' : plain([...msgs].reverse().find((m) => m.role === 'ai')?.text) || 'Tap to open') : `${label(pref)} · ${tier === 'priority' ? 'Priority' : 'Standard'}`}</p>
         </div>
         {onHelp && !min && <button type="button" className="as-ic as-help" onClick={onHelp} title="How the trip planner works · data sources" aria-label="How the trip planner works"><b aria-hidden="true">?</b></button>}
         <button type="button" className="as-ic" onClick={() => setMin(!min)} aria-expanded={!min} aria-label={min ? 'Open the chat' : 'Fold the chat'} title={min ? 'Open the chat' : 'Fold the chat'}>
@@ -174,6 +202,62 @@ export default function Assistant({ open, onClose, getCtx, side = 'right', onHel
           <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
         </button>
       </header>
+
+      {!min && (() => {
+        const cur = status?.billing_currency || { code: 'USD', symbol: '$', per_usd: 1 };
+        const rm = (usd) => `${cur.symbol}${amt(usd * cur.per_usd)}`;
+        const std = status?.price_usd_per_million_tokens?.[pref], pri = status?.price_usd_per_million_tokens_priority?.[pref];
+        const conn = PREVIEW || status?.preview ? ['off', 'Not available in the online preview']
+          : status == null ? ['wait', 'Checking the connection…']
+          : !status.reachable ? ['err', 'Relay not reachable']
+          : !status.configured ? ['err', 'No API key on this computer']
+          : !last ? ['ready', 'Ready (API key found)']
+          : last.ok ? ['ok', 'Connected']
+          : ['err', `Error${last.status ? ` ${last.status}` : ''} · ${(ERROR_TITLE[last.kind] || 'Request failed').replace(/\s*\(\d+\)$/, '')}`];
+        const cool = status?.cooling?.[pref];
+        return (
+          <div className="as-models">
+            <div className="as-mrow">
+              <label className="as-msel"><span>Model</span>
+                <select value={pref} onChange={(e) => setPref(e.target.value)} disabled={busy} aria-label="Preferred model">
+                  {models.map((m) => <option key={m} value={m}>{label(m)}</option>)}
+                </select>
+              </label>
+              <div className="as-tier" role="radiogroup" aria-label="Service tier">
+                <button type="button" role="radio" aria-checked={tier === 'standard'} className={tier === 'standard' ? 'on' : ''} disabled={busy} onClick={() => { setTier('standard'); setAskPri(false); }}>Standard</button>
+                <button type="button" role="radio" aria-checked={tier === 'priority'} className={tier === 'priority' ? 'on pri' : ''} disabled={busy || !priorityOk} title={priorityOk ? 'Faster under load, about 1.8 times the price; asks you to confirm first' : 'Priority is not offered by this relay'} onClick={() => { if (tier !== 'priority') setAskPri(true); }}>Priority</button>
+              </div>
+              <label className="as-fb" title="When the preferred model is overloaded or failing, answer with another model"><input type="checkbox" checked={autoFb} disabled={busy} onChange={(e) => setAutoFb(e.target.checked)} /> Auto fallback</label>
+            </div>
+            <p className="as-conn" aria-live="polite">
+              <i className={'as-dot ' + conn[0]} aria-hidden="true" />
+              <span className="as-cstate">{conn[1]}</span>
+              <span>Preferred: <b>{label(pref)}</b></span>
+              <span>Used: <b>{last?.model ? label(last.model) : '—'}</b>{last?.ok && last.fallback ? ' (fallback)' : last && !last.ok ? ' (no answer)' : ''}</span>
+              <span>{last?.tier ? (last.tier === 'priority' ? 'Priority' : 'Standard') : (tier === 'priority' ? 'Priority' : 'Standard')}</span>
+              {last && <span>{!last.ok && !last.usd ? 'Not billed' : `Last ≈ ${rm(last.usd)}`}</span>}
+              {cool > 0 && autoFb && <span className="as-cool">{label(pref)} was busy: tried after the others for {Math.ceil(cool / 60)} min</span>}
+            </p>
+            {last && !last.ok && last.tried && <p className="as-tried">Tried: {last.tried}</p>}
+            {askPri && (
+              <div className="as-pri" role="alertdialog" aria-label="Confirm Priority">
+                <b>Use Priority for {label(pref)}?</b>
+                <p>Priority answers ahead of Standard traffic when Gemini is busy, at about 1.8 times the price (per 1M tokens):</p>
+                <table><tbody>
+                  <tr><th /><th>Input</th><th>Output + thinking</th><th>A typical question</th></tr>
+                  <tr><td>Standard</td><td>US${std?.input?.toFixed(2)}</td><td>US${std?.output_including_thinking?.toFixed(2)}</td><td>≈ {rm(typicalUsd(std))}</td></tr>
+                  <tr className="hi"><td>Priority</td><td>US${pri?.input?.toFixed(2)}</td><td>US${pri?.output_including_thinking?.toFixed(2)}</td><td>≈ {rm(typicalUsd(pri))}</td></tr>
+                </tbody></table>
+                <p className="as-small">A typical question here is about {n0(TYPICAL.input)} tokens in and {n0(TYPICAL.output)} out; planning questions can be several times that. If Google serves a request at Standard after all, it is billed (and counted here) at Standard. The daily limit of {cur.symbol}{status?.limits?.max_cost_per_day} still applies. Priority is on until you switch back or reload the page.</p>
+                <div className="as-pri-b">
+                  <button type="button" className="as-btn" onClick={() => { setTier('priority'); setAskPri(false); }}>Use Priority</button>
+                  <button type="button" className="as-btn ghost" onClick={() => setAskPri(false)}>Keep Standard</button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       <div className="as-body" ref={body} aria-live="polite">
         {status == null && <p className="as-note">Checking the assistant’s connection…</p>}
@@ -225,7 +309,7 @@ export default function Assistant({ open, onClose, getCtx, side = 'right', onHel
                   {m.retry && <button type="button" onClick={() => send(m.retry)} disabled={busy}>Try again</button>}
                 </div>
               )}
-              {usageLine(m.usage, status?.billing_currency) && <p className="as-use" title="Token counts from Gemini; the price is an estimate at the Standard rates and the exchange rate in assistant-config.json">{usageLine(m.usage, status?.billing_currency)}</p>}
+              {usageLine(m.usage, status?.billing_currency) && !(m.error && !m.usage?.usd) && <p className="as-use" title="Token counts from Gemini; the price is an estimate at the rates of the tier that served it and the exchange rate in assistant-config.json">{usageLine(m.usage, status?.billing_currency)}</p>}
             </div>
           )))}
         {busy && (

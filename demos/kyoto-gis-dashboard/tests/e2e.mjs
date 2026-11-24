@@ -1495,12 +1495,13 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   const ap = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const aErr = []; ap.on('pageerror', (e) => aErr.push(e.message));
   let configured = false;
-  const bodies = [], sentKey = [], script = [];
+  const bodies = [], sentKey = [], script = [], heads = [];
   let calls = 0;
   const LIM = { max_requests_per_day: 200, max_cost_per_day: 3, max_tool_rounds_per_question: 6, max_tool_calls_per_question: 12, max_history_turns: 6, max_output_tokens: 8192, timeout_seconds: 90, retries: 2, duplicate_window_seconds: 5 };
-  await ap.route('**/api/assistant/status', (r) => r.fulfill({ json: { configured, model: 'gemini-4-hydrogen', thinking: { default: 'medium', planning: 'high', allowed: ['medium', 'high'] }, service_tier: 'standard', limits: LIM, billing_currency: { code: 'MYR', symbol: 'RM', per_usd: 4.122961 }, today: { requests: calls, usd: +(calls * 0.003525).toFixed(6) } } }));
+  const PRI = { selectable_models: ['gemini-4-hydrogen', 'gemini-3.6-flash'], service_tiers: ['standard', 'priority'], price_usd_per_million_tokens: { 'gemini-4-hydrogen': { input: 1.5, cached_input: 0.075, output_including_thinking: 7.5 }, 'gemini-3.6-flash': { input: 0.75, cached_input: 0.075, output_including_thinking: 3.75 } }, price_usd_per_million_tokens_priority: { 'gemini-4-hydrogen': { input: 2.7, cached_input: 0.135, output_including_thinking: 13.5 }, 'gemini-3.6-flash': { input: 1.35, cached_input: 0.135, output_including_thinking: 6.75 } } };
+  await ap.route('**/api/assistant/status', (r) => r.fulfill({ json: { ...PRI, configured, model: 'gemini-4-hydrogen', thinking: { default: 'medium', planning: 'high', allowed: ['medium', 'high'] }, service_tier: 'standard', limits: LIM, billing_currency: { code: 'MYR', symbol: 'RM', per_usd: 4.122961 }, today: { requests: calls, usd: +(calls * 0.003525).toFixed(6) } } }));
   await ap.route('**/api/assistant', (r) => {
-    const b = r.request().postDataJSON(); bodies.push(b);
+    const b = r.request().postDataJSON(); bodies.push(b); heads.push(r.request().headers());
     sentKey.push(r.request().headers()['x-goog-api-key'] || (r.request().url().includes('key=') ? 'in url' : null));
     let next = script.shift(); if (typeof next === 'function') next = next(b);
     r.fulfill(next.status ? { status: next.status, json: next.json } : { json: next });
@@ -1555,6 +1556,32 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   await ask('What is the weather at Kiyomizu-dera?');
   const err = await ap.evaluate(() => [...document.querySelectorAll('.as-err')].map((e) => e.textContent).join(' '));
   check('assistant: an error from Gemini (here a bad key) is shown as it is, with Try again', /API key not valid/.test(err) && /Try again/.test(err), err);
+
+  // the model bar at the top: preferred model, tier, automatic fallback, and what the last request did
+  const bar0 = await ap.evaluate(() => ({ sel: document.querySelector('.as-msel select').value, opts: [...document.querySelectorAll('.as-msel option')].map((o) => o.textContent).join(), tier: document.querySelector('.as-tier [aria-checked=true]')?.textContent, fb: document.querySelector('.as-fb input').checked, conn: document.querySelector('.as-conn').textContent, top: document.querySelector('.as-models').getBoundingClientRect().top < document.querySelector('.as-body').getBoundingClientRect().top }));
+  const h0 = heads.map((h) => [h['x-atlas-preferred'], h['x-atlas-fallback'] || 'on', h['x-atlas-priority-confirmed'] || '-']);
+  check('assistant model bar: at the top, Gemini 4 Hydrogen by default, Standard, Auto fallback on; it shows the preferred model, the model used, the connection (here the last error code) and the cost; every request named the preferred model with fallback on and no Priority',
+    bar0.top && bar0.sel === 'gemini-4-hydrogen' && bar0.opts === 'Gemini 4 Hydrogen,Gemini 3.6 Flash' && bar0.tier === 'Standard' && bar0.fb && /Error 400/.test(bar0.conn) && /Preferred: Gemini 4 Hydrogen/.test(bar0.conn) && /Used: — \(no answer\)/.test(bar0.conn)
+    && h0.length === bodies.length && h0.every(([p, f, pr]) => p === 'gemini-4-hydrogen' && f === 'on' && pr === '-') && bodies.every((b) => b.serviceTier === 'standard'), JSON.stringify({ bar0, h0: h0.slice(0, 2) }));
+  // Priority: the prices first; "Keep Standard" changes nothing; "Use Priority" applies to the next question only after that
+  await ap.locator('.as-tier button', { hasText: 'Priority' }).click(); await ap.waitForTimeout(200);
+  const pri0 = await ap.evaluate(() => ({ box: document.querySelector('.as-pri')?.textContent || '', tier: document.querySelector('.as-tier [aria-checked=true]').textContent }));
+  await ap.locator('.as-pri .as-btn', { hasText: 'Keep Standard' }).click(); await ap.waitForTimeout(150);
+  const pri1 = await ap.evaluate(() => ({ box: !!document.querySelector('.as-pri'), tier: document.querySelector('.as-tier [aria-checked=true]').textContent }));
+  await ap.locator('.as-tier button', { hasText: 'Priority' }).click(); await ap.locator('.as-pri .as-btn', { hasText: 'Use Priority' }).click();
+  await ap.locator('.as-msel select').selectOption('gemini-3.6-flash'); await ap.locator('.as-fb input').uncheck();
+  script.push(() => ({ ...say('Ginkaku-ji is in Sakyo.'), atlasUsage: { ...use(), model: 'gemini-3.6-flash', preferred_model: 'gemini-3.6-flash', fallback: false, tier: 'priority', tier_requested: 'priority', status: 200, kind: 'ok', usd: 0.006345 } }));
+  const nH = heads.length;
+  await ask('Where is Ginkaku-ji?');
+  const hP = heads[nH], bP = bodies[nH];
+  const bar1 = await ap.evaluate(() => ({ conn: document.querySelector('.as-conn').textContent, sub: document.querySelector('.as-title p').textContent, use: [...document.querySelectorAll('.as-msg.ai .as-use')].at(-1)?.textContent || '' }));
+  check('assistant model bar: Priority asks first, showing Standard and Priority prices per 1M tokens and for a typical question; after "Use Priority" the request goes as Priority with the confirmation, to the chosen 3.6 Flash, with fallback off; the bar shows Connected, the model used and the cost',
+    /Use Priority for Gemini 4 Hydrogen\?/.test(pri0.box) && /US\$1\.50.*US\$7\.50/.test(pri0.box) && /US\$2\.70.*US\$13\.50/.test(pri0.box) && /RM0\.096/.test(pri0.box) && /RM0\.173/.test(pri0.box) && pri0.tier === 'Standard' && !pri1.box && pri1.tier === 'Standard'
+    && bP.serviceTier === 'priority' && hP['x-atlas-priority-confirmed'] === 'yes' && hP['x-atlas-preferred'] === 'gemini-3.6-flash' && hP['x-atlas-fallback'] === 'off'
+    && /Connected/.test(bar1.conn) && /Used: Gemini 3\.6 Flash/.test(bar1.conn) && /Priority/.test(bar1.conn) && /Last ≈ RM0\.026/.test(bar1.conn) && /Gemini 3\.6 Flash · Priority/.test(bar1.sub) && /Priority · /.test(bar1.use),
+    JSON.stringify({ pri0: pri0.box.slice(0, 200), pri1, hP: [hP['x-atlas-preferred'], hP['x-atlas-fallback'], hP['x-atlas-priority-confirmed'], bP.serviceTier], bar1 }));
+  // back to the defaults for the rest of the run
+  await ap.locator('.as-tier button', { hasText: 'Standard' }).click(); await ap.locator('.as-msel select').selectOption('gemini-4-hydrogen'); await ap.locator('.as-fb input').check();
 
   await ap.locator('.as-h [aria-label="Close the assistant"]').click();
   await ap.waitForTimeout(1600);
