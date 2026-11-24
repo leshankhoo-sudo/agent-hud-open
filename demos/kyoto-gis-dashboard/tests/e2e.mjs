@@ -948,6 +948,8 @@ check('closing page: starts empty; pointers pull a column grid, drag out sized p
 await rp.waitForFunction(() => document.querySelector('.outro.st12'), null, { timeout: 20000 }).catch(() => {});
 await rp.waitForTimeout(600);
 const cardAt = async () => rp.evaluate(() => { const r = document.querySelector('.outro-card').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+// a turn takes about 0.85 s; under load it can take longer, so wait until it has really finished
+const turnDone = async () => { await rp.waitForTimeout(250); await rp.waitForFunction(() => !document.querySelector('.oc-turn').getAnimations().length, null, { timeout: 8000 }).catch(() => {}); await rp.waitForTimeout(150); };
 const fogState = () => rp.evaluate(() => { const c = document.querySelector('.fm-glass'), card = document.querySelector('.outro-card'); return { flipped: card.classList.contains('flipped'), back: getComputedStyle(document.querySelector('.oc-back')).visibility, front: +getComputedStyle(document.querySelector('.oc-front')).opacity, frontInert: document.querySelector('.oc-front').hasAttribute('inert'), backInert: document.querySelector('.oc-back').hasAttribute('inert'), pen: +(c.dataset.pen || 0), phase: c.dataset.phase || '', wipes: +(c.dataset.wipes || 0), w: c.width, h: c.height, visibleBtn: [...document.querySelectorAll('.outro-card button')].filter((b) => +getComputedStyle(b).opacity > 0.5 && getComputedStyle(b).visibility === 'visible' && !b.closest('[inert]')).map((b) => b.textContent.trim()) }; });
 const fg0 = await fogState();
 let cb = await cardAt();
@@ -971,21 +973,21 @@ await rp.mouse.move(cb.x + 30, cb.y + cb.h * 0.86); await rp.mouse.move(cb.x + c
 const fg5 = await fogState(); const fogCut = await rp.evaluate(() => (window.__cursorLight?.on ? window.__cursorLight.cut : -1));
 check('fog mirror: the writing finishes, and moving the mouse over the glass wipes it (no cursor light drawn over the glass)', fg4.phase === 'written' && fg4.pen === 1 && fg5.wipes >= 10 && fogCut !== 0, JSON.stringify({ fg4: [fg4.phase, fg4.pen], wipes: fg5.wipes, fogCut }));
 // a click on the glass turns it back; a drag (wiping) does not
-await rp.mouse.move(cb.x + cb.w * 0.3, cb.y + cb.h * 0.3); await rp.mouse.down(); await rp.mouse.move(cb.x + cb.w * 0.6, cb.y + cb.h * 0.35, { steps: 6 }); await rp.mouse.up(); await rp.waitForTimeout(900);
+await rp.mouse.move(cb.x + cb.w * 0.3, cb.y + cb.h * 0.3); await rp.mouse.down(); await rp.mouse.move(cb.x + cb.w * 0.6, cb.y + cb.h * 0.35, { steps: 6 }); await rp.mouse.up(); await turnDone();
 const fg6 = await fogState();
-await rp.mouse.click(cb.x + cb.w / 2, cb.y + cb.h * 0.3); await rp.waitForTimeout(1300);
+await rp.mouse.click(cb.x + cb.w / 2, cb.y + cb.h * 0.3); await turnDone();
 const fg7 = await fogState();
 // from the keyboard: a turn button that shows only when focused, and the focus follows to the other side
 await rp.locator('.oc-front .ist-skip').focus(); await rp.keyboard.press('Tab'); await rp.waitForTimeout(100); const kbShown = await rp.evaluate(() => document.activeElement?.classList.contains('oc-flip') ? +getComputedStyle(document.activeElement).opacity : -1);
-await rp.keyboard.press('Enter'); await rp.waitForTimeout(1300);
+await rp.keyboard.press('Enter'); await turnDone();
 const fg8 = await fogState(); const kbFocus = await rp.evaluate(() => document.activeElement?.textContent || '');
-await rp.keyboard.press('Enter'); await rp.waitForTimeout(1300);
+await rp.keyboard.press('Enter'); await turnDone();
 const fg9 = await fogState();
 check('fog mirror: a drag on the glass does not turn it, a click turns it back; from the keyboard a turn button shows when focused and works both ways',
   fg6.flipped && !fg7.flipped && fg7.backInert && kbShown === 1 && fg8.flipped && kbFocus === 'Turn the card back' && !fg9.flipped,
   JSON.stringify({ fg6: fg6.flipped, fg7: fg7.flipped, kbShown, fg8: fg8.flipped, kbFocus, fg9: fg9.flipped }));
 // scrolled away while turned over: it is turned back when the page is taken apart
-await rp.mouse.click(cb.x + cb.w / 2, cb.y + cb.h * 0.25); await rp.waitForTimeout(1200);
+await rp.mouse.click(cb.x + cb.w / 2, cb.y + cb.h * 0.25); await turnDone();
 const fgA = (await fogState()).flipped;
 await rp.evaluate(() => scrollBy(0, -1600)); await rp.waitForTimeout(1500);
 const fgB = await fogState();

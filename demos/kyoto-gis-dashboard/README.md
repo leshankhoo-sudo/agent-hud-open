@@ -808,3 +808,25 @@ kyoto-gis-dashboard/
 - **测试**：浏览器测试加了 5 项：点卡片翻过来（正面没有可见按钮）、雾镜和逐笔书写的进度、写完和鼠标擦雾（光标光效不画在镜子上）、拖动不会翻、点一下翻回、键盘按钮两个方向都能用、往上滚后回到正面；减少动画时直接翻过来、字已经写好。
 - **测试结果**：本机构建上完整浏览器测试 235/236（没过的是键盘按钮的检查：测试用程序聚焦时浏览器不显示 :focus-visible，改成用 Tab 键后单独重跑通过）；逻辑测试 71/71。在线预览第 48 版（同一个链接），预览构建里雾镜同样能翻、能写、能擦。
 - **Windows ZIP**：`Kyoto-Prefecture-Travel-Atlas-Windows-2026-11-24c.zip`（897 个文件，95.7 MB，多了字体许可证）。用自带启动服务器跑完整浏览器测试 235/236，雾镜的 6 项全部通过；没过的一项是结尾页组装的中间状态读得太晚（读到第 6 步），和 7m 的同一个计时问题，在本机构建上的完整测试里通过。
+
+## 7o. 2026-11-24：GenerateContent 还是 Interactions；Hydrogen 测试；助手顶部的模型选择
+
+- **现在用的 API**：GenerateContent。页面把对话交给本机的转发器（`/api/assistant`），转发器调用 `POST https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent`，Key 只在 `x-goog-api-key` 头里（`server/assistantRelay.js` 和 `windows/serve.ps1` 都一样）。这次没有改架构。
+- **Interactions API**（按 Google 文档）：`POST /v1beta/interactions`，请求写 `model`、`input`、`service_tier`（flex、standard、priority）、`generation_config.thinking_level`；默认会把 interaction 存在 Google（`store: true`，付费层 55 天），测试时用 `store: false`。
+- **Hydrogen 的最小测试**（2026-11-24，Standard，每种 API 最多 2 次，脚本在临时文件夹，Key 只读长度 53，没有显示）：
+  - 第一次两种 API 都回 400：Hydrogen 不支持思考等级 minimal。这说明请求到了 Hydrogen、格式被接受，不收费。
+  - 改成 medium 后，GenerateContent 和 Interactions 各试 2 次，全部 503 “currently experiencing high demand”。GenerateContent 的回应头 `x-gemini-service-tier: standard`；Interactions 的回应没有这个头。
+  - 一共 6 次请求，0 token 计费。结论：Interactions 一样连不上 Hydrogen（同样是 Google 的容量问题），换 API 解决不了 503，所以先不迁移。
+- **助手顶部的模型栏**（`src/Assistant.jsx`）：
+  - 选首选模型：Gemini 4 Hydrogen（默认）或 Gemini 3.6 Flash（`assistant-config.json` 的 `selectable_models`），会记住。
+  - 服务层级：Standard（默认）或 Priority。
+  - Auto fallback：默认开（首选模型 503、429、出错或超时时换别的模型），关掉就只用首选模型（仍然最多重试 3 次），会记住。
+  - 下面一行：连接状态（检查中 / Ready / Connected / Error 503 · Gemini overloaded / 没有 Key / 转发器没开）、首选模型、实际用的模型（是否 fallback，失败时写 no answer）、层级、上一次的费用（失败写 Not billed）；首选模型最近忙过时会注明；失败时列出试过的模型和状态码。标题下面也写首选模型和层级。
+- **Priority 一定要先确认费用**：按 Priority 先出现确认框，列出这个模型 Standard 和 Priority 每 1M tokens 的价格，以及一个典型问题（约 8,000 tokens 输入、1,500 输出）的费用（Hydrogen：Standard ≈ RM0.096，Priority ≈ RM0.173）。按 Use Priority 才会用；Keep Standard 什么都不改。Priority 只在这次打开的网页有效，重新打开就回到 Standard。
+- **转发器的规则**（两个转发器一样）：
+  - 页面送 `X-Atlas-Preferred`（首选模型，必须是设定里的模型）、`X-Atlas-Fallback: off`（关掉 fallback）。
+  - Priority 只有在请求同时带 `X-Atlas-Priority-Confirmed: yes`（页面只在用户按了 Use Priority 后才送）时才接受，否则 400（`priority_unconfirmed`），什么都不发给 Google。
+  - 费用按 Google 回应头 `x-gemini-service-tier` 说的实际层级算：Priority 价格（Hydrogen 输入 2.70、输出 13.50 美元/1M；3.6 Flash 1.35 / 6.75，2027 年起 2.70 / 13.50）；Priority 请求被降为 Standard 时按 Standard 算。3.8 Flash 的 Priority 价格文档没单独列，按 Standard 的 1.8 倍估算。
+  - 每天 RM3 的上限对两种层级都有效。用量记录多了 `preferred_model`、`auto_fallback`、`tier_requested`。
+- **测试**：逻辑测试新增 4 项（可选模型和 Priority 价格、首选模型先试和关掉 fallback、Priority 要确认并按实际层级计价、页面送的头和层级），共 75/75；PowerShell 转发器对着假 Gemini 新增 7 项全部通过；之前那套 PowerShell 检查 11/12，没过的是一项旧的超时检查（那套测试设定 2 秒超时，但转发器从之前的改动开始每次请求至少等 5 秒，和这次的改动无关）。浏览器测试新增 2 项模型栏检查。
+- **结果**：本机构建上完整浏览器测试 238/238。Windows ZIP `Kyoto-Prefecture-Travel-Atlas-Windows-2026-11-24d.zip`（897 个文件，95.7 MB）用自带启动服务器跑 235/238：Explore 环随鼠标转动是已知的计时检查；另外两项是雾镜测试在负载下上一次翻转动画还没结束就按了 Enter（按键被忽略，后面的检查就错位了）。测试改成等动画真正结束再继续，同一段翻转流程对 ZIP 服务器单独跑 2 次都通过。在线预览第 49 版（同一个链接）。
