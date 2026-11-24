@@ -1359,9 +1359,7 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   // a transition is over when the page no longer marks one (html[data-vt])
   const settled = () => tp.waitForFunction(() => !document.documentElement.dataset.vt, null, { timeout: 5000 }).catch(() => {});
   const nv0 = await navAt();
-  const agBox = await tp.locator('.tn-i[data-k="agenda"]').boundingBox();
-  await tp.mouse.move(agBox.x + agBox.width + 300, agBox.y); await tp.waitForTimeout(100);
-  await tp.mouse.move(agBox.x + agBox.width / 2, agBox.y + agBox.height / 2, { steps: 4 }); await tp.waitForTimeout(500);
+  await tp.locator('.tn-i[data-k="agenda"]').hover(); await tp.waitForTimeout(500);   // hover() brings it into view first
   const tip = await tp.evaluate(() => { const el = document.querySelector('.tn-i[data-k="agenda"]'); const a = getComputedStyle(el, '::after'); const r = el.getBoundingClientRect(), top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return { text: el.title, shown: a.content !== 'none', op: +a.opacity, hov: el.matches(':hover'), top: top ? `${top.tagName}.${String(top.className?.baseVal ?? top.className).slice(0, 40)}` : null }; });
   await tp.locator('.tn-fold').click(); await settled(); await tp.waitForTimeout(700);
   const nv1 = await navAt();
