@@ -27,7 +27,9 @@ export const GREET = {
 export const SHORT = { ja: '何かお手伝いしましょうか？', en: 'How can I help?' };
 // the spoken いらっしゃいませ: a short clip made once with an open-source voice (see the README for its credit);
 // null until the clip is in public/media. It plays once per visit, after the knock (a click, so it may play).
-export const VOICE = null;   // e.g. { src: 'media/irasshaimase.mp3', credit: 'VOICEVOX:春日部つむぎ' }
+// Made once, offline, with VOICEVOX (voicevox_core 0.17.1, voice 春日部つむぎ, style ノーマル); its terms ask for
+// the credit below, shown in Data & Sources. public/licenses/VOICEVOX-model-TERMS.txt has the model terms.
+export const VOICE = { src: 'media/irasshaimase.wav', credit: 'VOICEVOX:春日部つむぎ' };
 const GREETED = 'kyoto-house-greeted';
 function sayWelcome() {
   if (!VOICE) return;

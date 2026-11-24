@@ -1456,6 +1456,7 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   await hp.mouse.click(hb.x + hb.width / 2, hb.y + hb.height * 0.75);
   await hp.waitForTimeout(250);
   const hint = await hp.evaluate(() => document.querySelector('.ah-bubble')?.textContent || '');
+  await hp.evaluate(() => { window.__played = []; const play = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { window.__played.push(this.src); return play.call(this).catch(() => {}); }; });
   await hp.mouse.dblclick(hb.x + hb.width / 2, hb.y + hb.height * 0.75);
   await hp.waitForTimeout(350);
   const k = await hp.evaluate(() => ({ knock: document.querySelector('.ah-house').classList.contains('knock'), kon: document.querySelectorAll('.ah-kon').length, girl: !!document.querySelector('.ah-girl') }));
@@ -1471,6 +1472,8 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   const chat = await hp.evaluate(() => { const c = document.querySelector('.as').getBoundingClientRect(), g = document.querySelector('.ah-girl').getBoundingClientRect(); return { on: document.querySelector('.as').classList.contains('on'), beside: c.left >= g.right - 20, bottom: Math.round(innerHeight - c.bottom) }; });
   await hp.screenshot({ path: `${out}/26-house-chat.png` });
   const greetChat = await hp.evaluate(() => document.querySelector('.as-greet')?.textContent || '');
+  const voice = await hp.evaluate(async () => ({ played: window.__played.filter((u) => /irasshaimase\.wav$/.test(u)).length, ok: (await fetch('media/irasshaimase.wav')).ok, once: sessionStorage.getItem('kyoto-house-greeted') }));
+  check('house: the knock plays her spoken いらっしゃいませ once (VOICEVOX:春日部つむぎ), and the clip is in the site', voice.played === 1 && voice.ok && voice.once === '1', JSON.stringify(voice));
   check('house: she greets with いらっしゃいませ, typed into her bubble in Japanese with the English under it, and the chat opens with the same greeting',
     wave.greet && /いらっしゃいませ/.test(wave.bubble) && /Welcome! I'm your atlas guide/.test(wave.bubble) && typed2.length > wave.typed.length && /^いら/.test(typed2) && 'いらっしゃいませ！'.startsWith(typed2.slice(0, 9)) && /いらっしゃいませ/.test(greetChat) && /Welcome/.test(greetChat),
     JSON.stringify({ wave, typed2, greetChat }));

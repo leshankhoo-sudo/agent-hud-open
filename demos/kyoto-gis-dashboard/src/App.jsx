@@ -1797,6 +1797,10 @@ function Sources({ d, status, walk, failed, onClose, onRecords }) {
           </section>
         )}
         <section>
+          <h3>Voice, fonts and sounds</h3>
+          <p className="xs">The guide's spoken いらっしゃいませ: <b>VOICEVOX:春日部つむぎ</b> (made once with VOICEVOX, voicevox_core 0.17.1; used under the VOICEVOX voice model terms and 春日部つむぎ's terms, see licenses/VOICEVOX-model-TERMS.txt). The handwritten "Group 4" on the closing card is drawn from Great Vibes (SIL Open Font License 1.1, licenses/GreatVibes-OFL.txt).</p>
+        </section>
+        <section>
           <h3>Data quality notes</h3>
           <ul className="xs">
             <li>{m?.attractions?.unnamed} of {m?.attractions?.records} attraction records have no name; {m?.transport?.unnamed} of {m?.transport?.records} stop records have no name.</li>
