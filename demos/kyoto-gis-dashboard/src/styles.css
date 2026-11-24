@@ -461,10 +461,25 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
 .op-t span { font: 500 11px var(--mono); letter-spacing: .3em; color: #ffd7e4; }
 .op-t b { font: 600 clamp(18px, 2vw, 30px)/1.1 var(--sans); }
 .op-t small { font-size: clamp(11px, .9vw, 13px); color: rgba(255, 255, 255, .78); }
-.outro-card { position: absolute; left: 50%; top: 42%; translate: -50% -50%; width: min(560px, 86%); text-align: center; padding: 26px 28px; border-radius: 18px; color: #fff;
-  background: linear-gradient(150deg, rgba(40, 18, 46, .55), rgba(10, 14, 36, .68)); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3); border: 1px solid rgba(255, 210, 228, .28);
+.outro-card { position: absolute; left: 50%; top: 42%; translate: -50% -50%; width: min(560px, 86%); text-align: center; color: #fff; perspective: 1400px;
   opacity: 0; transform: scale(.94) translateY(16px); transition: opacity .8s 1.6s, transform 1s 1.6s cubic-bezier(.2, 1.2, .3, 1); }
 .outro.on .outro-card { opacity: 1; transform: none; }
+/* the card has two faces: the front (the glass card) and the back, a fogged mirror (FogMirror.jsx). A click turns it. */
+.oc-turn { position: relative; transition: transform .5s cubic-bezier(.2, .8, .2, 1); }
+.oc-front { padding: 26px 28px; border-radius: 18px;
+  background: linear-gradient(150deg, rgba(40, 18, 46, .55), rgba(10, 14, 36, .68)); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3); border: 1px solid rgba(255, 210, 228, .28); }
+.oc-back { position: absolute; inset: 0; border-radius: 18px; overflow: hidden; visibility: hidden; background: #cfd8e4;
+  border: 1px solid rgba(255, 255, 255, .5); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25), inset 0 0 40px rgba(255, 255, 255, .25), 0 18px 50px rgba(0, 0, 0, .35); }
+.fm-glass { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.outro-card.flipped .oc-front { opacity: 0; }
+.outro-card.flipped .oc-back { visibility: visible; }
+.outro-card.turnable { cursor: pointer; }
+/* a slight lean on hover says the card can be turned */
+@media (hover: hover) { .outro-card.turnable:not(.flipped):hover .oc-turn { transform: rotateY(-7deg) rotateX(2deg); } }
+/* the turn buttons are for the keyboard: they show only when focused */
+.oc-flip { position: absolute; top: 10px; right: 10px; z-index: 2; font: 600 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; padding: 6px 11px; border-radius: 999px;
+  color: #fff; background: rgba(16, 20, 36, .82); border: 1px solid rgba(255, 215, 228, .55); opacity: 0; pointer-events: none; }
+.oc-flip:focus-visible { opacity: 1; outline: 2px solid #ffd7e4; outline-offset: 2px; }
 .outro-card h2 { font: 600 clamp(22px, 2.4vw, 34px)/1.15 var(--sans); margin: 0 0 14px; }
 .oc-by { margin: 0 0 10px; font: 500 11px var(--mono); letter-spacing: .3em; text-transform: uppercase; color: rgba(255, 255, 255, .7); }
 .oc-team { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
@@ -477,7 +492,7 @@ input[type='search'] { width: 100%; padding: 8px 10px; border: 1px solid var(--l
   .op { aspect-ratio: 4 / 9; }
   .outro-card { position: relative; left: auto; top: auto; translate: none; width: auto; grid-column: 1 / -1; }
 }
-@media (prefers-reduced-motion: reduce) { .op, .op-t, .outro-card, .op canvas { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .op, .op-t, .outro-card, .op canvas, .oc-turn { transition: none; } .outro-card.turnable:hover .oc-turn { transform: none; } }
 
 /* ================= motion borrowed from the earlier dashboard ================= */
 /* conic glow border + breathing backlight on the selected record (Conic Glow chapter) */
@@ -1987,7 +2002,7 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
 .outro.build .op.txt .op-t small { animation: swFade .5s calc(.6s + var(--i) * .12s) both; }
 .outro.build .outro-card { opacity: 0; transform: none; transition: opacity .4s .45s; }
 .outro.build .outro-card.on { opacity: 1; }
-.outro.build .outro-card > * { visibility: hidden; }
+.outro.build .oc-front > * { visibility: hidden; }
 .outro.build .outro-card.fill .ist-eb, .outro.build .outro-card.fill h2, .outro.build .outro-card.fill .oc-by, .outro.build .outro-card.fill .oc-team { visibility: visible; }
 .outro.build .outro-card.fill .ist-eb { animation: swFade .3s both; }
 .outro.build .outro-card.fill h2 { animation: swType .8s .1s steps(16) both; }
@@ -1995,6 +2010,7 @@ hr.mizuhiki { border: 0; height: 14px; margin: 14px auto 8px; width: 100%; max-w
 .outro.build .outro-card .oc-team li { animation: none; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .4s cubic-bezier(.2, 1.6, .4, 1); transition-delay: calc(.5s + var(--j) * .22s); }
 .outro.build .outro-card.fill .oc-team li { opacity: 1; transform: none; }
 .outro.build .outro-card.done .oc-src, .outro.build .outro-card.done .ist-skip { visibility: visible; animation: swFade .6s both; }
+.outro.build .outro-card.done .oc-flip { visibility: visible; }
 @keyframes swType { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 @keyframes swTypeW { from { max-width: 0; } to { max-width: 6em; } }
 @keyframes swCaret { 0% { border-right-color: #ff9a6b; } 50% { border-right-color: transparent; } }

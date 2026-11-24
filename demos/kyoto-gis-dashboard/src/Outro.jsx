@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { loadAsBlob } from './lib/media.js';
 import { useScene } from './lib/depth.js';
+import FogMirror from './FogMirror.jsx';
 
 // Closing section: one 10 s video holds four vertical shots side by side (16:9 overall), one shot per panel,
 // and a thank-you card over them.
@@ -11,6 +12,8 @@ import { useScene } from './lib/depth.js';
 // framed, snapped to centre guides, sketched, and filled in; the scaffolding goes and the pointers leave.
 // Scrolled back up past it, it is taken apart in reverse, and built again next time. With reduced motion
 // it simply shows.
+// Once built, the card can be turned over with a click (or, from the keyboard, its hidden turn button): the back
+// is a fogged mirror where "Group 4" is written by hand (FogMirror.jsx). Click it again to turn it back.
 export const TEAM = ['KHOO LE SHAN', 'ER ZE XI', 'NICHOLAS LIM JUN XIAN', 'LUI YING HUI'];
 const PANELS = [
   { k: '01', t: 'Explore', s: 'Attraction records across Kyoto Prefecture, checked against a second list and deduplicated' },
@@ -53,6 +56,9 @@ export default function Outro({ manifest }) {
   const [geo, setGeo] = useState(null);   // element boxes, in px inside the frame
   const timers = useRef([]);
   const stepRef = useRef(step); stepRef.current = step;
+  const [flipped, setFlipped] = useState(false);
+  const flippedRef = useRef(false);
+  const turner = useRef(null), turning = useRef(null), downAt = useRef(null);
 
   const measure = () => {
     const f = frame.current.getBoundingClientRect();
@@ -68,6 +74,9 @@ export default function Outro({ manifest }) {
   };
   const takeApart = () => {   // in reverse, quickly
     clear();
+    // the card goes back to its front
+    if (turning.current) { turning.current.cancel(); turning.current = null; }
+    flippedRef.current = false; card.current?.classList.remove('flipped'); setFlipped(false);
     for (let k = stepRef.current - 1, n = 0; k >= 0; k--, n++) timers.current.push(setTimeout(() => setStep(k), n * 90));
   };
 
@@ -152,6 +161,31 @@ export default function Outro({ manifest }) {
   const topOf = () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   const building = !reduce;
   const showOverlay = building && geo && step > 0 && step < DONE;
+  const turnable = step >= 11;
+  // turn the card: it turns to its edge, the other face comes round from the other edge (in two halves, so the
+  // front's glass blur keeps working and nothing shows through backwards)
+  const turn = (to, byKey) => {
+    const el = turner.current;
+    if (!el || turning.current || to === flippedRef.current) return;
+    const swap = () => { flippedRef.current = to; card.current.classList.toggle('flipped', to); setFlipped(to); };
+    const focusOther = () => { if (byKey) card.current?.querySelector(to ? '.oc-back .oc-flip' : '.oc-front .oc-flip')?.focus({ preventScroll: true }); };
+    if (reduce || !el.animate) { swap(); setTimeout(focusOther, 30); return; }
+    const dir = to ? 1 : -1;
+    const a = el.animate([{ transform: 'rotateY(0deg) scale(1)' }, { transform: `rotateY(${90 * dir}deg) scale(.96)` }], { duration: 300, easing: 'cubic-bezier(.5, 0, .9, .4)', fill: 'forwards' });
+    turning.current = a;
+    a.onfinish = () => {
+      swap();
+      const b = el.animate([{ transform: `rotateY(${-90 * dir}deg) scale(.96)` }, { transform: 'rotateY(0deg) scale(1)' }], { duration: 540, easing: 'cubic-bezier(.15, .7, .25, 1)' });
+      a.cancel(); turning.current = b;
+      b.onfinish = () => { turning.current = null; focusOther(); };
+    };
+  };
+  const clickCard = (e) => {
+    if (!turnable || e.target.closest('button, a')) return;
+    const d = downAt.current;
+    if (d && Math.hypot(e.clientX - d[0], e.clientY - d[1]) > 10) return;   // a drag (selecting text, wiping the glass), not a click
+    turn(!flippedRef.current);
+  };
   const gaps = geo ? geo.panels.slice(0, -1).map((a, k) => { const b = geo.panels[k + 1]; return b.y === a.y ? { x: a.x + a.w, w: b.x - (a.x + a.w), y: a.y + a.h * 0.5 } : null; }).filter(Boolean) : [];
 
   return (
@@ -199,13 +233,26 @@ export default function Outro({ manifest }) {
             {Array.from({ length: N_PTR }, (_, n) => { const q = ptr(n); return <i key={n} className="sw-ptr" style={{ '--c': PCOL[n % 4], transform: `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px)`, opacity: q.o, transitionDelay: `${delay(n).toFixed(2)}s` }} />; })}
           </div>
         )}
-        <div className={'outro-card' + (step >= 9 ? ' on' : '') + (step >= 10 ? ' fill chips' : '') + (step >= 11 ? ' done' : '')} ref={card}>
-          <p className="ist-eb">THANK YOU · ありがとう</p>
-          <h2 ref={heading}>Kyoto Prefecture Travel Atlas</h2>
-          <p className="oc-by">Prepared by</p>
-          <ul className="oc-team" ref={team}>{TEAM.map((n, i) => <li key={n} style={{ '--j': i }}>{n}</li>)}</ul>
-          <p className="oc-src">Data: OpenStreetMap contributors (ODbL), MLIT N03 2026, Kyoto City Transportation Bureau, Open-Meteo, Wikimedia Commons{manifest ? ` · ${manifest.attractions.records} + ${manifest.transport.records} records` : ''}</p>
-          <button type="button" className="ist-skip" onClick={topOf}>Back to the start ↑</button>
+        <div className={'outro-card' + (step >= 9 ? ' on' : '') + (step >= 10 ? ' fill chips' : '') + (step >= 11 ? ' done turnable' : '') + (flipped ? ' flipped' : '')} ref={card}
+          onPointerDown={(e) => { downAt.current = [e.clientX, e.clientY]; }} onClick={clickCard}
+          title={turnable ? (flipped ? 'Click to turn the card back' : 'Click to turn the card over') : undefined}>
+          <div className="oc-turn" ref={turner}>
+            <div className="oc-face oc-front" inert={flipped ? '' : undefined}>
+              <p className="ist-eb">THANK YOU · ありがとう</p>
+              <h2 ref={heading}>Kyoto Prefecture Travel Atlas</h2>
+              <p className="oc-by">Prepared by</p>
+              <ul className="oc-team" ref={team}>{TEAM.map((n, i) => <li key={n} style={{ '--j': i }}>{n}</li>)}</ul>
+              <p className="oc-src">Data: OpenStreetMap contributors (ODbL), MLIT N03 2026, Kyoto City Transportation Bureau, Open-Meteo, Wikimedia Commons{manifest ? ` · ${manifest.attractions.records} + ${manifest.transport.records} records` : ''}</p>
+              <button type="button" className="ist-skip" onClick={topOf} title="Back to the start">Back to the start ↑</button>
+              {/* for the keyboard only: shown when focused */}
+              <button type="button" className="oc-flip" onClick={() => turn(true, true)}>Turn the card over</button>
+            </div>
+            <div className="oc-face oc-back" inert={flipped ? undefined : ''}>
+              <FogMirror active={flipped} panels={canvases} boxRef={card} reduce={reduce} poster={`${base}media/ending_quad.jpg`} />
+              <span className="sr-only">Group 4</span>
+              <button type="button" className="oc-flip" onClick={() => turn(false, true)}>Turn the card back</button>
+            </div>
+          </div>
         </div>
       </div>
       <p className="ist-credit">Closing clips: social-media travel montage (creators incl. @camezi), used for a non-commercial university presentation.</p>

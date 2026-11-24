@@ -62,7 +62,7 @@ export const FX = {
     warm: { share: 0.16, stops: [[40, 32, 30], [112, 58, 44], [170, 84, 60], [190, 120, 100], [200, 160, 148]] },
   },
   // what the light must never lie over
-  avoid: '[role="dialog"], [role="tooltip"], .tip, .season-pop, .split-tip, .koto-cap, .maplibregl-popup, .d3-card',
+  avoid: '[role="dialog"], [role="tooltip"], .tip, .season-pop, .split-tip, .koto-cap, .maplibregl-popup, .d3-card, .oc-back',   // .oc-back: the fogged mirror, where the mouse wipes the glass instead
 };
 const KEY = 'kyoto.cursorFx';
 const finePointer = () => typeof matchMedia === 'function' && matchMedia('(hover: hover) and (pointer: fine)').matches;

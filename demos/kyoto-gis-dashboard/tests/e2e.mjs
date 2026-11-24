@@ -631,6 +631,11 @@ const rm = await browser.newPage({ viewport: { width: 1280, height: 800 }, reduc
 await rm.goto(url);
 await rm.waitForSelector('#explore .season-drift', { state: 'attached', timeout: 30000 });
 check('reduced motion: no seasonal drift', await rm.evaluate(() => getComputedStyle(document.querySelector('#explore .season-drift')).display === 'none'));
+await rm.evaluate(() => document.getElementById('credits').scrollIntoView({ block: 'center' })); await rm.waitForTimeout(900);
+const rmBox = await rm.evaluate(() => { const r = document.querySelector('.outro-card').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height * 0.25 }; });
+await rm.mouse.click(rmBox.x, rmBox.y); await rm.waitForTimeout(500);
+const rmFog = await rm.evaluate(() => ({ flipped: document.querySelector('.outro-card').classList.contains('flipped'), anims: document.querySelector('.oc-turn').getAnimations().length, pen: document.querySelector('.fm-glass').dataset.pen, phase: document.querySelector('.fm-glass').dataset.phase }));
+check('reduced motion: the closing card turns over at once (no turning animation) and "Group 4" is already written on the fogged glass', rmFog.flipped && rmFog.anims === 0 && rmFog.pen === '1.00' && rmFog.phase === 'written', JSON.stringify(rmFog));
 await rm.close();
 
 // 8z. landmark symbols: three levels by zoom, hover, selection and search break the zoom limits, both themes
@@ -939,6 +944,53 @@ check('closing page: starts empty; pointers pull a column grid, drag out sized p
   && wh(ob1c.box) && ob1c.snaps === 2 && ob1c.sketch === 4 && ob1c.typed === 4
   && !ob2.swarm && ob2.panels === 4 && +ob2.card === 1 && ob2.chips && ob2.btn === 'visible' && ob3.st === '0' && ob3.panels === 0 && ob4.swarm && ob4.st >= 2 && ob4.st < 12,
   JSON.stringify({ ob0, ob1, ob1c, ob2, ob3, ob4 }));
+// the fog mirror: a click turns the card over; the back is fogged glass where "Group 4" is written by hand
+await rp.waitForFunction(() => document.querySelector('.outro.st12'), null, { timeout: 20000 }).catch(() => {});
+await rp.waitForTimeout(600);
+const cardAt = async () => rp.evaluate(() => { const r = document.querySelector('.outro-card').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+const fogState = () => rp.evaluate(() => { const c = document.querySelector('.fm-glass'), card = document.querySelector('.outro-card'); return { flipped: card.classList.contains('flipped'), back: getComputedStyle(document.querySelector('.oc-back')).visibility, front: +getComputedStyle(document.querySelector('.oc-front')).opacity, frontInert: document.querySelector('.oc-front').hasAttribute('inert'), backInert: document.querySelector('.oc-back').hasAttribute('inert'), pen: +(c.dataset.pen || 0), phase: c.dataset.phase || '', wipes: +(c.dataset.wipes || 0), w: c.width, h: c.height, visibleBtn: [...document.querySelectorAll('.outro-card button')].filter((b) => +getComputedStyle(b).opacity > 0.5 && getComputedStyle(b).visibility === 'visible' && !b.closest('[inert]')).map((b) => b.textContent.trim()) }; });
+const fg0 = await fogState();
+let cb = await cardAt();
+await rp.mouse.click(cb.x + cb.w / 2, cb.y + cb.h * 0.25); await rp.waitForTimeout(1300);
+const fg1 = await fogState();
+await rp.waitForTimeout(1600);
+const fg2 = await fogState();
+await rp.waitForTimeout(1200);
+const fg3 = await fogState();
+// the glass: bright fog (blurred and washed out) with the sharp picture through the letters
+const fgGlass = await rp.evaluate(() => { const c = document.querySelector('.fm-glass'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let s = 0, n = 0; for (let i = 0; i < d.length; i += 4 * 97) { s += (d[i] + d[i + 1] + d[i + 2]) / 3; n++; } return { mean: Math.round(s / n) }; });
+check('fog mirror: a click on the closing card (no button shown) turns it over; the back is fogged glass and "Group 4" is written into it stroke by stroke over a few seconds',
+  !fg0.flipped && fg0.visibleBtn.length === 1 && fg1.flipped && fg1.back === 'visible' && fg1.front === 0 && fg1.frontInert && !fg1.backInert && fg1.w > 300 && fg1.h > 150
+  && fg2.phase === 'writing' && fg2.pen > 0.05 && fg2.pen < 0.9 && fg3.pen > fg2.pen && fgGlass.mean > 140 && fg1.visibleBtn.length === 0,
+  JSON.stringify({ fg0, fg1: { ...fg1, visibleBtn: undefined }, fg2: [fg2.phase, fg2.pen], fg3: [fg3.phase, fg3.pen], fgGlass }));
+await rp.waitForFunction(() => document.querySelector('.fm-glass').dataset.phase === 'written', null, { timeout: 12000 }).catch(() => {});
+const fg4 = await fogState();
+// wiping the glass with the mouse (the cursor light keeps off the glass)
+cb = await cardAt();
+await rp.mouse.move(cb.x + 30, cb.y + cb.h * 0.86); await rp.mouse.move(cb.x + cb.w - 30, cb.y + cb.h * 0.88, { steps: 18 }); await rp.waitForTimeout(200);
+const fg5 = await fogState(); const fogCut = await rp.evaluate(() => (window.__cursorLight?.on ? window.__cursorLight.cut : -1));
+check('fog mirror: the writing finishes, and moving the mouse over the glass wipes it (no cursor light drawn over the glass)', fg4.phase === 'written' && fg4.pen === 1 && fg5.wipes >= 10 && fogCut !== 0, JSON.stringify({ fg4: [fg4.phase, fg4.pen], wipes: fg5.wipes, fogCut }));
+// a click on the glass turns it back; a drag (wiping) does not
+await rp.mouse.move(cb.x + cb.w * 0.3, cb.y + cb.h * 0.3); await rp.mouse.down(); await rp.mouse.move(cb.x + cb.w * 0.6, cb.y + cb.h * 0.35, { steps: 6 }); await rp.mouse.up(); await rp.waitForTimeout(900);
+const fg6 = await fogState();
+await rp.mouse.click(cb.x + cb.w / 2, cb.y + cb.h * 0.3); await rp.waitForTimeout(1300);
+const fg7 = await fogState();
+// from the keyboard: a turn button that shows only when focused, and the focus follows to the other side
+await rp.locator('.oc-front .ist-skip').focus(); await rp.keyboard.press('Tab'); await rp.waitForTimeout(100); const kbShown = await rp.evaluate(() => document.activeElement?.classList.contains('oc-flip') ? +getComputedStyle(document.activeElement).opacity : -1);
+await rp.keyboard.press('Enter'); await rp.waitForTimeout(1300);
+const fg8 = await fogState(); const kbFocus = await rp.evaluate(() => document.activeElement?.textContent || '');
+await rp.keyboard.press('Enter'); await rp.waitForTimeout(1300);
+const fg9 = await fogState();
+check('fog mirror: a drag on the glass does not turn it, a click turns it back; from the keyboard a turn button shows when focused and works both ways',
+  fg6.flipped && !fg7.flipped && fg7.backInert && kbShown === 1 && fg8.flipped && kbFocus === 'Turn the card back' && !fg9.flipped,
+  JSON.stringify({ fg6: fg6.flipped, fg7: fg7.flipped, kbShown, fg8: fg8.flipped, kbFocus, fg9: fg9.flipped }));
+// scrolled away while turned over: it is turned back when the page is taken apart
+await rp.mouse.click(cb.x + cb.w / 2, cb.y + cb.h * 0.25); await rp.waitForTimeout(1200);
+const fgA = (await fogState()).flipped;
+await rp.evaluate(() => scrollBy(0, -1600)); await rp.waitForTimeout(1500);
+const fgB = await fogState();
+check('fog mirror: scrolled back up while turned over, the card is back on its front for the next build', fgA && !fgB.flipped && fgB.frontInert === false, JSON.stringify({ fgA, fgB: fgB.flipped }));
+await rp.screenshot({ path: `${out}/09f-fog-mirror.png` }).catch(() => {});
 // 3D density: switched on next to Cinematic view, the surface rises from the project's density grid; a click on it opens a card with the data for that spot
 await rp.evaluate(() => document.getElementById('dashboard').scrollIntoView());
 const d3before = await rp.evaluate(() => ({ pts: window.__kyotoMap.getLayoutProperty('attractions-pt', 'visibility') }));
