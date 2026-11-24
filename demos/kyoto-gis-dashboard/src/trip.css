@@ -9,7 +9,7 @@
   --tp-bg: #f3efe7; --tp-card: rgba(251, 249, 245, .94); --tp-solid: #fbf9f5; --tp-ink: #16201f; --tp-ink2: #3d4a48; --tp-mute: #6b7775;
   --tp-teal: #1f6f6b; --tp-teal2: #2a756f; --tp-tint: #e6efec; --tp-line: rgba(30, 50, 45, .12); --tp-shadow: 0 18px 40px rgba(30, 45, 40, .14), inset 0 0 0 1px rgba(255, 255, 255, .8);
   --tp-warn: #a4461f; --tp-bus: #c0472a; --tp-bike: #e0952a; --tp-car: #4a6fa5; --tp-paper: #f7f0e1; --tp-serif: 'Shippori Mincho', 'Iowan Old Style', Georgia, serif;
-  --rail: 112px; --side: clamp(330px, 28vw, 450px);
+  --rail: 84px; --side: clamp(330px, 28vw, 450px);
   position: absolute; inset: 0; overflow: hidden; background: var(--tp-bg); color: var(--tp-ink); font-family: var(--sans);
   display: grid; grid-template-columns: var(--rail) minmax(0, 1fr) var(--side); grid-template-rows: 96px minmax(0, 1fr) auto 78px; column-gap: 18px; padding-right: 22px;
   animation: tpIn .7s cubic-bezier(.2, .8, .2, 1) both;
@@ -38,7 +38,7 @@
 .tp-card h4 em { font-style: normal; color: var(--tp-teal); }
 
 /* header */
-.tp-logo { grid-column: 1; grid-row: 1; width: 78px; margin: 30px 0 0 28px; fill: none; stroke-linecap: round; }
+.tp-logo { grid-column: 1; grid-row: 1; width: 56px; margin: 34px 0 0 22px; fill: none; stroke-linecap: round; }
 .tp-logo path:first-child { stroke: var(--tp-teal); stroke-width: 5; }
 .tp-logo path:last-child { stroke: #5aa7a0; stroke-width: 4; }
 .tp-head { grid-column: 2; grid-row: 1; padding-top: 18px; min-width: 0; }
@@ -53,15 +53,103 @@
 .tp-bell i { position: absolute; right: 14px; top: 13px; width: 9px; height: 9px; border-radius: 50%; background: #e2553a; box-shadow: 0 0 0 2px var(--tp-solid); }
 
 /* rail */
-.tp-rail { grid-column: 1; grid-row: 2 / 4; display: flex; flex-direction: column; gap: 20px; padding: 34px 0 0 24px; z-index: 3; }
-.tp-rail button { width: 88px; height: 98px; border: 0; border-radius: 24px; background: var(--tp-card); box-shadow: 0 10px 24px rgba(30, 50, 45, .12), inset 0 0 0 1px rgba(255, 255, 255, .55); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; font-size: 13.5px; color: var(--tp-ink2); transition: transform .25s cubic-bezier(.3, 1.6, .5, 1), background .2s; }
-.tp-rail button svg { color: var(--tp-teal); }
-.tp-rail button:hover { transform: scale(1.05); }
-.tp-rail button.on { background: var(--tp-teal); color: #fff; }
-.tp-rail button.on svg { color: #fff; }
-:root:not([data-theme='light']) .tp-rail button.on, :root:not([data-theme='light']) .tp-rail button.on svg { color: #062220; }
 .tp-support { grid-column: 1; grid-row: 4; align-self: center; justify-self: start; margin-left: 26px; width: 94px; height: 70px; border: 0; border-radius: 22px; background: var(--tp-teal); color: #fff !important; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 13px; z-index: 4; box-shadow: 0 10px 22px rgba(31, 111, 107, .3); }
 :root:not([data-theme='light']) .tp-support { color: #062220 !important; }
+
+/* The planner's sidebar (TripNav in TripDashboard.jsx): a frosted rail of icons over the picture that unfolds
+   into a panel with labels. --rail is its column: 84px folded, 248px unfolded. */
+.trip { --tn-ease: cubic-bezier(.32, .72, 0, 1); --tn-out: cubic-bezier(.23, 1, .32, 1); }
+.trip.nav-open { --rail: 248px; }
+.tn-wrap { grid-column: 1; grid-row: 2 / 4; position: relative; z-index: 5; margin: 8px 0 10px 18px; min-height: 0; align-self: start; }
+.tp-nav { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 22px; width: calc(var(--rail) - 18px);
+  background: color-mix(in srgb, var(--tp-solid) 72%, transparent); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: 0 16px 36px rgba(30, 45, 40, .16), inset 0 0 0 1px rgba(255, 255, 255, .6); overflow: hidden; }
+:root:not([data-theme='light']) .tp-nav { box-shadow: 0 16px 36px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(255, 255, 255, .08); }
+/* an item: the icon stays where it is (44px square at the left); the label sits to its right */
+.tn-i { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; height: 44px; width: 100%; padding: 0 12px; border: 0; border-radius: 999px; background: none;
+  color: var(--tp-ink2); font-size: 14px; font-weight: 500; white-space: nowrap; text-align: left; transition: color .2s var(--tn-out), background-color .2s var(--tn-out); }
+.tn-i svg { flex: none; color: var(--tp-teal); transition: color .2s var(--tn-out); }
+@media (hover: hover) and (pointer: fine) { .tn-i:not(.on):hover { background: color-mix(in srgb, var(--tp-teal) 10%, transparent); color: var(--tp-ink); } }
+.tn-i.on, .tn-i.on svg { color: #fff; }
+:root:not([data-theme='light']) .tn-i.on, :root:not([data-theme='light']) .tn-i.on svg { color: #062220; }
+.tn-i:focus-visible { outline: 2px solid var(--tp-teal); outline-offset: 2px; }
+/* the "you are here" pill: one element that slides (translate, composited) to the chosen item */
+.tn-pill { position: absolute; left: 10px; right: 10px; top: 0; z-index: 0; border-radius: 999px; background: var(--tp-teal); box-shadow: 0 6px 14px rgba(31, 111, 107, .3);
+  transition: translate .26s var(--tn-ease); }
+.tn-search { margin-bottom: 4px; background: color-mix(in srgb, var(--tp-ink) 6%, transparent); color: var(--tp-mute); font-weight: 400; }
+.tn-search kbd { margin-left: auto; font: 500 11px var(--mono); padding: 1px 6px; border-radius: 6px; border: 1px solid var(--tp-line); color: var(--tp-mute); }
+.tn-sec { display: flex; flex-direction: column; gap: 2px; }
+/* section titles keep their height folded (a short line then), so the icons never move up or down */
+.tn-h { position: relative; height: 24px; margin: 6px 0 0; padding: 0 14px; display: flex; align-items: center; font-size: 10.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--tp-mute); }
+.tn-h::before { content: ''; position: absolute; left: 50%; width: 18px; margin-left: -9px; height: 1px; background: var(--tp-line); transition: opacity .15s; }
+.tp-nav.open .tn-h::before { opacity: 0; }
+.tn-badge { margin-left: auto; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: #c0472a; color: #fff; font: 600 11px/20px var(--sans); font-style: normal; text-align: center; }
+.tp-nav:not(.open) .tn-badge { position: absolute; left: 30px; top: 6px; min-width: 9px; width: 9px; height: 9px; padding: 0; font-size: 0; box-shadow: 0 0 0 2px var(--tp-solid); }
+/* labels: hidden at once when folding; when unfolding they come in one after another, from the left */
+.tp-nav .lb { opacity: 0; transform: translateX(-6px); }
+.tp-nav.open .lb { animation: tnLabel .24s var(--tn-out) both; animation-delay: calc(110ms + var(--i, 0) * 18ms); }
+@keyframes tnLabel { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+/* the fold button sits on the edge of the panel */
+.tn-fold { position: absolute; z-index: 6; top: 18px; left: calc(var(--rail) - 18px - 13px); width: 26px; height: 26px; padding: 0; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid var(--tp-line); background: var(--tp-solid); color: var(--tp-ink2); box-shadow: 0 4px 12px rgba(30, 45, 40, .16); }
+.tn-fold svg { transition: rotate .26s var(--tn-ease); }
+.tn-wrap.open .tn-fold svg { rotate: 180deg; }
+@media (hover: hover) and (pointer: fine) { .tn-fold:hover { color: var(--tp-teal); } }
+/* folded: a label shows beside the icon on hover or keyboard focus */
+.tp-nav:not(.open) .tn-i[title]::after { content: attr(title); position: absolute; left: calc(100% + 12px); top: 50%; translate: 0 -50%; padding: 5px 10px; border-radius: 8px; background: var(--tp-ink); color: var(--tp-solid);
+  font-size: 12px; font-weight: 500; opacity: 0; transform: translateX(-4px); transform-origin: left center; pointer-events: none; transition: opacity .15s var(--tn-out), transform .15s var(--tn-out); }
+.tp-nav:not(.open) { overflow: visible; }
+.tp-nav:not(.open) .tn-i:focus-visible::after { opacity: 1; transform: none; }
+@media (hover: hover) and (pointer: fine) { .tp-nav:not(.open) .tn-i:hover::after { opacity: 1; transform: none; } }
+.tp-nav:not(.open) .lb, .tp-nav:not(.open) kbd { visibility: hidden; }
+
+/* View Transitions (html[data-vt] is set while one runs; see viewTransition in TripDashboard.jsx).
+   Only the planner's own parts take part: the rest of the page (the Explore cards, the corner controls) keeps
+   its names out of these, so nothing else is captured and the transition ends with the planner's motion.
+   Unfolding: the panel grows (its contents revealed as it widens), the middle column slides aside. */
+html[data-vt] .explore, html[data-vt] .explore *, html[data-vt] .music, html[data-vt] .tt-ripples, html[data-vt] .theme-toggle, html[data-vt] [class*='theme-toggle'] { view-transition-name: none !important; }
+html[data-vt]::view-transition-group(*) { animation-duration: .28s; animation-timing-function: cubic-bezier(.32, .72, 0, 1); }
+html[data-vt^='nav'] .trip .tn-wrap { view-transition-name: tp-nav; }
+html[data-vt^='nav'] .trip .tp-head { view-transition-name: tp-head; }
+html[data-vt^='nav'] .trip .tp-dock { view-transition-name: tp-dock; }
+html[data-vt^='nav'] .trip .tp-credit { view-transition-name: tp-credit; }
+html[data-vt^='nav'] .trip .tp-strip { view-transition-name: tp-strip; }
+html[data-vt] .trip .tp-feat { view-transition-name: tp-feat; }
+html[data-vt] .trip .tp-worth { view-transition-name: tp-worth; }
+html[data-vt] .trip .tp-agenda, html[data-vt] .trip .tp-full { view-transition-name: tp-view; }
+html[data-vt='view'] .trip .tp-scene { view-transition-name: tp-scene; }
+html[data-vt^='nav']::view-transition-group(tp-nav), html[data-vt^='nav']::view-transition-group(tp-head), html[data-vt^='nav']::view-transition-group(tp-dock),
+html[data-vt^='nav']::view-transition-group(tp-credit), html[data-vt^='nav']::view-transition-group(tp-strip), html[data-vt^='nav']::view-transition-group(tp-feat),
+html[data-vt^='nav']::view-transition-group(tp-worth), html[data-vt^='nav']::view-transition-group(tp-view) { animation-duration: .28s; animation-timing-function: var(--tn-ease, cubic-bezier(.32, .72, 0, 1)); }
+html[data-vt='nav-close']::view-transition-group(*) { animation-duration: .2s; }
+html[data-vt^='nav']::view-transition-group(tp-nav) { overflow: clip; border-radius: 22px; }
+html[data-vt='nav-open']::view-transition-old(tp-nav) { display: none; }
+html[data-vt='nav-open']::view-transition-new(tp-nav) { animation: none; }
+html[data-vt='nav-close']::view-transition-old(tp-nav) { animation: none; }
+html[data-vt='nav-close']::view-transition-new(tp-nav) { display: none; }
+html[data-vt^='nav']::view-transition-old(tp-head), html[data-vt^='nav']::view-transition-old(tp-dock), html[data-vt^='nav']::view-transition-old(tp-credit), html[data-vt^='nav']::view-transition-old(tp-strip),
+html[data-vt^='nav']::view-transition-old(tp-feat), html[data-vt^='nav']::view-transition-old(tp-worth), html[data-vt^='nav']::view-transition-old(tp-view) { animation: tnFadeOut .12s ease-out both; }
+html[data-vt^='nav']::view-transition-new(tp-head), html[data-vt^='nav']::view-transition-new(tp-dock), html[data-vt^='nav']::view-transition-new(tp-credit), html[data-vt^='nav']::view-transition-new(tp-strip),
+html[data-vt^='nav']::view-transition-new(tp-feat), html[data-vt^='nav']::view-transition-new(tp-worth), html[data-vt^='nav']::view-transition-new(tp-view) { animation: tnFadeIn .18s ease-out both; }
+/* changing view: the old view blurs out, the new one blurs in and rises a little; the pill slides on its own */
+html[data-vt='view']::view-transition-group(tp-scene), html[data-vt='view']::view-transition-group(tp-feat), html[data-vt='view']::view-transition-group(tp-worth),
+html[data-vt='view']::view-transition-group(tp-view) { animation-duration: .4s; }
+html[data-vt='view']::view-transition-old(tp-scene), html[data-vt='view']::view-transition-old(tp-feat), html[data-vt='view']::view-transition-old(tp-worth),
+html[data-vt='view']::view-transition-old(tp-view) { animation: tnBlurOut .16s ease-out both; }
+html[data-vt='view']::view-transition-new(tp-scene), html[data-vt='view']::view-transition-new(tp-feat), html[data-vt='view']::view-transition-new(tp-worth),
+html[data-vt='view']::view-transition-new(tp-view) { animation: tnBlurIn .34s cubic-bezier(.23, 1, .32, 1) .07s both; }
+@keyframes tnFadeOut { to { opacity: 0; } }
+@keyframes tnFadeIn { from { opacity: 0; } }
+@keyframes tnBlurOut { to { opacity: 0; filter: blur(6px); } }
+@keyframes tnBlurIn { from { opacity: 0; filter: blur(6px); transform: translateY(8px); } }
+
+/* numbers that roll into place, digit by digit (Roll in TripDashboard.jsx) */
+/* made of <i> elements, so the cards' span rules do not reach it */
+.roll, .roll i { font-style: normal; }
+.roll { display: inline-flex; line-height: 1.15em; height: 1.15em; vertical-align: bottom; overflow: hidden; }
+.roll .rd { position: relative; display: inline-block; height: 1.15em; overflow: hidden; }
+.roll .rc { display: block; transition: translate .7s var(--tn-out, cubic-bezier(.23, 1, .32, 1)); }
+.roll .rc::before { content: '0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9'; white-space: pre; display: block; line-height: 1.15em; }
 
 /* the scene */
 .tp-scene { grid-column: 1 / 3; grid-row: 2; position: relative; margin-right: 6px; overflow: hidden; z-index: 1;
@@ -333,8 +421,8 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
 
 /* narrower screens */
 @media (max-width: 1180px) {
-  .trip { --rail: 96px; --side: clamp(300px, 32vw, 380px); }
-  .tp-rail button { width: 76px; height: 86px; font-size: 12px; }
+  .trip { --rail: 84px; --side: clamp(300px, 32vw, 380px); }
+  .trip.nav-open { --rail: 232px; }
   .tp-feat { width: min(560px, 66%); }
   .tp-feat .ph { display: none; }
   .tp-worth .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -346,9 +434,16 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
   .tp-head { padding-top: 12px; }
   .tp-head h2 { font-size: 30px; white-space: normal; }
   .tp-tools { padding: 0; }
-  .tp-rail { flex-direction: row; padding: 0; gap: 8px; order: 0; }
-  .tp-rail button { flex: 1; width: auto; height: 62px; font-size: 11px; border-radius: 16px; gap: 3px; }
-  .tp-rail button svg { width: 22px; height: 22px; }
+  /* on a phone the sidebar is a row of the three views and the way back, with their names */
+  .tn-wrap { margin: 0; order: 0; align-self: stretch; }
+  .tn-fold, .tn-search, .tn-h, .tn-pill, .tn-sec:nth-of-type(2), .tn-i[data-k='ask'] { display: none !important; }
+  .tp-nav, .tp-nav:not(.open) { flex-direction: row; width: auto; padding: 6px; gap: 6px; overflow: visible; }
+  .tn-sec { flex-direction: row; flex: 3; gap: 6px; }
+  .tn-sec:last-of-type { flex: 1; }
+  .tn-i { flex: 1; flex-direction: column; justify-content: center; gap: 3px; height: 58px; padding: 0 4px; border-radius: 16px; font-size: 11px; }
+  .tn-i.on { background: var(--tp-teal); }
+  .tp-nav .lb, .tp-nav:not(.open) .lb { opacity: 1; transform: none; visibility: visible; animation: none; }
+  .tp-nav:not(.open) .tn-i[title]::after { display: none; }
   .tp-scene { min-height: 660px; margin: 0 -12px; flex: none; }
   .tp-feat { left: 12px; right: 12px; width: auto; top: auto; bottom: 34px; height: auto; }
   .tp-feat .txt { padding: 16px 18px; }
@@ -371,6 +466,8 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
   .tp-pop.hours { left: 50%; transform: translateX(-50%); bottom: 80px; position: fixed; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .tn-pill, .tn-fold svg, .roll .rc { transition: none; }
+  .tp-nav.open .lb { animation: none; opacity: 1; transform: none; }
   .trip, .tp-strip, .ds-tl > li, .tp-thread path, .tp-hint, .tp-head .wave, .tp-scene.photo .tp-photo { animation: none !important; }
   .ema:hover, .ema:focus-visible { animation: none; }
 }
@@ -390,14 +487,15 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
 .trip-root { z-index: 50; }   /* under the site's theme, volume and season controls (z-index 60) */
 .trip { padding-top: 40px; grid-template-rows: 86px minmax(0, 1fr) auto 66px; }
 :root:not([data-theme='light']) .trip > .tp-scene, .trip > .tp-head, .trip > .tp-tools, .trip > .tp-logo, .trip > .tp-full, .trip > .tp-agenda, .trip > .tp-foot { position: relative; z-index: 1; }
-.trip > .tp-worth, .trip > .tp-side, .trip > .tp-rail, .trip > .tp-dock, .trip > .tp-support { position: relative; z-index: 3; }
+.trip > .tp-worth, .trip > .tp-side, .trip > .tp-dock, .trip > .tp-support { position: relative; z-index: 3; }
+.trip > .tn-wrap { z-index: 5; }
 
 /* glass: translucent, blurred, a bright rim; a mist of light inside follows the pointer */
-.tp-card, .tp-strip, .tp-rail button, .tp-dock, .tp-search, .tp-bell {
+.tp-card, .tp-strip, .tp-nav, .tp-dock, .tp-search, .tp-bell {
   background: rgba(252, 250, 246, .56); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4);
   box-shadow: 0 14px 34px rgba(30, 45, 40, .12), inset 0 0 0 1px rgba(255, 255, 255, .55), inset 0 1px 0 rgba(255, 255, 255, .8);
 }
-:root:not([data-theme='light']) .tp-card, :root:not([data-theme='light']) .tp-strip, :root:not([data-theme='light']) .tp-rail button,
+:root:not([data-theme='light']) .tp-card, :root:not([data-theme='light']) .tp-strip, :root:not([data-theme='light']) .tp-nav,
 :root:not([data-theme='light']) .tp-dock, :root:not([data-theme='light']) .tp-search, :root:not([data-theme='light']) .tp-bell {
   background: rgba(20, 30, 33, .52); box-shadow: 0 14px 34px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(170, 230, 222, .1), inset 0 1px 0 rgba(255, 255, 255, .06);
 }
@@ -424,11 +522,7 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
 :root:not([data-theme='light']) .tp-wx { background: rgba(29, 92, 87, .64) !important; }
 .tp-wx::before { background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .22), transparent 62%) !important; opacity: var(--mo, 0) !important; animation: none !important; }
 
-/* rail and dock: smaller */
-.tp-rail { gap: 12px; padding: 22px 0 0 26px; }
-.tp-rail button { width: 70px; height: 72px; border-radius: 20px; font-size: 11.5px; gap: 5px; }
-.tp-rail button svg { width: 22px; height: 22px; }
-.tp-rail button.on { background: var(--tp-teal); }
+/* dock: smaller */
 .tp-support { width: 70px; height: 54px; border-radius: 18px; font-size: 11.5px; gap: 3px; margin-left: 26px; }
 .tp-support svg { width: 20px; height: 20px; }
 .tp-dock { width: min(520px, 100%); height: 52px; grid-template-columns: 1fr 1fr 76px 1fr 1fr; }
@@ -478,14 +572,12 @@ button.ds-stop:hover, .ds-row.open .ds-stop { background: color-mix(in srgb, var
 .tp-mapcard .tp-map { border-radius: 18px; }
 @media (max-width: 760px) {
   .trip { padding-top: 46px; }
-  .tp-rail button { height: 56px; }
+  .tn-i { height: 56px; }
   .tp-dock { width: auto; height: 52px; }
 }
 @media (prefers-reduced-motion: reduce) { .tp-mk, .tp-card::before, .tp-strip::before { animation: none !important; } .pc, .pc .im { transition: none; } }
 .tp-agenda .col { position: relative; }
-:root .trip .tp-rail button.on { background: var(--tp-teal); color: #fff; }
-:root:not([data-theme='light']) .trip .tp-rail button.on { background: rgba(95, 179, 170, .9); color: #062220; }
-:root:not([data-theme='light']) .trip .tp-rail button.on svg { color: #062220; }
+:root:not([data-theme='light']) .trip .tn-pill { background: rgba(95, 179, 170, .9); }
 @media (max-width: 760px) {
   .trip { overflow-x: hidden; }
     .trip > .tp-dock, .trip > .tp-support { position: fixed; }

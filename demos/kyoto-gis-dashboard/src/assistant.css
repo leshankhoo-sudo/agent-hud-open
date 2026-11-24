@@ -133,7 +133,12 @@
 /* its top stays below the map's tool rail, so the rail's labels can unfold beside it */
 .as.left { right: auto; left: max(78px, env(safe-area-inset-left, 0px)); bottom: 52px; height: max(360px, min(560px, calc(100vh - 360px))); }
 /* beside the house and the girl at the bottom-left (AtlasHouse.jsx); its top stays below the map tools */
-.as.house { right: auto; left: calc(max(10px, env(safe-area-inset-left, 0px)) + 200px); bottom: 18px; height: max(360px, min(560px, calc(100vh - 360px))); }
+.as.house { right: auto; left: calc(max(10px, env(safe-area-inset-left, 0px)) + 200px); bottom: 18px; height: max(360px, min(560px, calc(100vh - 360px))); transform-origin: 0% 100%; }
+/* opened from the house: it grows out of the corner beside her, where her speech bubble was */
+.as.house:not(.on) { transform: translate(-10px, 10px) scale(.94); }
+/* her greeting, carried over from her speech bubble */
+.as-greet { margin: 0 0 10px; padding: 9px 12px; border-radius: 12px 12px 12px 4px; background: var(--field); border: 1px solid var(--line); font-size: 13.5px; line-height: 1.5; color: var(--ink); }
+.as-greet small { display: block; margin-top: 2px; font-size: 11.5px; color: var(--mute); }
 .as-help b { font: 700 15px var(--sans); }
 .as-help-link { margin-top: 10px; border: 0; background: none; padding: 4px 0; color: var(--indigo-2); font-size: 12.5px; text-decoration: underline; cursor: pointer; }
 /* folded: only the header, with the last answer in one line */

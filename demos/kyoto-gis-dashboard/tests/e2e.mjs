@@ -1242,11 +1242,11 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
     hidden: getComputedStyle(document.querySelector('#dashboard > .top')).visibility, photo: document.querySelector('.tp-scene').classList.contains('photo'),
     pinned: document.querySelectorAll('.ema.pinned').length, add: document.querySelectorAll('.ema.add').length, hint: !!document.querySelector('.tp-hint'),
     sub: document.querySelector('.tp-feat h3').textContent, cards: [...document.querySelectorAll('.tp-worth .pc')].map((c) => !!c.querySelector('.im').style.backgroundImage), title: document.querySelector('.tp-worth h4').textContent,
-    rail: [...document.querySelectorAll('.tp-rail button')].map((b) => b.textContent.trim()), dock: [...document.querySelectorAll('.tp-dock button')].map((b) => b.textContent.trim()), support: getComputedStyle(document.querySelector('.tp-support')).visibility, house: !!document.querySelector('.ah-house'),
+    rail: [...document.querySelectorAll('.tp-nav .tn-i[data-k]')].map((b) => b.dataset.k), folded: !document.querySelector('.trip').classList.contains('nav-open'), dock: [...document.querySelectorAll('.tp-dock button')].map((b) => b.textContent.trim()), support: getComputedStyle(document.querySelector('.tp-support')).visibility, house: !!document.querySelector('.ah-house'),
   }));
   await tp.screenshot({ path: `${out}/20-trip-empty.png` });
   check('trip: "Plan your trip" in the panel switches the whole dashboard behind shoji doors; not planned yet, the ema are pinned on the board with a hint', doors && e0.hidden === 'hidden' && !e0.photo && e0.pinned === 4 && e0.add === 1 && e0.hint && e0.sub === 'Not planned yet', JSON.stringify(e0));
-  check('trip: rail is Trip, Agenda, Trip map, Dashboard; dock is Play day, hours, +, Best order, Export; the atlas house at the bottom left in place of Support; popular places have photos', JSON.stringify(e0.rail) === JSON.stringify(['Trip', 'Agenda', 'Trip map', 'Dashboard']) && e0.dock.length === 5 && /Play day/.test(e0.dock[0]) && /Best order/.test(e0.dock[3]) && /Export/.test(e0.dock[4]) && e0.support === 'hidden' && e0.house && e0.cards.length === 4 && e0.cards.every(Boolean) && /Popular in/.test(e0.title), JSON.stringify(e0));
+  check('trip: the sidebar (folded at first) has Search, Trip, Agenda, Trip map, Plan notes, Help, Ask the atlas, Dashboard; dock is Play day, hours, +, Best order, Export; the atlas house at the bottom left in place of Support; popular places have photos', JSON.stringify(e0.rail) === JSON.stringify(['search', 'trip', 'agenda', 'map', 'notes', 'help', 'ask', 'back']) && e0.folded && e0.dock.length === 5 && /Play day/.test(e0.dock[0]) && /Best order/.test(e0.dock[3]) && /Export/.test(e0.dock[4]) && e0.support === 'hidden' && e0.house && e0.cards.length === 4 && e0.cards.every(Boolean) && /Popular in/.test(e0.title), JSON.stringify(e0));
 
   // an ema opens its day's strip (a thread runs from the ema, the trip card steps aside); the "+" ema adds a day
   await tp.locator('.ema.add').click();
@@ -1349,18 +1349,42 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   const icsPath = await dl.path(), ics = readFileSync(icsPath, 'utf8');
   check('trip: Export saves an .ics calendar with timed stops in UTC and the untimed-bus note', /\.ics$/.test(dl.suggestedFilename()) && ics.startsWith('BEGIN:VCALENDAR') && /DTSTART:20\d{6}T010000Z/.test(ics) && /no timetable/.test(ics.replace(/\r\n /g, '')), dl.suggestedFilename());
 
+  // the sidebar: folded it is a rail of icons with a label on hover; unfolded (remembered) it pushes the trip card
+  // aside, the labels come in, and the "you are here" pill grows into a capsule under the current view
+  const navAt = () => tp.evaluate(() => { const t = document.querySelector('.trip'), pill = document.querySelector('.tn-pill'), on = document.querySelector('.tn-i.on');
+    const pr = pill?.getBoundingClientRect(), or = on?.getBoundingClientRect(), lb = on?.querySelector('.lb');
+    return { open: t.classList.contains('nav-open'), rail: getComputedStyle(t).getPropertyValue('--rail').trim(), feat: Math.round(document.querySelector('.tp-feat')?.getBoundingClientRect().left ?? -1), on: on?.dataset.k,
+      pillOn: !!(pr && or && Math.abs(pr.top - or.top) < 3 && Math.abs(pr.height - or.height) < 3), pillW: Math.round(pr?.width || 0), label: lb ? +getComputedStyle(lb).opacity : -1, kept: localStorage.getItem('kyoto-trip-nav'),
+      fold: document.querySelector('.tn-fold').getAttribute('aria-expanded') }; });
+  // a transition is over when the page no longer marks one (html[data-vt])
+  const settled = () => tp.waitForFunction(() => !document.documentElement.dataset.vt, null, { timeout: 5000 }).catch(() => {});
+  const nv0 = await navAt();
+  const agBox = await tp.locator('.tn-i[data-k="agenda"]').boundingBox();
+  await tp.mouse.move(agBox.x + agBox.width + 300, agBox.y); await tp.waitForTimeout(100);
+  await tp.mouse.move(agBox.x + agBox.width / 2, agBox.y + agBox.height / 2, { steps: 4 }); await tp.waitForTimeout(500);
+  const tip = await tp.evaluate(() => { const el = document.querySelector('.tn-i[data-k="agenda"]'); const a = getComputedStyle(el, '::after'); const r = el.getBoundingClientRect(), top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return { text: el.title, shown: a.content !== 'none', op: +a.opacity, hov: el.matches(':hover'), top: top ? `${top.tagName}.${String(top.className?.baseVal ?? top.className).slice(0, 40)}` : null }; });
+  await tp.locator('.tn-fold').click(); await settled(); await tp.waitForTimeout(700);
+  const nv1 = await navAt();
+  check('trip sidebar: folded, a rail of icons with the pill as a circle on Trip and a label beside an icon on hover; unfolded, the trip card moves aside, labels show, the pill becomes a capsule under Trip, and it is remembered',
+    !nv0.open && nv0.rail === '84px' && nv0.on === 'trip' && nv0.pillOn && nv0.pillW <= 48 && nv0.fold === 'false' && tip.text === 'Agenda' && tip.shown && tip.op > 0.9
+    && nv1.open && nv1.rail === '248px' && nv1.feat > nv0.feat + 100 && nv1.pillOn && nv1.pillW > 150 && nv1.label === 1 && nv1.kept === '1' && nv1.fold === 'true', JSON.stringify({ nv0, tip, nv1 }));
+
   // the other views, Support, and back to the GIS dashboard
-  await tp.locator('.tp-rail button', { hasText: 'Agenda' }).click(); await tp.waitForTimeout(800);
+  await tp.locator('.tn-i[data-k="agenda"]').click(); await settled(); await tp.waitForTimeout(400);
+  const nvA = await navAt();
   const ag = await tp.evaluate(() => document.querySelectorAll('.tp-agenda .col').length);
-  await tp.locator('.tp-rail button', { hasText: 'Trip map' }).click(); await tp.waitForTimeout(2500);
+  await tp.locator('.tn-i[data-k="map"]').click(); await tp.waitForTimeout(2500);
   const fm = await tp.evaluate(() => ({ map: !!document.querySelector('.tp-full .tp-map canvas'), keys: document.querySelectorAll('.tp-daykey span').length }));
-  await tp.locator('.tp-rail button', { hasText: 'Trip' }).first().click();
+  await tp.locator('.tn-i[data-k="trip"]').click(); await tp.waitForTimeout(700);
+  await tp.locator('.tn-fold').click(); await settled(); await tp.waitForTimeout(400);
+  const nvF = await navAt();
+  check('trip sidebar: choosing Agenda slides the pill to it; folding again brings the rail back (and is remembered)', nvA.on === 'agenda' && nvA.pillOn && !nvF.open && nvF.rail === '84px' && nvF.kept === '0' && nvF.on === 'trip' && nvF.pillOn, JSON.stringify({ nvA, nvF }));
   await tp.evaluate(() => dispatchEvent(new CustomEvent('kyoto-trip-help')));   // the chat's "How the trip planner works" link
   await tp.waitForSelector('.tp-sheet.help', { timeout: 5000 });
   const hp = await tp.evaluate(() => document.querySelector('.tp-sheet.help')?.textContent || '');
   await tp.locator('.tp-sheet .x').click();
   check('trip: Agenda lists every day, Trip map shows them all, the planner help (now opened from the chat) explains the sources and that the plan stays in the browser', ag === 4 && fm.map && fm.keys === 4 && /no timetable/.test(hp) && /saved in this browser only/.test(hp) && /AI-generated illustration/.test(hp), JSON.stringify({ ag, fm }));
-  await tp.locator('.tp-rail button', { hasText: 'Dashboard' }).click();
+  await tp.locator('.tn-i[data-k="back"]').click();
   await tp.waitForFunction(() => !document.querySelector('.trip'), null, { timeout: 5000 }).catch(() => {});
   const back = await tp.evaluate(() => ({ trip: !!document.querySelector('.trip'), top: getComputedStyle(document.querySelector('#dashboard > .top')).visibility }));
   check('trip: Dashboard returns to the GIS dashboard as it was', !back.trip && back.top === 'visible', JSON.stringify(back));
@@ -1441,11 +1465,17 @@ await ph.screenshot({ path: `${out}/08-phone.png`, fullPage: false });
   await hp.waitForTimeout(1300);
   const o = await hp.evaluate(() => ({ open: document.querySelector('.ah-svg').classList.contains('open'), door: getComputedStyle(document.querySelector('.ah-door.l')).transform, chat: document.querySelector('.as')?.classList.contains('on') || false }));
   await hp.waitForFunction(() => /How can I help/.test(document.querySelector('.ah-bubble')?.textContent || ''), null, { timeout: 4000 }).catch(() => {});
-  const wave = await hp.evaluate(() => ({ bubble: document.querySelector('.ah-bubble')?.textContent || '', arm: !!document.querySelector('.ah-arm.up') }));
+  const wave = await hp.evaluate(() => ({ bubble: document.querySelector('.ah-bubble')?.textContent || '', arm: !!document.querySelector('.ah-arm.up'), greet: !!document.querySelector('.ah-bubble.greet'), typed: document.querySelector('.ah-bubble.greet > span[aria-hidden]')?.textContent || '' }));
+  await hp.waitForTimeout(1200);
+  const typed2 = await hp.evaluate(() => document.querySelector('.ah-bubble.greet > span[aria-hidden]')?.textContent || '');
   await hp.waitForSelector('.as.on', { timeout: 6000 });
   await hp.waitForTimeout(600);
   const chat = await hp.evaluate(() => { const c = document.querySelector('.as').getBoundingClientRect(), g = document.querySelector('.ah-girl').getBoundingClientRect(); return { on: document.querySelector('.as').classList.contains('on'), beside: c.left >= g.right - 20, bottom: Math.round(innerHeight - c.bottom) }; });
   await hp.screenshot({ path: `${out}/26-house-chat.png` });
+  const greetChat = await hp.evaluate(() => document.querySelector('.as-greet')?.textContent || '');
+  check('house: she greets with いらっしゃいませ, typed into her bubble in Japanese with the English under it, and the chat opens with the same greeting',
+    wave.greet && /いらっしゃいませ/.test(wave.bubble) && /Welcome! I'm your atlas guide/.test(wave.bubble) && typed2.length > wave.typed.length && /^いら/.test(typed2) && 'いらっしゃいませ！'.startsWith(typed2.slice(0, 9)) && /いらっしゃいませ/.test(greetChat) && /Welcome/.test(greetChat),
+    JSON.stringify({ wave, typed2, greetChat }));
   check('house: a click shows "Double-click to knock"; a double-click knocks (the doors shake, コン), they slide open, she steps out, waves "How can I help?" and the chat opens beside her', /Double-click to knock/.test(hint) && k.knock && k.kon === 2 && !k.girl && o.open && o.door !== 'none' && /How can I help/.test(wave.bubble) && wave.arm && chat.on && chat.beside, JSON.stringify({ hint, k, o, wave, chat }));
   // drag her somewhere else; she stays there
   const g0 = await hp.locator('.ah-girl').boundingBox();

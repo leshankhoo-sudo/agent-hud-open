@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import maplibregl from 'maplibre-gl';
 import * as TP from './lib/trip.js';
 import { fetchRoute, fetchTable, fmtDuration, fmtDistance, ROUTE_SERVICE } from './lib/route.js';
@@ -58,6 +59,7 @@ const I = {
   down: <path d="m6 9 6 6 6-6" />,
   trash: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />,
   chev: <path d="m9 6 6 6-6 6" />,
+  spark: <><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /><path d="M18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" /></>,
   house: <path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6" />,
 };
 const Ic = ({ k, s = 20, ...p }) => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...p}>{I[k]}</svg>;
@@ -486,6 +488,8 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
   const setTrip = (f) => setTripState((t) => { const n = typeof f === 'function' ? f(t) : f; TP.saveTrip(n); return n; });
   const [active, setActive] = useState(0);
   const [view, setView] = useState('trip');          // 'trip' | 'agenda' | 'map'
+  const [navOpen, setNavOpenState] = useState(() => { try { return localStorage.getItem(NAV_KEY) === '1'; } catch { return false; } });
+  const setNavOpen = (v) => { setNavOpenState(v); try { localStorage.setItem(NAV_KEY, v ? '1' : '0'); } catch { /* not kept */ } };
   const [planner, setPlanner] = useState(null);      // day index whose scroll is open
   const [sheet, setSheet] = useState(null);          // 'add' | 'help' | 'order' | 'hours' | 'notes'
   const [addKind, setAddKind] = useState('all');     // the add sheet opens on stations when choosing a start
@@ -736,13 +740,22 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
     say('Calendar file saved (kyoto-trip.ics).');
   };
 
+  // the sidebar: a view (Trip, Agenda, Trip map) changes with a transition; the others act at once
+  const pickNav = (k) => {
+    if (VIEWS.has(k)) { if (k !== view) viewTransition('view', () => setView(k)); return; }
+    if (k === 'search') { rootRef.current?.querySelector('.tp-search input')?.focus(); return; }
+    if (k === 'notes') { setSheet(sheet === 'notes' ? null : 'notes'); return; }
+    if (k === 'help') { setSheet('help'); return; }
+    if (k === 'ask') { onAsk?.(); return; }
+    if (k === 'back') onClose();
+  };
   const placesN = trip.days.reduce((s, x) => s + x.stops.length, 0);
   const sub = isPlanned ? `${NUM[trip.days.length] || trip.days.length} ${seasonWord(trip.days[0].date)} day${trip.days.length > 1 ? 's' : ''}` : 'Not planned yet';
   const hour = Math.floor(nowTokyoMin() / 60);
   const greet = hour < 5 ? 'Good evening' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <section ref={rootRef} className={'trip' + (drag?.moved ? ' dragging' : '') + ` v-${view}`} aria-label="Plan your trip">
+    <section ref={rootRef} className={'trip' + (drag?.moved ? ' dragging' : '') + ` v-${view}` + (navOpen ? ' nav-open' : '')} aria-label="Plan your trip">
       <svg className="tp-logo" viewBox="0 0 84 40" aria-hidden="true"><path d="M4 22c14-14 30-14 44-4 10 7 20 6 30-2" /><path d="M10 33c12-9 24-9 36-2 9 5 18 5 28 0" /></svg>
       <header className="tp-head">
         <h2>Hello, Explorer <span className="wave" aria-hidden="true">👋</span></h2>
@@ -755,12 +768,7 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
         <button type="button" className="tp-bell" onClick={() => setSheet(sheet === 'notes' ? null : 'notes')} aria-expanded={sheet === 'notes'} aria-label={`Plan notes (${notes.length})`}><Ic k="bell" s={22} />{notes.length > 0 && <i />}</button>
       </div>
 
-      <nav className="tp-rail" aria-label="Trip views">
-        {[['trip', 'home', 'Trip'], ['agenda', 'agenda', 'Agenda'], ['map', 'map', 'Trip map']].map(([k, ic, lb]) => (
-          <button key={k} type="button" className={view === k ? 'on' : ''} aria-pressed={view === k} onClick={() => setView(k)}><Ic k={ic} s={28} />{lb}</button>
-        ))}
-        <button type="button" onClick={onClose}><Ic k="back" s={28} />Dashboard</button>
-      </nav>
+      <TripNav open={navOpen} view={view} notes={notes.length} onToggle={() => viewTransition(navOpen ? 'nav-close' : 'nav-open', () => setNavOpen(!navOpen))} onPick={pickNav} />
 
       {view === 'trip' && (
         <Scene trip={trip} active={di} theme={theme} seasonPick={seasonPick} strip={planner} onPick={openDay} onAddDay={() => { setTrip((t) => TP.addDay(t)); say('Day added.'); }} board={board} hint={!trip.hintSeen && !isPlanned}
@@ -771,9 +779,9 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
               <input className="title" value={trip.title} aria-label="Trip name" maxLength={28} onChange={(e) => setTrip((t) => ({ ...t, title: e.target.value }))} />
               <h3>{sub}</h3>
               <div className="stats">
-                <span><Ic k="cal" s={22} /><b>{trip.days.length} Day{trip.days.length > 1 ? 's' : ''}<small>{TP.dateLong(trip.days[0].date)}</small></b></span>
-                <span><Ic k="pin" s={22} /><b>{placesN} Place{placesN === 1 ? '' : 's'}<small>{placesN ? 'On your list' : 'Add a few'}</small></b></span>
-                <span><Ic k="bus" s={22} /><b>{fareInfo.n ? `¥${fareInfo.sum.toLocaleString('en-US')}` : '—'}<small>{fareInfo.n ? `Bus fares${fareInfo.other ? ' + more' : ''}` : 'No bus yet'}</small></b></span>
+                <span><Ic k="cal" s={22} /><b><Roll value={trip.days.length} /> Day{trip.days.length > 1 ? 's' : ''}<small>{TP.dateLong(trip.days[0].date)}</small></b></span>
+                <span><Ic k="pin" s={22} /><b><Roll value={placesN} /> Place{placesN === 1 ? '' : 's'}<small>{placesN ? 'On your list' : 'Add a few'}</small></b></span>
+                <span><Ic k="bus" s={22} /><b>{fareInfo.n ? <>¥<Roll value={fareInfo.sum.toLocaleString('en-US')} /></> : '—'}<small>{fareInfo.n ? `Bus fares${fareInfo.other ? ' + more' : ''}` : 'No bus yet'}</small></b></span>
               </div>
               <button type="button" className="tp-btn" onClick={() => (isPlanned ? setView('agenda') : openDay(0))}>{isPlanned ? 'Open itinerary' : 'Start planning'} <span aria-hidden="true">→</span></button>
             </div>
@@ -799,7 +807,7 @@ function Trip({ d, byId, A, Tr, theme, seasonPick, fetchBusVariant, onClose, add
             <>
               <div className="big">
                 <WxIcon icon={wxNow?.icon} night={wxNow?.night} s={60} />
-                <div><b>{wxNow?.temperature != null ? `${Math.round(wxNow.temperature)}°` : '–'}</b><span>{wxNow?.pending ? 'Loading…' : wxNow?.error ? 'Forecast not available' : wxNow?.none ? 'No forecast yet' : wxNow?.label}</span></div>
+                <div><b>{wxNow?.temperature != null ? <><Roll value={Math.round(wxNow.temperature)} />°</> : '–'}</b><span>{wxNow?.pending ? 'Loading…' : wxNow?.error ? 'Forecast not available' : wxNow?.none ? 'No forecast yet' : wxNow?.label}</span></div>
               </div>
               <p className="loc">{wxMain.p.name}<small>{TP.dateLong(day.date)} · {TP.fmtHM(wxMain.t)}</small></p>
               <div className="tp-tree"><PixelTree season={seasonPick || seasonWord(day.date)} theme={theme} wind={wxNow?.wind} windDir={wxNow?.windDir} gust={wxNow?.gust} code={wxNow?.code} precip={wxNow?.precip} night={!!wxNow?.night} width={150} height={112}
@@ -1082,6 +1090,79 @@ function AddSheet({ kind0 = 'all', A, Tr, info, trip, di, query, setQuery, onAdd
 }
 
 // ---------- all days as a list ----------
+// The planner's sidebar: a frosted-glass rail of icons over the picture that unfolds into a panel with labels
+// (after a reference recording). Unfolding pushes the trip card and the middle column aside; the white
+// "you are here" pill grows from a circle into a capsule; the labels come in one after another. Changing
+// view slides the pill to the new item while the old view blurs out and the new one blurs in.
+// Both changes run as View Transitions (the browser animates snapshots on the GPU, so nothing is laid out
+// frame by frame); without them, or with reduced motion, they simply happen.
+const NAV_KEY = 'kyoto-trip-nav';
+const NAV = [
+  ['Plan', [['trip', 'home', 'Trip'], ['agenda', 'agenda', 'Agenda'], ['map', 'map', 'Trip map']]],
+  ['Tools', [['notes', 'bell', 'Plan notes'], ['help', 'support', 'Help']]],
+  ['Atlas', [['ask', 'spark', 'Ask the atlas'], ['back', 'back', 'Dashboard']]],
+];
+const VIEWS = new Set(['trip', 'agenda', 'map']);
+// run a state change as a View Transition; kind names the transition for the CSS (html[data-vt])
+// a number that rolls into place digit by digit (each digit a column of 0-9 that slides, composited), like a
+// counter; it starts from 0 when it first shows and rolls on when it changes. The text itself is there for
+// screen readers and for copying.
+function Roll({ value }) {
+  const s = String(value);
+  const [go, setGo] = useState(false);
+  useEffect(() => { const r = requestAnimationFrame(() => requestAnimationFrame(() => setGo(true))); return () => cancelAnimationFrame(r); }, []);
+  return (
+    <i className="roll">{[...s].map((c, i) => (/\d/.test(c)
+      ? <i key={i} className="rd"><i className="sr-only">{c}</i><i className="rc" aria-hidden="true" style={{ translate: `0 ${go ? -c * 10 : 0}%`, transitionDelay: `${i * 45}ms` }} /></i>
+      : <i key={i}>{c}</i>))}</i>
+  );
+}
+
+function viewTransition(kind, change) {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !document.startViewTransition) { change(); return; }
+  const html = document.documentElement;
+  html.dataset.vt = kind;
+  const vt = document.startViewTransition(() => flushSync(change));
+  vt.finished.finally(() => { if (html.dataset.vt === kind) delete html.dataset.vt; });
+}
+
+function TripNav({ open, onToggle, view, onPick, notes }) {
+  const nav = useRef(null);
+  const [pill, setPill] = useState(null);   // where the "you are here" pill sits: { y, h }
+  useLayoutEffect(() => {
+    const el = nav.current?.querySelector(`[data-k="${view}"]`);
+    if (!el) return;
+    const y = el.offsetTop, h = el.offsetHeight;
+    setPill((p) => (p && p.y === y && p.h === h ? p : { y, h }));
+  }, [view, open]);
+  let i = 0;
+  return (
+    <div className={'tn-wrap' + (open ? ' open' : '')}>
+      <nav ref={nav} className={'tp-nav' + (open ? ' open' : '')} aria-label="Trip planner">
+        {pill && <span className="tn-pill" aria-hidden="true" style={{ translate: `0 ${pill.y}px`, height: pill.h }} />}
+        <button type="button" className="tn-i tn-search" data-k="search" onClick={() => onPick('search')} title={open ? undefined : 'Search places'}>
+          <Ic k="search" s={19} /><span className="lb" style={{ '--i': i++ }}>Search places…</span><kbd className="lb" style={{ '--i': i }}>/</kbd>
+        </button>
+        {NAV.map(([sec, items]) => (
+          <div key={sec} className="tn-sec">
+            <p className="tn-h" aria-hidden={!open}><span className="lb" style={{ '--i': i++ }}>{sec}</span></p>
+            {items.map(([k, ic, lb]) => (
+              <button key={k} type="button" data-k={k} className={'tn-i' + (view === k ? ' on' : '')} aria-current={view === k ? 'page' : undefined} onClick={() => onPick(k)} title={open ? undefined : lb}>
+                <Ic k={ic} s={20} /><span className="lb" style={{ '--i': i++ }}>{lb}</span>
+                {k === 'notes' && notes > 0 && <i className="tn-badge" aria-label={`${notes} notes`}>{notes}</i>}
+              </button>
+            ))}
+          </div>
+        ))}
+      </nav>
+      <button type="button" className="tn-fold" onClick={onToggle} aria-expanded={open} aria-label={open ? 'Fold the menu' : 'Unfold the menu'} title={open ? 'Fold the menu' : 'Unfold the menu'}>
+        <Ic k="chev" s={14} strokeWidth="2.6" />
+      </button>
+    </div>
+  );
+}
+
 function Agenda({ trip, info, allLegs, onOpen }) {
   return (
     <div className="tp-agenda">

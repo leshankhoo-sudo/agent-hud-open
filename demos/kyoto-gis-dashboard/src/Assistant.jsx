@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { askAssistant, assistantStatus, thinkingFor, ERROR_TITLE } from './lib/assistant.js';
 import { DECLARATIONS, makeHandlers, actionLabel } from './assistantTools.js';
 import { tokyoDate } from './lib/trip.js';
+import { GREET } from './AtlasHouse.jsx';
 import './assistant.css';
 
 const PREVIEW = import.meta.env.VITE_TARGET === 'artifact';
@@ -86,7 +87,7 @@ function Actions({ acts }) {
 }
 
 // side: 'left' on the map (the information panel the assistant opens is on the right), 'right' over the trip planner
-export default function Assistant({ open, onClose, getCtx, side = 'right', onHelp = null }) {
+export default function Assistant({ open, onClose, getCtx, side = 'right', onHelp = null, enFirst = false }) {
   const [status, setStatus] = useState(PREVIEW ? { reachable: false, preview: true } : null);
   const [msgs, setMsgs] = useState([]);           // { role: 'me' | 'ai', text, actions, error }
   const [live, setLive] = useState(null);         // actions of the answer being prepared
@@ -289,6 +290,9 @@ export default function Assistant({ open, onClose, getCtx, side = 'right', onHel
         )}
         {ready && msgs.length === 0 && !busy && (
           <div className="as-hello">
+            {side === 'house' && (() => { const l = enFirst ? 'en' : 'ja', o = l === 'ja' ? 'en' : 'ja'; return (
+              <p className="as-greet"><span lang={l}>{GREET[l].text}</span><small lang={o}>{GREET[o].text}</small></p>
+            ); })()}
             <p>Ask about places, weather, buses and fares, or have me plan your days. I can also open the right panel on the map for you.</p>
             <div className="as-sugs">{SUGGEST.map((s) => <button key={s} type="button" onClick={() => send(s)}>{s}</button>)}</div>
             {onHelp && <button type="button" className="as-help-link" onClick={onHelp}>How the trip planner works · data sources</button>}

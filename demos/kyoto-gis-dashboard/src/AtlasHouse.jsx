@@ -3,15 +3,58 @@
 // kimono who lives in it and opens the assistant. An original cartoon drawing (SVG) in the style of the
 // references the team chose: thick brown outlines, flat colours, a round face, dot eyes and pink cheeks.
 //   double-click the house  -> a knock (the doors shake, "kon kon"), the doors slide open, she steps out,
-//                              bows, waves "How can I help?" and the chat opens beside her
+//                              bows and says いらっしゃいませ (welcome; spoken once per visit when a voice clip
+//                              is set in VOICE), her greeting is typed into her speech bubble (Japanese with
+//                              English under it, or the other way round with "English first"), then the
+//                              bubble gives way to the chat, which opens beside her
 //   drag her                -> she is lifted (legs swing, surprised face) and put down wherever you drop her
 //   stroke her head         -> she smiles, blushes, hearts rise
 //   close the chat          -> she walks back home and the doors close
 // Her kimono and the branch over the roof follow the season of the site; nothing here talks to the network.
+// Motion that follows the pointer or the page (her eyes, a drag, the house riding the scroll) is written to the
+// elements directly, never through React state, so nothing re-renders per frame; positions use the `translate`
+// property, which the browser composites, not left/top.
 import { useEffect, useRef, useState } from 'react';
 import './atlasHouse.css';
 
 const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+// her greeting when you knock (いらっしゃいませ: "welcome", how a Kyoto shop greets you), and the short line when
+// the chat was opened another way; ms: how fast her words are typed into the bubble, per character
+export const GREET = {
+  ja: { text: 'いらっしゃいませ！アトラスの案内係です。何かお手伝いしましょうか？', ms: 55 },
+  en: { text: 'Welcome! I\'m your atlas guide. How can I help?', ms: 30 },
+};
+export const SHORT = { ja: '何かお手伝いしましょうか？', en: 'How can I help?' };
+// the spoken いらっしゃいませ: a short clip made once with an open-source voice (see the README for its credit);
+// null until the clip is in public/media. It plays once per visit, after the knock (a click, so it may play).
+export const VOICE = null;   // e.g. { src: 'media/irasshaimase.mp3', credit: 'VOICEVOX:春日部つむぎ' }
+const GREETED = 'kyoto-house-greeted';
+function sayWelcome() {
+  if (!VOICE) return;
+  try { if (sessionStorage.getItem(GREETED)) return; sessionStorage.setItem(GREETED, '1'); } catch { /* say it anyway */ }
+  try { const a = new Audio(`${import.meta.env.BASE_URL}${VOICE.src}`); a.volume = 0.8; a.play().catch(() => {}); } catch { /* no sound */ }
+}
+// her speech bubble. A greeting ({ main, sub, ms }) is typed in as she speaks, the other language under it once
+// it is done; a plain string just appears. The whole text is there for screen readers from the start.
+function Bubble({ msg, style, away }) {
+  const greet = typeof msg === 'object';
+  const main = greet ? msg.main : msg;
+  const [n, setN] = useState(greet && msg.ms && !reduce() ? 0 : main.length);
+  useEffect(() => {
+    if (n >= main.length) return undefined;
+    const t = setTimeout(() => setN((k) => k + 1), msg.ms);
+    return () => clearTimeout(t);
+  }, [n]); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <div className={'ah-bubble' + (greet ? ' greet' : '') + (away ? ' away' : '')} style={style} role="status">
+      {greet ? <>
+        <span className="sr-only">{main} {msg.sub}</span>
+        <span aria-hidden="true" lang={msg.lang}>{main.slice(0, n)}</span>
+        {msg.sub && <small aria-hidden="true" className={n >= main.length ? 'on' : ''} lang={msg.lang === 'ja' ? 'en' : 'ja'}>{msg.sub}</small>}
+      </> : main}
+    </div>
+  );
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, reduce() ? Math.min(ms, 60) : ms));
 
 // colours by season: kimono, its shade, the obi, the pattern; the branch over the roof
@@ -107,14 +150,13 @@ function House({ season, open, knocking }) {
 }
 
 // the girl: 100 x 140 drawing units; pose: stand | bow | wave; face: open | blink | shut | happy | wide
-function Girl({ season, pose, face, look }) {
+function Girl({ season, pose, face, eyesRef }) {
   const S = SEASON[season] || SEASON.spring;
   const fl = (x, y, s = 1) => (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
       <g fill={S.flower} stroke="#4a2f24" strokeWidth="0.9"><circle cx="0" cy="-3.4" r="2.9" /><circle cx="3.2" cy="-1.1" r="2.9" /><circle cx="2" cy="2.8" r="2.9" /><circle cx="-2" cy="2.8" r="2.9" /><circle cx="-3.2" cy="-1.1" r="2.9" /></g><circle r="1.4" fill={S.mid} />
     </g>
   );
-  const lx = (look?.x || 0) * 1.6, ly = (look?.y || 0) * 1.2;
   return (
     <svg viewBox="0 0 100 142" className="ah-girl-svg" aria-hidden="true">
       <defs>
@@ -146,7 +188,7 @@ function Girl({ season, pose, face, look }) {
         <path d="M16 52Q15 22 50 21Q85 22 84 52Q79 41 70 43Q62 35 50 40Q38 35 30 43Q21 41 16 52Z" fill="#4a3328" className="ol" />
         <path d="M16 48Q9 64 17 77Q24 71 21 56Z M84 48Q91 64 83 77Q76 71 79 56Z" fill="#4a3328" className="ol" />
         <path d="M32 28Q41 24 50 25" stroke="#6b5040" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-        <g transform={`translate(${lx} ${ly})`}>
+        <g ref={eyesRef}>{/* moved by the pointer, directly (see the eyes effect) */}
           {face === 'open' && <g><ellipse cx="38" cy="58" rx="3.5" ry="4.3" fill="#2a1a16" /><ellipse cx="62" cy="58" rx="3.5" ry="4.3" fill="#2a1a16" /><circle cx="36.9" cy="56.4" r="1.3" fill="#fff" /><circle cx="60.9" cy="56.4" r="1.3" fill="#fff" /></g>}
           {face === 'wide' && <g><circle cx="38" cy="58" r="4.8" fill="#fff" className="ol2" /><circle cx="62" cy="58" r="4.8" fill="#fff" className="ol2" /><circle cx="38" cy="58.6" r="2.4" fill="#2a1a16" /><circle cx="62" cy="58.6" r="2.4" fill="#2a1a16" /></g>}
         </g>
@@ -177,20 +219,24 @@ function anchor() {
   return { x: Math.round(r.left + (phone ? 8 : 12)), y: Math.round(top), w, h, where: 'map' };
 }
 
-export default function AtlasHouse({ open, onOpen, ready = true }) {
+export default function AtlasHouse({ open, onOpen, ready = true, enFirst = false }) {
   const [season, setSeason] = useState(() => document.documentElement.dataset.season || 'spring');
   const [phase, setPhase] = useState('home');       // home | knock | out | held | returning
   const [doorOpen, setDoorOpen] = useState(false);
   const [pose, setPose] = useState('stand');
   const [face, setFace] = useState('open');
-  const [look, setLook] = useState({ x: 0, y: 0 });
   const [pos, setPos] = useState(null);             // the girl's top-left (px, in the window) when she is out
   const [bubble, setBubble] = useState(null);
+  const [away, setAway] = useState(false);          // the bubble is giving way to the chat
+  const enRef = useRef(enFirst); enRef.current = enFirst;
   const [hearts, setHearts] = useState([]);
   const [drop, setDrop] = useState(0);
-  const houseRef = useRef(null), girlRef = useRef(null);
+  const houseRef = useRef(null), girlRef = useRef(null), eyesRef = useRef(null), tuckRef = useRef(null), badgeRef = useRef(null);
   const run = useRef(0);                            // the current sequence; a newer one cancels it
-  const [place, setPlace] = useState(null);         // { x, y, w, h, where } or null: hidden
+  // where the house is: { x, y, w, h, where } or null (hidden). The state changes only when it appears, goes or
+  // changes slot or size; scrolling moves the elements directly from placeRef, without a re-render.
+  const [place, setPlace] = useState(null);
+  const placeRef = useRef(null);
   const [tucked, setTuckedState] = useState(() => { try { return localStorage.getItem(TUCK_KEY) === '1'; } catch { return false; } });
   const setTucked = (v) => { setTuckedState(v); try { localStorage.setItem(TUCK_KEY, v ? '1' : '0'); } catch { /* not kept */ } };
   const live = useRef({ phase, open, pos });
@@ -198,7 +244,20 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
   // follow the slot: on scroll and resize, and now and then for layout changes (the trip planner opening)
   useEffect(() => {
     let raf = 0;
-    const upd = () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; const a = anchor(); setPlace((p) => (JSON.stringify(p) === JSON.stringify(a) ? p : a)); }); };
+    const kind = (a) => (a ? `${a.where}|${a.w}|${a.h}` : '');
+    const upd = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const a = anchor(), was = placeRef.current;
+        placeRef.current = a;
+        if (kind(a) !== kind(was)) { setPlace(a); return; }
+        if (!a || (a.x === was.x && a.y === was.y)) return;
+        if (houseRef.current) houseRef.current.style.translate = `${a.x}px ${a.y}px`;
+        if (tuckRef.current) tuckRef.current.style.translate = `${a.x + a.w - 16}px ${a.y + 2}px`;
+        if (badgeRef.current) badgeRef.current.style.translate = `${a.x}px ${a.y + a.h - 44}px`;
+      });
+    };
     upd();
     addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd);
     const iv = setInterval(upd, 400);
@@ -238,7 +297,7 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
         if (!r) return;
         const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height * 0.4), d = Math.hypot(dx, dy) || 1;
         const k = Math.min(1, d / 220);
-        setLook({ x: (dx / d) * k, y: (dy / d) * k });
+        eyesRef.current?.setAttribute('transform', `translate(${((dx / d) * k * 1.6).toFixed(2)} ${((dy / d) * k * 1.2).toFixed(2)})`);
       });
     };
     addEventListener('pointermove', mv, { passive: true });
@@ -248,7 +307,7 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
   const comeOut = async (knock) => {
     const id = ++run.current;
     const ok = () => run.current === id;
-    setBubble(null);
+    setBubble(null); setAway(false);
     if (knock) {
       setPhase('knock'); knockSound();
       await sleep(950); if (!ok()) return;
@@ -258,18 +317,29 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
     setPos(homePos()); setPose('stand'); setFace('open'); setPhase('out');
     await sleep(480); if (!ok()) return;
     setPose('bow'); setFace('shut');
+    if (knock) sayWelcome();
     await sleep(720); if (!ok()) return;
-    setPose('wave'); setFace('open'); setBubble('How can I help?');
-    await sleep(1200); if (!ok()) return;
+    // her greeting: typed in her language first (Japanese, or English with "English first"), the other under it
+    const lang = enRef.current ? 'en' : 'ja', other = lang === 'ja' ? 'en' : 'ja';
+    setPose('wave'); setFace('open');
+    if (knock) {
+      setBubble({ main: GREET[lang].text, sub: GREET[other].text, ms: GREET[lang].ms, lang });
+      await sleep(GREET[lang].text.length * GREET[lang].ms + 900); if (!ok()) return;
+    } else {
+      setBubble({ main: SHORT[lang], sub: SHORT[other], lang });
+      await sleep(1100); if (!ok()) return;
+    }
     setPose('stand');
+    // the bubble gives way to the chat, which grows out of the corner beside her
+    setAway(true);
     if (!live.current.open) onOpen?.();
-    await sleep(400); if (!ok()) return;
-    setBubble(null);
+    await sleep(240); if (!ok()) return;
+    setBubble(null); setAway(false);
   };
   const goHome = async () => {
     const id = ++run.current;
     const ok = () => run.current === id;
-    setBubble(null); setFace('open'); setPose('stand');
+    setBubble(null); setAway(false); setFace('open'); setPose('stand');
     setPhase('returning'); setPos(homePos());
     await sleep(760); if (!ok()) return;
     setPhase('home');
@@ -318,7 +388,7 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
     const g = grab.current;
     if (g && g.id === e.pointerId) {
       if (!g.moved && Math.hypot(e.clientX - g.x, e.clientY - g.y) > 5) { g.moved = true; run.current++; setBubble(null); setPhase('held'); setFace('wide'); setPose('stand'); }
-      if (g.moved) setPos({ x: e.clientX - g.ox, y: e.clientY - g.oy });
+      if (g.moved) { g.cx = e.clientX - g.ox; g.cy = e.clientY - g.oy; girlRef.current.style.translate = `${g.cx}px ${g.cy}px`; }   // directly: no re-render per move
       return;
     }
     // petting: the pointer moving to and fro over her head
@@ -335,7 +405,7 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
     if (!g || g.id !== e.pointerId) return;
     grab.current = null;
     if (g.moved) {
-      setPos((p) => clampPos(p)); setPhase('out'); setFace('open'); setDrop((n) => n + 1);
+      setPos((p) => clampPos({ x: g.cx ?? p.x, y: g.cy ?? p.y })); setPhase('out'); setFace('open'); setDrop((n) => n + 1);
     } else if (!live.current.open) onOpen?.();
     else pet();
   };
@@ -350,35 +420,37 @@ export default function AtlasHouse({ open, onOpen, ready = true }) {
 
   const { w, h } = size();
   const out = phase !== 'home' && phase !== 'knock' && pos;
-  const style = place ? { left: place.x, top: place.y, width: place.w, height: place.h } : undefined;
+  const pl = place && placeRef.current;   // the latest position (scrolling moves it without a re-render)
+  const style = pl ? { translate: `${pl.x}px ${pl.y}px`, width: pl.w, height: pl.h } : undefined;
   return (
     <>
-      {place && tucked && (
-        <button type="button" className="ah-badge" style={{ left: place.x, top: place.y + place.h - 44 }} onClick={() => setTucked(false)} aria-label="Show the atlas house" title="Show the atlas house">
+      {pl && tucked && (
+        <button ref={badgeRef} type="button" className="ah-badge" style={{ translate: `${pl.x}px ${pl.y + pl.h - 44}px` }} onClick={() => setTucked(false)} aria-label="Show the atlas house" title="Show the atlas house">
           <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 18L20 7L35 18Z" fill="#a9a3ad" stroke="#4a2f24" strokeWidth="2.4" strokeLinejoin="round" /><rect x="10" y="18" width="20" height="15" fill="#f8ecd8" stroke="#4a2f24" strokeWidth="2.4" /><rect x="16.5" y="23" width="7" height="10" fill="#e8a65e" stroke="#4a2f24" strokeWidth="2" /></svg>
         </button>
       )}
-      <button ref={houseRef} type="button" style={style} hidden={!place || tucked} className={'ah-house' + (phase === 'knock' ? ' knock' : '') + (place ? ` in-${place.where}` : '')} onClick={clickHouse} onDoubleClick={knockHouse}
+      <button ref={houseRef} type="button" style={style} hidden={!pl || tucked} className={'ah-house' + (phase === 'knock' ? ' knock' : '') + (pl ? ` in-${pl.where}` : '')} onClick={clickHouse} onDoubleClick={knockHouse}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); knockHouse(); } }}
         aria-label="Atlas assistant: double-click the house (or press Enter) to knock" title="Atlas assistant · double-click to knock">
         <House season={season} open={doorOpen} knocking={phase === 'knock'} />
         {phase === 'knock' && <><span className="ah-kon a" aria-hidden="true">コン</span><span className="ah-kon b" aria-hidden="true">コン</span></>}
       </button>
-      {place && !tucked && phase === 'home' && (
-        <button type="button" className="ah-tuck" style={{ left: place.x + place.w - 16, top: place.y + 2 }} onClick={() => setTucked(true)} aria-label="Tuck the house away" title="Tuck the house away">
+      {pl && !tucked && phase === 'home' && (
+        <button ref={tuckRef} type="button" className="ah-tuck" style={{ translate: `${pl.x + pl.w - 16}px ${pl.y + 2}px` }} onClick={() => setTucked(true)} aria-label="Tuck the house away" title="Tuck the house away">
           <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5L6 7.5L9 4.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
       )}
       {out && (
-        <div ref={girlRef} className={`ah-girl ${phase}` + (drop ? ` drop${drop % 2}` : '')} style={{ left: pos.x, top: pos.y, width: w, height: h }}
+        <div ref={girlRef} className={`ah-girl ${phase}` + (drop ? ` drop${drop % 2}` : '')} style={{ translate: `${pos.x}px ${pos.y}px`, width: w, height: h }}
           onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
           role="img" aria-label="The atlas guide in a kimono. Drag her anywhere; stroke her head.">
-          <Girl season={season} pose={pose} face={face} look={look} />
+          <Girl season={season} pose={pose} face={face} eyesRef={eyesRef} />
           {hearts.map((x) => <span key={x.id} className="ah-heart" style={{ left: `${70 + x.dx}%`, animationDelay: `${x.delay}ms` }} aria-hidden="true">♥</span>)}
         </div>
       )}
       {bubble && (
-        <div className="ah-bubble" style={out ? { left: pos.x + w * 0.78, top: pos.y - 14 } : place ? { left: place.x + place.w * 0.3, top: place.y - 30 } : { display: 'none' }} role="status">{bubble}</div>
+        <Bubble key={typeof bubble === 'object' ? bubble.main : bubble} msg={bubble} away={away}
+          style={out ? { left: pos.x + w * 0.78, top: pos.y - 14 } : pl ? { left: pl.x + pl.w * 0.3, top: pl.y - 30 } : { display: 'none' }} />
       )}
     </>
   );

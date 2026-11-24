@@ -1,6 +1,6 @@
 /* The atlas house (AtlasHouse.jsx): placed by script in the map's bottom-left corner, or in the trip planner's old
    Support slot; hidden elsewhere. Above the dashboards (the trip planner is z 50), under the chat (z 70). */
-.ah-house { position: fixed; z-index: 64; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
+.ah-house { position: fixed; left: 0; top: 0; z-index: 64; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent;
   filter: drop-shadow(0 6px 10px rgba(40, 26, 20, .18)); transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
 .ah-house:hover { transform: translateY(-2px); }
 .ah-house:focus-visible { outline: 3px solid #ec6d4f; outline-offset: 2px; border-radius: 14px; }
@@ -23,8 +23,9 @@
 .ah-kon.b { left: 62%; top: 40%; animation-delay: .45s; }
 @keyframes ahKon { from { opacity: 0; transform: translateY(4px) scale(.8); } 40% { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
 
-.ah-girl { position: fixed; z-index: 71; touch-action: none; cursor: grab; user-select: none;
-  transition: left .7s cubic-bezier(.45, 0, .3, 1), top .7s cubic-bezier(.45, 0, .3, 1); animation: ahStep .48s cubic-bezier(.2, .8, .2, 1) both; }
+/* placed with `translate` (composited), so walking home and being dragged never re-lay the page out */
+.ah-girl { position: fixed; left: 0; top: 0; z-index: 71; touch-action: none; cursor: grab; user-select: none;
+  transition: translate .7s cubic-bezier(.45, 0, .3, 1); animation: ahStep .48s cubic-bezier(.2, .8, .2, 1) both; }
 .ah-girl-svg { display: block; width: 100%; height: 100%; overflow: visible; }
 @keyframes ahStep { from { opacity: 0; transform: translateY(-14px) scale(.72); } to { opacity: 1; transform: none; } }
 .ah-girl.out .ah-girl-svg { animation: ahBreathe 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
@@ -54,6 +55,13 @@
   font: 700 13.5px 'Yu Gothic UI', 'Hiragino Sans', 'Segoe UI', sans-serif; white-space: nowrap; pointer-events: none; animation: ahPop .25s cubic-bezier(.2, 1.4, .4, 1) both; }
 .ah-bubble::after { content: ''; position: absolute; left: 14px; bottom: -10px; border: 7px solid transparent; border-top-color: #4a2f24; border-bottom: 0; }
 @keyframes ahPop { from { opacity: 0; transform: translateY(6px) scale(.85); } }
+/* her greeting: a wider bubble on two lines, her words typed in, the other language underneath */
+.ah-bubble.greet { white-space: normal; width: max-content; max-width: 232px; line-height: 1.45; transform-origin: 14px 100%; }
+.ah-bubble.greet small { display: block; margin-top: 3px; font: 600 11px 'Segoe UI', 'Yu Gothic UI', sans-serif; color: #8a6a58; opacity: 0; transition: opacity .25s cubic-bezier(.23, 1, .32, 1); }
+.ah-bubble.greet small.on { opacity: 1; }
+/* it gives way to the chat, which opens beside her */
+.ah-bubble.away { animation: ahAway .22s cubic-bezier(.23, 1, .32, 1) both; }
+@keyframes ahAway { to { opacity: 0; transform: translate(10px, -4px) scale(.96); } }
 
 @media (max-width: 640px) {
   /* a little higher, so the map's credit line along the bottom stays readable */
@@ -67,10 +75,10 @@
    help opens from the chat's ? */
 .trip .tp-support { visibility: hidden !important; pointer-events: none; }
 .ah-house[hidden] { display: none; }
-.ah-tuck { position: fixed; z-index: 65; width: 18px; height: 18px; padding: 0; border-radius: 50%; border: 2px solid #4a2f24; background: #fffaf1; color: #4a2f24; display: grid; place-items: center; cursor: pointer; opacity: .0; transition: opacity .2s; }
+.ah-tuck { position: fixed; left: 0; top: 0; z-index: 65; width: 18px; height: 18px; padding: 0; border-radius: 50%; border: 2px solid #4a2f24; background: #fffaf1; color: #4a2f24; display: grid; place-items: center; cursor: pointer; opacity: .0; transition: opacity .2s; }
 .ah-tuck svg { width: 11px; height: 11px; }
 .ah-house:hover + .ah-tuck, .ah-tuck:hover, .ah-tuck:focus-visible { opacity: 1; }
 @media (hover: none) { .ah-tuck { opacity: .85; } }
-.ah-badge { position: fixed; z-index: 64; width: 44px; height: 44px; padding: 4px; border-radius: 50%; border: 2.5px solid #4a2f24; background: #fffaf1; cursor: pointer; box-shadow: 0 4px 10px rgba(40, 26, 20, .2); transition: transform .2s; }
+.ah-badge { position: fixed; left: 0; top: 0; z-index: 64; width: 44px; height: 44px; padding: 4px; border-radius: 50%; border: 2.5px solid #4a2f24; background: #fffaf1; cursor: pointer; box-shadow: 0 4px 10px rgba(40, 26, 20, .2); transition: transform .2s; }
 .ah-badge:hover { transform: scale(1.08); }
 .ah-badge svg { width: 100%; height: 100%; display: block; }

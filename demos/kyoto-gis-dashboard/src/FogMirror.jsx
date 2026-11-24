@@ -10,6 +10,10 @@ import GROUP4 from './lib/group4.js';
 // letters and run down. After a while the fog creeps back over the writing, and it is written again.
 // Moving the mouse over the glass wipes it too; those wipes fog over again in a few seconds.
 // It draws only while the back is showing and on screen. With reduced motion the writing is simply there.
+// Cost: the canvas size is never read inside the frame (that forced a layout of the page every frame); the
+// clear parts (letters, drips, wipes) are kept at half size and blurred once when they change; the haze is
+// drawn on the small blur canvas; and when nothing moves on the glass it draws 30 times a second (the closing
+// video behind it runs at about that).
 const WRITE_MS = 4200;      // the pen's time on the glass for all of "Group 4" (lifts come on top)
 const START_MS = 650;       // after the card has turned
 const HOLD_MS = 14000;      // the writing stays this long
@@ -45,16 +49,17 @@ export default function FogMirror({ active, panels, boxRef, reduce, poster }) {
     const ctx = canvas.getContext('2d');
     const brush = sprite();
     const img = new Image(); img.src = poster;
-    const S = st.current = { W: 0, H: 0, raf: 0, seen: true, wipes: 0, lastWipe: 0, wipeDecayAt: 0, last: null, cycleAt: 0, dataAt: 0 };
+    const S = st.current = { W: 0, H: 0, raf: 0, seen: true, wipes: 0, lastWipe: 0, wipeDecayAt: 0, last: null, cycleAt: 0, dataAt: 0, dirty: true, drawnAt: 0 };
 
     function layout() {
-      const dpr = Math.min(2, devicePixelRatio || 1);
+      const dpr = Math.min(1.5, devicePixelRatio || 1);
       const W = Math.round(canvas.offsetWidth * dpr), H = Math.round(canvas.offsetHeight * dpr);
       if (!W || !H || (W === S.W && H === S.H)) return;
       Object.assign(S, { W, H, dpr });
       canvas.width = W; canvas.height = H;
       S.small = mk(Math.max(8, Math.round(W / 14)), Math.max(6, Math.round(H / 14)));   // drawn small, stretched back: a cheap strong blur
-      S.fog = mk(W, H); S.mask = mk(W, H); S.ink = mk(W, H); S.pen = mk(W, H); S.drip = mk(W, H); S.wipe = mk(W, H);
+      // the clear parts (mask) are kept at half size: they are soft anyway
+      S.fog = mk(W, H); S.mask = mk(Math.ceil(W / 2), Math.ceil(H / 2)); S.maskBlur = mk(Math.ceil(W / 2), Math.ceil(H / 2)); S.ink = mk(W, H); S.pen = mk(W, H); S.drip = mk(W, H); S.wipe = mk(W, H);
       // grain and beads of condensation: fixed, so made once per size
       S.tex = mk(W, H);
       const t = S.tex.getContext('2d'), grain = mk(256, 256), gg = grain.getContext('2d'), id = gg.createImageData(256, 256);
@@ -98,7 +103,7 @@ export default function FogMirror({ active, panels, boxRef, reduce, poster }) {
     function reset(now) {
       S.writeAt = now + (reduce ? -1e7 : START_MS);
       S.done = { si: 0, d: 0 };     // how far the brush has been laid down
-      S.drops = []; S.dripped = new Set(); S.cycleAt = 0;
+      S.drops = []; S.dripped = new Set(); S.cycleAt = 0; S.dirty = true;
       if (S.pen) { S.pen.getContext('2d').clearRect(0, 0, S.W, S.H); S.drip.getContext('2d').clearRect(0, 0, S.W, S.H); }
     }
 
@@ -166,12 +171,18 @@ export default function FogMirror({ active, panels, boxRef, reduce, poster }) {
     function frame(now) {
       S.raf = 0;
       if (!activeRef.current || !S.seen) return;
-      layout();
+      // the size is kept by the ResizeObserver; reading it here every frame would force a layout of the page
+      if (!S.W) layout();
       if (!S.W) { S.raf = requestAnimationFrame(frame); return; }
       const { W, H } = S;
       const t = now - S.writeAt;
+      // what changes this frame: the pen writing (and the letters filling in after it), drops running, a wipe
+      // fogging over. With none of these, 30 frames a second are enough.
+      const busy = (t >= -100 && t < S.total + 600) || S.drops.some((d) => d.y < d.stop) || now - S.lastWipe < WIPE_FADE_MS * 3.2;
+      if (!busy && now - S.drawnAt < 31) { S.raf = requestAnimationFrame(frame); return; }
+      S.drawnAt = now;
       const pen = t >= 0 ? penAt(t) : { si: 0, d: 0, down: false };
-      if (t >= 0) writeUpTo(pen);
+      if (t >= 0 && t < S.total + 600) { writeUpTo(pen); S.dirty = true; }
       const written = t >= S.total;
       // the cycle: written, held, fogged over, written again
       let refog = 0;
@@ -185,6 +196,7 @@ export default function FogMirror({ active, panels, boxRef, reduce, poster }) {
       S.drops.forEach((d) => {
         if (d.wait > 0) { d.wait -= 16; return; }
         if (d.y < d.stop) {
+          S.dirty = true;
           d.v = Math.min(d.v + 0.0009 * S.dpr, 0.07 * S.dpr) * (d.y > d.stop - 6 * S.dpr ? 0.92 : 1);
           const ny = d.y + d.v * 16 + (Math.random() < 0.03 ? 1.6 * S.dpr : 0), nx = d.x + (Math.random() - 0.5) * 0.3 * S.dpr;
           dg.lineWidth = d.r * 1.25; dg.beginPath(); dg.moveTo(d.x, d.y); dg.lineTo(nx, ny); dg.stroke();
@@ -194,40 +206,49 @@ export default function FogMirror({ active, panels, boxRef, reduce, poster }) {
       // mouse wipes slowly fog over again
       if (now - S.wipeDecayAt > 120) {
         const wg = S.wipe.getContext('2d');
-        if (now - S.lastWipe > WIPE_FADE_MS * 3.2) wg.clearRect(0, 0, W, H);
-        else { wg.globalCompositeOperation = 'destination-out'; wg.fillStyle = `rgba(0,0,0,${1 - Math.exp(-(now - S.wipeDecayAt) / WIPE_FADE_MS)})`; wg.fillRect(0, 0, W, H); wg.globalCompositeOperation = 'source-over'; }
+        if (now - S.lastWipe > WIPE_FADE_MS * 3.2) { if (S.wipeLeft) { wg.clearRect(0, 0, W, H); S.wipeLeft = false; S.dirty = true; } }
+        else { wg.globalCompositeOperation = 'destination-out'; wg.fillStyle = `rgba(0,0,0,${1 - Math.exp(-(now - S.wipeDecayAt) / WIPE_FADE_MS)})`; wg.fillRect(0, 0, W, H); wg.globalCompositeOperation = 'source-over'; S.wipeLeft = true; S.dirty = true; }
         S.wipeDecayAt = now;
       }
       // what is clear: the brush inside the letters (and, once written, all of the letters), drip trails, wipes
-      const m = S.mask.getContext('2d');
-      m.clearRect(0, 0, W, H);
-      m.globalAlpha = 1 - refog;
-      m.drawImage(S.pen, 0, 0);
-      if (written) { m.globalAlpha = (1 - refog) * Math.min(1, (t - S.total) / 500); m.drawImage(S.ink, 0, 0); }
-      m.globalAlpha = 1;
-      m.globalCompositeOperation = 'destination-in'; m.drawImage(S.ink, 0, 0);
-      m.globalCompositeOperation = 'source-over';
-      m.globalAlpha = 1 - refog; m.drawImage(S.drip, 0, 0); m.globalAlpha = 1;
-      m.drawImage(S.wipe, 0, 0);
+      if (S.dirty) {
+        S.dirty = false;
+        const m = S.mask.getContext('2d'), mw = S.mask.width, mh = S.mask.height;
+        m.clearRect(0, 0, mw, mh);
+        m.drawImage(S.pen, 0, 0, mw, mh);
+        if (written) { m.globalAlpha = Math.min(1, (t - S.total) / 500); m.drawImage(S.ink, 0, 0, mw, mh); m.globalAlpha = 1; }
+        m.globalCompositeOperation = 'destination-in'; m.drawImage(S.ink, 0, 0, mw, mh);
+        m.globalCompositeOperation = 'source-over';
+        m.drawImage(S.drip, 0, 0, mw, mh);
+        m.drawImage(S.wipe, 0, 0, mw, mh);
+        // softened once here, not every frame
+        const mb = S.maskBlur.getContext('2d');
+        mb.clearRect(0, 0, mw, mh); mb.filter = `blur(${0.6 * S.dpr}px)`; mb.drawImage(S.mask, 0, 0); mb.filter = 'none';
+      }
       // the picture: sharp behind, fog over it with the clear parts cut out
       sharp(ctx, W, H);
-      const sm = S.small.getContext('2d'); sharp(sm, S.small.width, S.small.height);
+      // the fog: the picture drawn small (a cheap strong blur) with the white breath and its slowly drifting
+      // thicker patches on it, all at that small size, then stretched over the glass with the grain and beads
+      const sm = S.small.getContext('2d'), sw = S.small.width, sh = S.small.height;
+      sm.drawImage(canvas, 0, 0, sw, sh);   // the sharp picture just drawn, shrunk (one source, no layout reads)
+      sm.fillStyle = 'rgba(226, 233, 242, .58)'; sm.fillRect(0, 0, sw, sh);
+      const drift = reduce ? 0 : now;
+      for (let n = 0; n < 4; n++) {
+        const a = drift / 9000 + n * 1.7, x = sw * (0.5 + 0.45 * Math.sin(a * (1 + n * 0.13))), y = sh * (0.5 + 0.4 * Math.cos(a * 0.8 + n));
+        const rg = sm.createRadialGradient(x, y, 0, x, y, sw * 0.38);
+        rg.addColorStop(0, 'rgba(244, 247, 251, .34)'); rg.addColorStop(1, 'rgba(244, 247, 251, 0)');
+        sm.fillStyle = rg; sm.fillRect(0, 0, sw, sh);
+      }
       const f = S.fog.getContext('2d');
       f.globalCompositeOperation = 'source-over'; f.globalAlpha = 1; f.imageSmoothingQuality = 'high';
       f.drawImage(S.small, 0, 0, W, H);
-      f.fillStyle = 'rgba(226, 233, 242, .58)'; f.fillRect(0, 0, W, H);
-      const drift = reduce ? 0 : now;
-      for (let n = 0; n < 4; n++) {   // thicker patches of fog, drifting slowly
-        const a = drift / 9000 + n * 1.7, x = W * (0.5 + 0.45 * Math.sin(a * (1 + n * 0.13))), y = H * (0.5 + 0.4 * Math.cos(a * 0.8 + n));
-        const rg = f.createRadialGradient(x, y, 0, x, y, W * 0.38);
-        rg.addColorStop(0, 'rgba(244, 247, 251, .34)'); rg.addColorStop(1, 'rgba(244, 247, 251, 0)');
-        f.fillStyle = rg; f.fillRect(0, 0, W, H);
-      }
       f.drawImage(S.tex, 0, 0);
-      f.save(); f.filter = `blur(${1.2 * S.dpr}px)`; f.globalCompositeOperation = 'destination-out'; f.globalAlpha = 0.94; f.drawImage(S.mask, 0, 0); f.restore();
+      f.globalCompositeOperation = 'destination-out'; f.globalAlpha = 0.94 * (1 - refog); f.drawImage(S.maskBlur, 0, 0, W, H);
+      f.globalCompositeOperation = 'source-over'; f.globalAlpha = 1;
       ctx.drawImage(S.fog, 0, 0);
       // a faint wet rim along what was cleared
-      ctx.save(); ctx.globalAlpha = 0.16; ctx.filter = `blur(${2.5 * S.dpr}px)`; ctx.globalCompositeOperation = 'screen'; ctx.drawImage(S.mask, -S.dpr, -1.5 * S.dpr); ctx.restore();
+      ctx.globalAlpha = 0.16 * (1 - refog); ctx.globalCompositeOperation = 'screen'; ctx.drawImage(S.maskBlur, -S.dpr, -1.5 * S.dpr, W, H);
+      ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
       // the fingertip: a soft wet gleam where the pen is
       if (pen.down && !reduce) {
         const [x, y, r] = pointAt(S.strokes[pen.si], pen.d), R = r * 2.2 + 6 * S.dpr;
@@ -262,7 +283,7 @@ export default function FogMirror({ active, panels, boxRef, reduce, poster }) {
       const [px, py] = S.last || [x, y];
       const n = Math.max(1, Math.ceil(Math.hypot(x - px, y - py) / (R * 0.35)));
       for (let i = 1; i <= n; i++) { const u = i / n; wg.drawImage(brush, px + (x - px) * u - R, py + (y - py) * u - R, R * 2, R * 2); }
-      S.last = [x, y]; S.wipes++; S.lastWipe = performance.now();
+      S.last = [x, y]; S.wipes++; S.lastWipe = performance.now(); S.dirty = true;
     };
     const leave = () => { S.last = null; };
     canvas.addEventListener('pointermove', move); canvas.addEventListener('pointerleave', leave);
@@ -279,7 +300,7 @@ export default function FogMirror({ active, panels, boxRef, reduce, poster }) {
       if (S.W) {
         const now = performance.now();
         S.writeAt = now + (reduce ? -1e7 : START_MS); S.done = { si: 0, d: 0 }; S.drops = []; S.dripped = new Set();
-        S.pen.getContext('2d').clearRect(0, 0, S.W, S.H); S.drip.getContext('2d').clearRect(0, 0, S.W, S.H); S.wipe.getContext('2d').clearRect(0, 0, S.W, S.H);
+        S.pen.getContext('2d').clearRect(0, 0, S.W, S.H); S.drip.getContext('2d').clearRect(0, 0, S.W, S.H); S.wipe.getContext('2d').clearRect(0, 0, S.W, S.H); S.dirty = true;
       } else S.W = 0;
       if (!S.raf) S.raf = requestAnimationFrame(S.frame);
     } else if (S.raf) { cancelAnimationFrame(S.raf); S.raf = 0; }

@@ -1144,8 +1144,8 @@ export default function App() {
       )}
       <TripDashboard open={tripOpen} onShown={setTripShown} onClose={() => setTripOpen(false)} d={d} byId={byId} A={A} Tr={Tr} theme={theme} seasonPick={seasonMode === 'auto' ? null : seasonMode} fetchBusVariant={fetchBusVariant} addRequest={tripAdd} goRequest={tripGo} onAsk={openAsk} />
     </div>
-    {askOn && <Assistant open={askOpen} onClose={() => setAskOpen(false)} getCtx={askCtx} side="house" onHelp={tripShown ? () => dispatchEvent(new CustomEvent('kyoto-trip-help')) : null} />}
-    <AtlasHouse open={askOpen} onOpen={openAsk} />
+    {askOn && <Assistant open={askOpen} onClose={() => setAskOpen(false)} getCtx={askCtx} side="house" enFirst={enFirst} onHelp={tripShown ? () => dispatchEvent(new CustomEvent('kyoto-trip-help')) : null} />}
+    <AtlasHouse open={askOpen} onOpen={openAsk} enFirst={enFirst} />
     <Seam mark="結" ja="結び" en="Closing" />
     <Outro manifest={d.manifest} />
     </>
